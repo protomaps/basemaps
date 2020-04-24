@@ -1,0 +1,588 @@
+global:
+    background_color: [0.957, 0.937, 0.937, 1.00]
+    water_color: [0.612, 0.757, 0.859, 1.00]
+    park_color: '#bddec5'
+    grass_color: '#9dbea5'
+    garden_color: [0.804, 1.000, 0.808, 1.00]   
+    school_color: [0.941, 0.941, 0.941, 1.00]
+    hospital_color: [0.949, 0.914, 0.976, 1.00]
+    residential_color: [0.980, 0.961, 0.914, 1.00]
+    pedestrian_color: [0.902, 0.902, 0.902, 1.00]
+    industrial_color: [1.000, 1.000, 0.863, 1.00]
+    brownfield_color: [1.000, 0.973, 0.882, 1.00]
+    commercial_color: [0.945, 0.945, 0.945, 1.00]
+    aerodrome_color: [0.941, 0.941, 0.941, 1.00]
+    wood_color: [0.745, 0.871, 0.773, 1.00]
+    scrub_color: [0.761, 0.867, 0.741, 1.00]
+    glacier_color: [1.000, 1.000, 1.000, 1.00]
+    sand_color: [0.976, 0.969, 0.843, 1.00]
+    runway_color: "#e6e6e6"
+    buildings_color: [0.796, 0.808, 0.847, 1.00]
+    physical_line_color: [0.820, 0.898, 0.922, 1.00]
+    physical_line_label_color: [0.114, 0.282, 0.549, 1.00]
+    highway_color:  [0.886, 0.643, 0.643, 1.00]
+    highway_tunnel_color: [0.804, 0.737, 0.737, 1.00]
+    major_road_color: [0.925, 0.596, 0.573, 1.00]
+    medium_road_color: white
+    minor_road_color: white
+    admin_color: [0.000, 0.000, 0.000, 1.00]
+    label_color:  "black"
+    lighter_color: [.8,.8,.8]
+
+styles:
+    space-constant:
+        shaders:
+            blocks:
+                global: |
+                    // Get the constant coordinates (glitches on zooms)
+                    // ================================
+                    vec2 getConstantCoords () {
+                        #ifdef TANGRAM_FRAGMENT_SHADER
+                        const float pixel_scale = 695.;
+                        float meter_pixels = u_meters_per_pixel / u_device_pixel_ratio;
+                        vec2 st = gl_FragCoord.xy/pixel_scale;
+                        const float dot_wrap = 1000.;
+                        st += mod(u_map_position.xy / meter_pixels, dot_wrap)/pixel_scale;
+                        return st;
+                        #else
+                        return vec2(0.0,0.0);
+                        #endif
+                    }
+
+    functions-aastep:
+        shaders:
+            extensions: OES_standard_derivatives
+            blocks:
+                global: |
+                    // AntiAliased Step function
+                    //=============================
+                    float aastep(float threshold, float value) {
+                        #ifdef TANGRAM_FRAGMENT_SHADER
+                            #ifdef TANGRAM_EXTENSION_OES_standard_derivatives
+                                float afwidth = length(vec2(dFdx(value), dFdy(value))) * 0.70710678118654757;
+                                return smoothstep(threshold-afwidth, threshold+afwidth, value);
+                            #else
+                                return step(threshold, value);
+                            #endif
+                        #else
+                            return step(threshold, value);
+                        #endif
+                    }
+    
+    patterns-stripes:
+        mix: functions-aastep
+        shaders:
+            defines:
+                PI: 3.14159265358979323846
+            blocks:
+                global: |
+                    // Return a distance function of stripes
+                    float stripesDF (vec2 st) {
+                        return abs(sin(st.y*PI));
+                    }
+                    // Adjustable width stripes
+                    float stripes (vec2 st, float width) {
+                        return aastep(width,stripesDF(st));
+                    }
+                    // Faster optimisation of diagonal stripes
+                    float diagonalStripes (vec2 st) {
+                        vec2 i_st = floor(st);
+                        vec2 f_st = fract(st);
+                        if (mod(i_st.y,2.) - mod(i_st.x,2.) == 0.) {
+                            return 1.0 - aastep(f_st.x,f_st.y);
+                        } else {
+                            return aastep(f_st.x,f_st.y);
+                        }
+                    }
+    diagonal:
+        base: polygons
+        mix: [space-constant, patterns-stripes]
+        shaders:
+            uniforms:
+                u_lighter: global.lighter_color
+                u_lightest: global.background_color
+            blocks:
+                filter: |
+                    vec2 st = getConstantCoords();
+                    
+                    color = mix(color,vec4(0.5,0.5,0.5,0.5),diagonalStripes(st*200.));
+
+sources:
+    protomaps:
+        type: MVT
+        url: https://api.protomaps.dev/tile/{z}/{x}/{y}.pbf?key=1f72ef3f6d6edc04
+        tile_size: 512
+        max_zoom: 14
+
+scene:
+    background:
+        color: global.background_color
+
+fonts:
+    Inter:
+        - weight: 100
+        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 200
+        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 300
+        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 400
+        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+
+
+# order
+# natural 0
+# landuse 10
+# water   20
+# physical_line 30
+# roads 40
+# buildings 50
+# admin 60
+
+layers:
+    water:
+        data: { source: protomaps, layer: water }
+        draw:
+            polygons:
+                color: global.water_color
+                order: 20
+
+    landuse:
+        data: { source: protomaps, layer: landuse }
+            
+        park:
+            filter:
+                - leisure: park
+                - landuse: cemetery
+            draw:
+                polygons:
+                    color: global.park_color
+                    order: 10
+                points:
+                    size: 0px
+                    color: black
+                    priority: 10 
+                    placement: midpoint
+                    text:
+                        font:
+                            weight: 600
+                            size: 14px
+                            family: Inter
+                            fill: [0.012, 0.400, 0.271, 1.00]
+                    
+        grass:
+            filter:
+                - landuse: grass
+            draw:
+                polygons:
+                    color: global.grass_color
+                    order: 10
+        
+        recreation:
+            filter:
+                - landuse: recreation_ground
+                - leisure: garden
+                - leisure: playground
+                - leisure: golf_course
+                - leisure: dog_park
+            draw:
+                polygons:
+                    color: global.garden_color
+                    order: 10
+                    
+        school:
+            filter:
+                - amenity: college
+                - amenity: university
+                - amenity: school
+                - amenity: kindergarten
+            draw:
+                polygons:
+                    color: global.school_color
+                    order: 10
+                    
+        hospital:
+            filter:
+                - amenity: hospital
+            draw:
+                polygons:
+                    color: global.hospital_color
+                    order: 10
+                    
+        residential:
+            filter:
+                - landuse: residential
+            draw:
+                polygons:
+                    color: [0.937, 0.937, 0.937, 1.00]
+                    order: 10
+                    
+        pedestrian:
+            filter:
+                - highway: pedestrian
+                - man_made: bridge
+                - highway: footway
+                - man_made: pier
+                - railway: platform
+            draw:
+                polygons:
+                    color: global.pedestrian_color
+                    order: 10    
+        industrial:
+            filter:
+                - landuse: industrial
+                - landuse: railway
+            draw:
+                polygons:
+                    style: diagonal
+                    color: [0.820, 0.820, 0.820, 1.00]
+                    order: 10
+        brownfield:
+            filter:
+                - landuse: brownfield
+            draw:
+                polygons:
+                    color: global.brownfield_color
+                    order: 10
+        commercial:
+            filter:
+                - landuse: commercial
+            draw:
+                polygons:
+                    color: global.commercial_color
+                    order: 10      
+        airport:
+            filter:
+                aeroway: aerodrome
+            draw:
+                polygons:
+                    color: global.aerodrome_color
+                    order: 10
+                    
+        farmland:
+            filter:
+                landuse: farmland
+            draw:
+                polygons:
+                    color: [0.686, 0.867, 0.616, 1.00]
+                    order: 10
+
+#         other:
+#             filter:
+#                 none:
+#                     - leisure: park
+#                     - amenity: college
+#                     - amenity: university
+#                     - place: neighbourhood
+#                     - landuse: grass
+#                     - landuse: recreation_ground
+#                     - leisure: garden
+#                     - amenity: hospital
+#                     - amenity: school
+#                     - landuse: residential
+#                     - highway: pedestrian
+#                     - man_made: bridge
+#                     - landuse: industrial
+#                     - highway: footway
+#                     - landuse: brownfield
+#                     - leisure: playground
+#                     - leisure: golf_course
+#                     - landuse: railway
+#                     - landuse: commercial
+#                     - aeroway: aerodrome
+#                     - man_made: pier
+#                     - leisure: dog_park
+#                     - amenity: kindergarten
+#                     - landuse: farmland     
+#             draw:
+#                 polygons:
+#                     color: [1.000, 0.702, 0.702, 1.00]
+#                     order: 10
+
+    natural:
+        data: { source: protomaps, layer: natural }
+        wood:
+            filter: 
+                any:
+                    - natural: wood
+                    - leisure: nature_reserve
+                    - landuse: forest
+            draw:
+                polygons:
+                    order: 0
+                    color: global.wood_color
+
+        scrub:
+            filter: {natural: [scrub, grassland]}
+            draw:
+                polygons:
+                    order: 0
+                    color: global.scrub_color
+
+        glacier:
+            filter: {natural: glacier}
+            draw:
+                polygons:
+                    order: 0
+                    color: global.glacier_color
+        sand:
+            filter: {natural: sand}
+            draw:
+                polygons:
+                    order: 0
+                    color: global.sand_color
+                
+        wetland:
+            filter: {natural: wetland }
+            draw:
+                polygons:
+                    style: diagonal
+                    order: 0
+                    color: [0.651, 0.808, 0.792, 1.00]
+        # other:
+        #     filter: 
+        #         none:
+        #             - natural: wood
+        #             - natural: scrub
+        #             - natural: glacier
+        #             - landuse: forest
+        #             - natural: sand
+        #     draw:
+        #         polygons:
+        #             color: [0.694, 0.600, 1.000, 1.00]
+        #             order: 0
+
+    runway:
+        data: { source: protomaps, layer: landuse }
+        filter: {aeroway: runway }
+        draw:
+            polygons:
+                color: global.runway_color
+                order: 10
+
+    buildings:
+        data: { source: protomaps, layer: buildings }
+        draw:
+            polygons:
+                color: global.buildings_color 
+                order: 50
+
+    physical_line:
+        data: { source: protomaps, layer: physical_line }
+        draw:
+            lines:
+                color: global.physical_line_color
+                width: [[13,0px],[14,1px]]
+                order: 30
+        labels:
+            filter: { $zoom: { min: 15 } }
+            draw:
+                text:
+                    font:
+                        weight: 600
+                        size: 16px
+                        family: Inter
+                        fill: global.physical_line_label_color
+
+    # transit:
+    #     data: { source: protomaps, layer: transit }
+    #     taxiway:
+    #         filter: { aeroway: taxiway }
+    #         draw:
+    #             lines:
+    #                 color: "#e6e6e6"
+    #                 width: [[12,1px],[18,8px]]
+    #                 order: 999
+    #     railway:
+    #         filter: { railway: subway }
+    #         draw:
+    #             lines:
+    #                 dash: [6, 4]
+    #                 color: "red"
+    #                 dash_background_color: "blue"
+    #                 width: [[12,0.5px],[18,2px]]
+    #                 order: 999999
+
+    roads:
+        data: { source: protomaps, layer: roads }
+
+        highway:
+            filter: { pmap:kind: highway }
+
+            bridges:
+                filter: { pmap:level: "1" }
+                draw:
+                    lines:
+                        color: global.highway_color
+                        width: [[3,0px],[4, 1px], [14, 2px], [16, 3px]]
+                        order: 46
+                        outline:
+                            color: global.background_color
+                            width: [[10, 0], [12, 1px], [16, 2px]]
+
+            ground:
+                filter: { pmap:level: "0" }
+                draw:
+                    lines:
+                        color: global.highway_color
+                        width: [[4,0px],[5, 0.5px], [7, 0.5px],[14, 3px], [16, 5px]]
+                        order: 45
+                        join: round
+                        outline:
+                            color: global.background_color
+                            width: [[10, 0], [12, 1px], [16, 2px]]
+                    points:
+                        size: 0px
+                        color: black
+                        priority: 10 
+                        placement: midpoint
+                        buffer: 20 # space out motorway shields.
+                        text:
+                            text_source: ref
+                            font:
+                                weight: 600
+                                size: 14px
+                                family: Inter
+                                fill: [0.580, 0.141, 0.141, 1.00]
+            tunnels:
+                filter: { pmap:level: "-1" }
+                draw:
+                    lines:
+                        color: global.highway_tunnel_color
+                        width: [[3,0px],[4, 1px], [14, 2px], [16, 3px]]
+                        order: 44
+                        outline:
+                            color: global.background_color
+                            width: [[10, 0], [12, 1px], [16, 2px]]
+
+        major_road:
+            filter: {pmap:kind: major_road }
+            draw:
+                lines:
+                    color: global.major_road_color
+                    width: [[8, 0px], [9, 0.5px], [16, 1.5px], [19, 6m]]
+                    order: 43
+                    join: round
+                    outline:
+                        color: global.background_color
+                        width: [[12, 1px], [13, 1px], [15, 1px]]
+
+                text:
+                    text_source: name
+                    font:
+                        weight: 600
+                        size: 14px
+                        family: Inter
+                        fill: [0.447, 0.000, 0.000, 1.00]
+
+        medium_road:
+            filter: {pmap:kind: medium_road }
+            draw:
+                lines:
+                    color: global.medium_road_color
+                    width: [[10, 0px], [12, 0.5px], [16, 2.5px], [19, 8m]]
+                    order: 42
+                    join: round
+                    outline:
+                        color: global.background_color
+                        width: [[12, 1px], [13, 1px], [15, 1px]]
+
+                text:
+                    text_source: name
+                    font:
+                        weight: 600
+                        size: 13px
+                        family: Inter
+                        fill: [0.408, 0.408, 0.408, 1.00]
+
+
+        minor_road:
+            filter: {pmap:kind: minor_road }
+            draw:
+                lines:
+                    color: global.minor_road_color
+                    width: [[13,0px],[14,1px],[16,3px]]
+                    order: 41
+
+            labels:
+                filter: { $zoom: { min: 16 } }
+                draw:
+                    text:
+                        text_source: name
+                        font:
+                            weight: 400
+                            size: 16px
+                            family: inter
+                            fill: [0.545, 0.545, 0.545, 1.00]
+
+        other:
+            filter: {pmap:kind: other }
+            draw:
+                lines:
+                    color: [1.000, 1.000, 1.000, 1.00]
+                    width: [[15,0px],[16,1px]]
+                    order: 40
+
+
+    admin:
+        data: { source: protomaps, layer: admin }
+        filter: { not: {maritime: true} }
+        draw:
+            lines:
+                order: 60
+                color: global.admin_color
+                width: [[5,0.3px],[8,0.8px]]
+
+    places:
+        data: { source: protomaps, layer: places }
+        countries:
+            filter: { place: country }
+            draw:
+                text:
+                    priority: 1
+                    font:
+                        weight: 600
+                        size: 12px
+                        family: Inter
+                        fill: global.label_color
+
+        city_major:
+            filter: { place: city, population: { min: 200000 }}
+            draw:
+                text:
+                    text_source: name
+                    priority: 3
+                    font:
+                        weight: 500
+                        size: [[4,10px],[8,22px],[13,24px],[14,48px]]
+                        family: Inter
+                        fill: global.label_color
+                        alpha: [[13,1],[14,0.3]]
+                        blend: multiply
+
+        city_minor:
+            filter: { place: city, population: { max: 200000 }}
+            draw:
+                text:
+                    text_source: name
+                    priority: 4
+                    font:
+                        weight: 300
+                        size: 10px
+                        family: Inter
+                        fill: global.label_color
+
+        subplace:
+            filter: { place: [neighbourhood, village, town, suburb] } 
+            draw:
+                text:
+                    priority: 4
+                    text_source: name
+                    font:
+                        weight: 200
+                        size: [[11,16px],[14,22px],[15,30px]]
+                        family: Inter
+                        fill: [0,0,0,0.5]
+                        alpha: [[14,0.5],[15,0.5]]
+                        blend: add
+                        order: 9999999
