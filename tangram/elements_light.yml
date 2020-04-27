@@ -121,13 +121,13 @@ scene:
 fonts:
     Inter:
         - weight: 100
-        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
         - weight: 200
-        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
         - weight: 300
-        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
         - weight: 400
-        - url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
 
 
 # order
