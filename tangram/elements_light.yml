@@ -110,7 +110,7 @@ styles:
 sources:
     protomaps:
         type: MVT
-        url: https://api.protomaps.com/tile/{z}/{x}/{y}.pbf
+        url: https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf
         tile_size: 512
         max_zoom: 14
         url_params:
