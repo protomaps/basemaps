@@ -26,7 +26,6 @@ global:
     minor_road_color: "white"
     admin_color: "black"
     label_color:  "black"
-    lighter_color: [.8,.8,.8]
 
 styles:
     space-constant:
@@ -97,13 +96,9 @@ styles:
         base: polygons
         mix: [space-constant, patterns-stripes]
         shaders:
-            uniforms:
-                u_lighter: global.lighter_color
-                u_lightest: global.background_color
             blocks:
                 filter: |
                     vec2 st = getConstantCoords();
-                    
                     color = mix(color,vec4(0.5,0.5,0.5,0.5),diagonalStripes(st*200.));
 
 sources:
