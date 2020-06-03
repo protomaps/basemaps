@@ -1,31 +1,30 @@
 global:
-    background_color: [0.957, 0.937, 0.937, 1.00]
-    water_color: [0.612, 0.757, 0.859, 1.00]
-    park_color: '#bddec5'
-    grass_color: '#9dbea5'
-    garden_color: [0.804, 1.000, 0.808, 1.00]   
-    school_color: [0.941, 0.941, 0.941, 1.00]
-    hospital_color: [0.949, 0.914, 0.976, 1.00]
-    residential_color: [0.980, 0.961, 0.914, 1.00]
-    pedestrian_color: [0.902, 0.902, 0.902, 1.00]
-    industrial_color: [1.000, 1.000, 0.863, 1.00]
-    brownfield_color: [1.000, 0.973, 0.882, 1.00]
-    commercial_color: [0.945, 0.945, 0.945, 1.00]
-    aerodrome_color: [0.941, 0.941, 0.941, 1.00]
-    wood_color: [0.745, 0.871, 0.773, 1.00]
-    scrub_color: [0.761, 0.867, 0.741, 1.00]
-    glacier_color: [1.000, 1.000, 1.000, 1.00]
-    sand_color: [0.976, 0.969, 0.843, 1.00]
+    background_color: "#e2e2e2"
+    water_color: "#aaaaaa"
+    park_color: '#e4e4e4'
+    grass_color: '#e4e4e4'
+    garden_color: '#e4e4e4'
+    school_color: "#d9d9d9"
+    hospital_color: "#d9d9d9"
+    pedestrian_color: global.background_color
+    industrial_color: "#cccccc"
+    brownfield_color: "#aaaaaa"
+    commercial_color: "#e8e8e8"
+    aerodrome_color: "#e0e0e0"
+    wood_color: "#f1f1f1"
+    scrub_color: '#f1f1f1'
+    glacier_color: "#ffffff"
+    sand_color: "#f3f3f3"
     runway_color: "#e6e6e6"
-    buildings_color: [0.796, 0.808, 0.847, 1.00]
-    physical_line_color: [0.820, 0.898, 0.922, 1.00]
-    physical_line_label_color: [0.114, 0.282, 0.549, 1.00]
-    highway_color:  [0.886, 0.643, 0.643, 1.00]
-    highway_tunnel_color: [0.804, 0.737, 0.737, 1.00]
-    major_road_color: [0.925, 0.596, 0.573, 1.00]
-    medium_road_color: white
-    minor_road_color: white
-    admin_color: [0.000, 0.000, 0.000, 1.00]
+    buildings_color: "#d0d0d0"
+    physical_line_color: "#aaaaaa"
+    physical_line_label_color: "white"
+    highway_color:  "white"
+    highway_tunnel_color: "white"
+    major_road_color: "white"
+    medium_road_color: "white"
+    minor_road_color: "white"
+    admin_color: "black"
     label_color:  "black"
     lighter_color: [.8,.8,.8]
 
@@ -115,6 +114,7 @@ sources:
         max_zoom: 14
         url_params:
             key: global.api_key
+        preserve_tiles_within_zoom: 4
 
 scene:
     background:
@@ -129,6 +129,16 @@ fonts:
         - weight: 300
           url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
         - weight: 400
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 500
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 600
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 700
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 800
+          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
+        - weight: 900
           url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
 
 
@@ -167,10 +177,14 @@ layers:
                     placement: midpoint
                     text:
                         font:
-                            weight: 600
-                            size: 14px
+                            weight: 200
+                            size: 12px
                             family: Inter
-                            fill: [0.012, 0.400, 0.271, 1.00]
+                            fill: black
+                            style: italic
+                            stroke:
+                                color: global.background_color
+                                width: 2px
                     
         grass:
             filter:
@@ -237,13 +251,14 @@ layers:
             draw:
                 polygons:
                     style: diagonal
-                    color: [0.820, 0.820, 0.820, 1.00]
+                    color: global.industrial_color
                     order: 10
         brownfield:
             filter:
                 - landuse: brownfield
             draw:
                 polygons:
+                    style: diagonal
                     color: global.brownfield_color
                     order: 10
         commercial:
@@ -266,7 +281,7 @@ layers:
                 landuse: farmland
             draw:
                 polygons:
-                    color: [0.686, 0.867, 0.616, 1.00]
+                    color: global.comemrcial_color
                     order: 10
 
 #         other:
@@ -340,7 +355,7 @@ layers:
                 polygons:
                     style: diagonal
                     order: 0
-                    color: [0.651, 0.808, 0.792, 1.00]
+                    color: global.water_color
         # other:
         #     filter: 
         #         none:
@@ -385,6 +400,9 @@ layers:
                         size: 16px
                         family: Inter
                         fill: global.physical_line_label_color
+                        stroke:
+                            color: #aaaaaa
+                            width: 2px
 
     # transit:
     #     data: { source: protomaps, layer: transit }
@@ -442,10 +460,12 @@ layers:
                         text:
                             text_source: ref
                             font:
-                                weight: 600
-                                size: 14px
+                                weight: 500
+                                size: 9px
                                 family: Inter
-                                fill: [0.580, 0.141, 0.141, 1.00]
+                                fill: white
+                                background:
+                                    fill: "#444444"
             tunnels:
                 filter: { pmap:level: "-1" }
                 draw:
@@ -465,17 +485,17 @@ layers:
                     width: [[8, 0px], [9, 0.5px], [16, 1.5px], [19, 6m]]
                     order: 43
                     join: round
-                    outline:
-                        color: global.background_color
-                        width: [[12, 1px], [13, 1px], [15, 1px]]
 
                 text:
                     text_source: name
                     font:
                         weight: 600
-                        size: 14px
+                        size: 12px
                         family: Inter
-                        fill: [0.447, 0.000, 0.000, 1.00]
+                        fill: "#666666"
+                        stroke:
+                            color: white
+                            width: 2px
 
         medium_road:
             filter: {pmap:kind: medium_road }
@@ -496,6 +516,9 @@ layers:
                         size: 13px
                         family: Inter
                         fill: [0.408, 0.408, 0.408, 1.00]
+                        stroke:
+                            color: white
+                            width: 2px
 
 
         minor_road:
@@ -513,9 +536,12 @@ layers:
                         text_source: name
                         font:
                             weight: 400
-                            size: 16px
+                            size: 12px
                             family: inter
                             fill: [0.545, 0.545, 0.545, 1.00]
+                            stroke:
+                                color: white
+                                width: 2px
 
         other:
             filter: {pmap:kind: other }
@@ -526,14 +552,29 @@ layers:
                     order: 40
 
 
-    admin:
-        data: { source: protomaps, layer: admin }
-        filter: { not: {maritime: true} }
+    # admin:
+    #     data: { source: protomaps, layer: admin }
+    #     filter: { not: {maritime: true} }
+    #     draw:
+    #         lines:
+    #             order: 60
+    #             color: global.admin_color
+    #             width: [[5,0.3px],[8,0.8px]]
+
+    physical_point:
+        data: { source: protomaps, layer: physical_point }
         draw:
-            lines:
-                order: 60
-                color: global.admin_color
-                width: [[5,0.3px],[8,0.8px]]
+            text:
+                priority: 1
+                font:
+                    weight: 300
+                    size: 12px
+                    style: italic
+                    family: Inter
+                    fill: white
+                    stroke:
+                        color: "#aaaaaa"
+                        width: 2px
 
     places:
         data: { source: protomaps, layer: places }
@@ -543,10 +584,13 @@ layers:
                 text:
                     priority: 1
                     font:
-                        weight: 600
-                        size: 12px
+                        weight: 400
+                        size: [[2,12px],[8,24px]]
                         family: Inter
-                        fill: global.label_color
+                        fill: [[2,"#333333"],[8,[0,0,0,0.3]]]
+                        stroke:
+                            color: white
+                            width: 2px
 
         city_major:
             filter: { place: city, population: { min: 200000 }}
@@ -555,12 +599,15 @@ layers:
                     text_source: name
                     priority: 3
                     font:
-                        weight: 500
-                        size: [[4,10px],[8,22px],[13,24px],[14,48px]]
+                        weight: 300
+                        size: [[4,10px],[8,16px],[13,24px],[14,48px]]
                         family: Inter
                         fill: global.label_color
-                        alpha: [[13,1],[14,0.3]]
+                        alpha: [[13,1],[14,0.5]]
                         blend: multiply
+                        stroke: 
+                            color: white
+                            width: [[13,3px],[14,0px]]
 
         city_minor:
             filter: { place: city, population: { max: 200000 }}
@@ -573,6 +620,9 @@ layers:
                         size: 10px
                         family: Inter
                         fill: global.label_color
+                        stroke: 
+                            color: white
+                            width: 2px
 
         subplace:
             filter: { place: [neighbourhood, village, town, suburb] } 
@@ -581,10 +631,12 @@ layers:
                     priority: 4
                     text_source: name
                     font:
-                        weight: 200
-                        size: [[11,16px],[14,22px],[15,30px]]
+                        weight: 400
+                        size: [[11,10px],[14,12px],[15,12px]]
                         family: Inter
-                        fill: [0,0,0,0.5]
-                        alpha: [[14,0.5],[15,0.5]]
+                        fill: black
                         blend: add
                         order: 9999999
+                        stroke: 
+                            color: white
+                            width: 3px
