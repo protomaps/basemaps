@@ -555,10 +555,11 @@ layers:
                 color: global.admin_color
                 width: |
                     function() { 
-                        if (feature.admin_level == "2") return 1 * $meters_per_pixel;
-                        else return 0.5 * $meters_per_pixel;
+                        if (feature['pmap:min_admin_level'] == "2") return 2 * $meters_per_pixel;
+                        if (feature['pmap:min_admin_level'] == "4") return 1 * $meters_per_pixel;
+                        else return 0.8 * $meters_per_pixel;
                     }
-                alpha: 0.2
+                alpha: 0.25
 
     physical_point:
         data: { source: protomaps, layer: physical_point }
@@ -584,7 +585,7 @@ layers:
                     priority: 1
                     font:
                         weight: 400
-                        size: [[2,12px],[6,12px],[8,24px]]
+                        size: [[2,12px],[6,18px],[8,24px]]
                         family: Inter
                         fill: [[2,"#333333"],[8,[0,0,0,0.3]]]
                         stroke:
