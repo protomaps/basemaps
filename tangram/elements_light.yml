@@ -458,9 +458,9 @@ layers:
                                 weight: 500
                                 size: 9px
                                 family: Inter
-                                fill: white
+                                fill: "#444444"
                                 background:
-                                    fill: "#444444"
+                                    fill: "#cccccc"
             tunnels:
                 filter: { pmap:level: "-1" }
                 draw:
@@ -555,11 +555,11 @@ layers:
                 color: global.admin_color
                 width: |
                     function() { 
-                        if (feature['pmap:min_admin_level'] == "2") return 2 * $meters_per_pixel;
-                        if (feature['pmap:min_admin_level'] == "4") return 1 * $meters_per_pixel;
-                        else return 0.8 * $meters_per_pixel;
+                        if (feature['pmap:min_admin_level'] == "2") return 1 * $meters_per_pixel;
+                        if (feature['pmap:min_admin_level'] == "4") return 0.6 * $meters_per_pixel;
+                        else return 0.3 * $meters_per_pixel;
                     }
-                alpha: 0.25
+                alpha: 0.35
 
     physical_point:
         data: { source: protomaps, layer: physical_point }
@@ -640,3 +640,18 @@ layers:
                         stroke: 
                             color: white
                             width: 3px
+
+    poi:
+        data: { source: protomaps, layer: poi }
+        filter: { $zoom: { min: 16 }}
+        draw:
+            text:
+                priority: 1
+                font:
+                    weight: 300
+                    size: 10px
+                    family: Inter
+                    fill: black
+                    stroke:
+                        color: white
+                        width: 2px
