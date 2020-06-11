@@ -552,7 +552,9 @@ layers:
         draw:
             lines:
                 order: 60
-                color: global.admin_color
+                dash: [1, 3]
+                dash_background_color: black
+                color: black
                 width: |
                     function() { 
                         if (feature['pmap:min_admin_level'] == "2") return 1 * $meters_per_pixel;
