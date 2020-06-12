@@ -454,10 +454,14 @@ layers:
                         placement: midpoint
                         buffer: 20 # space out motorway shields.
                         text:
-                            text_source: ref
+                            text_source: |
+                                function() {
+                                    if (feature.ref) return feature.ref.replace(/;/g,"\n");
+                                    return undefined;
+                                }
                             font:
-                                weight: 500
-                                size: 9px
+                                weight: 600
+                                size: 8px
                                 family: Inter
                                 fill: "#444444"
                                 background:
