@@ -163,7 +163,8 @@ layers:
                 - landuse: cemetery
             draw:
                 polygons:
-                    color: global.park_color
+                    style: diagonal
+                    color: "#dddddd"
                     order: 10
                 points:
                     size: 0px
@@ -396,7 +397,7 @@ layers:
                         family: Inter
                         fill: global.physical_line_label_color
                         stroke:
-                            color: #aaaaaa
+                            color: global.water_color
                             width: 2px
 
     # transit:
@@ -484,10 +485,10 @@ layers:
                 text:
                     text_source: name
                     font:
-                        weight: 600
+                        weight: 400
                         size: 12px
                         family: Inter
-                        fill: "#666666"
+                        fill: "#888888"
                         stroke:
                             color: white
                             width: 2px
@@ -543,7 +544,7 @@ layers:
             draw:
                 lines:
                     color: [1.000, 1.000, 1.000, 1.00]
-                    width: [[15,0px],[16,1px]]
+                    width: [[15,0px],[16,2px]]
                     order: 40
 
 
@@ -557,26 +558,42 @@ layers:
                 color: black
                 width: |
                     function() { 
-                        if (feature['pmap:min_admin_level'] == "2") return 1 * $meters_per_pixel;
-                        if (feature['pmap:min_admin_level'] == "4") return 0.6 * $meters_per_pixel;
+                        if (feature['pmap:min_admin_level'] == "2") return 0.7 * $meters_per_pixel;
+                        if (feature['pmap:min_admin_level'] == "4") return 0.4 * $meters_per_pixel;
                         else return 0.3 * $meters_per_pixel;
                     }
-                alpha: 0.35
+                alpha: 0.4
 
     physical_point:
         data: { source: protomaps, layer: physical_point }
-        draw:
-            text:
-                priority: 1
-                font:
-                    weight: 300
-                    size: 12px
-                    style: italic
-                    family: Inter
-                    fill: white
-                    stroke:
-                        color: "#aaaaaa"
-                        width: 2px
+        peaks:
+            filter: { natural: peak }
+            draw:
+                text:
+                    priority: 1
+                    font:
+                        weight: 300
+                        size: 12px
+                        style: italic
+                        family: Inter
+                        fill: "#888888" 
+                        stroke:
+                            color: "white"
+                            width: 2px
+        seas:
+            filter: { place: ["ocean", "sea"] }
+            draw:
+                text:
+                    priority: 1
+                    font:
+                        weight: 300
+                        size: 12px
+                        style: italic
+                        family: Inter
+                        fill: white
+                        stroke:
+                            color: "#aaaaaa"
+                            width: 2px
 
     places:
         data: { source: protomaps, layer: places }
@@ -601,7 +618,7 @@ layers:
                     text_source: name
                     priority: 3
                     font:
-                        weight: 300
+                        weight: 500
                         size: [[4,10px],[8,16px],[13,24px],[14,48px]]
                         family: Inter
                         fill: global.label_color
