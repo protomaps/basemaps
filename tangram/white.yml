@@ -1,30 +1,30 @@
 global:
-    background_color: [0.886, 0.890, 0.906, 1.00]
-    water_color: [0.702, 0.757, 0.851, 1.00]
-    park_color: [0.608, 0.788, 0.608, 1.00]
-    park_label_color: [0.231, 0.502, 0.412, 1.00]
-    grass_color: [0.812, 0.906, 0.831, 1.00]
-    garden_color: [0.851, 0.918, 0.804, 1.00]
-    school_color: [0.945, 0.949, 0.996, 1.00]
-    hospital_color: [1.000, 0.902, 0.902, 1.00]
+    background_color: white
+    water_color: "#e8e8e8"
+    park_color: global.background_color
+    park_label_color: black
+    grass_color: global.background_color
+    garden_color: global.background_color
+    school_color: global.background_color
+    hospital_color: global.background_color
     pedestrian_color: global.background_color
-    industrial_color: [0.929, 0.890, 0.690, 1.00]
-    brownfield_color: [0.816, 0.792, 0.753, 1.00]
-    commercial_color: [0.922, 1.000, 0.996, 1.00]
-    aerodrome_color: [0.859, 0.859, 0.859, 1.00]
-    wood_color: [0.910, 0.953, 0.863, 1.00]
-    scrub_color: [0.859, 0.937, 0.820, 1.00]
-    glacier_color: "#ffffff"
-    sand_color: "#f3f3f3"
+    industrial_color: global.background_color
+    brownfield_color: global.background_color
+    commercial_color: global.background_color
+    aerodrome_color: global.background_color
+    wood_color: global.background_color
+    scrub_color: global.background_color
+    glacier_color: global.background_color
+    sand_color: global.background_color
     runway_color: "#e6e6e6"
-    buildings_color: [0.773, 0.792, 0.847, 1.00]
+    buildings_color: "#d8d8d8"
     physical_line_color: "#aaaaaa"
     physical_line_label_color: white
-    highway_color: white
+    highway_color: "#bbbbbb"
     highway_tunnel_color: white
-    major_road_color: white
-    medium_road_color: white
-    minor_road_color: white
+    major_road_color: global.highway_color
+    medium_road_color: global.highway_color
+    minor_road_color: global.highway_color
     admin_color: black
     label_color:  black
     label_stroke_color: white

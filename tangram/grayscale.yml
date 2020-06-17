@@ -27,6 +27,7 @@ global:
     minor_road_color: "white"
     admin_color: "black"
     label_color:  "black"
+    label_stroke_color: white
 
 styles:
     space-constant:
@@ -559,8 +560,8 @@ layers:
             lines:
                 order: 60
                 dash: [1, 3]
-                dash_background_color: black
-                color: black
+                dash_background_color: global.admin_color
+                color: global.admin_color
                 width: |
                     function() { 
                         if (feature['pmap:min_admin_level'] == "2") return 0.7 * $meters_per_pixel;
@@ -613,7 +614,7 @@ layers:
                         family: Inter
                         fill: [[2,"#333333"],[8,[0,0,0,0.3]]]
                         stroke:
-                            color: white
+                            color: global.label_stroke_color
                             width: 2px
 
         city_major:
@@ -630,7 +631,7 @@ layers:
                         alpha: [[13,1],[14,0.5]]
                         blend: multiply
                         stroke: 
-                            color: white
+                            color: global.label_stroke_color
                             width: [[13,3px],[14,0px]]
 
         city_minor:
@@ -645,7 +646,7 @@ layers:
                         family: Inter
                         fill: global.label_color
                         stroke: 
-                            color: white
+                            color: global.label_stroke_color
                             width: 2px
 
         subplace:
@@ -658,11 +659,11 @@ layers:
                         weight: 400
                         size: [[11,10px],[14,12px],[15,12px]]
                         family: Inter
-                        fill: black
+                        fill: global.label_color
                         blend: add
                         order: 9999999
                         stroke: 
-                            color: white
+                            color: global.label_stroke_color
                             width: 3px
 
     poi:
@@ -675,7 +676,7 @@ layers:
                     weight: 300
                     size: 10px
                     family: Inter
-                    fill: black
+                    fill: global.label_color
                     stroke:
-                        color: white
+                        color: global.label_stroke_color
                         width: 2px
