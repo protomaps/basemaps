@@ -1,7 +1,8 @@
 global:
     background_color: [0.886, 0.890, 0.906, 1.00]
     water_color: [0.702, 0.757, 0.851, 1.00]
-    park_color: [0.925, 0.992, 0.902, 1.00]
+    park_color: [0.608, 0.788, 0.608, 1.00]
+    park_label_color: [0.231, 0.502, 0.412, 1.00]
     grass_color: [0.812, 0.906, 0.831, 1.00]
     garden_color: [0.851, 0.918, 0.804, 1.00]
     school_color: [0.945, 0.949, 0.996, 1.00]
@@ -164,7 +165,7 @@ layers:
             draw:
                 polygons:
                     style: diagonal
-                    color: [0.608, 0.788, 0.608, 1.00]
+                    color: global.park_color
                     order: 11
                 points:
                     size: 0px
@@ -176,7 +177,7 @@ layers:
                             weight: 200
                             size: 12px
                             family: Inter
-                            fill: [0.231, 0.502, 0.412, 1.00]
+                            fill: global.park_label_color
                             style: italic
                             stroke:
                                 color: global.background_color
@@ -239,7 +240,7 @@ layers:
             draw:
                 polygons:
                     color: global.pedestrian_color
-                    order: 10    
+                    order: 12
         industrial:
             filter:
                 - landuse: industrial
