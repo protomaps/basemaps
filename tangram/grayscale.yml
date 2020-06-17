@@ -1,8 +1,9 @@
 global:
+    # fills
     background_color: "#e2e2e2"
     water_color: "#aaaaaa"
     park_color: '#dddddd'
-    park_label_color: black
+    residential_color: [0.937, 0.937, 0.937, 1.00]
     grass_color: '#e4e4e4'
     garden_color: '#e4e4e4'
     school_color: "#d9d9d9"
@@ -14,20 +15,35 @@ global:
     aerodrome_color: "#e0e0e0"
     wood_color: "#f1f1f1"
     scrub_color: '#f1f1f1'
+    buildings_color: "#d0d0d0"
     glacier_color: "#ffffff"
     sand_color: "#f3f3f3"
     runway_color: "#e6e6e6"
-    buildings_color: "#d0d0d0"
+
+    # strokes
     physical_line_color: "#aaaaaa"
-    physical_line_label_color: "white"
-    highway_color:  "white"
-    highway_tunnel_color: "white"
-    major_road_color: "white"
-    medium_road_color: "white"
-    minor_road_color: "white"
-    admin_color: "black"
-    label_color:  "black"
+    highway_color: white
+    highway_tunnel_color: white
+    major_road_color: white
+    medium_road_color: white
+    minor_road_color: white
+    other_road_color: [1.000, 1.000, 1.000, 1.00]
+
+    # text colors and shield colors
+    country_color: "#333333"
+    label_color:  black
     label_stroke_color: white
+    shield_text_color: "#444444"
+    shield_background_color: "#cccccc"
+    major_road_text_color: "#888888"
+    medium_road_text_color: [0.408, 0.408, 0.408, 1.00]
+    minor_road_text_color: [0.545, 0.545, 0.545, 1.00]
+    physical_line_label_color: white
+    admin_color: black
+    park_label_color: black
+    sea_text_color: white
+    sea_text_stroke_color: "#aaaaaa"
+    peak_color: "#888888" 
 
 styles:
     space-constant:
@@ -228,7 +244,7 @@ layers:
                 - landuse: residential
             draw:
                 polygons:
-                    color: [0.937, 0.937, 0.937, 1.00]
+                    color: global.residential_color
                     order: 10
                     
         pedestrian:
@@ -465,9 +481,9 @@ layers:
                                 weight: 600
                                 size: 8px
                                 family: Inter
-                                fill: "#444444"
+                                fill: global.shield_text_color 
                                 background:
-                                    fill: "#cccccc"
+                                    fill: global.shield_background_color
             tunnels:
                 filter: { pmap:level: "-1" }
                 draw:
@@ -494,9 +510,9 @@ layers:
                         weight: 400
                         size: 12px
                         family: Inter
-                        fill: "#888888"
+                        fill: global,major_road_text_color
                         stroke:
-                            color: white
+                            color: global.label_stroke_color
                             width: 2px
 
         medium_road:
@@ -517,9 +533,9 @@ layers:
                         weight: 600
                         size: 13px
                         family: Inter
-                        fill: [0.408, 0.408, 0.408, 1.00]
+                        fill: global.medium_road_text_color
                         stroke:
-                            color: white
+                            color: global.label_stroke_color
                             width: 2px
 
 
@@ -540,16 +556,16 @@ layers:
                             weight: 400
                             size: 12px
                             family: inter
-                            fill: [0.545, 0.545, 0.545, 1.00]
+                            fill: global.minor_road_text_color
                             stroke:
-                                color: white
+                                color: global.label_stroke_color
                                 width: 2px
 
         other:
             filter: {pmap:kind: other }
             draw:
                 lines:
-                    color: [1.000, 1.000, 1.000, 1.00]
+                    color: global.other_road_color
                     width: [[15,0px],[16,2px]]
                     order: 40
 
@@ -582,9 +598,9 @@ layers:
                         size: 12px
                         style: italic
                         family: Inter
-                        fill: "#888888" 
+                        fill: global.peak_color
                         stroke:
-                            color: "white"
+                            color: global.label_stroke_color
                             width: 2px
         seas:
             filter: { place: ["ocean", "sea"] }
@@ -596,9 +612,9 @@ layers:
                         size: 12px
                         style: italic
                         family: Inter
-                        fill: white
+                        fill: global.sea_text_color
                         stroke:
-                            color: "#aaaaaa"
+                            color: global.sea_text_stroke_color
                             width: 2px
 
     places:
@@ -612,7 +628,7 @@ layers:
                         weight: 400
                         size: [[2,12px],[6,18px],[8,24px]]
                         family: Inter
-                        fill: [[2,"#333333"],[8,[0,0,0,0.3]]]
+                        fill: global.country_color
                         stroke:
                             color: global.label_stroke_color
                             width: 2px
