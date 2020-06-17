@@ -512,7 +512,7 @@ layers:
                         weight: 400
                         size: 12px
                         family: Inter
-                        fill: global,major_road_text_color
+                        fill: global.major_road_text_color
                         stroke:
                             color: global.label_stroke_color
                             width: 2px
