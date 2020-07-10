@@ -121,13 +121,13 @@ styles:
 
 sources:
     protomaps:
+        attribution: <a href="https://protomaps.com">Protomaps</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap</a>
         type: MVT
         url: https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf
         tile_size: 512
         max_zoom: 14
         url_params:
             key: global.api_key
-        preserve_tiles_within_zoom: 4
 
 scene:
     background:
