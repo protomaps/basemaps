@@ -4,7 +4,7 @@
   "sources": {
     "protomaps": {
       "type": "vector",
-      "tiles":["https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf"],
+      "tiles":["https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf?key=<YOUR API KEY>"],
       "minzoom":0,
       "maxzoom":14,
       "attribution":"<a href=\"https://protomaps.com\" target=\"_blank\">Protomaps</a> © <a href=\"https://www.openstreetmap.org\" target=\"_blank\"> OpenStreetMap</a>"
