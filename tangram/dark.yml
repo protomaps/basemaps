@@ -174,7 +174,7 @@ layers:
 
     landuse:
         data: { source: protomaps, layer: landuse }
-            
+
         park:
             filter:
                 - leisure: park
@@ -184,21 +184,27 @@ layers:
                     style: diagonal
                     color: global.park_color
                     order: 11
-                points:
-                    size: 0px
-                    color: black
-                    priority: 10 
-                    placement: midpoint
-                    text:
-                        font:
-                            weight: 200
-                            size: 12px
-                            family: Inter
-                            fill: global.park_label_color
-                            style: italic
-                            stroke:
-                                color: global.background_color
-                                width: 3px
+
+            park_label:
+                filter: function() {
+                        return +feature['pmap:area'] > 1000;
+                    }
+                draw:
+                    points:
+                        size: 0px
+                        color: black
+                        priority: 10 
+                        placement: midpoint
+                        text:
+                            font:
+                                weight: 200
+                                size: 12px
+                                family: Inter
+                                fill: global.park_label_color
+                                style: italic
+                                stroke:
+                                    color: global.background_color
+                                    width: 3px
                     
         grass:
             filter:
