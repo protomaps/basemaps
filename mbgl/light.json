@@ -1,0 +1,275 @@
+{
+  "version":8,
+  "glyphs": "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
+  "name": "Light",
+  "sources": {
+    "protomaps": {
+      "type": "vector",
+      "tiles":["https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf"],
+      "minzoom":0,
+      "maxzoom":14,
+      "attribution":"<a href=\"https://protomaps.com\" target=\"_blank\">Protomaps</a> © <a href=\"https://www.openstreetmap.org\" target=\"_blank\"> OpenStreetMap</a>"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#eeeeee"
+      }
+    },
+    {
+      "id": "landuse_park",
+      "type": "fill",
+      "source": "protomaps",
+      "source-layer": "landuse",
+      "filter":["any",["==","leisure","park"],["==","landuse","cemetery"]],
+      "paint": {
+        "fill-color": "rgb(232,243,220)"
+      }
+    },
+    {
+      "id": "natural_wood",
+      "type": "fill",
+      "source": "protomaps",
+      "source-layer": "natural",
+      "filter":["any",["==","natural","wood"],["==","leisure","nature_reserve"],["==","landuse","forest"]],
+      "paint": {
+        "fill-color": "rgb(232,243,220)"
+      }
+    },
+
+    {
+      "id": "landuse_pedestrian",
+      "type": "fill",
+      "source": "protomaps",
+      "source-layer": "landuse",
+      "filter":["any",["==","highway","footway"]],
+      "paint": {
+        "fill-color": "#aaaaaa"
+      }
+    },
+    {
+      "id": "natural_scrub",
+      "type": "fill",
+      "source": "protomaps",
+      "source-layer": "natural",
+      "filter":["in","natural","scrub","grassland"],
+      "paint": {
+        "fill-color": "rgb(219,239,209)"
+      }
+    },
+    {
+      "id": "natural_glacier",
+      "type": "fill",
+      "source": "protomaps",
+      "source-layer": "natural",
+      "filter":["==","natural","glacier"],
+      "paint": {
+        "fill-color": "white"
+      }
+    },
+    {
+      "id": "natural_sand",
+      "type": "fill",
+      "source": "protomaps",
+      "source-layer": "natural",
+      "filter":["==","natural","sand"],
+      "paint": {
+        "fill-color": "#f3f3f3"
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "protomaps",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "rgb(179,193,217)"
+      }
+    },
+    {
+      "id": "buildings",
+      "type": "fill-extrusion",
+      "source": "protomaps",
+      "source-layer": "buildings",
+      "paint": {
+        "fill-extrusion-color": "rgb(197,202,216)",
+        "fill-extrusion-height": ["to-number",["get","height"]],
+        "fill-extrusion-opacity":0.5
+      }
+    },
+    {
+      "id": "roads_tunnels_casing",
+      "type": "line",
+      "source": "protomaps",
+      "source-layer": "roads",
+      "filter":[
+        "all",
+        ["<","pmap:level",0]
+      ],
+      "paint": {
+        "line-color": "black",
+        "line-width": 4
+      }
+    },
+    {
+      "id": "roads_tunnels",
+      "type": "line",
+      "source": "protomaps",
+      "source-layer": "roads",
+      "filter":[
+        "all",
+        ["<","pmap:level",0]
+      ],
+      "paint": {
+        "line-color": "#cccccc",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "roads",
+      "type": "line",
+      "source": "protomaps",
+      "source-layer": "roads",
+      "filter":[
+        "all",
+        ["==","pmap:level",0]
+      ],
+      "paint": {
+        "line-color": "white",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "roads_bridges_1_casing",
+      "type": "line",
+      "source": "protomaps",
+      "source-layer": "roads",
+      "filter":[
+        "all",
+        [">","pmap:level",0]
+      ],
+      "paint": {
+        "line-color": "black",
+        "line-width": 3
+      }
+    },
+    {
+      "id": "roads_bridges_1",
+      "type": "line",
+      "source": "protomaps",
+      "source-layer": "roads",
+      "filter":[
+        "all",
+        [">","pmap:level",0]
+      ],
+      "paint": {
+        "line-color": "white",
+        "line-width": 2
+      }
+    },
+    {
+      "id":"roads_labels",
+      "type":"symbol",
+      "source":"protomaps",
+      "source-layer":"roads",
+      "layout": {
+        "symbol-placement":"line",
+        "text-font":["NotoSans-Regular"],
+        "text-field":["get","name"],
+        "text-size":13
+      },
+      "paint": {
+        "text-color":"#999999",
+        "text-halo-color":"white",
+        "text-halo-width":2
+      }
+    },
+    {
+      "id": "admin",
+      "type": "line",
+      "source": "protomaps",
+      "source-layer": "admin",
+      "paint": {
+        "line-color": "black",
+        "line-width": 0.5,
+        "line-dasharray": [3,2]
+      }
+    },
+    {
+      "id": "place_subplace",
+      "type": "symbol",
+      "source": "protomaps",
+      "source-layer": "places",
+      "filter":["==","pmap:kind","neighbourhood"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["NotoSans-Regular"],
+        "text-size": {"base":1.2, "stops":[[11,10],[14,16]]}
+      },
+      "paint": {
+        "text-color": "#777777",
+        "text-halo-color": "white",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "place_city_circle",
+      "type": "circle",
+      "source": "protomaps",
+      "source-layer": "places",
+      "filter":["==","pmap:kind","city"],
+      "paint": {
+        "circle-radius":2,
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "white",
+        "circle-color":"#666666"
+      }
+    },
+    {
+      "id": "place_city",
+      "type": "symbol",
+      "source": "protomaps",
+      "source-layer": "places",
+      "filter":["==","pmap:kind","city"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["NotoSans-Regular"],
+        "text-size": [
+            "step",
+            ["get","pmap:rank"],
+            0,
+            1,15,
+            2,12
+        ],
+        "text-variable-anchor":["bottom-left"],
+        "text-radial-offset":0.2
+      },
+      "paint": {
+        "text-color": "#444444",
+        "text-halo-color": "white",
+        "text-halo-width": 2.0
+      }
+    },
+    {
+      "id": "place_country",
+      "type": "symbol",
+      "source": "protomaps",
+      "source-layer": "places",
+      "filter": ["==","place","country"],
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["NotoSans-Bold"],
+        "text-size": {"base": 1.2, "stops": [[2, 14], [6, 14],[8,20]]},
+        "text-transform":"uppercase"
+      },
+      "paint": {
+        "text-color": "#aaaaaa",
+        "text-halo-color": "white",
+        "text-halo-width": 1.2
+      }
+    }
+  ]
+}
