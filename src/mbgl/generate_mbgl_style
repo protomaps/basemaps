@@ -5,10 +5,14 @@ import argparse
 parser = argparse.ArgumentParser(description='Generate a MapboxGL style from a template and parameters.')
 parser.add_argument('template', type=str)
 parser.add_argument('params', nargs='?', type=str)
+parser.add_argument('-key', type=str)
 args = parser.parse_args()
 
 with open(args.template,'r') as template:
     j = json.loads(template.read())
+
+    if args.key:
+        j['sources']['protomaps']['tiles'][0] = j['sources']['protomaps']['tiles'][0] + "?key=" + args.key
 
     if args.params:
         j['name'] = args.params
