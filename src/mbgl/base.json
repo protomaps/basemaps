@@ -379,22 +379,22 @@
           0.5,
           20,
           32
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0,
+          12.5,
+          1
         ]
-      },
-      "line-width": [
-        "interpolate",
-        [
-          "exponential",
-          1.6
-        ],
-        [
-          "zoom"
-        ],
-        16,
-        0,
-        16.5,
-        1
-      ]
+      }
     },
     {
       "id": "roads_tunnels_minor",
@@ -483,9 +483,9 @@
           [
             "zoom"
           ],
-          15,
+          10,
           0,
-          15.5,
+          10.5,
           1
         ]
       }
@@ -828,22 +828,22 @@
           0.5,
           20,
           32
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0,
+          12.5,
+          1
         ]
-      },
-      "line-width": [
-        "interpolate",
-        [
-          "exponential",
-          1.6
-        ],
-        [
-          "zoom"
-        ],
-        16,
-        0,
-        16.5,
-        1
-      ]
+      }
     },
     {
       "id": "roads_minor",
@@ -928,9 +928,9 @@
           [
             "zoom"
           ],
-          15,
+          10,
           0,
-          15.5,
+          10.5,
           1
         ]
       }
@@ -1346,22 +1346,22 @@
           0.5,
           20,
           32
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0,
+          12.5,
+          1
         ]
-      },
-      "line-width": [
-        "interpolate",
-        [
-          "exponential",
-          1.6
-        ],
-        [
-          "zoom"
-        ],
-        16,
-        0,
-        16.5,
-        1
-      ]
+      }
     },
     {
       "id": "roads_bridges_minor",
@@ -1446,9 +1446,9 @@
           [
             "zoom"
           ],
-          15,
+          10,
           0,
-          15.5,
+          10.5,
           1
         ]
       }

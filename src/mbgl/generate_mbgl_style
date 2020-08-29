@@ -18,6 +18,8 @@ with open(args.template,'r') as template:
         j['name'] = args.params
         with open(args.params,'r') as params:
             for line in params.readlines():
+                if not line.strip() or line.startswith('#'):
+                    continue
                 target, value = [s.strip() for s in line.split('=')]
                 parts = target.split('.')
                 ref = [l for l in j['layers'] if l['id'] == parts[0]][0]
