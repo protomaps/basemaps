@@ -1,10 +1,11 @@
 ## Protomaps Map Styles
 
-Map styles that can be used with the [Protomaps web map API](https://protomaps.com).
+Map styles that can be used with the [Protomaps web map API](https://protomaps.com), which serves [vector tiles](https://github.com/mapbox/vector-tile-spec).
 
-For use with either the [Tangram](https://github.com/tangrams/tangram) or [MapboxGL](https://github.com/mapbox/mapbox-gl-js) renderer.
-
-### TangramJS
+These styles have a few unique properties:
+* OpenStreetMap is the only data source for all geographic features. There are no discontinuities where different datasets are used at smaller scales.
+* OpenStreetMap tags are included directly, instead of being transformed to a fixed schema. For ease of styling, there are helper tags included prefixed with `pmap:`. examples `pmap:level`, `pmap:area`.
+* A version of each style is included for use with the [Tangram](https://github.com/tangrams/tangram) library as well as the [MapboxGL](https://github.com/mapbox/mapbox-gl-js) library.
 
 Use TangramJS for:
 * Custom web fonts or variable fonts.
