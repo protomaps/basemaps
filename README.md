@@ -12,12 +12,15 @@ Use TangramJS for:
 * High-quality CJK and Indic script rendering.
 * Integration with the rich LeafletJS ecosystem.
 
+Editor: https://play.tangram.city 
+
 Use MapboxGL for:
 * High performance on the web.
 * True 3D maps that can be rotated (changing bearing and pitch).
 * Shared custom styles with [Mapbox GL Native](https://github.com/mapbox/mapbox-gl-native) apps for iOS, Mac and Android.
 
 
+Editor: https://fresco.gospatial.org
 To generate font files for MapboxGL, try [sdf-glyph-tool](https://github.com/protomaps/sdf-glyph-tool).
 
 ## License
