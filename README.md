@@ -17,6 +17,9 @@ Use MapboxGL for:
 * True 3D maps that can be rotated (changing bearing and pitch).
 * Shared custom styles with [Mapbox GL Native](https://github.com/mapbox/mapbox-gl-native) apps for iOS, Mac and Android.
 
+
+To generate font files for MapboxGL, try [sdf-glyph-tool](https://github.com/protomaps/sdf-glyph-tool).
+
 ## License
 
 [BSD 3-clause](/LICENSE.md). The organization of layers and features used by these map styles, as well as the "look and feel" of the resulting maps, are licensed [CC0](https://creativecommons.org/publicdomain/zero/1.0/). However, maps using the [Protomaps web map service](https://protomaps.com) or another OpenStreetMap-based service will be subject to the terms of the [Open Database License](https://www.openstreetmap.org/copyright).
