@@ -54,11 +54,6 @@
           "==",
           "pmap:kind",
           "hospital"
-        ],
-        [
-          "==",
-          "landuse",
-          "cemetery"
         ]
       ],
       "paint": {
@@ -76,11 +71,6 @@
           "==",
           "pmap:kind",
           "industrial"
-        ],
-        [
-          "==",
-          "landuse",
-          "cemetery"
         ]
       ],
       "paint": {
@@ -98,11 +88,6 @@
           "==",
           "pmap:kind",
           "school"
-        ],
-        [
-          "==",
-          "landuse",
-          "cemetery"
         ]
       ],
       "paint": {
