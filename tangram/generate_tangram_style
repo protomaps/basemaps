@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+import argparse
+
+parser = argparse.ArgumentParser(description='Generate a Tangram style from a template and parameters.')
+parser.add_argument('template', type=str)
+parser.add_argument('params', nargs='?', type=str)
+parser.add_argument('-key', type=str)
+args = parser.parse_args()
+
+b = True
+if args.params:
+    b = False
+    with open(args.params,'r') as params:
+        for line in params.readlines():
+            print(line,end='')
+    print('\n')
+
+with open(args.template,'r') as template:
+
+    for line in template.readlines():
+        if line == 'styles:\n':
+            b = True
+
+        if b:
+            if line.endswith('{z}/{x}/{y}.pbf\n') and args.key:
+                print(line[:-1] + '?key=' + args.key)
+            else:
+                print(line,end='')

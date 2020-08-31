@@ -1,0 +1,43 @@
+global:
+    background_color: black
+    water_color: "#444444"
+    park_color: global.background_color
+    residential_color: global.background_color
+    grass_color: global.background_color
+    garden_color: global.background_color
+    school_color: global.background_color
+    hospital_color: global.background_color
+    pedestrian_color: global.background_color
+    industrial_color: global.background_color
+    brownfield_color: global.background_color
+    commercial_color: global.background_color
+    aerodrome_color: global.background_color
+    wood_color: global.background_color
+    scrub_color: global.background_color
+    wood_color: global.background_color
+    scrub_color: global.background_color
+    buildings_color: "#222222"
+    glacier_color: global.background_color
+    sand_color: global.background_color
+    runway_color: "#e6e6e6"
+    physical_line_color: "#aaaaaa"
+    highway_color: "#444444"
+    highway_tunnel_color: global.highway_color
+    major_road_color: global.highway_color
+    medium_road_color: global.highway_color
+    minor_road_color: global.highway_color
+    other_road_color: [1.000, 1.000, 1.000, 1.00]
+    country_color: "#aaaaaa"
+    label_color:  white
+    label_stroke_color: black
+    shield_text_color: "#888888"
+    shield_background_color: black
+    major_road_text_color: "#888888"
+    medium_road_text_color: [0.408, 0.408, 0.408, 1.00]
+    minor_road_text_color: [0.545, 0.545, 0.545, 1.00]
+    physical_line_label_color: white
+    admin_color: white
+    park_label_color: white
+    sea_text_color: white
+    sea_text_stroke_color: black
+    peak_color: "#888888"
