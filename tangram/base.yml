@@ -697,3 +697,10 @@ layers:
                     stroke:
                         color: global.label_stroke_color
                         width: 2px
+
+    mask:
+        data: { source: protomaps, layer: mask }
+        draw:
+            polygons:
+                order: 10000
+                color: black

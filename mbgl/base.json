@@ -1657,6 +1657,15 @@
       }
     },
     {
+      "id":"mask",
+      "type":"fill",
+      "source":"protomaps",
+      "source-layer":"mask",
+      "paint":{
+        "fill-color":"black"
+      }
+    },
+    {
       "id": "roads_labels",
       "type": "symbol",
       "source": "protomaps",
