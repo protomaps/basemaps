@@ -79,10 +79,10 @@
       }
     },
     {
-      "id": "admin",
+      "id": "boundaries",
       "type": "line",
       "source": "protomaps",
-      "source-layer": "admin",
+      "source-layer": "boundaries",
       "paint": {
         "line-color": "#5E2CA5",
         "line-opacity": 0.5
@@ -99,10 +99,10 @@
       }
     },
     {
-      "id": "poi",
+      "id": "pois",
       "type": "circle",
       "source": "protomaps",
-      "source-layer": "poi",
+      "source-layer": "pois",
       "paint": {
         "circle-radius":2,
         "circle-color":"#268bd2",
