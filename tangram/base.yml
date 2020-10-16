@@ -1,5 +1,6 @@
 global:
-    background_color: "#e7f1ee"
+    background_color: "black"
+    earth_color: "#e7f1ee"
     water_color: "#a4cae1"
     park_color: "#c2f7d1"
     residential_color: "#eeeeee"
@@ -143,6 +144,12 @@ fonts:
 # admin 60
 
 layers:
+    earth:
+        data: { source: protomaps, layer: earth }
+        draw:
+            polygons:
+                color: global.earth_color
+                order: 0
     water:
         data: { source: protomaps, layer: water }
         draw:
@@ -181,7 +188,7 @@ layers:
                                 fill: global.park_label_color
                                 style: italic
                                 stroke:
-                                    color: global.background_color
+                                    color: global.earth_color
                                     width: 3px
                     
         grass:
@@ -435,7 +442,7 @@ layers:
                         width: [[3,0px],[4, 1px], [14, 2px], [16, 3px]]
                         order: 46
                         outline:
-                            color: global.background_color
+                            color: global.earth_color
                             width: [[10, 0], [12, 1px], [16, 2px]]
 
             ground:
@@ -447,7 +454,7 @@ layers:
                         order: 45
                         join: round
                         outline:
-                            color: global.background_color
+                            color: global.earth_color
                             width: [[10, 0], [12, 1px], [16, 2px]]
                     points:
                         size: 0px
@@ -476,7 +483,7 @@ layers:
                         width: [[3,0px],[4, 1px], [14, 2px], [16, 3px]]
                         order: 44
                         outline:
-                            color: global.background_color
+                            color: global.earth_color
                             width: [[10, 0], [12, 1px], [16, 2px]]
 
         major_road:
@@ -508,7 +515,7 @@ layers:
                     order: 42
                     join: round
                     outline:
-                        color: global.background_color
+                        color: global.earth_color
                         width: [[12, 1px], [13, 1px], [15, 1px]]
 
                 text:
@@ -686,4 +693,4 @@ layers:
         draw:
             polygons:
                 order: 10000
-                color: black
+                color: global.background_color

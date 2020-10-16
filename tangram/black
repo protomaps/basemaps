@@ -1,5 +1,6 @@
 global:
     background_color: black
+    earth_color: black
     water_color: "#444444"
     park_color: global.background_color
     residential_color: global.background_color

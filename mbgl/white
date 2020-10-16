@@ -1,4 +1,4 @@
-background.paint.background-color = #ffffff
+earth.paint.background-color = #ffffff
 landuse_park.paint.fill-color = #ffffff
 landuse_hospital.paint.fill-color = #ffffff
 landuse_industrial.paint.fill-color = #ffffff

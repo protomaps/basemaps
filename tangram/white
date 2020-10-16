@@ -1,6 +1,7 @@
 global:
     # fills
-    background_color: white
+    background_color: black
+    earth_color: white
     water_color: "#e8e8e8"
     park_color: global.background_color
     residential_color: [0.937, 0.937, 0.937, 1.00]

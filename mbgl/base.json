@@ -18,7 +18,16 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#e7f1ee"
+        "background-color": "black"
+      }
+    },
+    {
+      "id": "earth",
+      "type":"fill",
+      "source":"protomaps",
+      "source-layer":"earth",
+      "paint": {
+        "fill-color":" #e7f1ee"
       }
     },
     {

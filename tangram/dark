@@ -1,5 +1,6 @@
 global:
-    background_color: [0.059, 0.063, 0.224, 1.00]
+    background_color: black
+    earth_color: [0.059, 0.063, 0.224, 1.00]
     water_color: [0.169, 0.216, 0.298, 1.00]
     park_color: [0.039, 0.255, 0.039, 1.00]
     residential_color: [0.184, 0.208, 0.231, 1.00]
