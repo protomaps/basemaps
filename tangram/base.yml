@@ -130,25 +130,8 @@ scene:
 
 fonts:
     Inter:
-        - weight: 100
+        - weight: 100 900
           url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 200
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 300
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 400
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 500
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 600
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 700
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 800
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-        - weight: 900
-          url: https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2
-
 
 # order
 # natural 0
@@ -393,7 +376,7 @@ layers:
                 order: 10
 
     buildings:
-        data: { source: protomaps, layer: building }
+        data: { source: protomaps, layer: buildings }
         draw:
             polygons:
                 color: global.buildings_color 
@@ -439,7 +422,7 @@ layers:
     #                 order: 999999
 
     roads:
-        data: { source: protomaps, layer: road }
+        data: { source: protomaps, layer: roads }
 
         highway:
             filter: { pmap:kind: highway }
@@ -571,8 +554,8 @@ layers:
                     order: 40
 
 
-    admin:
-        data: { source: protomaps, layer: admin }
+    boundaries:
+        data: { source: protomaps, layer: boundaries }
         draw:
             lines:
                 order: 60
@@ -619,7 +602,7 @@ layers:
                             width: 2px
 
     places:
-        data: { source: protomaps, layer: place }
+        data: { source: protomaps, layer: places }
         countries:
             filter: { place: country }
             draw:
@@ -683,8 +666,8 @@ layers:
                             color: global.label_stroke_color
                             width: 3px
 
-    poi:
-        data: { source: protomaps, layer: poi }
+    pois:
+        data: { source: protomaps, layer: pois }
         filter: { $zoom: { min: 16 }}
         draw:
             text:
