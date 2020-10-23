@@ -41,80 +41,6 @@ global:
     sea_text_stroke_color: "#aaaaaa"
     peak_color: "#888888" 
 
-styles:
-    space-constant:
-        shaders:
-            blocks:
-                global: |
-                    // Get the constant coordinates (glitches on zooms)
-                    // ================================
-                    vec2 getConstantCoords () {
-                        #ifdef TANGRAM_FRAGMENT_SHADER
-                        const float pixel_scale = 695.;
-                        float meter_pixels = u_meters_per_pixel / u_device_pixel_ratio;
-                        vec2 st = gl_FragCoord.xy/pixel_scale;
-                        const float dot_wrap = 1000.;
-                        st += mod(u_map_position.xy / meter_pixels, dot_wrap)/pixel_scale;
-                        return st;
-                        #else
-                        return vec2(0.0,0.0);
-                        #endif
-                    }
-
-    functions-aastep:
-        shaders:
-            extensions: OES_standard_derivatives
-            blocks:
-                global: |
-                    // AntiAliased Step function
-                    //=============================
-                    float aastep(float threshold, float value) {
-                        #ifdef TANGRAM_FRAGMENT_SHADER
-                            #ifdef TANGRAM_EXTENSION_OES_standard_derivatives
-                                float afwidth = length(vec2(dFdx(value), dFdy(value))) * 0.70710678118654757;
-                                return smoothstep(threshold-afwidth, threshold+afwidth, value);
-                            #else
-                                return step(threshold, value);
-                            #endif
-                        #else
-                            return step(threshold, value);
-                        #endif
-                    }
-    
-    patterns-stripes:
-        mix: functions-aastep
-        shaders:
-            defines:
-                PI: 3.14159265358979323846
-            blocks:
-                global: |
-                    // Return a distance function of stripes
-                    float stripesDF (vec2 st) {
-                        return abs(sin(st.y*PI));
-                    }
-                    // Adjustable width stripes
-                    float stripes (vec2 st, float width) {
-                        return aastep(width,stripesDF(st));
-                    }
-                    // Faster optimisation of diagonal stripes
-                    float diagonalStripes (vec2 st) {
-                        vec2 i_st = floor(st);
-                        vec2 f_st = fract(st);
-                        if (mod(i_st.y,2.) - mod(i_st.x,2.) == 0.) {
-                            return 1.0 - aastep(f_st.x,f_st.y);
-                        } else {
-                            return aastep(f_st.x,f_st.y);
-                        }
-                    }
-    diagonal:
-        base: polygons
-        mix: [space-constant, patterns-stripes]
-        shaders:
-            blocks:
-                filter: |
-                    vec2 st = getConstantCoords();
-                    color = mix(color,vec4(0.5,0.5,0.5,0.5),diagonalStripes(st*200.));
-
 sources:
     protomaps:
         attribution: <a href="https://protomaps.com">Protomaps</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap</a>
@@ -166,7 +92,6 @@ layers:
                 - landuse: cemetery
             draw:
                 polygons:
-                    style: diagonal
                     color: global.park_color
                     order: 11
 
@@ -255,7 +180,6 @@ layers:
                 - landuse: railway
             draw:
                 polygons:
-                    style: diagonal
                     color: global.industrial_color
                     order: 10
         brownfield:
@@ -263,7 +187,6 @@ layers:
                 - landuse: brownfield
             draw:
                 polygons:
-                    style: diagonal
                     color: global.brownfield_color
                     order: 10
         commercial:
@@ -358,7 +281,6 @@ layers:
             filter: {natural: wetland }
             draw:
                 polygons:
-                    style: diagonal
                     order: 0
                     color: global.water_color
         # other:
