@@ -1669,7 +1669,7 @@
       "id": "roads_labels",
       "type": "symbol",
       "source": "protomaps",
-      "source-layer": "road",
+      "source-layer": "roads",
       "layout": {
         "symbol-placement": "line",
         "text-font": [
