@@ -1666,15 +1666,6 @@
       }
     },
     {
-      "id":"mask",
-      "type":"fill",
-      "source":"protomaps",
-      "source-layer":"mask",
-      "paint":{
-        "fill-color":"#dddddd"
-      }
-    },
-    {
       "id": "roads_labels",
       "type": "symbol",
       "source": "protomaps",
@@ -1694,6 +1685,15 @@
         "text-color": "#91888b",
         "text-halo-color": "white",
         "text-halo-width": 2
+      }
+    },
+    {
+      "id":"mask",
+      "type":"fill",
+      "source":"protomaps",
+      "source-layer":"mask",
+      "paint":{
+        "fill-color":"#dddddd"
       }
     },
     {

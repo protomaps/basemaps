@@ -319,7 +319,7 @@ layers:
                 width: [[13,0px],[14,1px]]
                 order: 30
         labels:
-            filter: { $zoom: { min: 15 } }
+            filter: { $zoom: { min: 13 } }
             draw:
                 text:
                     font:
