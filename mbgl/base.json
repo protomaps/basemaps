@@ -18,7 +18,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "black"
+        "background-color": "#dddddd"
       }
     },
     {
@@ -1671,7 +1671,7 @@
       "source":"protomaps",
       "source-layer":"mask",
       "paint":{
-        "fill-color":"black"
+        "fill-color":"#dddddd"
       }
     },
     {

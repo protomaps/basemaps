@@ -1,5 +1,5 @@
 global:
-    background_color: "black"
+    background_color: "#ddd"
     earth_color: "#e7f1ee"
     water_color: "#a4cae1"
     park_color: "#c2f7d1"
