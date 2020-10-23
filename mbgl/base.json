@@ -6,7 +6,7 @@
     "protomaps": {
       "type": "vector",
       "tiles": [
-        "https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf"
+        "https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf"
       ],
       "minzoom": 0,
       "maxzoom": 14,
