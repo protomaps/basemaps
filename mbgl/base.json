@@ -1723,12 +1723,12 @@
           "name"
         ],
         "text-size": 14,
-        "text-letter-spacing": 0.3
+        "text-letter-spacing": 0.15
       },
       "paint": {
         "text-color": "white",
         "text-halo-color": "#a4cae1",
-        "text-halo-width": 2
+        "text-halo-width": 1
       }
     },
     {
@@ -1780,19 +1780,20 @@
           "stops": [
             [
               11,
-              12
+              10
             ],
             [
               14,
-              14
+              12
             ]
           ]
-        }
+        },
+        "text-transform":"uppercase"
       },
       "paint": {
         "text-color": "#757d91",
         "text-halo-color": "white",
-        "text-halo-width": 1.5
+        "text-halo-width": 0.5
       }
     },
     {
@@ -1836,9 +1837,9 @@
           ],
           0,
           1,
-          16,
+          12,
           2,
-          14
+          10
         ],
         "text-variable-anchor": [
           "bottom-left"
@@ -1848,7 +1849,7 @@
       "paint": {
         "text-color": "#787878",
         "text-halo-color": "white",
-        "text-halo-width": 2
+        "text-halo-width": 1
       }
     },
     {
@@ -1866,27 +1867,15 @@
         "text-font": [
           "NotoSans-Regular"
         ],
-        "text-size": [
-          "step",
-          [
-            "get",
-            "pmap:rank"
-          ],
-          0,
-          1,
-          16,
-          2,
-          14
-        ],
-        "text-variable-anchor": [
-          "bottom-left"
-        ],
-        "text-radial-offset": 0.2
+        "text-size": 12,
+        "text-radial-offset": 0.2,
+        "text-anchor": "center",
+        "text-transform": "uppercase"
       },
       "paint": {
         "text-color": "#bdbdbd",
         "text-halo-color": "white",
-        "text-halo-width": 2
+        "text-halo-width": 0.5
       }
     },
     {
@@ -1926,7 +1915,7 @@
       "paint": {
         "text-color": "#9590aa",
         "text-halo-color": "white",
-        "text-halo-width": 1.2
+        "text-halo-width": 1.0
       }
     }
   ]
