@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description='Generate a MapboxGL style from a template and parameters.')
 parser.add_argument('template', type=str)
@@ -26,7 +27,7 @@ with open(args.template,'r') as template:
                 for p in parts[1:-1]:
                     ref = ref[p]
                 if parts[-1] not in ref:
-                    print(target + " does not exist")
+                    print(target + " does not exist",file=sys.stderr)
                     exit(1)
 
                 ref[parts[-1]] = value
