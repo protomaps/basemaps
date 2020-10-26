@@ -1,4 +1,4 @@
-earth.paint.background-color = #ffffff
+earth.paint.fill-color = #ffffff
 landuse_park.paint.fill-color = #ffffff
 landuse_hospital.paint.fill-color = #ffffff
 landuse_industrial.paint.fill-color = #ffffff
@@ -28,13 +28,13 @@ physical_line_waterway.paint.line-color = #ffffff
 buildings.paint.fill-extrusion-color = #ffffff
 
 roads_other.paint.line-color = #ffffff
-roads_minor_casing.paint.line-color = #999999
+roads_minor_casing.paint.line-color = #cccccc
 roads_minor.paint.line-color = #ffffff
-roads_medium_casing.paint.line-color = #888888
+roads_medium_casing.paint.line-color = #bbbbbb
 roads_medium.paint.line-color = #ffffff
-roads_major_casing.paint.line-color = #777777
+roads_major_casing.paint.line-color = #bbbbbb
 roads_major.paint.line-color = #ffffff
-roads_highway_casing.paint.line-color = #666666
+roads_highway_casing.paint.line-color = #bbbbbb
 roads_highway.paint.line-color = #ffffff
 
 transit_railway.paint.line-color = #bbbbbb
