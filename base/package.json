@@ -1,0 +1,23 @@
+{
+  "name": "protomaps-themes-base",
+  "version": "0.0.1",
+  "description": "Basemap themes",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "esbuild src/index.js --bundle --target=es2015 --outfile=dist/index.js --global-name=protomaps_themes_base",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/protomaps/protomaps-themes.git"
+  },
+  "author": "Brandon Liu",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/protomaps/protomaps-themes/issues"
+  },
+  "homepage": "https://github.com/protomaps/protomaps-themes#readme",
+  "devDependencies": {
+    "esbuild": "^0.12.8"
+  }
+}
