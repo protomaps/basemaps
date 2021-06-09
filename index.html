@@ -6,7 +6,9 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
         <link rel="stylesheet" href="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.css">
         <script src="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.js"></script>
-        <script src="L.Map.Sync.js"></script>
+        <script src="https://unpkg.com/leaflet.sync@0.2.4/L.Map.Sync.js"></script>
+        <script src="https://unpkg.com/mapbox-gl-leaflet@0.0.15/leaflet-mapbox-gl.js"></script>
+        <script src="base/dist/index.js"></script>
         <style>
             body, #map {
                 font-family: sans-serif;
@@ -24,6 +26,7 @@
                         <select v-model="leftSelection">
                             <option value="osm_carto">openstreetmap carto</option>
                             <option value="toner_raster">stamen toner (raster)</option>
+                            <option value="gl_light">GL Light</option>
                         </select>
                     </span>
                     <span v-on:click="toggleCompare" class="bg-moon-gray pointer dim pa1">
@@ -38,6 +41,7 @@
                         <select v-model="rightSelection">
                             <option value="osm_carto">openstreetmap carto</option>
                             <option value="toner_raster">stamen toner (raster)</option>
+                            <option value="gl_light">GL Light</option>
                         </select>
                     </span>
                 </div>
@@ -50,19 +54,30 @@
 
         const OPTIONS = {
             'osm_carto':{
-                'url':'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                'attribution':'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                type:'raster',
+                url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             },
             'toner_raster':{
-                'url':'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}@2x.png',
-                'attribution':'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+                type:'raster',
+                url:'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}@2x.png',
+                attribution:'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+            },
+            'gl_light':{
+                type:'gl'
             }
         }
 
         var mapLeft, mapLeftLayer, mapRight, mapRightLayer, mapLeftSelection, mapRightSelection
 
+        let json_style = protomaps_themes_base.json_style({
+            glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+            tiles:'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
+        })
+
         const mountRightMap = (compare, selection) => {
             let opt = OPTIONS[selection]
+
             if (compare) {
                 if (mapRight === undefined) {
                     mapRight = L.map('map-right',{
@@ -72,18 +87,30 @@
                         zoomControl:false
                     })
                     mapRight.dragging.disable()
-                    mapRightLayer = L.tileLayer(opt.url, {
-                        attribution: opt.attribution
-                    }).addTo(mapRight)
+                    if (opt.type === 'gl') {
+                        mapRightLayer = L.mapboxGL({
+                            style: json_style
+                        }).addTo(mapRight)
+                    } else if (opt.type === 'raster') {
+                        mapRightLayer = L.tileLayer(opt.url, {
+                            attribution: opt.attribution
+                        }).addTo(mapRight)
+                    }
                     mapLeft.invalidateSize()
                     mapLeft.sync(mapRight)
                 } else if (selection !== mapRightSelection) {
                     if (mapRightLayer) {
                         mapRightLayer.remove(mapRight)
                     }
-                    mapRightLayer = L.tileLayer(opt.url, {
-                        attribution: opt.attribution
-                    }).addTo(mapRight)
+                    if (opt.type === 'gl') {
+                        mapRightLayer = L.mapboxGL({
+                            style: json_style
+                        }).addTo(mapRight)
+                    } else if (opt.type === 'raster') {
+                        mapRightLayer = L.tileLayer(opt.url, {
+                            attribution: opt.attribution
+                        }).addTo(mapRight)
+                    }
                 }
                 mapRightSelection = selection
             }
@@ -115,7 +142,7 @@
                 leftSelection:'osm_carto',
                 rightSelection:'osm_carto',
                 toggleCompare: () => { app.compare = !app.compare },
-                compare:false,
+                compare:true,
             },
             mounted: function () {
                 mapLeft = L.map('map-left').setView([51.505, -0.09], 13)
