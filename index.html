@@ -43,26 +43,31 @@
         </div>
     </body>
     <script>
-        var mapRight = L.map('map-right').setView([51.505, -0.09], 13)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapRight)
-
-        let compare = false
+        var mapRight
         var app = new Vue({
             el: '#app',
             data: {
                 selected:'osm',
                 toggleCompare: () => { app.compare = !app.compare },
-                compare:compare
+                compare:false
             },
             mounted: function () {
-                this.$nextTick(function () {
-                    var mapLeft = L.map('map-left').setView([51.505, -0.09], 13)
+                var mapLeft = L.map('map-left').setView([51.505, -0.09], 13)
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(mapLeft)
+            }, updated: function() {
+                if (app.compare && mapRight === undefined) {
+                    mapRight = L.map('map-right').setView([51.505, -0.09], 13)
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(mapLeft)
-                })
+                    }).addTo(mapRight)
+                }
+                if (!app.compare && mapRight !== undefined) {
+                    mapRight.off()
+                    mapRight.remove()
+                    mapRight = undefined
+                }
             }
         })
     </script>
