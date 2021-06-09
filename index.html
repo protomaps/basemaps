@@ -1,1 +1,40 @@
-Hello World
+<html>
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+        <style>
+            body, #map {
+                font-family: sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex flex-column vh-100">
+            <div class="h6 pa3 flex-grow-0 fw6" id="app">
+                protomaps-themes
+                <select v-model="selected">
+                    <option value="osm">(OTHER) openstreetmap carto</option>
+                </select>
+                {{ selected }}
+            </div>
+            <div class="flex-grow h-100">
+                <div id="map" class="h-100"></div>
+            </div>
+        </div>
+    </body>
+    <script>
+        var map = L.map('map').setView([51.505, -0.09], 13)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map)
+
+        var app = new Vue({
+          el: '#app',
+          data: {
+            selected:'osm'
+          }
+        })
+    </script>
+</html>
