@@ -21,8 +21,9 @@
                         protomaps-themes
                     </span>
                     <span>
-                        <select v-model="selected">
-                            <option value="osm">(OTHER) openstreetmap carto</option>
+                        <select v-model="leftSelection">
+                            <option value="osm_carto">openstreetmap carto</option>
+                            <option value="toner_raster">stamen toner (raster)</option>
                         </select>
                     </span>
                     <span v-on:click="toggleCompare" class="bg-moon-gray pointer dim pa1">
@@ -34,9 +35,6 @@
             <div v-if="compare" class="flex flex-column vh-100 w-50 bg-moon-gray">
                 <div class="flex flex-grow-0 justify-center h3 items-center ph3">
                     <span>
-                        <select v-model="selected">
-                            <option value="osm">(OTHER) openstreetmap carto</option>
-                        </select>
                     </span>
                 </div>
                 <div class="flex-grow h-100 flex" id="map-right"></div>
@@ -44,7 +42,20 @@
         </div>
     </body>
     <script>
-        var mapLeft, mapRight
+        const DEMO_KEY = "1003762824b9687f" // only works on gh-pages, get your own at https://protomaps.com
+
+        const OPTIONS = {
+            'osm_carto':{
+                'url':'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'attribution':'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            },
+            'toner_raster':{
+                'url':'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}@2x.png',
+                'attribution':'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+            }
+        }
+
+        var mapLeft, mapLeftLayer, mapRight, mapLeftSelection, mapRightSelection
 
         const mountRightMap = compare => {
             if (compare && mapRight === undefined) {
@@ -67,21 +78,33 @@
                 mapRight = undefined
             }
         }
+
+        const mountLeftMap = selection => {
+            if (selection !== mapLeftSelection) {
+                let opt = OPTIONS[selection]
+                if (mapLeftLayer) {
+                    mapLeftLayer.remove(mapLeft)
+                }
+                mapLeftLayer = L.tileLayer(opt.url, {
+                    attribution: opt.attribution
+                }).addTo(mapLeft)
+            }
+            mapLeftSelection = selection
+        }
+
         var app = new Vue({
             el: '#app',
             data: {
-                selected:'osm',
+                leftSelection:'osm_carto',
                 toggleCompare: () => { app.compare = !app.compare },
-                compare:false
+                compare:false,
             },
             mounted: function () {
                 mapLeft = L.map('map-left').setView([51.505, -0.09], 13)
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(mapLeft)
-
+                mountLeftMap(this.leftSelection)
                 mountRightMap(this.compare)
             }, updated: function() {
+                mountLeftMap(this.leftSelection)
                 mountRightMap(this.compare)
             }
         })
