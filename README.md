@@ -1,4 +1,4 @@
-# Protomaps Map Styles
+# Protomaps Themes
 
 Map styles that can be used with the [Protomaps web map API](https://protomaps.com), which serves [vector tiles](https://github.com/mapbox/vector-tile-spec).
 
@@ -14,23 +14,6 @@ Create an account at [protomaps.com](https://protomaps.com) for an API key.
 * See [Example Tangram Usage](#Example-Tangram-Usage) or [Example Mapbox GL Usage](#Example-Mapbox-GL-Usage) for how to specify your API key in code.
 * Or modify the style file: `https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf?key=YOUR_API_KEY`
 * Or run the preprocessor script with your customizations: `./generate_mbgl_style base.json dark -key=YOUR_API_KEY`
-
-## Tangram
-* Custom web fonts or variable fonts.
-* High-quality CJK and Indic script rendering.
-* Integration with the rich LeafletJS ecosystem.
-
-Try the [Tangram Play Editor](https://play.tangram.city) to customize Tangram styles.
-
-#### Example Tangram Usage
-
-    const map = L.map('map')
-    Tangram.leafletLayer({
-      scene: {
-        import: 'style.yml',
-        global: {api_key:'YOUR_API_KEY'}
-      }
-    }).addTo(map)
 
 ## Mapbox GL JS
 * High performance on the web.
