@@ -70,11 +70,12 @@
                         touchZoom: false,
                         scrollWheelZoom: false,
                         zoomControl:false
-                    }).setView([51.505, -0.09], 13)
+                    })
                     mapRight.dragging.disable()
                     mapRightLayer = L.tileLayer(opt.url, {
                         attribution: opt.attribution
                     }).addTo(mapRight)
+                    mapLeft.invalidateSize()
                     mapLeft.sync(mapRight)
                 } else if (selection !== mapRightSelection) {
                     if (mapRightLayer) {
@@ -87,6 +88,7 @@
                 mapRightSelection = selection
             }
             if (!compare && mapRight !== undefined) {
+                mapLeft.invalidateSize()
                 mapLeft.unsync(mapRight)
                 mapRight.off()
                 mapRight.remove()
