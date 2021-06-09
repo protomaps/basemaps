@@ -61,6 +61,7 @@
                 mapLeft.sync(mapRight)
             }
             if (!compare && mapRight !== undefined) {
+                mapLeft.unsync(mapRight)
                 mapRight.off()
                 mapRight.remove()
                 mapRight = undefined
