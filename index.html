@@ -4,6 +4,8 @@
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
         <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
         <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+        <link rel="stylesheet" href="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.css">
+        <script src="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.js"></script>
         <style>
             body, #map {
                 font-family: sans-serif;
@@ -12,12 +14,18 @@
     </head>
     <body>
         <div class="flex flex-column vh-100">
-            <div class="h6 pa3 flex-grow-0 fw6" id="app">
-                protomaps-themes
-                <select v-model="selected">
-                    <option value="osm">(OTHER) openstreetmap carto</option>
-                </select>
-                {{ selected }}
+            <div class="flex flex-grow-0 fw6 justify-between h3 items-center ph3" id="app">
+                <span>
+                    protomaps-themes
+                </span>
+                <span>
+                    <select v-model="selected">
+                        <option value="osm">(OTHER) openstreetmap carto</option>
+                    </select>
+                </span>
+                <span class="bg-moon-gray pointer dim">
+                    compare ⇤
+                </span>
             </div>
             <div class="flex-grow h-100">
                 <div id="map" class="h-100"></div>
