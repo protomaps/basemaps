@@ -45,6 +45,27 @@
     </body>
     <script>
         var mapLeft, mapRight
+
+        const mountRightMap = compare => {
+            if (compare && mapRight === undefined) {
+                mapRight = L.map('map-right',{
+                    doubleClickZoom: false,
+                    touchZoom: false,
+                    scrollWheelZoom: false,
+                    zoomControl:false
+                }).setView([51.505, -0.09], 13)
+                mapRight.dragging.disable()
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(mapRight)
+                mapLeft.sync(mapRight)
+            }
+            if (!compare && mapRight !== undefined) {
+                mapRight.off()
+                mapRight.remove()
+                mapRight = undefined
+            }
+        }
         var app = new Vue({
             el: '#app',
             data: {
@@ -57,25 +78,10 @@
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(mapLeft)
+
+                mountRightMap(this.compare)
             }, updated: function() {
-                if (app.compare && mapRight === undefined) {
-                    mapRight = L.map('map-right',{
-                        doubleClickZoom: false,
-                        touchZoom: false,
-                        scrollWheelZoom: false,
-                        zoomControl:false
-                    }).setView([51.505, -0.09], 13)
-                    mapRight.dragging.disable()
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(mapRight)
-                    mapLeft.sync(mapRight)
-                }
-                if (!app.compare && mapRight !== undefined) {
-                    mapRight.off()
-                    mapRight.remove()
-                    mapRight = undefined
-                }
+                mountRightMap(this.compare)
             }
         })
     </script>
