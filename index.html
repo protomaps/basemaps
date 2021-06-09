@@ -13,36 +13,57 @@
         </style>
     </head>
     <body>
-        <div class="flex flex-column vh-100">
-            <div class="flex flex-grow-0 fw6 justify-between h3 items-center ph3" id="app">
-                <span>
-                    protomaps-themes
-                </span>
-                <span>
-                    <select v-model="selected">
-                        <option value="osm">(OTHER) openstreetmap carto</option>
-                    </select>
-                </span>
-                <span class="bg-moon-gray pointer dim">
-                    compare ⇤
-                </span>
+        <div id="app" class="flex">
+            <div class="flex flex-column vh-100" v-bind:class="[ compare ? 'w-50' : 'w-100' ]">
+                <div class="flex flex-grow-0 fw6 justify-between h3 items-center ph3">
+                    <span>
+                        protomaps-themes
+                    </span>
+                    <span>
+                        <select v-model="selected">
+                            <option value="osm">(OTHER) openstreetmap carto</option>
+                        </select>
+                    </span>
+                    <span v-on:click="toggleCompare" class="bg-moon-gray pointer dim pa1">
+                        compare ⇤
+                    </span>
+                </div>
+                <div class="flex-grow h-100 flex" id="map-left"></div>
             </div>
-            <div class="flex-grow h-100">
-                <div id="map" class="h-100"></div>
+            <div v-if="compare" class="flex flex-column vh-100 w-50 bg-moon-gray">
+                <div class="flex flex-grow-0 justify-center h3 items-center ph3">
+                    <span>
+                        <select v-model="selected">
+                            <option value="osm">(OTHER) openstreetmap carto</option>
+                        </select>
+                    </span>
+                </div>
+                <div class="flex-grow h-100 flex" id="map-right"></div>
             </div>
         </div>
     </body>
     <script>
-        var map = L.map('map').setView([51.505, -0.09], 13)
+        var mapRight = L.map('map-right').setView([51.505, -0.09], 13)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map)
+        }).addTo(mapRight)
 
+        let compare = false
         var app = new Vue({
-          el: '#app',
-          data: {
-            selected:'osm'
-          }
+            el: '#app',
+            data: {
+                selected:'osm',
+                toggleCompare: () => { app.compare = !app.compare },
+                compare:compare
+            },
+            mounted: function () {
+                this.$nextTick(function () {
+                    var mapLeft = L.map('map-left').setView([51.505, -0.09], 13)
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(mapLeft)
+                })
+            }
         })
     </script>
 </html>
