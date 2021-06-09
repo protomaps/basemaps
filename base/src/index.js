@@ -1,19 +1,4 @@
-export const STYLE = {
-  "version": 8,
-  "glyphs": "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
-  "name": "Light",
-  "sources": {
-    "protomaps": {
-      "type": "vector",
-      "tiles": [
-        "https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf"
-      ],
-      "minzoom": 0,
-      "maxzoom": 14,
-      "attribution": "<a href=\"https://protomaps.com\" target=\"_blank\">Protomaps</a> © <a href=\"https://www.openstreetmap.org\" target=\"_blank\"> OpenStreetMap</a>"
-    }
-  },
-  "layers": [
+export const LAYERS = [
     {
       "id": "background",
       "type": "background",
@@ -1918,5 +1903,24 @@ export const STYLE = {
         "text-halo-width": 1.0
       }
     }
-  ]
+]
+
+export const json_style = options => {
+    return {
+        version: 8,
+        glyphs: options.glyphs,
+        name: "Light",
+        sources: {
+            protomaps: {
+                type: "vector",
+                tiles: [
+                   options.tiles
+                ],
+                minzoom: 0,
+                maxzoom: 14,
+                attribution: "<a href=\"https://protomaps.com\" target=\"_blank\">Protomaps</a> © <a href=\"https://www.openstreetmap.org\" target=\"_blank\"> OpenStreetMap</a>"
+            },
+        },
+        layers:LAYERS
+    }
 }
