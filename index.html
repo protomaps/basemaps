@@ -35,6 +35,10 @@
             <div v-if="compare" class="flex flex-column vh-100 w-50 bg-moon-gray">
                 <div class="flex flex-grow-0 justify-center h3 items-center ph3">
                     <span>
+                        <select v-model="rightSelection">
+                            <option value="osm_carto">openstreetmap carto</option>
+                            <option value="toner_raster">stamen toner (raster)</option>
+                        </select>
                     </span>
                 </div>
                 <div class="flex-grow h-100 flex" id="map-right"></div>
@@ -55,21 +59,32 @@
             }
         }
 
-        var mapLeft, mapLeftLayer, mapRight, mapLeftSelection, mapRightSelection
+        var mapLeft, mapLeftLayer, mapRight, mapRightLayer, mapLeftSelection, mapRightSelection
 
-        const mountRightMap = compare => {
-            if (compare && mapRight === undefined) {
-                mapRight = L.map('map-right',{
-                    doubleClickZoom: false,
-                    touchZoom: false,
-                    scrollWheelZoom: false,
-                    zoomControl:false
-                }).setView([51.505, -0.09], 13)
-                mapRight.dragging.disable()
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(mapRight)
-                mapLeft.sync(mapRight)
+        const mountRightMap = (compare, selection) => {
+            let opt = OPTIONS[selection]
+            if (compare) {
+                if (mapRight === undefined) {
+                    mapRight = L.map('map-right',{
+                        doubleClickZoom: false,
+                        touchZoom: false,
+                        scrollWheelZoom: false,
+                        zoomControl:false
+                    }).setView([51.505, -0.09], 13)
+                    mapRight.dragging.disable()
+                    mapRightLayer = L.tileLayer(opt.url, {
+                        attribution: opt.attribution
+                    }).addTo(mapRight)
+                    mapLeft.sync(mapRight)
+                } else if (selection !== mapRightSelection) {
+                    if (mapRightLayer) {
+                        mapRightLayer.remove(mapRight)
+                    }
+                    mapRightLayer = L.tileLayer(opt.url, {
+                        attribution: opt.attribution
+                    }).addTo(mapRight)
+                }
+                mapRightSelection = selection
             }
             if (!compare && mapRight !== undefined) {
                 mapLeft.unsync(mapRight)
@@ -80,8 +95,8 @@
         }
 
         const mountLeftMap = selection => {
+            let opt = OPTIONS[selection]
             if (selection !== mapLeftSelection) {
-                let opt = OPTIONS[selection]
                 if (mapLeftLayer) {
                     mapLeftLayer.remove(mapLeft)
                 }
@@ -96,16 +111,17 @@
             el: '#app',
             data: {
                 leftSelection:'osm_carto',
+                rightSelection:'osm_carto',
                 toggleCompare: () => { app.compare = !app.compare },
                 compare:false,
             },
             mounted: function () {
                 mapLeft = L.map('map-left').setView([51.505, -0.09], 13)
                 mountLeftMap(this.leftSelection)
-                mountRightMap(this.compare)
+                mountRightMap(this.compare,this.rightSelection)
             }, updated: function() {
                 mountLeftMap(this.leftSelection)
-                mountRightMap(this.compare)
+                mountRightMap(this.compare,this.rightSelection)
             }
         })
     </script>
