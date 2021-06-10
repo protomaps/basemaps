@@ -46,9 +46,10 @@
                             <option value="base_grayscale_gl">Base Grayscale GL</option>
                             <option value="lightweight">Lightweight</option>
                             <option value="extra_stamen_toner">Extra Stamen Toner</option>
+                            <option value="extra_stamen_toner_lite">Extra Stamen Toner Lite</option>
                             <option value="extra_mapzen_bubblewrap">Extra Mapzen Bubble Wrap</option>
-                            <option value="external_osm_carto">(EXTERNAL) Openstreetmap Carto raster</option>
-                            <option value="external_stamen_toner">(EXTERNAL) Stamen Toner raster</option>
+                            <option value="external_osm">(EXTERNAL) Openstreetmap Carto raster</option>
+                            <option value="external_toner">(EXTERNAL) Stamen Toner raster</option>
                         </select>
                     </span>
                     <span>
@@ -77,9 +78,10 @@
                             <option value="base_grayscale_gl">Base Grayscale GL</option>
                             <option value="lightweight">Lightweight</option>
                             <option value="extra_stamen_toner">Extra Stamen Toner</option>
+                            <option value="extra_stamen_toner_lite">Extra Stamen Toner Lite</option>
                             <option value="extra_mapzen_bubblewrap">Extra Mapzen Bubble Wrap</option>
-                            <option value="external_osm_carto">(EXTERNAL) Openstreetmap Carto raster</option>
-                            <option value="external_stamen_toner">(EXTERNAL) Stamen Toner raster</option>
+                            <option value="external_osm">(EXTERNAL) Openstreetmap Carto raster</option>
+                            <option value="external_toner">(EXTERNAL) Stamen Toner raster</option>
                         </select>
                     </span>
                     <span v-on:click="closeCompare" v-if="compare" class="bg-white pointer dim pa1">
@@ -129,7 +131,12 @@
                 type:'canvas'
             },
             extra_stamen_toner:{
-                type:'canvas'
+                type:'canvas',
+                fn:() => { return protomaps_themes_extra.Toner() }
+            },
+            extra_stamen_toner_lite:{
+                type:'canvas',
+                fn:() => { return protomaps_themes_extra.Toner('lite') }
             },
             extra_mapzen_bubblewrap:{
                 type:'canvas'
@@ -159,8 +166,14 @@
                     style: json_style
                 }).addTo(map)
             } else if (opt.type === 'canvas') {
+                var obj = {}
+                if (opt.fn) obj = opt.fn();
                 (new protomaps.LeafletLayer({
-                    url:VECTOR_TILES_URL
+                    url:VECTOR_TILES_URL,
+                    tasks:obj.tasks || [],
+                    paint_rules:obj.paint_rules,
+                    label_rules:obj.label_rules,
+                    attribution:obj.attribution
                 })).addTo(map)
             } else if (opt.type === 'raster') {
                 L.tileLayer(opt.url, {
