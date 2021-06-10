@@ -154,9 +154,16 @@
                 compare:true,
             },
             mounted: function () {
-                mapLeft = L.map('map-left').setView([51.505, -0.09], 13)
+                mapLeft = L.map('map-left')
+                if (!window.location.hash) {
+                    mapLeft.setView([51.505, -0.09], 13)
+                }
+                new L.Hash(mapLeft)
+
                 mountLeftMap(this.leftSelection)
                 mountRightMap(this.compare,this.rightSelection)
+
+
             }, updated: function() {
                 mountLeftMap(this.leftSelection)
                 mountRightMap(this.compare,this.rightSelection)
