@@ -26,7 +26,7 @@ const Toner = variant => {
             sprites.load(),
             Font('Inter','https://cdn.protomaps.com/fonts/woff2/Inter.var.woff2','100 900')
         ],
-        paint: [
+        paint_rules: [
             {
                 dataLayer: "earth",
                 symbolizer: new PolygonSymbolizer({
@@ -48,7 +48,7 @@ const Toner = variant => {
             },
             {
                 dataLayer: "roads",
-                symbolizer: new PolygonSymbolizer({
+                symbolizer: new LineSymbolizer({
                     color:"white",
                     width: arr(16,[7,9,17,20])
                 }),
@@ -132,7 +132,7 @@ const Toner = variant => {
                 minzoom:7
             },
         ],
-        label: [
+        label_rules: [
             {
                 dataLayer: "places",
                 symbolizer: new TextSymbolizer({
