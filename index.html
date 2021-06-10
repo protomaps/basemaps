@@ -38,20 +38,27 @@
                             <option value="gl_light">GL Light</option>
                         </select>
                     </span>
-                    <span v-on:click="toggleCompare" class="bg-moon-gray pointer dim pa1">
-                        compare ⇤
+                    <span>
+                        <span v-on:click="openCompare" v-if="!compare" class="bg-moon-gray pointer dim pa1">
+                            compare ⇤
+                        </span>
                     </span>
                 </div>
                 <div class="flex-grow h-100 flex" id="map-left"></div>
             </div>
             <div v-if="compare" class="flex flex-column vh-100 w-50 bg-moon-gray">
-                <div class="flex flex-grow-0 justify-center h3 items-center ph3">
+                <div class="flex flex-grow-0 justify-between h3 items-center ph3">
+                    <span>
+                    </span>
                     <span>
                         <select v-model="rightSelection">
                             <option value="osm_carto">openstreetmap carto</option>
                             <option value="toner_raster">stamen toner (raster)</option>
                             <option value="gl_light">GL Light</option>
                         </select>
+                    </span>
+                    <span v-on:click="closeCompare" v-if="compare" class="bg-white pointer dim pa1">
+                        close ⇥
                     </span>
                 </div>
                 <div class="flex-grow h-100 flex" id="map-right"></div>
@@ -77,96 +84,60 @@
             }
         }
 
-        var mapLeft, mapLeftLayer, mapRight, mapRightLayer, mapLeftSelection, mapRightSelection
-
         let json_style = protomaps_themes_base.json_style({
             glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
             tiles:'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
         })
 
-        const mountRightMap = (compare, selection) => {
+        const mountMap = (map, selection) => {
             let opt = OPTIONS[selection]
+            if (opt.type === 'gl') {
+                L.mapboxGL({
+                    style: json_style
+                }).addTo(map)
+            } else if (opt.type === 'raster') {
+                L.tileLayer(opt.url, {
+                    attribution: opt.attribution
+                }).addTo(map)
+            }
+        }
 
-            if (compare) {
-                if (mapRight === undefined) {
-                    mapRight = L.map('map-right',{
+        var search = new URLSearchParams(window.location.search)
+        var app = new Vue({
+            el: '#app',
+            data: {
+                leftSelection:search.get('map'),
+                rightSelection:search.get("compare")
+            },
+            methods: {
+                openCompare: function() { this.rightSelection = 'osm_carto' },
+                closeCompare: function() { this.rightSelection = undefined }
+            },
+            computed: {
+                compare: function() { return this.rightSelection != undefined }
+            },
+            mounted: function () {
+                let mapLeft = L.map('map-left')
+                if (!window.location.hash) mapLeft.setView([51.505, -0.09], 13)
+                let hsh = new L.Hash(mapLeft)
+                hsh.update() // force immediately as we need to read the center
+                mountMap(mapLeft,this.leftSelection)
+                if (this.rightSelection != undefined) {
+                    let mapRight = L.map('map-right',{
                         doubleClickZoom: false,
                         touchZoom: false,
                         scrollWheelZoom: false,
                         zoomControl:false
                     })
                     mapRight.dragging.disable()
-                    if (opt.type === 'gl') {
-                        mapRightLayer = L.mapboxGL({
-                            style: json_style
-                        }).addTo(mapRight)
-                    } else if (opt.type === 'raster') {
-                        mapRightLayer = L.tileLayer(opt.url, {
-                            attribution: opt.attribution
-                        }).addTo(mapRight)
-                    }
-                    mapLeft.invalidateSize()
                     mapLeft.sync(mapRight)
-                } else if (selection !== mapRightSelection) {
-                    if (mapRightLayer) {
-                        mapRightLayer.remove(mapRight)
-                    }
-                    if (opt.type === 'gl') {
-                        mapRightLayer = L.mapboxGL({
-                            style: json_style
-                        }).addTo(mapRight)
-                    } else if (opt.type === 'raster') {
-                        mapRightLayer = L.tileLayer(opt.url, {
-                            attribution: opt.attribution
-                        }).addTo(mapRight)
-                    }
+                    mountMap(mapRight,this.rightSelection)
                 }
-                mapRightSelection = selection
-            }
-            if (!compare && mapRight !== undefined) {
-                mapLeft.invalidateSize()
-                mapLeft.unsync(mapRight)
-                mapRight.off()
-                mapRight.remove()
-                mapRight = undefined
-            }
-        }
-
-        const mountLeftMap = selection => {
-            let opt = OPTIONS[selection]
-            if (selection !== mapLeftSelection) {
-                if (mapLeftLayer) {
-                    mapLeftLayer.remove(mapLeft)
-                }
-                mapLeftLayer = L.tileLayer(opt.url, {
-                    attribution: opt.attribution
-                }).addTo(mapLeft)
-            }
-            mapLeftSelection = selection
-        }
-
-        var app = new Vue({
-            el: '#app',
-            data: {
-                leftSelection:'osm_carto',
-                rightSelection:'osm_carto',
-                toggleCompare: () => { app.compare = !app.compare },
-                compare:true,
-            },
-            mounted: function () {
-                mapLeft = L.map('map-left')
-                if (!window.location.hash) {
-                    mapLeft.setView([51.505, -0.09], 13)
-                }
-                new L.Hash(mapLeft)
-
-                mountLeftMap(this.leftSelection)
-                mountRightMap(this.compare,this.rightSelection)
-
-
             }, updated: function() {
-                mountLeftMap(this.leftSelection)
-                mountRightMap(this.compare,this.rightSelection)
+                const params = new URLSearchParams()
+                params.set("map",this.leftSelection)
+                if (this.rightSelection) params.set("compare",this.rightSelection)
+                window.location.search = params.toString()
             }
         })
     </script>
