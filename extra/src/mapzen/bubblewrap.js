@@ -1,4 +1,4 @@
-import { arr, exp, createPattern, Font, Sprites, LineSymbolizer, FillSymbolizer, TextSymbolizer, IconSymbolizer, PolygonLabelSymbolizer } from 'protomaps'
+import { arr, exp, createPattern, Font, Sprites, LineSymbolizer, PolygonSymbolizer, TextSymbolizer, IconSymbolizer, PolygonLabelSymbolizer } from 'protomaps'
 import icons from './bubblewrap-icons.html'
 
 const BubbleWrap = variant => {

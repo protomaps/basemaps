@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "esbuild src/index.js --bundle --target=es2015 --watch --outfile=dist/protomaps_themes.js --global-name=protomaps_themes --loader:.html=text"
+    "dev": "esbuild src/index.js --bundle --target=es2015 --watch --minify --outfile=dist/index.js --global-name=protomaps_themes_extra --loader:.html=text"
   },
   "author": "Brandon Liu",
   "license": "varies",
   "dependencies": {
-    "protomaps": "^0.3.0"
+    "protomaps": "0.3.6"
   },
   "devDependencies": {
     "esbuild": "^0.11.20"
