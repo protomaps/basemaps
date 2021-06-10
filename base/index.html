@@ -1,1 +1,52 @@
-Hello Base
+<html>
+    <head>
+        <title>protomaps json style generator</title>
+        <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>
+        <script src="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.js"></script>
+        <link rel="stylesheet" href="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.css">
+
+        <!-- <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script> -->
+        <script src="dist/index.js"></script>
+    </head>
+    <body>
+        <div id="app" class="flex sans-serif debug vh-100">
+            <div class="w-50 h-100 flex flex-column">
+                <div class="pa2">
+                    <span v-on:click="copyToClipboard" class="pa2 bg-blue dim pointer">copy to clipboard</span>
+                    {{ msg }}
+                </div>
+                <div class="h-100 w-100 overflow-x-scroll overflow-y-scroll">
+                    <pre class="f7">{{ json_text }}</pre>
+                </div>
+            </div>
+            <div class="w-50 bg-moon-gray">
+            </div>
+        </div>
+    </body>
+    <script>
+        const DEMO_KEY = "1003762824b9687f" // only works on gh-pages, get your own at https://protomaps.com
+        const VECTOR_TILES_URL = 'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
+
+        let json_style = protomaps_themes_base.json_style({
+            glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+            tiles:VECTOR_TILES_URL
+        })
+
+        let json_text = JSON.stringify(json_style,null,4)
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                json_text:json_text,
+                msg:""
+            },
+            methods: {
+                copyToClipboard: function() {
+                    navigator.clipboard.writeText(this.json_text)
+                    this.msg = "copied!"
+                }
+            }
+        })
+    </script>
+</html>
