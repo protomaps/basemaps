@@ -106,8 +106,8 @@
         var app = new Vue({
             el: '#app',
             data: {
-                leftSelection:search.get('map'),
-                rightSelection:search.get("compare")
+                leftSelection:search.get('map') || 'osm_carto',
+                rightSelection:search.get("compare") || 'toner_raster'
             },
             methods: {
                 openCompare: function() { this.rightSelection = 'osm_carto' },
