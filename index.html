@@ -34,10 +34,21 @@
                     </span>
                     <span>
                         <select v-model="leftSelection">
-                            <option value="osm_carto">openstreetmap carto</option>
-                            <option value="toner_raster">stamen toner (raster)</option>
-                            <option value="gl_light">GL Light</option>
-                            <option value="canvas_light">Canvas Light</option>
+                            <option value="base_light">Base Light</option>
+                            <option value="base_dark">Base Dark</option>
+                            <option value="base_white">Base White</option>
+                            <option value="base_black">Base Black</option>
+                            <option value="base_grayscale">Base Grayscale</option>
+                            <option value="base_light_gl">Base Light GL</option>
+                            <option value="base_dark_gl">Base Dark GL</option>
+                            <option value="base_white_gl">Base White GL</option>
+                            <option value="base_black_gl">Base Black GL</option>
+                            <option value="base_grayscale_gl">Base Grayscale GL</option>
+                            <option value="lightweight">Lightweight</option>
+                            <option value="extra_stamen_toner">Extra Stamen Toner</option>
+                            <option value="extra_mapzen_bubblewrap">Extra Mapzen Bubble Wrap</option>
+                            <option value="external_osm_carto">(EXTERNAL) Openstreetmap Carto raster</option>
+                            <option value="external_stamen_toner">(EXTERNAL) Stamen Toner raster</option>
                         </select>
                     </span>
                     <span>
@@ -54,10 +65,21 @@
                     </span>
                     <span>
                         <select v-model="rightSelection">
-                            <option value="osm_carto">openstreetmap carto</option>
-                            <option value="toner_raster">stamen toner (raster)</option>
-                            <option value="gl_light">GL Light</option>
-                            <option value="canvas_light">Canvas Light</option>
+                            <option value="base_light">Base Light</option>
+                            <option value="base_dark">Base Dark</option>
+                            <option value="base_white">Base White</option>
+                            <option value="base_black">Base Black</option>
+                            <option value="base_grayscale">Base Grayscale</option>
+                            <option value="base_light_gl">Base Light GL</option>
+                            <option value="base_dark_gl">Base Dark GL</option>
+                            <option value="base_white_gl">Base White GL</option>
+                            <option value="base_black_gl">Base Black GL</option>
+                            <option value="base_grayscale_gl">Base Grayscale GL</option>
+                            <option value="lightweight">Lightweight</option>
+                            <option value="extra_stamen_toner">Extra Stamen Toner</option>
+                            <option value="extra_mapzen_bubblewrap">Extra Mapzen Bubble Wrap</option>
+                            <option value="external_osm_carto">(EXTERNAL) Openstreetmap Carto raster</option>
+                            <option value="external_stamen_toner">(EXTERNAL) Stamen Toner raster</option>
                         </select>
                     </span>
                     <span v-on:click="closeCompare" v-if="compare" class="bg-white pointer dim pa1">
@@ -73,21 +95,54 @@
         const VECTOR_TILES_URL = 'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
 
         const OPTIONS = {
-            'osm_carto':{
+            base_light:{
+                type:'canvas'
+            },
+            base_dark:{
+                type:'canvas'
+            },
+            base_white:{
+                type:'canvas'
+            },
+            base_black:{
+                type:'canvas'
+            },
+            base_grayscale:{
+                type:'gl'
+            },
+            base_light_gl:{
+                type:'gl'
+            },
+            base_dark_gl:{
+                type:'gl'
+            },
+            base_white_gl:{
+                type:'gl'
+            },
+            base_black_gl:{
+                type:'gl'
+            },
+            base_grayscale_gl:{
+                type:'gl'
+            },
+            lightweight:{
+                type:'canvas'
+            },
+            extra_stamen_toner:{
+                type:'canvas'
+            },
+            extra_mapzen_bubblewrap:{
+                type:'canvas'
+            },
+            external_osm:{
                 type:'raster',
                 url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             },
-            'toner_raster':{
+            external_toner:{
                 type:'raster',
                 url:'https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}@2x.png',
                 attribution:'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
-            },
-            'gl_light':{
-                type:'gl'
-            },
-            'canvas_light':{
-                type:'canvas'
             }
         }
 
@@ -98,18 +153,19 @@
 
         const mountMap = (map, selection) => {
             let opt = OPTIONS[selection]
+            if (opt == undefined) throw Error("Unknown key: " + selection)
             if (opt.type === 'gl') {
                 L.mapboxGL({
                     style: json_style
-                }).addTo(map)
-            } else if (opt.type === 'raster') {
-                L.tileLayer(opt.url, {
-                    attribution: opt.attribution
                 }).addTo(map)
             } else if (opt.type === 'canvas') {
                 (new protomaps.LeafletLayer({
                     url:VECTOR_TILES_URL
                 })).addTo(map)
+            } else if (opt.type === 'raster') {
+                L.tileLayer(opt.url, {
+                    attribution: opt.attribution
+                }).addTo(map)
             } else {
                 throw Error("Not recognized")
             }
@@ -119,11 +175,11 @@
         var app = new Vue({
             el: '#app',
             data: {
-                leftSelection:search.get('map') || 'osm_carto',
-                rightSelection:search.get("compare") || 'toner_raster'
+                leftSelection:search.get('map') || 'base_light',
+                rightSelection:search.get("compare") || 'base_light_gl'
             },
             methods: {
-                openCompare: function() { this.rightSelection = 'osm_carto' },
+                openCompare: function() { this.rightSelection = 'base_light' },
                 closeCompare: function() { this.rightSelection = undefined }
             },
             computed: {
