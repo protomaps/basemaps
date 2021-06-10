@@ -10,6 +10,9 @@
         <script src="https://unpkg.com/leaflet.sync@0.2.4/L.Map.Sync.js"></script>
         <script src="https://unpkg.com/leaflet-hash@0.2.1/leaflet-hash.js"></script>
 
+        <!-- canvas renderer -->
+        <script src="https://unpkg.com/protomaps@0.3.6/dist/protomaps.min.js"></script>
+
         <!-- gl -->
         <script src="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.js"></script>
         <link rel="stylesheet" href="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.css">
@@ -18,15 +21,12 @@
         <!-- our stuff -->
         <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script>
         <!-- <script src="base/dist/index.js"></script> -->
-        <script src="https://unpkg.com/protomaps@0.3.6/dist/protomaps.min.js"></script>
-        <style>
-            body, #map {
-                font-family: sans-serif;
-            }
-        </style>
+
+        <script src="https://unpkg.com/protomaps-themes-extra@latest/dist/index.js"></script>
+        <!-- <script src="extra/dist/index.js"></script> -->
     </head>
     <body>
-        <div id="app" class="flex">
+        <div id="app" class="flex sans-serif">
             <div class="flex flex-column vh-100" v-bind:class="[ compare ? 'w-50' : 'w-100' ]">
                 <div class="flex flex-grow-0 fw6 justify-between h3 items-center ph3">
                     <span>
@@ -176,7 +176,7 @@
             el: '#app',
             data: {
                 leftSelection:search.get('map') || 'base_light',
-                rightSelection:search.get("compare") || 'base_light_gl'
+                rightSelection:search.get("compare")
             },
             methods: {
                 openCompare: function() { this.rightSelection = 'base_light' },
