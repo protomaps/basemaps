@@ -12,9 +12,6 @@
   },
   "author": "Brandon Liu",
   "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/protomaps/protomaps-themes/issues"
-  },
   "homepage": "https://github.com/protomaps/protomaps-themes#readme",
   "devDependencies": {
     "esbuild": "^0.12.8"
