@@ -18,6 +18,7 @@
         <!-- our stuff -->
         <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script>
         <!-- <script src="base/dist/index.js"></script> -->
+        <script src="https://unpkg.com/protomaps@0.3.6/dist/protomaps.min.js"></script>
         <style>
             body, #map {
                 font-family: sans-serif;
@@ -36,6 +37,7 @@
                             <option value="osm_carto">openstreetmap carto</option>
                             <option value="toner_raster">stamen toner (raster)</option>
                             <option value="gl_light">GL Light</option>
+                            <option value="canvas_light">Canvas Light</option>
                         </select>
                     </span>
                     <span>
@@ -55,6 +57,7 @@
                             <option value="osm_carto">openstreetmap carto</option>
                             <option value="toner_raster">stamen toner (raster)</option>
                             <option value="gl_light">GL Light</option>
+                            <option value="canvas_light">Canvas Light</option>
                         </select>
                     </span>
                     <span v-on:click="closeCompare" v-if="compare" class="bg-white pointer dim pa1">
@@ -67,6 +70,7 @@
     </body>
     <script>
         const DEMO_KEY = "1003762824b9687f" // only works on gh-pages, get your own at https://protomaps.com
+        const VECTOR_TILES_URL = 'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
 
         const OPTIONS = {
             'osm_carto':{
@@ -81,12 +85,15 @@
             },
             'gl_light':{
                 type:'gl'
+            },
+            'canvas_light':{
+                type:'canvas'
             }
         }
 
         let json_style = protomaps_themes_base.json_style({
             glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
-            tiles:'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
+            tiles:VECTOR_TILES_URL
         })
 
         const mountMap = (map, selection) => {
@@ -99,6 +106,12 @@
                 L.tileLayer(opt.url, {
                     attribution: opt.attribution
                 }).addTo(map)
+            } else if (opt.type === 'canvas') {
+                (new protomaps.LeafletLayer({
+                    url:VECTOR_TILES_URL
+                })).addTo(map)
+            } else {
+                throw Error("Not recognized")
             }
         }
 
