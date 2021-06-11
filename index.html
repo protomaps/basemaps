@@ -102,8 +102,8 @@
             base_light:{
                 type:'canvas',
                 fn:() => {
-                    let layers = protomaps_themes_base.LAYERS
-                    result = protomaps.json_style({layers:layers})
+                    let raw_style = protomaps_themes_base.raw_style()
+                    result = protomaps.json_style(raw_style)
                     return result
                 }
             },
