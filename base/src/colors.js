@@ -67,7 +67,71 @@ export const LIGHT = {
 }
 
 export const DARK = {
-
+    background:"#dddddd",
+    earth:"#151515",
+    park:"#1d3e2e",
+    hospital:"#2e2226",
+    industrial:"#20201e",
+    school:"#193a3c",
+    wood:"#212e25",
+    pedestrian:"#1a1a1a",
+    scrub:"#27362a",
+    glacier:"#1c1c1c",
+    sand:"#374238",
+    aerodrome:"#000000",
+    runway:"#000000",
+    water:"#1e293b",
+    tunnel_other_casing:"#ffffff",
+    tunnel_other:"#000000",
+    tunnel_minor_casing:"#ffffff",
+    tunnel_minor:"#000000",
+    tunnel_medium_casing:"#ffffff",
+    tunnel_medium:"#000000",
+    tunnel_major_casing:"#ffffff",
+    tunnel_major:"#000000",
+    tunnel_highway_casing:"#ffffff",
+    tunnel_highway:"#000000",
+    buildings:"#393f43",
+    other:"#000000",
+    minor_casing:"#222222",
+    minor:"#000000",
+    medium_casing:"#222222",
+    medium:"#282828",
+    major_casing:"#222222",
+    major:"#2f2f2f",
+    highway_casing:"#222222",
+    highway:"#3b3b3b",
+    railway:"#bbbbbb",
+    railway_tracks:"#000000",
+    boundaries:"#6b1001",
+    waterway_label_halo:"#000000",
+    waterway_label:"#ffffff",
+    bridges_other_casing:"#ffffff",
+    bridges_other:"#000000",
+    bridges_minor_casing:"#ffffff",
+    bridges_minor:"#000000",
+    bridges_medium_casing:"#ffffff",
+    bridges_medium:"#000000",
+    bridges_major_casing:"#ffffff",
+    bridges_major:"#000000",
+    bridges_highway_casing:"#ffffff",
+    bridges_highway:"#000000",
+    roads_label:"#7a7a7a",
+    roads_label_halo:"#000000",
+    ocean_label:"#ffffff",
+    ocean_label_halo:"#000000",
+    peak_label:"#ffffff",
+    peak_label_halo:"#000000",
+    subplace_label:"#8e8e8e",
+    subplace_label_halo:"#000000",
+    city_circle:"#ffffff",
+    city_circle_stroke:"#000000",
+    city_label:"#ffffff",
+    city_label_halo:"#000000",
+    state_label:"#ffffff",
+    state_label_halo:"#000000",
+    country_label:"#ffffff",
+    country_label_halo:"#000000"
 }
 
 export const WHITE = {
@@ -80,4 +144,9 @@ export const BLACK = {
 
 export const GRAYSCALE = {
 
+}
+
+export default colors = {
+    'light':LIGHT,
+    'dark':DARK
 }

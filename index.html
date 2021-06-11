@@ -102,13 +102,16 @@
             base_light:{
                 type:'canvas',
                 fn:() => {
-                    let raw_style = protomaps_themes_base.raw_style()
-                    result = protomaps.json_style(raw_style)
-                    return result
+                    let raw_style = protomaps_themes_base.raw_style('light')
+                    return protomaps.json_style(raw_style)
                 }
             },
             base_dark:{
-                type:'canvas'
+                type:'canvas',
+                fn:() => {
+                    let raw_style = protomaps_themes_base.raw_style('dark')
+                    return protomaps.json_style(raw_style)
+                }
             },
             base_white:{
                 type:'canvas'
@@ -120,10 +123,22 @@
                 type:'gl'
             },
             base_light_gl:{
-                type:'gl'
+                type:'gl',
+                fn:() => {
+                    return protomaps_themes_base.json_style('light',{
+                        glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+                        tiles:VECTOR_TILES_URL
+                    })
+                }
             },
             base_dark_gl:{
-                type:'gl'
+                type:'gl',
+                fn:() => {
+                    return protomaps_themes_base.json_style('dark',{
+                        glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+                        tiles:VECTOR_TILES_URL
+                    })
+                }
             },
             base_white_gl:{
                 type:'gl'
@@ -160,17 +175,13 @@
             }
         }
 
-        let json_style = protomaps_themes_base.json_style({
-            glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
-            tiles:VECTOR_TILES_URL
-        })
 
         const mountMap = (map, selection) => {
             let opt = OPTIONS[selection]
             if (opt == undefined) throw Error("Unknown key: " + selection)
             if (opt.type === 'gl') {
                 L.mapboxGL({
-                    style: json_style
+                    style: opt.fn()
                 }).addTo(map)
             } else if (opt.type === 'canvas') {
                 var obj = {}

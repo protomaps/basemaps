@@ -1,7 +1,8 @@
 import layers from './layers'
-import { LIGHT } from './colors'
+import colors from './colors'
 
-export const json_style = options => {
+
+export const json_style = (variant,options) => {
     return {
         version: 8,
         glyphs: options.glyphs,
@@ -17,12 +18,12 @@ export const json_style = options => {
                 attribution: "<a href=\"https://protomaps.com\" target=\"_blank\">Protomaps</a> © <a href=\"https://www.openstreetmap.org\" target=\"_blank\"> OpenStreetMap</a>"
             },
         },
-        layers:layers(LIGHT)
+        layers:layers(colors[variant])
     }
 }
 
-export const raw_style = options => {
+export const raw_style =  variant => {
   return {
-    layers:layers(LIGHT)
+    layers:layers(colors[variant])
   }
 }
