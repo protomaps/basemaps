@@ -41,11 +41,13 @@
                             <option value="base_white">Base White</option>
                             <option value="base_black">Base Black</option>
                             <option value="base_grayscale">Base Grayscale</option>
+                            <option value="base_debug">Base Debug</option>
                             <option value="base_light_gl">Base Light GL</option>
                             <option value="base_dark_gl">Base Dark GL</option>
                             <option value="base_white_gl">Base White GL</option>
                             <option value="base_black_gl">Base Black GL</option>
                             <option value="base_grayscale_gl">Base Grayscale GL</option>
+                            <option value="base_debug_gl">Base Debug GL</option>
                             <option value="lightweight">Lightweight</option>
                             <option value="extra_stamen_toner">Extra Stamen Toner</option>
                             <option value="extra_stamen_toner_lite">Extra Stamen Toner Lite</option>
@@ -73,11 +75,13 @@
                             <option value="base_white">Base White</option>
                             <option value="base_black">Base Black</option>
                             <option value="base_grayscale">Base Grayscale</option>
+                            <option value="base_debug">Base Debug</option>
                             <option value="base_light_gl">Base Light GL</option>
                             <option value="base_dark_gl">Base Dark GL</option>
                             <option value="base_white_gl">Base White GL</option>
                             <option value="base_black_gl">Base Black GL</option>
                             <option value="base_grayscale_gl">Base Grayscale GL</option>
+                            <option value="base_debug_gl">Base Debug GL</option>
                             <option value="lightweight">Lightweight</option>
                             <option value="extra_stamen_toner">Extra Stamen Toner</option>
                             <option value="extra_stamen_toner_lite">Extra Stamen Toner Lite</option>
@@ -102,36 +106,43 @@
             base_light:{
                 type:'canvas',
                 fn:() => {
-                    let raw_style = protomaps_themes_base.raw_style('light')
-                    return protomaps.json_style(raw_style)
+                    let layers = protomaps_themes_base.layers('light')
+                    return protomaps.json_style({layers:layers})
                 }
             },
             base_dark:{
                 type:'canvas',
                 fn:() => {
-                    let raw_style = protomaps_themes_base.raw_style('dark')
-                    return protomaps.json_style(raw_style)
+                    let layers = protomaps_themes_base.layers('dark')
+                    return protomaps.json_style({layers:layers})
                 }
             },
             base_white:{
                 type:'canvas',
                 fn:() => {
-                    let raw_style = protomaps_themes_base.raw_style('white')
-                    return protomaps.json_style(raw_style)
+                    let layers = protomaps_themes_base.layers('white')
+                    return protomaps.json_style({layers:layers})
                 }
             },
             base_black:{
                 type:'canvas',
                 fn:() => {
-                    let raw_style = protomaps_themes_base.raw_style('black')
-                    return protomaps.json_style(raw_style)
+                    let layers = protomaps_themes_base.layers('black')
+                    return protomaps.json_style({layers:layers})
                 }
             },
             base_grayscale:{
                 type:'canvas',
                 fn:() => {
-                    let raw_style = protomaps_themes_base.raw_style('grayscale')
-                    return protomaps.json_style(raw_style)
+                    let layers = protomaps_themes_base.layers('grayscale')
+                    return protomaps.json_style({layers:layers})
+                }
+            },
+            base_debug:{
+                type:'canvas',
+                fn:() => {
+                    let layers = protomaps_themes_base.layers('debug')
+                    return protomaps.json_style({layers:layers})
                 }
             },
             base_light_gl:{
@@ -174,6 +185,15 @@
                 type:'gl',
                 fn:() => {
                     return protomaps_themes_base.json_style('grayscale',{
+                        glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+                        tiles:VECTOR_TILES_URL
+                    })
+                }
+            },
+            base_debug_gl:{
+                type:'gl',
+                fn:() => {
+                    return protomaps_themes_base.json_style('debug',{
                         glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
                         tiles:VECTOR_TILES_URL
                     })
