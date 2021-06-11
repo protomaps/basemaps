@@ -19,7 +19,7 @@
                         <option value="white">Base White GL</option>
                         <option value="black">Base Black GL</option>
                         <option value="grayscale">Base Grayscale GL</option>
-                        <option value="debugl">Base Debug GL</option>
+                        <option value="debug">Base Debug GL</option>
                     </select>
                     <span v-on:click="copyToClipboard" class="pa2 bg-blue dim pointer">copy to clipboard</span>
                     {{ msg }}
@@ -28,7 +28,7 @@
                     <pre class="f7">{{ json_text }}</pre>
                 </div>
             </div>
-            <div class="w-50 bg-moon-gray">
+            <div class="w-50 bg-moon-gray" id="map">
             </div>
         </div>
     </body>
@@ -37,14 +37,16 @@
         const VECTOR_TILES_URL = 'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
 
         let updateJson = selection => {
-            let json_style = protomaps_themes_base.json_style(selection,{
+            return protomaps_themes_base.json_style(selection,{
                 glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
                 tiles:VECTOR_TILES_URL
             })
-            return JSON.stringify(json_style,null,4)
         }
 
-        var app = new Vue({
+        let to_text = j => { return JSON.stringify(j,null,4) }
+
+        var map
+        let app = new Vue({
             el: '#app',
             data: {
                 selection:"light",
@@ -58,10 +60,19 @@
                 }
             },
             mounted: function() {
-                this.json_text = updateJson(this.selection)
+                let json_style = updateJson(this.selection)
+                map = new mapboxgl.Map({
+                    style:json_style,
+                    container:'map'
+                })
+                this.json_text = to_text(json_style)
             },
-            updated: function() {
-                this.json_text = updateJson(this.selection)
+            watch: {
+                selection: function(val) {
+                    let json_style = updateJson(val)
+                    map.setStyle(json_style)
+                    this.json_text = to_text(json_style)
+                }
             }
         })
     </script>
