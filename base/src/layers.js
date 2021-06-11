@@ -1,10 +1,10 @@
-export default layers = options => {
+export default layers = c => {
   return [
     {
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#dddddd"
+        "background-color": c.background
       }
     },
     {
@@ -13,7 +13,7 @@ export default layers = options => {
       "source":"protomaps",
       "source-layer":"earth",
       "paint": {
-        "fill-color":" #e7f1ee"
+        "fill-color": c.earth
       }
     },
     {
@@ -35,7 +35,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "fill-color": "#c2f7d1"
+        "fill-color": c.park
       }
     },
     {
@@ -52,7 +52,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "fill-color": "#ffeae8"
+        "fill-color": c.hospital
       }
     },
     {
@@ -69,7 +69,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "fill-color": "#f8ffed"
+        "fill-color": c.industrial
       }
     },
     {
@@ -86,7 +86,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "fill-color": "#f2fef9"
+        "fill-color": c.school
       }
     },
     {
@@ -113,7 +113,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "fill-color": "#eafbe9"
+        "fill-color": c.wood
       }
     },
     {
@@ -130,7 +130,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "fill-color": "#eef0f0"
+        "fill-color": c.pedestrian
       }
     },
     {
@@ -145,7 +145,7 @@ export default layers = options => {
         "grassland"
       ],
       "paint": {
-        "fill-color": "rgb(219,239,209)"
+        "fill-color": c.scrub
       }
     },
     {
@@ -159,7 +159,7 @@ export default layers = options => {
         "glacier"
       ],
       "paint": {
-        "fill-color": "white"
+        "fill-color": c.glacier
       }
     },
     {
@@ -173,7 +173,7 @@ export default layers = options => {
         "sand"
       ],
       "paint": {
-        "fill-color": "#eff5e7"
+        "fill-color": c.sand
       }
     },
     {
@@ -187,7 +187,7 @@ export default layers = options => {
         "aerodrome"
       ],
       "paint": {
-        "fill-color": "#dbe7e7"
+        "fill-color": c.aerodrome
       }
     },
     {
@@ -200,7 +200,7 @@ export default layers = options => {
         "aeroway"
       ],
       "paint": {
-        "line-color": "#d1d9d9",
+        "line-color": c.runway,
         "line-width": 6
       }
     },
@@ -228,7 +228,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "fill-color": "#d1d9d9"
+        "fill-color": c.runway
       }
     },
     {
@@ -237,7 +237,7 @@ export default layers = options => {
       "source": "protomaps",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#a4cae1"
+        "fill-color": c.water
       }
     },
     {
@@ -259,7 +259,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.tunnel_other_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -297,7 +297,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#f7f7f7",
+        "line-color": c.tunnel_other,
         "line-dasharray": [
           1,
           1
@@ -339,7 +339,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e2e2e2",
+        "line-color": c.tunnel_minor_casing,
         "line-dasharray": [
           3,
           2
@@ -395,7 +395,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ebebeb",
+        "line-color": c.tunnel_minor,
         "line-width": [
           "interpolate",
           [
@@ -433,7 +433,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e1e1e1",
+        "line-color": c.tunnel_medium_casing,
         "line-dasharray": [
           3,
           2
@@ -489,7 +489,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ebebeb",
+        "line-color": c.tunnel_medium,
         "line-width": [
           "interpolate",
           [
@@ -527,7 +527,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e3cfd3",
+        "line-color": c.tunnel_major_casing,
         "line-dasharray": [
           3,
           2
@@ -583,7 +583,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ebebeb",
+        "line-color": c.tunnel_major,
         "line-width": [
           "interpolate",
           [
@@ -621,7 +621,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ebcea2",
+        "line-color": c.tunnel_highway_casing,
         "line-dasharray": [
           3,
           2
@@ -677,7 +677,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ebebeb",
+        "line-color": c.tunnel_highway,
         "line-width": [
           "interpolate",
           [
@@ -710,7 +710,7 @@ export default layers = options => {
         "waterway"
       ],
       "paint": {
-        "line-color": "#a4cae1",
+        "line-color": c.water,
         "line-width": 0.5
       }
     },
@@ -720,7 +720,7 @@ export default layers = options => {
       "source": "protomaps",
       "source-layer": "buildings",
       "paint": {
-        "fill-extrusion-color": "#cbcece",
+        "fill-extrusion-color": c.buildings,
         "fill-extrusion-height": [
           "to-number",
           [
@@ -750,7 +750,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.other,
         "line-dasharray": [
           2,
           1
@@ -792,7 +792,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e2e2e2",
+        "line-color": c.minor_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -844,7 +844,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "white",
+        "line-color": c.minor,
         "line-width": [
           "interpolate",
           [
@@ -882,7 +882,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e1e1e1",
+        "line-color": c.medium_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -934,7 +934,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.medium,
         "line-width": [
           "interpolate",
           [
@@ -972,7 +972,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e3cfd3",
+        "line-color": c.major_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -1024,7 +1024,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.major,
         "line-width": [
           "interpolate",
           [
@@ -1062,7 +1062,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ebcea2",
+        "line-color": c.highway_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -1114,7 +1114,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#fefffc",
+        "line-color": c.highway,
         "line-width": [
           "interpolate",
           [
@@ -1147,7 +1147,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#b3bcc9",
+        "line-color": c.railway,
         "line-width": 2
       }
     },
@@ -1165,7 +1165,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.railway_tracks,
         "line-width": 0.8,
         "line-dasharray": [
           6,
@@ -1179,7 +1179,7 @@ export default layers = options => {
       "source": "protomaps",
       "source-layer": "boundaries",
       "paint": {
-        "line-color": "#5c4a6b",
+        "line-color": c.boundaries,
         "line-width": 0.5,
         "line-dasharray": [
           3,
@@ -1206,8 +1206,8 @@ export default layers = options => {
         "text-letter-spacing": 0.3
       },
       "paint": {
-        "text-color": "white",
-        "text-halo-color": "#a4cae1",
+        "text-color": c.waterway_label,
+        "text-halo-color": c.waterway_label_halo,
         "text-halo-width": 2
       }
     },
@@ -1230,7 +1230,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.bridges_other_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -1268,7 +1268,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.bridges_other,
         "line-dasharray": [
           2,
           1
@@ -1310,7 +1310,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e2e2e2",
+        "line-color": c.bridges_minor_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -1362,7 +1362,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "white",
+        "line-color": c.bridges_minor,
         "line-width": [
           "interpolate",
           [
@@ -1400,7 +1400,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e1e1e1",
+        "line-color": c.bridges_medium_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -1452,7 +1452,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.bridges_medium,
         "line-width": [
           "interpolate",
           [
@@ -1490,7 +1490,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#e3cfd3",
+        "line-color": c.bridges_major_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -1542,7 +1542,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": c.bridges_major,
         "line-width": [
           "interpolate",
           [
@@ -1580,7 +1580,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#ebcea2",
+        "line-color": c.bridges_highway_casing,
         "line-gap-width": [
           "interpolate",
           [
@@ -1632,7 +1632,7 @@ export default layers = options => {
         ]
       ],
       "paint": {
-        "line-color": "#fefffc",
+        "line-color": c.bridges_highway,
         "line-width": [
           "interpolate",
           [
@@ -1668,8 +1668,8 @@ export default layers = options => {
         "text-size": 14
       },
       "paint": {
-        "text-color": "#91888b",
-        "text-halo-color": "white",
+        "text-color": c.roads_label,
+        "text-halo-color": c.roads_label_halo,
         "text-halo-width": 2
       }
     },
@@ -1679,7 +1679,7 @@ export default layers = options => {
       "source":"protomaps",
       "source-layer":"mask",
       "paint":{
-        "fill-color":"#dddddd"
+        "fill-color": c.background
       }
     },
     {
@@ -1712,8 +1712,8 @@ export default layers = options => {
         "text-letter-spacing": 0.15
       },
       "paint": {
-        "text-color": "white",
-        "text-halo-color": "#a4cae1",
+        "text-color": c.ocean_label,
+        "text-halo-color": c.ocean_label_halo,
         "text-halo-width": 1
       }
     },
@@ -1741,8 +1741,8 @@ export default layers = options => {
         "text-size": 14
       },
       "paint": {
-        "text-color": "#61bb5b",
-        "text-halo-color": "#ffffff",
+        "text-color": c.peak_label,
+        "text-halo-color": c.peak_label_halo,
         "text-halo-width": 1.5
       }
     },
@@ -1777,8 +1777,8 @@ export default layers = options => {
         "text-transform":"uppercase"
       },
       "paint": {
-        "text-color": "#757d91",
-        "text-halo-color": "white",
+        "text-color": c.subplace_label,
+        "text-halo-color": c.subplace_label_halo,
         "text-halo-width": 0.5
       }
     },
@@ -1795,8 +1795,8 @@ export default layers = options => {
       "paint": {
         "circle-radius": 2,
         "circle-stroke-width": 2,
-        "circle-stroke-color": "white",
-        "circle-color": "#666666"
+        "circle-stroke-color": c.city_circle_stroke,
+        "circle-color": c.city_circle
       },
       "maxzoom": 8
     },
@@ -1833,8 +1833,8 @@ export default layers = options => {
         "text-radial-offset": 0.2
       },
       "paint": {
-        "text-color": "#787878",
-        "text-halo-color": "white",
+        "text-color": c.city_label,
+        "text-halo-color": c.city_label_halo,
         "text-halo-width": 1
       }
     },
@@ -1859,8 +1859,8 @@ export default layers = options => {
         "text-transform": "uppercase"
       },
       "paint": {
-        "text-color": "#bdbdbd",
-        "text-halo-color": "white",
+        "text-color": c.state_label,
+        "text-halo-color": c.state_label_halo,
         "text-halo-width": 0.5
       }
     },
@@ -1899,11 +1899,10 @@ export default layers = options => {
         "text-transform": "uppercase"
       },
       "paint": {
-        "text-color": "#9590aa",
-        "text-halo-color": "white",
+        "text-color": c.country_label,
+        "text-halo-color": c.country_label_halo,
         "text-halo-width": 1.0
       }
     }
   ]
 }
-

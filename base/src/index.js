@@ -1,4 +1,5 @@
 import layers from './layers'
+import { LIGHT } from './colors'
 
 export const json_style = options => {
     return {
@@ -16,12 +17,12 @@ export const json_style = options => {
                 attribution: "<a href=\"https://protomaps.com\" target=\"_blank\">Protomaps</a> © <a href=\"https://www.openstreetmap.org\" target=\"_blank\"> OpenStreetMap</a>"
             },
         },
-        layers:layers()
+        layers:layers(LIGHT)
     }
 }
 
 export const raw_style = options => {
   return {
-    layers:layers()
+    layers:layers(LIGHT)
   }
 }
