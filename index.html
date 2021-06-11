@@ -121,7 +121,11 @@
                 }
             },
             base_black:{
-                type:'canvas'
+                type:'canvas',
+                fn:() => {
+                    let raw_style = protomaps_themes_base.raw_style('black')
+                    return protomaps.json_style(raw_style)
+                }
             },
             base_grayscale:{
                 type:'gl'
@@ -154,7 +158,13 @@
                 }
             },
             base_black_gl:{
-                type:'gl'
+                type:'gl',
+                fn:() => {
+                    return protomaps_themes_base.json_style('black',{
+                        glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+                        tiles:VECTOR_TILES_URL
+                    })
+                }
             },
             base_grayscale_gl:{
                 type:'gl'
