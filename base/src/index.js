@@ -8,7 +8,7 @@ export const layers = variant => {
 }
 
 export const json_style = (variant,options) => {
-    return {
+    let style = {
         version: 8,
         glyphs: options.glyphs,
         name: "protomaps-themes-base/" + variant,
@@ -25,4 +25,6 @@ export const json_style = (variant,options) => {
         },
         layers:layers(variant)
     }
+    if (options.bounds) style.sources.protomaps.bounds = options.bounds
+    return style
 }
