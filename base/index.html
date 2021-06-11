@@ -6,13 +6,21 @@
         <script src="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.js"></script>
         <link rel="stylesheet" href="https://cdn.protomaps.com/maplibre-gl-js/1.13.0pm1/mapbox-gl.css">
 
-        <!-- <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script> -->
-        <script src="dist/index.js"></script>
+        <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script>
+        <!-- <script src="dist/index.js"></script> -->
     </head>
     <body>
         <div id="app" class="flex sans-serif debug vh-100">
             <div class="w-50 h-100 flex flex-column">
                 <div class="pa2">
+                    <select v-model="selection">
+                        <option value="light">Base Light GL</option>
+                        <option value="dark">Base Dark GL</option>
+                        <option value="white">Base White GL</option>
+                        <option value="black">Base Black GL</option>
+                        <option value="grayscale">Base Grayscale GL</option>
+                        <option value="debugl">Base Debug GL</option>
+                    </select>
                     <span v-on:click="copyToClipboard" class="pa2 bg-blue dim pointer">copy to clipboard</span>
                     {{ msg }}
                 </div>
@@ -28,17 +36,19 @@
         const DEMO_KEY = "1003762824b9687f" // only works on gh-pages, get your own at https://protomaps.com
         const VECTOR_TILES_URL = 'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
 
-        let json_style = protomaps_themes_base.json_style({
-            glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
-            tiles:VECTOR_TILES_URL
-        })
-
-        let json_text = JSON.stringify(json_style,null,4)
+        let updateJson = selection => {
+            let json_style = protomaps_themes_base.json_style(selection,{
+                glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+                tiles:VECTOR_TILES_URL
+            })
+            return JSON.stringify(json_style,null,4)
+        }
 
         var app = new Vue({
             el: '#app',
             data: {
-                json_text:json_text,
+                selection:"light",
+                json_text:"",
                 msg:""
             },
             methods: {
@@ -46,6 +56,12 @@
                     navigator.clipboard.writeText(this.json_text)
                     this.msg = "copied!"
                 }
+            },
+            mounted: function() {
+                this.json_text = updateJson(this.selection)
+            },
+            updated: function() {
+                this.json_text = updateJson(this.selection)
             }
         })
     </script>
