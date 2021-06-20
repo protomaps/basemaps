@@ -225,7 +225,7 @@
             }
         }
 
-
+        maplibregl.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js")
         const mountMap = (map, selection) => {
             let opt = OPTIONS[selection]
             if (opt == undefined) throw Error("Unknown key: " + selection)
