@@ -102,47 +102,51 @@
         const DEMO_KEY = "1003762824b9687f" // only works on gh-pages, get your own at https://protomaps.com
         const VECTOR_TILES_URL = 'https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=' + DEMO_KEY
 
+        let fontsub = {
+            'NotoSans-Regular':{face:'sans-serif',weight:400},
+            'NotoSans-Bold':{face:'sans-serif',weight:600}
+        }
         const OPTIONS = {
             base_light:{
                 type:'canvas',
                 fn:() => {
                     let layers = protomaps_themes_base.layers('light')
-                    return protomaps.json_style({layers:layers})
+                    return protomaps.json_style({layers:layers},fontsub)
                 }
             },
             base_dark:{
                 type:'canvas',
                 fn:() => {
                     let layers = protomaps_themes_base.layers('dark')
-                    return protomaps.json_style({layers:layers})
+                    return protomaps.json_style({layers:layers},fontsub)
                 }
             },
             base_white:{
                 type:'canvas',
                 fn:() => {
                     let layers = protomaps_themes_base.layers('white')
-                    return protomaps.json_style({layers:layers})
+                    return protomaps.json_style({layers:layers},fontsub)
                 }
             },
             base_black:{
                 type:'canvas',
                 fn:() => {
                     let layers = protomaps_themes_base.layers('black')
-                    return protomaps.json_style({layers:layers})
+                    return protomaps.json_style({layers:layers},fontsub)
                 }
             },
             base_grayscale:{
                 type:'canvas',
                 fn:() => {
                     let layers = protomaps_themes_base.layers('grayscale')
-                    return protomaps.json_style({layers:layers})
+                    return protomaps.json_style({layers:layers},fontsub)
                 }
             },
             base_debug:{
                 type:'canvas',
                 fn:() => {
                     let layers = protomaps_themes_base.layers('debug')
-                    return protomaps.json_style({layers:layers})
+                    return protomaps.json_style({layers:layers},{})
                 }
             },
             base_light_gl:{
