@@ -1823,9 +1823,9 @@ export default layers = c => {
           ],
           0,
           1,
-          12,
+          16,
           2,
-          10
+          14
         ],
         "text-variable-anchor": [
           "bottom-left"
