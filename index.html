@@ -237,17 +237,18 @@
             if (opt == undefined) throw Error("Unknown key: " + selection)
             if (opt.type === 'gl') {
                 L.maplibreGL({
-                    style: opt.fn()
+                    style: opt.fn(),
+                    attribution:'<a href="https://protomaps.com">Protomaps</a> © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
                 }).addTo(map)
             } else if (opt.type === 'canvas') {
                 var obj = {}
                 if (opt.fn) obj = opt.fn();
-                (new protomaps.LeafletLayer({
+                (protomaps.leafletLayer({
                     url:VECTOR_TILES_URL,
                     tasks:obj.tasks || [],
                     paint_rules:obj.paint_rules,
                     label_rules:obj.label_rules,
-                    attribution:obj.attribution
+                    attribution:obj.attribution || '<a href="https://protomaps.com">Protomaps</a> © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
                 })).addTo(map)
             } else if (opt.type === 'raster') {
                 L.tileLayer(opt.url, {
