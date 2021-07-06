@@ -1,7 +1,22 @@
-import { arr, exp, createPattern, Font, Sprites, LineLabelSymbolizer, GroupSymbolizer, CircleSymbolizer, LineSymbolizer, PolygonSymbolizer, TextSymbolizer, IconSymbolizer, PolygonLabelSymbolizer } from 'protomaps'
+import { arr, exp, createPattern, Font, Sprites, LineLabelSymbolizer, GroupSymbolizer, CircleSymbolizer, LineSymbolizer, PolygonSymbolizer, CenteredTextSymbolizer, OffsetTextSymbolizer, IconSymbolizer, PolygonLabelSymbolizer } from 'protomaps'
 import icons from './toner-icons.html'
 
 // https://github.com/stamen/toner-carto/blob/master/map.mss
+
+class MetroSymbolizer {
+   stash(index, order, scratch,geom,feature,zoom) {
+        let a = geom[0][0]
+        let bbox = {minX:a.x-6, minY:a.y-6,maxX:a.x+6,maxY:a.y+6}
+        let draw = ctx => {
+            ctx.fillStyle = "black"
+            ctx.fillRect(-6,-6,12,12)
+            ctx.fillStyle = "white"
+            ctx.font = "600 11px Inter"
+            ctx.fillText("M",-5,4)
+        }
+        return [{anchor:a,bboxes:[bbox],draw:draw}]
+    } 
+}
 
 const Toner = variant => {
     let halftone = createPattern(4,4, c => {
@@ -45,6 +60,13 @@ const Toner = variant => {
                 symbolizer: new PolygonSymbolizer({
                     fill: background
                 })
+            },
+            {
+                dataLayer: "roads",
+                symbolizer: new LineSymbolizer({
+                    color:"#dddddd"
+                }),
+                filter: f => { return f["pmap:kind"] === "minor_road" }
             },
             {
                 dataLayer: "roads",
@@ -106,6 +128,14 @@ const Toner = variant => {
                 minzoom:14
             },
             {
+                dataLayer: "transit",
+                symbolizer: new LineSymbolizer({
+                    color:"#888888"
+                }),
+                filter: f => { return f["pmap:kind"] === "railway" },
+                minzoom:14
+            },
+            {
                 dataLayer: "buildings",
                 symbolizer: new LineSymbolizer({
                     color:"#888888",
@@ -135,7 +165,7 @@ const Toner = variant => {
         label_rules: [
             {
                 dataLayer: "places",
-                symbolizer: new TextSymbolizer({
+                symbolizer: new CenteredTextSymbolizer({
                     properties:lang,
                     fill:"black",
                     stroke:"white",
@@ -149,7 +179,7 @@ const Toner = variant => {
             },
             {
                 dataLayer: "places",
-                symbolizer: new TextSymbolizer({
+                symbolizer: new CenteredTextSymbolizer({
                     properties:lang,
                     fill:"black",
                     stroke:"white",
@@ -170,7 +200,7 @@ const Toner = variant => {
                         stroke:"white",
                         width:2
                     }),
-                    new TextSymbolizer({
+                    new OffsetTextSymbolizer({
                         properties:lang,
                         offset:3,
                         fill:"black",
@@ -190,12 +220,12 @@ const Toner = variant => {
             },
             {
                 dataLayer: "places",
-                symbolizer: new TextSymbolizer({
+                symbolizer: new CenteredTextSymbolizer({
                     properties:lang,
                     align:"center",
                     fill:"black",
                     stroke:"white",
-                    width:3,
+                    width:2,
                     fontFamily:"Inter",
                     fontWeight:600,
                     fontSize: (z,p) => {
@@ -228,15 +258,20 @@ const Toner = variant => {
             },
             {
                 dataLayer: "pois",
-                symbolizer: new IconSymbolizer({
-                    sprites:sprites,
-                    name:"airplane"
-                }),
+                symbolizer: new MetroSymbolizer(),
                 filter: f => { return f.railway == 'station' }
             },
+            // {
+            //     dataLayer: "pois",
+            //     symbolizer: new IconSymbolizer({
+            //         sprites:sprites,
+            //         name:"airplane"
+            //     }),
+            //     filter: f => { return f.railway == 'station' }
+            // },
             {
                 dataLayer: "physical_point",
-                symbolizer: new TextSymbolizer({
+                symbolizer: new CenteredTextSymbolizer({
                     properties:lang,
                     fill:"white",
                     stroke:"black",
@@ -247,12 +282,16 @@ const Toner = variant => {
                 }),
                 filter: f => { return ["ocean","sea"].includes(f.place) }
             },
-            // {
-            //     dataLayer: "roads",
-            //     symbolizer: new LineLabelSymbolizer({
-            //         fill: "black"
-            //     })
-            // }
+            {
+                dataLayer: "roads",
+                symbolizer: new LineLabelSymbolizer({
+                    fill: "black",
+                    stroke:"white",
+                    width:2,
+                    font:"600 14px Inter",
+                    offset:4
+                })
+            }
         ],
         attribution:'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>.'
     }
