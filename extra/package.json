@@ -14,7 +14,7 @@
   "license": "varies",
   "homepage": "https://github.com/protomaps/protomaps-themes#readme",
   "dependencies": {
-    "protomaps": "0.4.0"
+    "protomaps": "0.7.0"
   },
   "devDependencies": {
     "esbuild": "^0.11.20"
