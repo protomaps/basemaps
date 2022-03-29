@@ -19,15 +19,15 @@
 
 
         <!-- canvas renderer -->
-        <script src="https://unpkg.com/protomaps@0.7.0/dist/protomaps.min.js"></script>
+        <script src="https://unpkg.com/protomaps@1.16.0/dist/protomaps.min.js"></script>
         <!-- <script src="http://localhost:8000/dist/protomaps.js"></script> -->
 
         <!-- our stuff -->
-        <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script>
-        <!-- <script src="base/dist/index.js"></script> -->
+        <!-- <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script> -->
+        <script src="base/dist/index.js"></script>
 
-        <script src="https://unpkg.com/protomaps-themes-extra@latest/dist/index.js"></script>
-        <!-- <script src="extra/dist/index.js"></script> -->
+        <!-- <script src="https://unpkg.com/protomaps-themes-extra@latest/dist/index.js"></script> -->
+        <script src="extra/dist/index.js"></script>
     </head>
     <body>
         <div id="app" class="flex sans-serif">
@@ -210,7 +210,13 @@
             },
             extra_stamen_toner:{
                 type:'canvas',
-                fn:() => { return protomaps_themes_extra.Toner() }
+                fn:() => { 
+                 let [ tasks, paint_rules, label_rules, attribution ] = protomaps_themes_extra.Toner();
+                 return {
+                    paint_rules:paint_rules,
+                    label_rules:label_rules
+                 }
+                }
             },
             extra_stamen_toner_lite:{
                 type:'canvas',
