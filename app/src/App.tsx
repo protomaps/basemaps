@@ -88,64 +88,7 @@ let setLayer = (map: L.Map, optionIdx: number) => {
   }
 };
 
-function Compare(props: {
-  closeCompare: () => void;
-  leftMap: L.Map | null;
-  compareSelection: number;
-  setCompareSelection: (n: number) => void;
-}) {
-  var map = useRef<L.Map | null>(null);
-  let mapRef = useRef<HTMLDivElement | null>(null);
-
-  let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    props.setCompareSelection(+e.target.value);
-  };
-
-  useEffect(() => {
-    map.current = L.map(mapRef.current!, {
-      doubleClickZoom: false,
-      touchZoom: false,
-      scrollWheelZoom: false,
-      zoomControl: false,
-    }).setView([0, 0], 0);
-    map.current.dragging.disable();
-    // (props.leftMap as any).sync(map.current);
-
-    return () => {
-      if (map.current) {
-        (props.leftMap as any).unsync(map.current);
-        map.current.remove();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (map.current) setLayer(map.current, props.compareSelection);
-  }, [props.compareSelection]);
-
-  return (
-    <div className="flex flex-column vh-100 w-50 bg-moon-gray">
-      <div className="flex flex-grow-0 justify-between h3 items-center ph3">
-        <span>
-          <select onChange={onChange} value={props.compareSelection}>
-            {OPTIONS.map((option, i) => (
-              <option value={i} key={i}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </span>
-        <span onClick={props.closeCompare} className="bg-white pointer dim pa1">
-          close ⇥
-        </span>
-      </div>
-      <div className="flex-grow h-100 flex" ref={mapRef}></div>
-    </div>
-  );
-}
-
 let initialSelection = 0;
-let initialCompare = false;
 let initialCompareSelection = 0;
 const paramMap = new URLSearchParams(location.search).get("map");
 const paramCompare = new URLSearchParams(location.search).get("compare");
@@ -158,58 +101,74 @@ if (paramMap) {
 if (paramCompare) {
   let idx = OPTIONS.findIndex((o) => o.name === paramCompare);
   if (idx >= 0) {
-    initialCompare = true;
     initialCompareSelection = idx;
   }
 }
 
 function App() {
-  var map = useRef<L.Map | null>(null);
-  let mapRef = useRef<HTMLDivElement | null>(null);
-
+  var leftMap = useRef<L.Map | null>(null);
+  let leftMapElement = useRef<HTMLDivElement | null>(null);
+  var rightMap = useRef<L.Map | null>(null);
+  let rightMapElement = useRef<HTMLDivElement | null>(null);
   let [compare, setCompare] = useState<boolean>(false);
   let [selection, setSelection] = useState<number>(initialSelection);
   let [compareSelection, setCompareSelection] = useState<number>(
     initialCompareSelection
   );
-
-  let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  let onChangeLeft = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelection(+e.target.value);
   };
 
+  let onChangeRight = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCompareSelection(+e.target.value);
+  };
+
   useEffect(() => {
-    map.current = L.map(mapRef.current!).setView([0, 0], 0);
-    (map.current as any).addHash();
+    leftMap.current = L.map(leftMapElement.current!).setView([0, 0], 0);
+    (leftMap.current as any).addHash();
+
+    rightMap.current = L.map(rightMapElement.current!, {
+      doubleClickZoom: false,
+      touchZoom: false,
+      scrollWheelZoom: false,
+      zoomControl: false,
+    }).setView([0, 0], 0);
+    rightMap.current.dragging.disable();
+    (leftMap.current as any).sync(rightMap.current);
 
     return () => {
-      if (map.current) {
-        map.current.remove();
-        (map.current as any).removeHash();
+      if (leftMap.current) {
+        leftMap.current.remove();
+        (leftMap.current as any).removeHash();
+      }
+      if (rightMap.current) {
+        rightMap.current.remove();
       }
     };
   }, []);
 
   useEffect(() => {
-    if (map.current) setLayer(map.current, selection);
+    if (leftMap.current) setLayer(leftMap.current, selection);
   }, [selection]);
+
+  useEffect(() => {
+    if (rightMap.current) setLayer(rightMap.current, compareSelection);
+  }, [compareSelection]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.set("map", OPTIONS[selection].name);
-    if (compare)
-      url.searchParams.set("compare", OPTIONS[compareSelection].name);
+    url.searchParams.set("compare", OPTIONS[compareSelection].name);
     history.pushState(null, "", url.toString());
   }, [compare, selection, compareSelection]);
 
-  let leftClass = "flex flex-column vh-100 " + (compare ? "w-50" : "w-100");
-
   return (
     <div id="app" className="flex sans-serif">
-      <div className={leftClass}>
+      <div className="flex flex-column vh-100 w-50">
         <div className="flex flex-grow-0 fw6 justify-between h3 items-center ph3">
           <span>protomaps-themes {GIT_SHA}</span>
           <span>
-            <select onChange={onChange} value={selection}>
+            <select onChange={onChangeLeft} value={selection}>
               {OPTIONS.map((option, i) => (
                 <option value={i} key={i}>
                   {option.name}
@@ -217,31 +176,24 @@ function App() {
               ))}
             </select>
           </span>
+          <span></span>
+        </div>
+        <div className="flex-grow h-100 flex" ref={leftMapElement}></div>
+      </div>
+      <div className="flex flex-column vh-100 w-50 bg-moon-gray">
+        <div className="flex flex-grow-0 justify-between h3 items-center ph3">
           <span>
-            {!compare ? (
-              <span
-                onClick={() => {
-                  setCompare(true);
-                }}
-                className="bg-moon-gray pointer dim pa1"
-              >
-                compare ⇤
-              </span>
-            ) : null}
+            <select onChange={onChangeRight} value={compareSelection}>
+              {OPTIONS.map((option, i) => (
+                <option value={i} key={i}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
           </span>
         </div>
-        <div className="flex-grow h-100 flex" ref={mapRef}></div>
+        <div className="flex-grow h-100 flex" ref={rightMapElement}></div>
       </div>
-      {compare ? (
-        <Compare
-          closeCompare={() => {
-            setCompare(false);
-          }}
-          compareSelection={compareSelection}
-          setCompareSelection={setCompareSelection}
-          leftMap={map.current}
-        />
-      ) : null}
     </div>
   );
 }
