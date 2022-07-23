@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "leaflet": "^1.8.0",
-    "maplibre-gl": "^2.1.9",
+    "leaflet-hash": "^0.2.1",
+    "leaflet.sync": "^0.2.4",
     "protomaps": "^1.19.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "tachyons": "^4.12.0"
   },
   "devDependencies": {
     "@types/leaflet": "^1.7.9",

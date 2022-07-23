@@ -1,6 +1,6 @@
 import { arr, exp, createPattern } from 'protomaps'
 import { Rule, LabelRule, Justify } from 'protomaps'
-import { Font, Sprites } from 'protomaps'
+import { Font, Sheet } from 'protomaps'
 import { CircleSymbolizer, IconSymbolizer } from 'protomaps'
 import { GroupSymbolizer, CenteredTextSymbolizer, OffsetTextSymbolizer } from 'protomaps'
 import { LineSymbolizer, LineLabelSymbolizer } from 'protomaps'
@@ -213,7 +213,7 @@ const Toner = (variant:string):[any,Rule[],LabelRule[],string] => {
                     fontFamily:"Inter",
                     fontWeight:600,
                     fontSize: (z,f) => {
-                        if (f.props["pmap:rank"] == 1) return 15
+                        if (f!.props["pmap:rank"] == 1) return 15
                         return 13
                     }
                 })
@@ -233,7 +233,7 @@ const Toner = (variant:string):[any,Rule[],LabelRule[],string] => {
                 fontFamily:"Inter",
                 fontWeight:600,
                 fontSize: (z,f) => {
-                    if (f.props["pmap:rank"] == 1) return 15
+                    if (f!.props["pmap:rank"] == 1) return 15
                     return 13
                 }
             }),
