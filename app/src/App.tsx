@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import "tachyons/css/tachyons.min.css";
-import { Toner } from "../../extra/src/stamen/toner.js";
+import { Toner } from "../../extra/src/stamen/toner";
+import transit from "../../extra/src/layers/transit";
 import L from "leaflet";
-import { leafletLayer } from "protomaps";
+import { leafletLayer, light, paintRules } from "protomaps";
 import "leaflet/dist/leaflet.css";
 import "leaflet.sync/L.Map.Sync.js";
 import "leaflet-hash/leaflet-hash.js";
@@ -23,10 +24,18 @@ interface Option {
 
 const OPTIONS: Option[] = [
   {
-    name: "lightweight",
+    name: "default",
     type: "canvas",
     fn: () => {
       return leafletLayer({ url: VECTOR_TILES_URL });
+    },
+  },
+  {
+    name: "transit",
+    type: "canvas",
+    fn: () => {
+      let rules = paintRules(light, "").concat(transit());
+      return leafletLayer({ url: VECTOR_TILES_URL, paint_rules: rules });
     },
   },
   {
@@ -124,7 +133,10 @@ function App() {
   };
 
   useEffect(() => {
-    leftMap.current = L.map(leftMapElement.current!).setView([0, 0], 0);
+    leftMap.current = L.map(leftMapElement.current!).setView(
+      [40.7239, -73.9814],
+      12
+    );
     (leftMap.current as any).addHash();
 
     rightMap.current = L.map(rightMapElement.current!, {
