@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <title>PMTiles MapLibre Example</title>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" crossorigin="anonymous">
+        <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/pmtiles@2.4.0/dist/index.js"></script>
+        <script src="https://unpkg.com/protomaps-themes-base@latest/dist/index.js"></script>
+        <style>
+            body {
+                margin: 0;
+            }
+            #map {
+                height:100%; width:100%;
+            }
+            #overlay {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                font:  600 16px sans-serif;
+                background-color: white;
+                border-radius: 4px;
+                padding: 0.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div id="overlay">
+        <script type="text/javascript">
+            // add the PMTiles plugin to the maplibregl global.
+            let protocol = new pmtiles.Protocol();
+            maplibregl.addProtocol("pmtiles",protocol.tile);
+
+            let URL = "https://pub-9288c68512ed46eca46ddcade307709b.r2.dev/protomaps-sample-datasets/protomaps_vector_planet_odbl_z10.pmtiles";
+
+            function formatBytes(a,b=2){if(!+a)return"0 Bytes";const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return`${parseFloat((a/Math.pow(1024,d)).toFixed(c))} ${["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}`}
+
+            fetch(URL, {method:"HEAD"}).then(resp => {
+                let length = resp.headers.get("Content-Length");
+                document.getElementById("overlay").innerHTML = `<a href="${URL}">${URL}</a> (${formatBytes(length)})`;
+            })
+
+            const map = new maplibregl.Map({
+                maxZoom: 12,
+                container: 'map',
+                style: {
+                    version:8,
+                    glyphs:'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
+                    sources: {
+                        "protomaps": {
+                            type: "vector",
+                            url: "pmtiles://" + URL,
+                            attribution: 'Protomaps © <a href="https://openstreetmap.org">OpenStreetMap</a>'
+                        }
+                    },
+                    layers: protomaps_themes_base.layers("light")
+                }
+            });
+        </script>
+    </body>
+</html>
