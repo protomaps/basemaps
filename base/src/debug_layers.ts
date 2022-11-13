@@ -1,4 +1,4 @@
-export default debug_layers = (source) => {
+export default function (source:string) {
   return [
     {
       id: "background",

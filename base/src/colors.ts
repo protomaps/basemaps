@@ -338,7 +338,7 @@ export const GRAYSCALE = {
     country_label_halo: "#ffffff",
 };
 
-export default colors = {
+export default {
     light: LIGHT,
     dark: DARK,
     white: WHITE,

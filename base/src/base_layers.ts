@@ -1,4 +1,4 @@
-export default layers = (source, c) => {
+export default function (source:string, c:any) {
   return [
     {
       id: "background",
