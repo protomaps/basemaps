@@ -1,6 +1,6 @@
 {
   "name": "protomaps-themes-base",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Protomaps basemap themes for MapLibre GL JS",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
