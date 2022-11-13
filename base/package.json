@@ -1,10 +1,14 @@
 {
   "name": "protomaps-themes-base",
-  "version": "0.2.0",
-  "description": "Basemap themes",
-  "main": "src/index.js",
+  "version": "1.0.0",
+  "description": "Protomaps basemap themes for MapLibre GL JS",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "scripts": {
-    "dev": "esbuild src/index.js --bundle --target=es2015 --watch --minify --outfile=dist/index.js --global-name=protomaps_themes_base"
+    "build-iife": "esbuild src/index.js --outfile=dist/index.js --target=es6 --global-name=protomaps_themes_base --bundle --format=iife",
+    "build-esm": "esbuild src/index.js --outfile=dist/index.mjs --target=es6 --bundle --format=esm",
+    "build-cjs": "esbuild src/index.js --outfile=dist/index.cjs --target=es6 --bundle --format=cjs",
+    "build": "npm run build-iife && npm run build-esm && npm run build-cjs"
   },
   "repository": {
     "type": "git",
