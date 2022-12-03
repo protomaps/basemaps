@@ -21,7 +21,7 @@ Create an account at [protomaps.com](https://protomaps.com) for an API key.
 * Shared custom styles with [Mapbox GL Native](https://github.com/mapbox/mapbox-gl-native) apps for iOS, Mac and Android.
 
 Try the [Fresco Editor](https://fresco.gospatial.org) to customize Mapbox GL styles. 
-To generate font files for MapboxGL, check out [sdf-glyph-tool](https://github.com/protomaps/sdf-glyph-tool).
+To generate font files for MapboxGL, check out [font-maker](https://github.com/maplibre/font-maker).
 
 #### Example Mapbox GL Usage
 
