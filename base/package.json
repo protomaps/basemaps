@@ -5,11 +5,13 @@
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "source": "src/index.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build-iife": "esbuild src/index.ts --outfile=dist/index.js --target=es6 --global-name=protomaps_themes_base --bundle --format=iife",
     "build-esm": "esbuild src/index.ts --outfile=dist/index.mjs --target=es6 --bundle --format=esm",
     "build-cjs": "esbuild src/index.ts --outfile=dist/index.cjs --target=es6 --bundle --format=cjs",
-    "build": "npm run build-iife && npm run build-esm && npm run build-cjs",
+    "build-tsc": "tsc --declaration --emitDeclarationOnly --outdir dist",
+    "build": "npm run build-iife && npm run build-esm && npm run build-cjs && npm run build-tsc",
     "tsc": "tsc --noEmit --watch"
   },
   "repository": {
