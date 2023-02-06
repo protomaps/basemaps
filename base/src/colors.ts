@@ -1,4 +1,72 @@
-export const LIGHT = {
+export interface Theme {
+    background: string;
+    earth: string;
+    park: string;
+    hospital: string;
+    industrial: string;
+    school: string;
+    wood: string;
+    pedestrian: string;
+    scrub: string;
+    glacier: string;
+    sand: string;
+    aerodrome: string;
+    runway: string;
+    water: string;
+    tunnel_other_casing: string;
+    tunnel_other: string;
+    tunnel_minor_casing: string;
+    tunnel_minor: string;
+    tunnel_medium_casing: string;
+    tunnel_medium: string;
+    tunnel_major_casing: string;
+    tunnel_major: string;
+    tunnel_highway_casing: string;
+    tunnel_highway: string;
+    buildings: string;
+    other: string;
+    minor_casing: string;
+    minor: string;
+    medium_casing: string;
+    medium: string;
+    major_casing: string;
+    major: string;
+    highway_casing: string;
+    highway: string;
+    railway: string;
+    railway_tracks: string;
+    boundaries: string;
+    waterway_label_halo: string;
+    waterway_label: string;
+    bridges_other_casing: string;
+    bridges_other: string;
+    bridges_minor_casing: string;
+    bridges_minor: string;
+    bridges_medium_casing: string;
+    bridges_medium: string;
+    bridges_major_casing: string;
+    bridges_major: string;
+    bridges_highway_casing: string;
+    bridges_highway: string;
+    roads_label: string;
+    roads_label_halo: string;
+    ocean_label: string;
+    ocean_label_halo: string;
+    peak_label: string;
+    peak_label_halo: string;
+    subplace_label: string;
+    subplace_label_halo: string;
+    city_circle: string;
+    city_circle_stroke: string;
+    city_label: string;
+    city_label_halo: string;
+    state_label: string;
+    state_label_halo: string;
+    country_label: string;
+    country_label_halo: string;
+}
+
+export const LIGHT: Theme = {
     background: "#dddddd",
     earth: "#e7f1ee",
     park: "#c2f7d1",
@@ -66,7 +134,7 @@ export const LIGHT = {
     country_label_halo: "white",
 };
 
-export const DARK = {
+export const DARK: Theme = {
     background: "#dddddd",
     earth: "#151515",
     park: "#1d3e2e",
@@ -134,7 +202,7 @@ export const DARK = {
     country_label_halo: "#000000",
 };
 
-export const WHITE = {
+export const WHITE: Theme = {
     background: "#ffffff",
     earth: "#ffffff",
     park: "#ffffff",
@@ -202,7 +270,7 @@ export const WHITE = {
     country_label_halo: "#ffffff",
 };
 
-export const BLACK = {
+export const BLACK: Theme = {
     background: "#000000",
     earth: "#000000",
     park: "#000000",
@@ -270,7 +338,7 @@ export const BLACK = {
     country_label_halo: "#000000",
 };
 
-export const GRAYSCALE = {
+export const GRAYSCALE: Theme = {
     background: "#ffffff",
     earth: "#ffffff",
     park: "#ffffff",

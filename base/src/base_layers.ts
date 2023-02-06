@@ -1,4 +1,6 @@
-export default function (source:string, c:any) {
+import { Theme } from "./colors";
+
+export default function (source: string, c: Theme) {
   return [
     {
       id: "background",
@@ -1195,4 +1197,4 @@ export default function (source:string, c:any) {
       },
     },
   ];
-};
+}
