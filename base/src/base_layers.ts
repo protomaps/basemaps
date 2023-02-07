@@ -1085,7 +1085,7 @@ export default function (source: string, c: Theme) {
         "symbol-placement": "line",
         "text-font": ["NotoSans-Regular"],
         "text-field": ["get", "name"],
-        "text-size": 14,
+        "text-size": 12,
       },
       paint: {
         "text-color": c.roads_label,
@@ -1111,8 +1111,8 @@ export default function (source: string, c: Theme) {
       layout: {
         "text-font": ["NotoSans-Regular"],
         "text-field": ["get", "name"],
-        "text-size": 14,
-        "text-letter-spacing": 0.15,
+        "text-size": 13,
+        "text-letter-spacing": 0.1,
       },
       paint: {
         "text-color": c.ocean_label,
@@ -1184,7 +1184,7 @@ export default function (source: string, c: Theme) {
       layout: {
         "text-field": "{name}",
         "text-font": ["NotoSans-Bold"],
-        "text-size": ["step", ["get", "pmap:rank"], 0, 1, 16, 2, 14],
+        "text-size": ["step", ["get", "pmap:rank"], 0, 1, 12, 2, 10],
         "text-variable-anchor": ["bottom-left"],
         "text-radial-offset": 0.2,
       },
@@ -1226,8 +1226,8 @@ export default function (source: string, c: Theme) {
         "text-size": {
           base: 1.2,
           stops: [
-            [2, 14],
-            [6, 14],
+            [2, 13],
+            [6, 13],
             [8, 20],
           ],
         },
