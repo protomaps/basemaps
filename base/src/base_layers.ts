@@ -1,6 +1,7 @@
 import { Theme } from "./colors";
 
 export default function (source: string, c: Theme) {
+  const casingVisibility = (c.hasCasings ? "visible" : "none");
   return [
     {
       id: "background",
@@ -182,6 +183,9 @@ export default function (source: string, c: Theme) {
           12,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_tunnels_other",
@@ -239,6 +243,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_tunnels_minor",
@@ -299,6 +306,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_tunnels_medium",
@@ -359,6 +369,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_tunnels_major",
@@ -415,6 +428,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_tunnels_highway",
@@ -514,6 +530,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_minor",
@@ -573,6 +592,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_medium",
@@ -632,6 +654,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_major",
@@ -687,6 +712,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_highway",
@@ -782,6 +810,9 @@ export default function (source: string, c: Theme) {
           12,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_bridges_other",
@@ -838,6 +869,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_bridges_minor",
@@ -897,6 +931,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_bridges_medium",
@@ -956,6 +993,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_bridges_major",
@@ -1011,6 +1051,9 @@ export default function (source: string, c: Theme) {
           1,
         ],
       },
+      layout: {
+        visibility: casingVisibility
+      }
     },
     {
       id: "roads_bridges_highway",
