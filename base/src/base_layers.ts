@@ -1,7 +1,7 @@
 import { Theme } from "./colors";
 
-export default function (source: string, c: Theme) {
-  const casingVisibility = (c.hasCasings ? "visible" : "none");
+export function nolabels_layers(source: string, c: Theme): any[] {
+  const casingVisibility = c.hasCasings ? "visible" : "none";
   return [
     {
       id: "background",
@@ -184,8 +184,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_tunnels_other",
@@ -244,8 +244,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_tunnels_minor",
@@ -307,8 +307,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_tunnels_medium",
@@ -370,8 +370,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_tunnels_major",
@@ -429,8 +429,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_tunnels_highway",
@@ -531,8 +531,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_minor",
@@ -593,8 +593,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_medium",
@@ -655,8 +655,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_major",
@@ -713,8 +713,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_highway",
@@ -772,25 +772,6 @@ export default function (source: string, c: Theme) {
       },
     },
     {
-      id: "physical_line_waterway_label",
-      type: "symbol",
-      source: source,
-      "source-layer": "physical_line",
-      minzoom: 14,
-      layout: {
-        "symbol-placement": "line",
-        "text-font": ["NotoSans-Regular"],
-        "text-field": ["get", "name"],
-        "text-size": 14,
-        "text-letter-spacing": 0.3,
-      },
-      paint: {
-        "text-color": c.waterway_label,
-        "text-halo-color": c.waterway_label_halo,
-        "text-halo-width": 2,
-      },
-    },
-    {
       id: "roads_bridges_other_casing",
       type: "line",
       source: source,
@@ -811,8 +792,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_bridges_other",
@@ -870,8 +851,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_bridges_minor",
@@ -932,8 +913,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_bridges_medium",
@@ -994,8 +975,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_bridges_major",
@@ -1052,8 +1033,8 @@ export default function (source: string, c: Theme) {
         ],
       },
       layout: {
-        visibility: casingVisibility
-      }
+        visibility: casingVisibility,
+      },
     },
     {
       id: "roads_bridges_highway",
@@ -1074,6 +1055,30 @@ export default function (source: string, c: Theme) {
           18,
           32,
         ],
+      },
+    },
+  ];
+}
+
+export function labels_layers(source: string, c: Theme): any[] {
+  return [
+    {
+      id: "physical_line_waterway_label",
+      type: "symbol",
+      source: source,
+      "source-layer": "physical_line",
+      minzoom: 14,
+      layout: {
+        "symbol-placement": "line",
+        "text-font": ["NotoSans-Regular"],
+        "text-field": ["get", "name"],
+        "text-size": 14,
+        "text-letter-spacing": 0.3,
+      },
+      paint: {
+        "text-color": c.waterway_label,
+        "text-halo-color": c.waterway_label_halo,
+        "text-halo-width": 2,
       },
     },
     {
