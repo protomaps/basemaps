@@ -1,37 +1,9 @@
-# Protomaps Themes
+# Protomaps Basemaps
 
-Map styles that can be used with the [Protomaps web map API](https://protomaps.com), which serves [vector tiles](https://github.com/mapbox/vector-tile-spec).
+This repository has two core parts:
 
-These styles have a few unique properties:
-* OpenStreetMap is the only data source for all geographic features. There are no discontinuities where different datasets are used at smaller scales.
-* OpenStreetMap tags are included directly, instead of being transformed to a fixed schema. For ease of styling, there are helper tags included prefixed with `pmap:`. examples `pmap:level`, `pmap:area`.
-* A version of each style is included for use with the [Tangram](https://github.com/tangrams/tangram) library as well as the [MapboxGL](https://github.com/mapbox/mapbox-gl-js) library.
-* A simple preprocessor script lets you "skin" the base style with different colors.
-
-## Get started
-
-Create an account at [protomaps.com](https://protomaps.com) for an API key. 
-* See [Example Tangram Usage](#Example-Tangram-Usage) or [Example Mapbox GL Usage](#Example-Mapbox-GL-Usage) for how to specify your API key in code.
-* Or modify the style file: `https://api.protomaps.com/tiles/v1/{z}/{x}/{y}.pbf?key=YOUR_API_KEY`
-* Or run the preprocessor script with your customizations: `./generate_mbgl_style base.json dark -key=YOUR_API_KEY`
-
-## Mapbox GL JS
-* High performance on the web.
-* True 3D maps that can be rotated (changing bearing and pitch).
-* Shared custom styles with [Mapbox GL Native](https://github.com/mapbox/mapbox-gl-native) apps for iOS, Mac and Android.
-
-Try the [Fresco Editor](https://fresco.gospatial.org) to customize Mapbox GL styles. 
-To generate font files for MapboxGL, check out [font-maker](https://github.com/maplibre/font-maker).
-
-#### Example Mapbox GL Usage
-
-    new mapboxgl.Map({
-      container: 'map',
-      style: 'style.json',
-      transformRequest: u => {
-        return {url: u + "?key=YOUR_API_KEY"}
-      },
-    })
+* `tiles/`: A [Planetiler](https://github.com/onthegomap/planetiler) build profile that generates `planet.pmtiles` from OpenStreetMap and Natural Earth in 2-3 hours on a modest computer.
+* `base/`: A TypeScript package that generates [MapLibre GL](http://github.com/maplibre) styles, in multiple color themes, that can be used via `npm` or exported as JSON.
 
 ## License
 
