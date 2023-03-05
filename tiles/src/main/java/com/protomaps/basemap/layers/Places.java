@@ -32,12 +32,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
             } else if (sf.hasTag("place","city")){
                 feat.setAttr("pmap:kind", "city")
                         .setZoomRange(4, 15);
-                int population = Parse.parseIntOrNull(sf.getString("population"));
-                if (population > 200000) {
-                    feat.setAttr("pmap:rank", 1);
-                } else {
-                    feat.setAttr("pmap:rank", 2);
-                }
+              if (sf.getString("population") != null && Parse.parseIntOrNull(sf.getString("population")) > 200000) {
+                  feat.setAttr("pmap:rank", 1);
+              } else {
+                  feat.setAttr("pmap:rank", 2);
+              }
             } else if (sf.hasTag("place","suburb")) {
                 feat.setAttr("pmap:kind", "neighbourhood")
                         .setZoomRange(8, 15);
