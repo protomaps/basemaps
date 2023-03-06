@@ -1,6 +1,7 @@
 {
 	"name": "protomaps-basemaps-compare",
 	"private": true,
+	"version": "0.0.0",
 	"scripts": {
 		"serve": "nodemon --watch ../base/src --watch tiles serve.ts"
 	},

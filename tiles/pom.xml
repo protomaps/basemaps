@@ -15,10 +15,10 @@
   </properties>
 
   <groupId>com.protomaps.basemap</groupId>
-  <artifactId>pt</artifactId>
+  <artifactId>protomaps-basemap</artifactId>
   <version>HEAD</version>
 
-  <name>Example Planetiler Project</name>
+  <name>Protomaps Basemap</name>
 
   <repositories>
     <!-- Planetiler depends on geotools for shapefile processing, which is not in maven central. Add here: -->
