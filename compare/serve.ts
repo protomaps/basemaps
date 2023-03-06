@@ -72,6 +72,7 @@ app.get("/api/:variant.json", async (req: any, res: any) => {
 			protomaps: source,
 		},
 		glyphs: "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
+		sprite: "",
 		layers: layers("protomaps", req.params.variant),
 	};
 	res.send(style);
@@ -89,6 +90,7 @@ app.get("/local/:pmtiles/:variant.json", async (req: any, res: any) => {
 			protomaps: source,
 		},
 		glyphs: "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
+		sprite: "",
 		layers: layers("protomaps", req.params.variant),
 	};
 	res.send(style);
