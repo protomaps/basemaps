@@ -32,6 +32,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
     @Override
     public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-        return FeatureMerge.mergeNearbyPolygons(items, 10, 10, 2, 2);
+        if (zoom >= 14) return items;
+        return FeatureMerge.mergeNearbyPolygons(items, 1, 1, 0.5, 0.5);
     }
 }
