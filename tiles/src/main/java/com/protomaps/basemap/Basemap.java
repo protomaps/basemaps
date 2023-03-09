@@ -108,13 +108,15 @@ public class Basemap extends ForwardingProfile {
     Path dataDir = Path.of("data");
     Path sourcesDir = dataDir.resolve("sources");
 
+    String area = args.getString("area", "geofabrik area to download", "monaco");
+
     Planetiler.create(args)
       .setProfile(new Basemap())
-      .addOsmSource("osm", Path.of(args.getString("input","foo")))
+      .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
             .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"), "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
             .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"), "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
             .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"), "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .overwriteOutput("mbtiles", Path.of(args.getString("output","foo")))
+      .overwriteOutput("mbtiles", Path.of("data", area+".protomaps.mbtiles"))
       .run();
   }
 }
