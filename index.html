@@ -30,6 +30,7 @@
         <script type="text/javascript">
             // add the PMTiles plugin to the maplibregl global.
             let protocol = new pmtiles.Protocol();
+            maplibregl.setRTLTextPlugin('https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.js');
             maplibregl.addProtocol("pmtiles",protocol.tile);
 
             let URL = "https://r2-public.protomaps.com/protomaps-sample-datasets/protomaps_vector_planet_odbl_z10.pmtiles";
