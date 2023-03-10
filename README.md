@@ -7,7 +7,7 @@ This repository has two core parts:
 
 # Usage
 
-How to build protomaps-theme compatabile pmtiles with Planetiler](https://github.com/onthegomap/planetiler):
+How to build protomaps-theme compatabile pmtiles with [Planetiler](https://github.com/onthegomap/planetiler):
 
 1) Clone the [Planetiler](https://github.com/onthegomap/planetiler)
 `$ git clone git@github.com:onthegomap/planetiler.git`
