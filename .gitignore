@@ -5,3 +5,4 @@ dist
 target
 yarn.lock
 *.pmtiles
+.idea
