@@ -1,11 +1,11 @@
 package com.protomaps.basemap;
 
-import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.ForwardingProfile;
+import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
-
 import com.protomaps.basemap.layers.Boundaries;
 import com.protomaps.basemap.layers.Buildings;
+import com.protomaps.basemap.layers.Earth;
 import com.protomaps.basemap.layers.Landuse;
 import com.protomaps.basemap.layers.Natural;
 import com.protomaps.basemap.layers.PhysicalLine;
@@ -15,8 +15,6 @@ import com.protomaps.basemap.layers.Pois;
 import com.protomaps.basemap.layers.Roads;
 import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
-import com.protomaps.basemap.layers.Earth;
-
 import java.nio.file.Path;
 
 
@@ -26,47 +24,47 @@ public class Basemap extends ForwardingProfile {
 
     var admin = new Boundaries();
     registerHandler(admin);
-    registerSourceHandler("osm",admin);
+    registerSourceHandler("osm", admin);
 
     var buildings = new Buildings();
     registerHandler(buildings);
-    registerSourceHandler("osm",buildings);
+    registerSourceHandler("osm", buildings);
 
     var landuse = new Landuse();
     registerHandler(landuse);
-    registerSourceHandler("osm",landuse);
+    registerSourceHandler("osm", landuse);
 
     var natural = new Natural();
     registerHandler(natural);
-    registerSourceHandler("osm",natural);
+    registerSourceHandler("osm", natural);
 
     var physical_line = new PhysicalLine();
     registerHandler(physical_line);
-    registerSourceHandler("osm",physical_line);
+    registerSourceHandler("osm", physical_line);
 
     var physical_point = new PhysicalPoint();
     registerHandler(physical_point);
-    registerSourceHandler("osm",physical_point);
+    registerSourceHandler("osm", physical_point);
 
     var place = new Places();
     registerHandler(place);
-    registerSourceHandler("osm",place);
+    registerSourceHandler("osm", place);
 
     var poi = new Pois();
     registerHandler(poi);
-    registerSourceHandler("osm",poi);
+    registerSourceHandler("osm", poi);
 
     var roads = new Roads();
     registerHandler(roads);
-    registerSourceHandler("osm",roads);
+    registerSourceHandler("osm", roads);
 
     var transit = new Transit();
     registerHandler(transit);
-    registerSourceHandler("osm",transit);
+    registerSourceHandler("osm", transit);
 
     var water = new Water();
     registerHandler(water);
-    registerSourceHandler("osm",water);
+    registerSourceHandler("osm", water);
     registerSourceHandler("osm_water", water::processOsm);
     registerSourceHandler("ne", water::processNe);
 
@@ -103,7 +101,7 @@ public class Basemap extends ForwardingProfile {
   }
 
   static void run(Arguments args) throws Exception {
-    args = args.orElse(Arguments.of("maxzoom",15));
+    args = args.orElse(Arguments.of("maxzoom", 15));
 
     Path dataDir = Path.of("data");
     Path sourcesDir = dataDir.resolve("sources");
@@ -113,10 +111,13 @@ public class Basemap extends ForwardingProfile {
     Planetiler.create(args)
       .setProfile(new Basemap())
       .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
-            .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"), "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
-            .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"), "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
-            .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"), "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .overwriteOutput("mbtiles", Path.of("data", area+".protomaps.mbtiles"))
+      .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
+        "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
+      .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
+        "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
+      .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
+        "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
+      .overwriteOutput("mbtiles", Path.of("data", area + ".protomaps.mbtiles"))
       .run();
   }
 }
