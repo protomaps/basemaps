@@ -27,7 +27,7 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
     - name: Ensure code formatted with mvn spotless:apply
-      run: ./mvnw -DskipTests --batch-mode -no-transfer-progress spotless:check
+      run: mvn -DskipTests --batch-mode -no-transfer-progress spotless:check
 
   build:
     name: Java ${{ matrix.jdk }} / ${{ matrix.os }} ${{ matrix.args }}
@@ -58,10 +58,10 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
     # Skip spotless since that gets checked in a separate task
-    - name: Build with mvnw (linux/mac)
+    - name: Build with mvn (linux/mac)
       if: ${{ !contains(matrix.os, 'windows') }}
-      run: ./mvnw ${{matrix.args}} -Dspotless.check.skip --batch-mode -no-transfer-progress package verify jib:buildTar --file pom.xml
-    - name: Build with mvnw.cmd (windows)
+      run: mvn ${{matrix.args}} -Dspotless.check.skip --batch-mode -no-transfer-progress package verify jib:buildTar --file pom.xml
+    - name: Build with mvn.cmd (windows)
       if: ${{ contains(matrix.os, 'windows') }}
-      run: mvnw.cmd ${{matrix.args}} -Dspotless.check.skip --batch-mode -no-transfer-progress package verify jib:buildTar --file pom.xml
+      run: mvn.cmd ${{matrix.args}} -Dspotless.check.skip --batch-mode -no-transfer-progress package verify jib:buildTar --file pom.xml
       shell: cmd
