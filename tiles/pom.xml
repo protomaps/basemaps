@@ -82,6 +82,39 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>3.0.0-M8</version>
       </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.34.0</version>
+        <configuration>
+          <java>
+            <importOrder/>
+            <removeUnusedImports/>
+            <eclipse>
+              <version>4.21.0</version>
+              <!--suppress UnresolvedMavenProperty -->
+              <file>${maven.multiModuleProjectDirectory}/eclipse-formatter.xml</file>
+            </eclipse>
+          </java>
+          <markdown>
+            <includes>
+              <include>**/*.md</include>
+            </includes>
+            <excludes>
+              <exclude>**/target/**</exclude>
+            </excludes>
+            <flexmark/>
+          </markdown>
+        </configuration>
+        <!-- bind to "mvn verify" -->
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <!-- Create an executable jar from "mvn package" goal -->
       <plugin>
