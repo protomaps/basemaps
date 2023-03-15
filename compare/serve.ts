@@ -4,8 +4,10 @@ import open from "open";
 import fs from "fs/promises";
 let app = express();
 
+const TILES_PATH = '../tiles'
+
 app.use(express.static("."));
-app.use("/tiles", express.static("tiles"));
+app.use("/tiles", express.static(TILES_PATH));
 
 const PORT = 3857;
 
@@ -35,7 +37,7 @@ app.get("/config.js", async (req: any, res: any) => {
 		},
 	];
 
-	const files = await fs.readdir("tiles");
+	const files = await fs.readdir(TILES_PATH);
 
 	files.forEach((file) => {
 		if (file.endsWith(".pmtiles")) {

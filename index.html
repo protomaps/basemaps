@@ -43,7 +43,7 @@
             })
 
             const map = new maplibregl.Map({
-                maxZoom: 12,
+                hash: true,
                 container: 'map',
                 style: {
                     version:8,
@@ -57,6 +57,13 @@
                     },
                     layers: protomaps_themes_base.default("protomaps","light")
                 }
+            });
+
+            map.on('mousedown', function (e) {
+                var features = map.queryRenderedFeatures(e.point);
+                features.map(feat => {
+                    console.log(feat);
+                });
             });
         </script>
     </body>
