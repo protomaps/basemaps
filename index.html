@@ -51,7 +51,9 @@
                     sources: {
                         "protomaps": {
                             type: "vector",
+                            // comment out "url" and uncomment "tiles" to use a tiles Z/X/Y API instead
                             url: "pmtiles://" + URL,
+                            // tiles: ["https://api.protomaps.com/tiles/v2/{z}/{x}/{y}.pbf?key=1003762824b9687f"],
                             attribution: 'Protomaps © <a href="https://openstreetmap.org">OpenStreetMap</a>'
                         }
                     },
