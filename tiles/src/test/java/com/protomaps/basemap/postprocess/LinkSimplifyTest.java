@@ -1,2 +1,3 @@
-package com.protomaps.basemap.postprocess;public class LinkSimplifyTest {
-}
+package com.protomaps.basemap.postprocess;
+
+public class LinkSimplifyTest {}
