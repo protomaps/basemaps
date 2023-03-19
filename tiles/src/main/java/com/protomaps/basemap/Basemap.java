@@ -117,7 +117,7 @@ public class Basemap extends ForwardingProfile {
         "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
       .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .overwriteOutput("mbtiles", Path.of("data", area + ".protomaps.mbtiles"))
+      .setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
 }
