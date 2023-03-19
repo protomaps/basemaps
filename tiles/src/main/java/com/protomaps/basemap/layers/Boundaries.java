@@ -15,8 +15,6 @@ import java.util.OptionalInt;
 public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, ForwardingProfile.FeatureProcessor,
   ForwardingProfile.FeaturePostProcessor {
 
-  private record AdminRecord(long id, int adminLevel) implements OsmRelationInfo {}
-
   @Override
   public String name() {
     return "boundaries";
@@ -63,4 +61,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
       4
     );
   }
+
+  private record AdminRecord(long id, int adminLevel) implements OsmRelationInfo {}
 }
