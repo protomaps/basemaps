@@ -5,6 +5,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
+import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -19,6 +20,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     if (sf.isPoint() &&
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state"))) {
       var feat = features.point(this.name())
+        .setId(FeatureId.create(sf))
         .setAttr("name", sf.getString("name"))
         .setAttr("place", sf.getString("place"));
 

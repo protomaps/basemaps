@@ -9,6 +9,7 @@ import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmReader;
 import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.onthegomap.planetiler.util.Parse;
+import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 import java.util.OptionalInt;
 
@@ -30,7 +31,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
       if (recs.size() > 0) {
         OptionalInt minAdminLevel = recs.stream().mapToInt(r -> r.relation().adminLevel).min();
         var line =
-          features.line(this.name()).setMinPixelSize(0).setAttr("pmap:min_admin_level", minAdminLevel.getAsInt());
+          features.line(this.name()).setId(FeatureId.create(sf)).setMinPixelSize(0).setAttr("pmap:min_admin_level",
+            minAdminLevel.getAsInt());
         if (minAdminLevel.getAsInt() <= 2) {
           line.setMinZoom(0);
         } else if (minAdminLevel.getAsInt() <= 4) {

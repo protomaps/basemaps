@@ -8,6 +8,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 
 public class Buildings implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -22,6 +23,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     if (sf.canBePolygon() && (sf.hasTag("building"))) {
       Double height = parseDoubleOrNull(sf.getString("height"));
       features.polygon(this.name())
+        .setId(FeatureId.create(sf))
         .setAttrWithMinzoom("name", sf.getString("name"), 13)
         .setAttrWithMinzoom("building:part", sf.getString("building:part"), 13)
         .setAttrWithMinzoom("layer", sf.getString("layer"), 13)

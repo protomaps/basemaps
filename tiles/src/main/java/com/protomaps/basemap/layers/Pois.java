@@ -4,6 +4,7 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 
 public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -20,6 +21,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("tourism") ||
       sf.hasTag("railway", "station"))) {
       features.point(this.name())
+        .setId(FeatureId.create(sf))
         .setAttr("name", sf.getString("name"))
         .setAttr("amenity", sf.getString("amenity"))
         .setAttr("shop", sf.getString("shop"))

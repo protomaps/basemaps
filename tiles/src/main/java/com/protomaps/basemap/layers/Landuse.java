@@ -4,17 +4,14 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 
 public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+  public static final String NAME = "landuse";
 
-  @Override
-  public String name() {
-    return "landuse";
-  }
-
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public static void processFeature(SourceFeature sf, FeatureCollector features, String layerName,
+    boolean ghostFeatures) {
     if (sf.canBePolygon() && (sf.hasTag("aeroway", "aerodrome", "runway") ||
       sf.hasTag("area:aeroway", "taxiway", "runway") ||
       sf.hasTag("amenity", "hospital", "school", "kindergarten", "university", "college") ||
@@ -24,7 +21,8 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("man_made", "pier") ||
       sf.hasTag("place", "neighbourhood") ||
       sf.hasTag("railway", "platform"))) {
-      var poly = features.polygon(this.name())
+      var poly = features.polygon(layerName)
+        .setId(FeatureId.create(sf))
         .setAttr("name", sf.getString("name"))
         .setAttr("landuse", sf.getString("landuse"))
         .setAttr("leisure", sf.getString("leisure"))
@@ -38,6 +36,9 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setAttr("sport", sf.getString("sport"))
         .setZoomRange(5, 15);
 
+      if (ghostFeatures) {
+        poly.setAttr("isGhostFeature", true);
+      }
 
       poly.setAttr("pmap:area", "");
 
@@ -67,6 +68,16 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       }
       poly.setAttr("pmap:kind", kind);
     }
+  }
+
+  @Override
+  public String name() {
+    return NAME;
+  }
+
+  @Override
+  public void processFeature(SourceFeature sf, FeatureCollector features) {
+    processFeature(sf, features, NAME, false);
   }
 
   @Override
