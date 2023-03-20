@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -21,9 +22,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state"))) {
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
-        .setAttr("name", sf.getString("name"))
         .setAttr("place", sf.getString("place"));
 
+      OsmNames.setOsmNames(feat, sf, 0);
 
       if (sf.hasTag("place", "country")) {
         feat.setAttr("pmap:kind", "country")

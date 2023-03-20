@@ -5,6 +5,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
 public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -17,13 +18,14 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && (sf.hasTag("place", "sea", "ocean") || sf.hasTag("natural", "peak"))) {
-      features.point(this.name())
+      var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
-        .setAttr("name", sf.getString("name"))
         .setAttr("place", sf.getString("place"))
         .setAttr("natural", sf.getString("natural"))
         .setAttr("ele", sf.getString("ele"))
         .setZoomRange(12, 15);
+
+      OsmNames.setOsmNames(feat, sf, 0);
     }
   }
 

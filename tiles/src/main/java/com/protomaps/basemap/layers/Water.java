@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
 public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -35,11 +36,12 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("water") || sf.hasTag("waterway") || sf.hasTag("natural", "water") ||
       sf.hasTag("landuse", "reservoir") || sf.hasTag("leisure", "swimming_pool"))) {
-      features.polygon(this.name())
-        .setAttr("name", sf.getString("name"))
+      var feature = features.polygon(this.name())
         .setAttr("water", sf.getString("water"))
         .setZoomRange(6, 15)
         .setBufferPixels(8);
+
+      OsmNames.setOsmNames(feature, sf, 0);
     }
   }
 

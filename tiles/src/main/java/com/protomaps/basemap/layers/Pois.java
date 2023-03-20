@@ -5,6 +5,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
 public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -20,9 +21,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("shop") ||
       sf.hasTag("tourism") ||
       sf.hasTag("railway", "station"))) {
-      features.point(this.name())
+      var feature = features.point(this.name())
         .setId(FeatureId.create(sf))
-        .setAttr("name", sf.getString("name"))
         .setAttr("amenity", sf.getString("amenity"))
         .setAttr("shop", sf.getString("shop"))
         .setAttr("railway", sf.getString("railway"))
@@ -30,6 +30,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         .setAttr("religion", sf.getString("religion"))
         .setAttr("tourism", sf.getString("tourism"))
         .setZoomRange(13, 15);
+
+      OsmNames.setOsmNames(feature, sf, 0);
     }
   }
 

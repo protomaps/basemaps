@@ -5,6 +5,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
 public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -23,7 +24,6 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("railway", "platform"))) {
       var poly = features.polygon(layerName)
         .setId(FeatureId.create(sf))
-        .setAttr("name", sf.getString("name"))
         .setAttr("landuse", sf.getString("landuse"))
         .setAttr("leisure", sf.getString("leisure"))
         .setAttr("aeroway", sf.getString("aeroway"))
@@ -35,6 +35,8 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setAttr("railway", sf.getString("railway"))
         .setAttr("sport", sf.getString("sport"))
         .setZoomRange(5, 15);
+
+      OsmNames.setOsmNames(poly, sf, 0);
 
       if (ghostFeatures) {
         poly.setAttr("isGhostFeature", true);

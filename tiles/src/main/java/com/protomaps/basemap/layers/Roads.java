@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
 public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -25,12 +26,13 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setMinPixelSize(0)
         .setPixelTolerance(0)
         .setAttr("pmap:level", 0)
-        .setAttr("name", sourceFeature.getString("name"))
         .setAttr("bridge", sourceFeature.getString("bridge"))
         .setAttr("tunnel", sourceFeature.getString("tunnel"))
         .setAttr("layer", sourceFeature.getString("layer"))
         .setAttr("oneway", sourceFeature.getString("oneway"))
         .setAttr("ref", sourceFeature.getString("ref"));
+
+      OsmNames.setOsmNames(feat, sourceFeature, 0);
 
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         feat.setAttr("pmap:kind", "highway").setZoomRange(6, 15);
