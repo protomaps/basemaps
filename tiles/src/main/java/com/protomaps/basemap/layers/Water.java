@@ -34,7 +34,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("water") || sf.hasTag("waterway") || sf.hasTag("natural", "water") ||
-      sf.hasTag("landuse", "reservoir", "swimming_pool"))) {
+      sf.hasTag("landuse", "reservoir") || sf.hasTag("leisure", "swimming_pool"))) {
       features.polygon(this.name())
         .setAttr("name", sf.getString("name"))
         .setAttr("water", sf.getString("water"))
