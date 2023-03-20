@@ -7,21 +7,29 @@ This repository has two core parts:
 
 # Usage
 
-How to build protomaps-theme compatabile pmtiles with [Planetiler](https://github.com/onthegomap/planetiler):
+You will need [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers. 
 
-1) Clone the [Planetiler](https://github.com/onthegomap/planetiler)
-`$ git clone git@github.com:onthegomap/planetiler.git`
-2) Clone [protomaps/basemaps](https://github.com/protomaps/basemaps) as a directory in the planetiler repo
-`$ git clone git@github.com:protomaps/basemaps.git`
-3) Install [Planetiler dependencies](https://github.com/onthegomap/planetiler/tree/main/planetiler-examples), specifially maven
-4) Build Planetiler with the protomaps/basemaps build profile
-`$ mvn clean package --file basemaps/tiles/pom.xml`
-5) Download and process an osm area with the protomaps/basemaps build profile
-`$ java -cp basemaps/tiles/target/*-with-deps.jar com.protomaps.basemap.Basemap --download --area=monaco`
-6) Install [go-pmtiles](https://github.com/protomaps/go-pmtiles)
-7) Convert the mbtiles to pmtiles
-`$ pmtiles convert INPUT.mbtiles OUTPUT.pmtiles`
+Generate and inspect a basemap PMTiles of any named area:
 
+1. Clone this repository.
+```sh
+git clone git@github.com:protomaps/basemaps.git
+```
+2. change to the `tiles` directory, download dependencies and compile the JAR:
+```sh
+mvn clean package
+```
+3. Download and generate `monaco.pmtiles` in the current directory:
+```
+java -jar basemaps/tiles/target/*-with-deps.jar com.protomaps.basemap.Basemap --download --force --area=monaco
+```
+
+4. Switch to the `compare/` directory to run the map compare tool:
+
+```
+cd compare
+npm run serve
+```
 
 ## License
 
