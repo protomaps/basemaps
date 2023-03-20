@@ -25,7 +25,12 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setMinPixelSize(0)
         .setPixelTolerance(0)
         .setAttr("pmap:level", 0)
-        .setAttr("name", sourceFeature.getString("name"));
+        .setAttr("name", sourceFeature.getString("name"))
+        .setAttr("bridge", sourceFeature.getString("bridge"))
+        .setAttr("tunnel", sourceFeature.getString("tunnel"))
+        .setAttr("layer", sourceFeature.getString("layer"))
+        .setAttr("oneway", sourceFeature.getString("oneway"))
+        .setAttr("ref", sourceFeature.getString("ref"));
 
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         feat.setAttr("pmap:kind", "highway").setZoomRange(6, 15);
@@ -40,6 +45,14 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         feat.setAttr("pmap:kind", "minor_road").setZoomRange(12, 15);
       } else {
         feat.setAttr("pmap:kind", "other").setZoomRange(14, 15);
+      }
+
+      if (sourceFeature.hasTag("bridge", "yes")) {
+        feat.setAttr("pmap:level", 1);
+      } else if (sourceFeature.hasTag("tunnel", "yes")) {
+        feat.setAttr("pmap:level", -1);
+      } else {
+        feat.setAttr("pmap:level", 0);
       }
     }
   }
