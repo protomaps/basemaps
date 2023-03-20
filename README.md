@@ -21,7 +21,7 @@ mvn clean package
 ```
 3. Download and generate `monaco.pmtiles` in the current directory:
 ```
-java -jar basemaps/tiles/target/*-with-deps.jar com.protomaps.basemap.Basemap --download --force --area=monaco
+java -jar target/*-with-deps.jar --download --force --area=monaco
 ```
 
 4. Switch to the `compare/` directory to run the map compare tool:
