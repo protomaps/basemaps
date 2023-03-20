@@ -35,6 +35,12 @@ app.get("/config.js", async (req: any, res: any) => {
 			type: "maplibre-gl",
 			url: "/api/light.json",
 		},
+		{
+			id: "osm-carto",
+			name: "OpenStreetMap Carto",
+			type: "maplibre-gl",
+			url: "/osm-carto.json",
+		}
 	];
 
 	const files = await fs.readdir(TILES_PATH);
