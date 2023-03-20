@@ -18,7 +18,7 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("natural", "wood", "glacier", "scrub", "sand", "wetland", "bare_rock") ||
-      sf.hasTag("landuse", "meadow") || sf.hasTag("leisure", "nature_reserve") ||
+      sf.hasTag("landuse", "forest", "meadow") || sf.hasTag("leisure", "nature_reserve") ||
       sf.hasTag("boundary", "national_park", "protected_area"))) {
       var feat = features.polygon(this.name())
         .setId(FeatureId.create(sf))
