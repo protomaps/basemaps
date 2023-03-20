@@ -25,6 +25,15 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         .setAttr("natural", sf.getString("natural"))
         .setZoomRange(12, 15);
 
+      String kind = "other";
+      if (sf.hasTag("waterway")) {
+        kind = "waterway";
+      } else if (sf.hasTag("natural")) {
+        kind = "natural";
+      }
+
+      feat.setAttr("pmap:kind", kind);
+
       OsmNames.setOsmNames(feat, sf, 0);
     }
   }

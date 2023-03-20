@@ -18,12 +18,23 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && (sf.hasTag("place", "sea", "ocean") || sf.hasTag("natural", "peak"))) {
+
+      // TODO: rank based on ele
+
+      int minzoom = 12;
+      if (sf.hasTag("natural", "peak")) {
+        minzoom = 13;
+      }
+      if (sf.hasTag("place", "sea")) {
+        minzoom = 3;
+      }
+
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         .setAttr("place", sf.getString("place"))
         .setAttr("natural", sf.getString("natural"))
         .setAttr("ele", sf.getString("ele"))
-        .setZoomRange(12, 15);
+        .setZoomRange(minzoom, 15);
 
       OsmNames.setOsmNames(feat, sf, 0);
     }
