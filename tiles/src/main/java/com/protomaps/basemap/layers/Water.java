@@ -37,7 +37,11 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
     if (sf.canBePolygon() && (sf.hasTag("water") || sf.hasTag("waterway") || sf.hasTag("natural", "water") ||
       sf.hasTag("landuse", "reservoir") || sf.hasTag("leisure", "swimming_pool"))) {
       var feature = features.polygon(this.name())
+        .setAttr("natural", sf.getString("natural"))
+        .setAttr("landuse", sf.getString("landuse"))
+        .setAttr("leisure", sf.getString("leisure"))
         .setAttr("water", sf.getString("water"))
+        .setAttr("waterway", sf.getString("waterway"))
         .setZoomRange(6, 15)
         .setBufferPixels(8);
 
