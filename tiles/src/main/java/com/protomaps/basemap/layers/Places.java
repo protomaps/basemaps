@@ -22,7 +22,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state"))) {
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
-        .setAttr("place", sf.getString("place"));
+        .setAttr("place", sf.getString("place"))
+        .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
+        .setAttr("population", sf.getString("population"))
+        .setAttr("capital", sf.getString("capital"));
 
       OsmNames.setOsmNames(feat, sf, 0);
 
