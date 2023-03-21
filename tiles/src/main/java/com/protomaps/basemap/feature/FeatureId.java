@@ -16,7 +16,7 @@ public class FeatureId {
       } else {
         elemType = 0x1;
       }
-      return (elemType << 51) | element.id();
+      return (elemType << 44) | element.id();
     }
     return feature.id();
   }
