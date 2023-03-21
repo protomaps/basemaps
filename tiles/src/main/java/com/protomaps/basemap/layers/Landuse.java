@@ -18,10 +18,12 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("amenity", "hospital", "school", "kindergarten", "university", "college") ||
       sf.hasTag("landuse", "recreation_ground", "industrial", "brownfield", "railway", "cemetery", "commercial",
         "grass", "orchard", "farmland", "farmyard", "residential") ||
-      sf.hasTag("leisure", "park", "garden", "golf_course", "residential", "dog_park", "playground", "pitch") ||
+      sf.hasTag("leisure", "park", "garden", "golf_course", "dog_park", "playground", "pitch") ||
       sf.hasTag("man_made", "pier") ||
       sf.hasTag("place", "neighbourhood") ||
-      sf.hasTag("railway", "platform"))) {
+      sf.hasTag("railway", "platform")) ||
+      (sf.hasTag("area", "yes") &&
+        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge")))) {
       var poly = features.polygon(layerName)
         .setId(FeatureId.create(sf))
         .setAttr("landuse", sf.getString("landuse"))
