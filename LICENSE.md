@@ -1,4 +1,6 @@
-Copyright 2019-2020 Protomaps
+# The BSD 3-Clause License (BSD-3-Clause)
+
+Copyright 2019-2023 Protomaps
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,7 +18,7 @@ Parts of schema adapted from:
 https://github.com/tilezen/vector-datasource
 https://github.com/tilezen/vector-datasource/blob/master/docs/LICENSE-SCHEMA.md
 
-The MIT License (MIT)
+# The MIT License (MIT)
 
 Copyright (c) 2015-2018 Mapzen
 Copyright (c) 2019 Linux Foundation
