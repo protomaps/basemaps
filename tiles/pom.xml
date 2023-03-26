@@ -12,6 +12,10 @@
     <planetiler.version>0.6-SNAPSHOT</planetiler.version>
     <junit.version>5.9.2</junit.version>
     <mainClass>com.protomaps.basemap.Basemap</mainClass>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>protomaps</sonar.organization>
+    <sonar.projectKey>protomaps_basemap</sonar.projectKey>
+    <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
   </properties>
 
   <groupId>com.protomaps.basemap</groupId>
