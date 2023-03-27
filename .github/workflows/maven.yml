@@ -1,3 +1,6 @@
+# Derived from planetiler (Apache License)
+# https://github.com/onthegomap/planetiler/blob/main/.github/workflows/maven.yml
+
 name: Maven CI
 
 on:
