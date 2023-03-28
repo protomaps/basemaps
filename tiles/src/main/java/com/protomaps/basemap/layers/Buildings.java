@@ -10,6 +10,7 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
 public class Buildings implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -36,8 +37,13 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
+    if (zoom == 15) {
+      return items;
+    }
+    items = Area.filterArea(items, 0);
+
     if (zoom >= 14)
       return items;
-    return FeatureMerge.mergeNearbyPolygons(items, 1, 1, 0.5, 0.5);
+    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
   }
 }

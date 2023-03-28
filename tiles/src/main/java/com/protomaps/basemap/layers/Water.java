@@ -7,6 +7,7 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
 public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -51,6 +52,15 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
+    items = Area.addAreaTag(items);
+    if (zoom == 15)
+      return items;
+    int minArea = 400 / (4096 * 4096) * (256 * 256);
+    if (zoom == 6)
+      minArea = 600 / (4096 * 4096) * (256 * 256);
+    else if (zoom <= 5)
+      minArea = 800 / (4096 * 4096) * (256 * 256);
+    items = Area.filterArea(items, minArea);
     return FeatureMerge.mergeOverlappingPolygons(items, 1);
   }
 }
