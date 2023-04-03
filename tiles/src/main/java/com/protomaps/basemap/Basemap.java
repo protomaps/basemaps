@@ -20,58 +20,64 @@ import java.nio.file.Path;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap() {
+  public Basemap(Boolean useTilezen) {
 
-    var admin = new Boundaries();
-    registerHandler(admin);
-    registerSourceHandler("osm", admin);
+    if (useTilezen) {
+      var water = new com.protomaps.basemap.tilezen.Water();
+      registerHandler(water);
+      registerSourceHandler("osm", water);
+    } else {
+      var admin = new Boundaries();
+      registerHandler(admin);
+      registerSourceHandler("osm", admin);
 
-    var buildings = new Buildings();
-    registerHandler(buildings);
-    registerSourceHandler("osm", buildings);
+      var buildings = new Buildings();
+      registerHandler(buildings);
+      registerSourceHandler("osm", buildings);
 
-    var landuse = new Landuse();
-    registerHandler(landuse);
-    registerSourceHandler("osm", landuse);
+      var landuse = new Landuse();
+      registerHandler(landuse);
+      registerSourceHandler("osm", landuse);
 
-    var natural = new Natural();
-    registerHandler(natural);
-    registerSourceHandler("osm", natural);
+      var natural = new Natural();
+      registerHandler(natural);
+      registerSourceHandler("osm", natural);
 
-    var physical_line = new PhysicalLine();
-    registerHandler(physical_line);
-    registerSourceHandler("osm", physical_line);
+      var physical_line = new PhysicalLine();
+      registerHandler(physical_line);
+      registerSourceHandler("osm", physical_line);
 
-    var physical_point = new PhysicalPoint();
-    registerHandler(physical_point);
-    registerSourceHandler("osm", physical_point);
+      var physical_point = new PhysicalPoint();
+      registerHandler(physical_point);
+      registerSourceHandler("osm", physical_point);
 
-    var place = new Places();
-    registerHandler(place);
-    registerSourceHandler("osm", place);
+      var place = new Places();
+      registerHandler(place);
+      registerSourceHandler("osm", place);
 
-    var poi = new Pois();
-    registerHandler(poi);
-    registerSourceHandler("osm", poi);
+      var poi = new Pois();
+      registerHandler(poi);
+      registerSourceHandler("osm", poi);
 
-    var roads = new Roads();
-    registerHandler(roads);
-    registerSourceHandler("osm", roads);
+      var roads = new Roads();
+      registerHandler(roads);
+      registerSourceHandler("osm", roads);
 
-    var transit = new Transit();
-    registerHandler(transit);
-    registerSourceHandler("osm", transit);
+      var transit = new Transit();
+      registerHandler(transit);
+      registerSourceHandler("osm", transit);
 
-    var water = new Water();
-    registerHandler(water);
-    registerSourceHandler("osm", water);
-    registerSourceHandler("osm_water", water::processOsm);
-    registerSourceHandler("ne", water::processNe);
+      var water = new Water();
+      registerHandler(water);
+      registerSourceHandler("osm", water);
+      registerSourceHandler("osm_water", water::processOsm);
+      registerSourceHandler("ne", water::processNe);
 
-    var earth = new Earth();
-    registerHandler(earth);
-    registerSourceHandler("osm_land", earth::processOsm);
-    registerSourceHandler("ne", earth::processNe);
+      var earth = new Earth();
+      registerHandler(earth);
+      registerSourceHandler("osm_land", earth::processOsm);
+      registerSourceHandler("ne", earth::processNe);
+    }
   }
 
   @Override
@@ -81,7 +87,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String description() {
-    return "An example overlay showing bicycle routes";
+    return "Basemap layers derived from OpenStreetMap and Natural Earth";
   }
 
   @Override
@@ -106,10 +112,12 @@ public class Basemap extends ForwardingProfile {
     Path dataDir = Path.of("data");
     Path sourcesDir = dataDir.resolve("sources");
 
+    Boolean tilezen = args.getBoolean("tilezen", "Create the Tilezen 1.9 profile", false);
+
     String area = args.getString("area", "geofabrik area to download", "monaco");
 
     Planetiler.create(args)
-      .setProfile(new Basemap())
+      .setProfile(new Basemap(tilezen))
       .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
       .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
         "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
