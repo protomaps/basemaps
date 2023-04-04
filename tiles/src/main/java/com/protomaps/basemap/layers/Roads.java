@@ -1,5 +1,7 @@
 package com.protomaps.basemap.layers;
 
+import static com.protomaps.basemap.postprocess.LinkSimplify.linkSimplify;
+
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
@@ -25,7 +27,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setId(FeatureId.create(sourceFeature))
         .setMinPixelSize(0)
         .setPixelTolerance(0)
-        .setAttr("pmap:level", 0)
+        .setAttr("highway", highway)
         .setAttr("bridge", sourceFeature.getString("bridge"))
         .setAttr("tunnel", sourceFeature.getString("tunnel"))
         .setAttr("layer", sourceFeature.getString("layer"))
@@ -62,10 +64,10 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
 
-    // items = graphAnalyze(items, "highway", "motorway", "motorway_link");
-    // items = graphAnalyze(items, "highway", "trunk", "trunk_link");
-    // items = graphAnalyze(items, "highway", "primary", "primary_link");
-    // items = graphAnalyze(items, "highway", "secondary", "secondary_link");
+    items = linkSimplify(items, "highway", "motorway", "motorway_link");
+    items = linkSimplify(items, "highway", "trunk", "trunk_link");
+    items = linkSimplify(items, "highway", "primary", "primary_link");
+    items = linkSimplify(items, "highway", "secondary", "secondary_link");
 
     items = FeatureMerge.mergeLineStrings(items,
       0.5, // after merging, remove lines that are still less than 0.5px long

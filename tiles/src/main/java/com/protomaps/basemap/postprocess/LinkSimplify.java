@@ -3,6 +3,7 @@ package com.protomaps.basemap.postprocess;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.geo.GeometryType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ public class LinkSimplify {
             continue;
           Coordinate start = coordinates[0];
           Coordinate end = coordinates[coordinates.length - 1];
-          // degrees.put(item.id(),new DegreePair(coordinates[0],coordinates[coordinates.length-1]));
           degrees.put(start, 0);
           degrees.put(end, 0);
         } catch (GeometryException e) {
@@ -49,6 +49,8 @@ public class LinkSimplify {
       }
     }
 
+    List<VectorTile.Feature> retval = new ArrayList<>();
+
     for (VectorTile.Feature item : items) {
       if (item.geometry().geomType() == GeometryType.LINE && item.attrs().get(key).equals(linkval)) {
         try {
@@ -58,14 +60,14 @@ public class LinkSimplify {
           Coordinate start = coordinates[0];
           Coordinate end = coordinates[coordinates.length - 1];
           if (degrees.get(start) == 1 && degrees.get(end) == 1) {
-            item.attrs().put("link", "include");
-          } else {
-            item.attrs().put("link", "exclude");
+            retval.add(item);
           }
         } catch (GeometryException e) {
         }
+      } else {
+        retval.add(item);
       }
     }
-    return items;
+    return retval;
   }
 }
