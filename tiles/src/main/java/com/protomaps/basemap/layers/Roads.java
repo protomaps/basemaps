@@ -28,35 +28,38 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setMinPixelSize(0)
         .setPixelTolerance(0)
         .setAttr("highway", highway)
-        .setAttr("bridge", sourceFeature.getString("bridge"))
-        .setAttr("tunnel", sourceFeature.getString("tunnel"))
-        .setAttr("layer", sourceFeature.getString("layer"))
-        .setAttr("oneway", sourceFeature.getString("oneway"))
+        .setAttrWithMinzoom("bridge", sourceFeature.getString("bridge"), 12)
+        .setAttrWithMinzoom("tunnel", sourceFeature.getString("tunnel"), 12)
+        .setAttrWithMinzoom("layer", sourceFeature.getString("layer"), 12)
+        .setAttrWithMinzoom("oneway", sourceFeature.getString("oneway"), 14)
         .setAttr("ref", sourceFeature.getString("ref"));
-
-      OsmNames.setOsmNames(feat, sourceFeature, 0);
 
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         feat.setAttr("pmap:kind", "highway").setZoomRange(6, 15);
+        OsmNames.setOsmNames(feat, sourceFeature, 10);
       } else if (highway.equals("trunk") || highway.equals("trunk_link") || highway.equals("primary") ||
         highway.equals("primary_link")) {
         feat.setAttr("pmap:kind", "major_road").setZoomRange(7, 15);
+        OsmNames.setOsmNames(feat, sourceFeature, 12);
       } else if (highway.equals("secondary") || highway.equals("secondary_link") || highway.equals("tertiary") ||
         highway.equals("tertiary_link")) {
         feat.setAttr("pmap:kind", "medium_road").setZoomRange(9, 15);
+        OsmNames.setOsmNames(feat, sourceFeature, 13);
       } else if (highway.equals("residential") || highway.equals("service") || highway.equals("unclassified") ||
         highway.equals("road")) {
         feat.setAttr("pmap:kind", "minor_road").setZoomRange(12, 15);
+        OsmNames.setOsmNames(feat, sourceFeature, 14);
       } else {
         feat.setAttr("pmap:kind", "other").setZoomRange(14, 15);
+        OsmNames.setOsmNames(feat, sourceFeature, 14);
       }
 
       if (sourceFeature.hasTag("bridge", "yes")) {
-        feat.setAttr("pmap:level", 1);
+        feat.setAttrWithMinzoom("pmap:level", 1, 12);
       } else if (sourceFeature.hasTag("tunnel", "yes")) {
-        feat.setAttr("pmap:level", -1);
+        feat.setAttrWithMinzoom("pmap:level", -1, 12);
       } else {
-        feat.setAttr("pmap:level", 0);
+        feat.setAttrWithMinzoom("pmap:level", 0, 12);
       }
     }
   }
@@ -68,6 +71,13 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
     items = linkSimplify(items, "highway", "trunk", "trunk_link");
     items = linkSimplify(items, "highway", "primary", "primary_link");
     items = linkSimplify(items, "highway", "secondary", "secondary_link");
+
+    for (var item : items) {
+      item.attrs().remove("highway");
+      if (!item.attrs().containsKey("pmap:level")) {
+        item.attrs().put("pmap:level", 0);
+      }
+    }
 
     items = FeatureMerge.mergeLineStrings(items,
       0.5, // after merging, remove lines that are still less than 0.5px long
