@@ -22,8 +22,16 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBePolygon() && (sf.hasTag("building"))) {
+    if (sf.canBePolygon() && (sf.hasTag("building") || sf.hasTag("building:part"))) {
       Double height = parseDoubleOrNull(sf.getString("height"));
+
+      if (height == null) {
+        Double levels = parseDoubleOrNull(sf.getString("building:levels"));
+        if (levels != null) {
+          height = Math.max(levels, 1) * 3 + 2;
+        }
+      }
+
       var feature = features.polygon(this.name())
         .setId(FeatureId.create(sf))
         .setAttrWithMinzoom("building:part", sf.getString("building:part"), 13)
