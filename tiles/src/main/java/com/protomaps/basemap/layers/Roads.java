@@ -21,7 +21,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   @Override
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("highway") &&
-      !(sourceFeature.hasTag("highway", "proposed", "construction"))) {
+      !(sourceFeature.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))) {
       String highway = sourceFeature.getString("highway");
       var feat = features.line("roads")
         .setId(FeatureId.create(sourceFeature))
