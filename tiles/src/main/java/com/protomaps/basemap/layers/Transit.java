@@ -22,7 +22,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("aerialway", "cable_car") ||
       sf.hasTag("route", "ferry") ||
       sf.hasTag("aeroway", "runway", "taxiway")) &&
-      (!sf.hasTag("railway", "abandoned", "construction", "platform", "proposed"))) {
+      (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
 
       int minzoom = 11;
 
