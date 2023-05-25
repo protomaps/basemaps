@@ -40,6 +40,17 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         } else {
           line.setMinZoom(10);
         }
+
+        // Disputed boundaries handling
+        if( sf.hasTag("boundary", "disputed") ) {
+          line.setAttr("disputed", 1)
+                  .setAttr("claimed_by", sf.getString("claimed_by"))
+                  .setAttr("recognized_by", sf.getString("recognized_by"))
+                  .setAttr("disputed_by", sf.getString("disputed_by"))
+                  // Normally we don't export names on boundaries... But has a hack
+                  // for styling which disputed boundaries we include them here
+                  .setAttr("disputed_name", sf.getString("name"));
+        }
       }
     }
   }
