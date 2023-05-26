@@ -30,6 +30,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
       List<OsmReader.RelationMember<AdminRecord>> recs = sf.relationInfo(AdminRecord.class);
       if (recs.size() > 0) {
         OptionalInt minAdminLevel = recs.stream().mapToInt(r -> r.relation().adminLevel).min();
+        OptionalInt disputed = recs.stream().mapToInt(r -> r.relation().disputed).max();
         var line =
           features.line(this.name()).setId(FeatureId.create(sf)).setMinPixelSize(0).setAttr("pmap:min_admin_level",
             minAdminLevel.getAsInt());
@@ -41,15 +42,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
           line.setMinZoom(10);
         }
 
-        // Disputed boundaries handling
-        if( sf.hasTag("boundary", "disputed") ) {
-          line.setAttr("disputed", 1)
-                  .setAttr("claimed_by", sf.getString("claimed_by"))
-                  .setAttr("recognized_by", sf.getString("recognized_by"))
-                  .setAttr("disputed_by", sf.getString("disputed_by"))
-                  // Normally we don't export names on boundaries... But has a hack
-                  // for styling which disputed boundaries we include them here
-                  .setAttr("disputed_name", sf.getString("name"));
+        if( disputed.getAsInt() == 1 ) {
+          line.setAttr("disputed", 1);
         }
       }
     }
@@ -57,11 +51,13 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
   @Override
   public List<OsmRelationInfo> preprocessOsmRelation(OsmElement.Relation relation) {
-    if (relation.hasTag("type", "boundary") && relation.hasTag("boundary", "administrative")) {
+    if (relation.hasTag("type", "boundary") && (relation.hasTag("boundary", "administrative") || relation.hasTag("boundary", "disputed"))) {
       Integer adminLevel = Parse.parseIntOrNull(relation.getString("admin_level"));
+      Integer disputed = relation.hasTag("boundary", "disputed") ? 1 : 0;
+
       if (adminLevel == null || adminLevel > 8)
         return null;
-      return List.of(new AdminRecord(relation.id(), adminLevel));
+      return List.of(new AdminRecord(relation.id(), adminLevel, disputed));
     }
     return null;
   }
@@ -75,5 +71,5 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
     );
   }
 
-  private record AdminRecord(long id, int adminLevel) implements OsmRelationInfo {}
+  private record AdminRecord(long id, int adminLevel, int disputed) implements OsmRelationInfo {}
 }
