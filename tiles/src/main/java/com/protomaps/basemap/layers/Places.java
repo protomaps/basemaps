@@ -20,7 +20,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() &&
-      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state"))) {
+      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))) {
+      Integer population = sf.getString("population") == null ? 0 : (int)Double.parseDouble(sf.getString("population"));
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         .setAttr("place", sf.getString("place"))
@@ -38,31 +39,66 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       } else if (sf.hasTag("place", "city")) {
         feat.setAttr("pmap:kind", "city")
           .setZoomRange(4, 15);
-
-        if (sf.getString("population") != null) {
-          Integer population = Parse.parseIntOrNull(sf.getString("population"));
-          if (population != null) {
-            feat.setAttr("population", population);
-            feat.setSortKey((int) Math.log(population));
-            // TODO: use label grid
-          } else {
-            feat.setSortKey(0);
-          }
+        if ( population.equals(0) ) {
+          population = 10000;
         }
-
-      } else if (sf.hasTag("place", "suburb")) {
-        feat.setAttr("pmap:kind", "neighbourhood")
-          .setZoomRange(8, 15);
       } else if (sf.hasTag("place", "town")) {
         feat.setAttr("pmap:kind", "neighbourhood")
           .setZoomRange(8, 15);
+        if ( population.equals(0) ) {
+          population = 5000;
+        }
       } else if (sf.hasTag("place", "village")) {
         feat.setAttr("pmap:kind", "neighbourhood")
-          .setZoomRange(10, 15);
+                .setZoomRange(10, 15);
+        if ( population.equals(0) ) {
+          population = 2000;
+        }
+      } else if (sf.hasTag("place", "suburb")) {
+        feat.setAttr("pmap:kind", "neighbourhood")
+                .setZoomRange(8, 15);
       } else {
         feat.setAttr("pmap:kind", "neighbourhood")
           .setZoomRange(12, 15);
       }
+
+      if (population != null) {
+        feat.setAttr("population", population);
+        feat.setSortKey((int) Math.log(population));
+        // TODO: use label grid
+      } else {
+        feat.setSortKey(0);
+      }
+
+      Integer population_rank = 0;
+
+      int[] pop_breaks = {
+              1000000000,
+              100000000,
+              50000000,
+              20000000,
+              10000000,
+              5000000,
+              1000000,
+              500000,
+              200000,
+              100000,
+              50000,
+              20000,
+              10000,
+              5000,
+              2000,
+              1000,
+              200,
+              0};
+
+      for (int i = 0; i < pop_breaks.length; i++) {
+        if( population >= pop_breaks[i]) {
+          population_rank = pop_breaks.length - i;
+        }
+      }
+
+      feat.setAttr("population_rank", population_rank);
     }
   }
 
