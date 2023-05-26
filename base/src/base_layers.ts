@@ -129,6 +129,15 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "water",
+      type: "fill",
+      source: source,
+      "source-layer": "water",
+      paint: {
+        "fill-color": c.water,
+      },
+    },
+    {
       id: "transit_runway",
       type: "line",
       source: source,
@@ -152,15 +161,6 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       ],
       paint: {
         "fill-color": c.runway,
-      },
-    },
-    {
-      id: "water",
-      type: "fill",
-      source: source,
-      "source-layer": "water",
-      paint: {
-        "fill-color": c.water,
       },
     },
     {
@@ -532,6 +532,20 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
       layout: {
         visibility: casingVisibility,
+      },
+    },
+    {
+      id: "transit_pier",
+      type: "line",
+      source: source,
+      "source-layer": "transit",
+      filter: [
+        "any",
+        ["==", "kind", "pier"],
+      ],
+      paint: {
+        "line-color": c.minor,
+        "line-width": 1,
       },
     },
     {
@@ -1139,6 +1153,23 @@ export function labels_layers(source: string, c: Theme): any[] {
       paint: {
         "text-color": c.peak_label,
         "text-halo-color": c.peak_label_halo,
+        "text-halo-width": 1.5,
+      },
+    },
+    {
+      id: "pois",
+      type: "symbol",
+      source: source,
+      minzoom: 17,
+      "source-layer": "pois",
+      layout: {
+        "text-font": ["NotoSans-Regular"],
+        "text-field": ["get", "name"],
+        "text-size": 12,
+      },
+      paint: {
+        "text-color": c.subplace_label,
+        "text-halo-color": c.subplace_label_halo,
         "text-halo-width": 1.5,
       },
     },
