@@ -7,6 +7,7 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.names.NeNames;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,59 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     return "places";
   }
 
+  public void processNe(SourceFeature sf, FeatureCollector features) {
+    var sourceLayer = sf.getSourceLayer();
+    var kind = "";
+    var kind_detail = "";
+
+    var theme_min_zoom = 0;
+    var theme_max_zoom = 0;
+    if (sourceLayer.equals("ne_10m_populated_places")) {
+      theme_min_zoom = 1;
+      theme_max_zoom = 8;
+    }
+
+    // Test for props because of Natural Earth funk
+    if( sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom" ) ) {
+      switch (sf.getString("featurecla")) {
+        case "Admin-0 capital":
+        case "Admin-0 capital alt":
+        case "Admin-0 region capital":
+          kind = "city";
+          break;
+        case "Admin-1 capital":
+        case "Admin-1 region capital":
+          kind = "city";
+          break;
+        case "Populated place":
+          kind = "city";
+          break;
+        case "Historic place":
+          kind = "locality";
+          kind_detail = "hamlet";
+          break;
+        case "Scientific station":
+          kind = "locality";
+          kind_detail = "scientific_station";
+          break;
+      }
+    }
+
+    if( kind != "" ) {
+      var feat = features.point(this.name())
+              .setAttr("name", sf.getString("name"))
+              .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+              .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int)Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom)
+              .setAttr("pmap:kind", kind)
+              .setAttr("pmap:kind_detail", kind_detail)
+              .setAttr("population", sf.getString("pop_max"))
+              .setAttr("population_rank", sf.getString("rank_max"))
+              .setAttr("wikidata_id", sf.getString("wikidata"))
+              .setBufferPixels(128);
+
+      NeNames.setNeNames(feat, sf, 0);
+    }
+  }
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() &&
@@ -32,13 +86,13 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       if (sf.hasTag("place", "country")) {
         feat.setAttr("pmap:kind", "country")
-          .setZoomRange(0, 15);
+          .setZoomRange(0, 9);
       } else if (sf.hasTag("place", "state", "province")) {
         feat.setAttr("pmap:kind", "state")
-          .setZoomRange(4, 15);
+          .setZoomRange(4, 11);
       } else if (sf.hasTag("place", "city")) {
         feat.setAttr("pmap:kind", "city")
-          .setZoomRange(4, 15);
+          .setZoomRange(8, 15);
         if ( population.equals(0) ) {
           population = 10000;
         }
