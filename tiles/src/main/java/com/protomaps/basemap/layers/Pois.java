@@ -17,25 +17,14 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.isPoint() && (sf.hasTag("amenity") ||
-      sf.hasTag("shop") ||
-      sf.hasTag("tourism") ||
-      sf.hasTag("leisure") ||
-      sf.hasTag("aeroway", "aerodrome") ||
-      sf.hasTag("railway", "station"))) {
-      var feature = features.point(this.name())
-        .setId(FeatureId.create(sf))
-        .setAttr("amenity", sf.getString("amenity"))
-        .setAttr("shop", sf.getString("shop"))
-        .setAttr("railway", sf.getString("railway"))
-        .setAttr("cuisine", sf.getString("cuisine"))
-        .setAttr("religion", sf.getString("religion"))
-        .setAttr("tourism", sf.getString("tourism"))
-        .setAttr("iata", sf.getString("iata"))
-        .setZoomRange(13, 15);
-
-      OsmNames.setOsmNames(feature, sf, 0);
-
+    if( !sf.canBeLine() && (sf.isPoint() || sf.canBePolygon())
+      && (sf.hasTag("amenity") ||
+          sf.hasTag("shop") ||
+          sf.hasTag("tourism") ||
+          sf.hasTag("leisure") ||
+          sf.hasTag("aeroway", "aerodrome") ||
+          sf.hasTag("railway", "station")))
+    {
       String kind = "other";
       if (sf.hasTag("aeroway", "aerodrome" )) {
         kind = sf.getString("aeroway");
@@ -54,7 +43,42 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         kind = sf.getString("tourism");
       }
 
-      feature.setAttr("pmap:kind", kind);
+      // try first for polygon -> point representations
+      if (sf.canBePolygon()) {
+        var poly_label_position = features.pointOnSurface(this.name())
+                // all POIs should receive their IDs at all zooms
+                // (there is no merging of POIs like with lines and polygons in other layers)
+                .setId(FeatureId.create(sf))
+                .setAttr("amenity", sf.getString("amenity"))
+                .setAttr("shop", sf.getString("shop"))
+                .setAttr("railway", sf.getString("railway"))
+                .setAttr("cuisine", sf.getString("cuisine"))
+                .setAttr("religion", sf.getString("religion"))
+                .setAttr("tourism", sf.getString("tourism"))
+                .setAttr("iata", sf.getString("iata"))
+                .setZoomRange(13, 15)
+                .setBufferPixels(128);
+
+        OsmNames.setOsmNames(poly_label_position, sf, 0);
+
+        poly_label_position.setAttr("pmap:kind", kind);
+      } else if (sf.isPoint()) {
+        var point_feature = features.point(this.name())
+                .setId(FeatureId.create(sf))
+                .setAttr("amenity", sf.getString("amenity"))
+                .setAttr("shop", sf.getString("shop"))
+                .setAttr("railway", sf.getString("railway"))
+                .setAttr("cuisine", sf.getString("cuisine"))
+                .setAttr("religion", sf.getString("religion"))
+                .setAttr("tourism", sf.getString("tourism"))
+                .setAttr("iata", sf.getString("iata"))
+                .setZoomRange(13, 15)
+                .setBufferPixels(128);
+
+        OsmNames.setOsmNames(point_feature, sf, 0);
+
+        point_feature.setAttr("pmap:kind", kind);
+      }
     }
   }
 
