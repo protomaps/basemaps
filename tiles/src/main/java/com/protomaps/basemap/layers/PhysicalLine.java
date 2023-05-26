@@ -30,7 +30,7 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         .setZoomRange(12, 15);
 
       if( sf.hasTag("intermittent", "yes" ) ) {
-        sf.setAttr("intermittent", 1);
+        feat.setAttr("intermittent", 1);
       }
 
       String kind = "other";

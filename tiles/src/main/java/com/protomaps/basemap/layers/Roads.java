@@ -23,7 +23,8 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("highway") &&
       !(sourceFeature.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))) {
       String highway = sourceFeature.getString("highway");
-      Integer shield_text_length = (shield_text == null ? null : sourceFeature.getString("ref").length());
+      String shield_text = sourceFeature.getString("ref");
+      Integer shield_text_length = (shield_text == null ? null : shield_text.length());
       var feat = features.line("roads")
         .setId(FeatureId.create(sourceFeature))
         .setMinPixelSize(0)
@@ -33,7 +34,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setAttrWithMinzoom("tunnel", sourceFeature.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", sourceFeature.getString("layer"), 12)
         .setAttrWithMinzoom("oneway", sourceFeature.getString("oneway"), 14)
-        .setAttr("ref", sourceFeature.getString("ref"));
+        .setAttr("ref", shield_text);
 
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         feat.setAttr("pmap:kind", "highway").setZoomRange(6, 15);

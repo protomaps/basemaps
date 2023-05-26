@@ -52,7 +52,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setBufferPixels(8);
 
       if( sf.hasTag("intermittent", "yes" ) ) {
-        sf.setAttr("intermittent", 1);
+        feature.setAttr("intermittent", 1);
       }
 
       OsmNames.setOsmNames(feature, sf, 0);
