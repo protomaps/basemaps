@@ -38,7 +38,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           network_val = "other";
         }
       }
-      shield_text = (shield_text == null ? null : shield_text..replaceAll("\\s", ""));
+      shield_text = (shield_text == null ? null : shield_text.replaceAll("\\s", ""));
       Integer shield_text_length = (shield_text == null ? null : shield_text.length());
 
       var feat = features.line("roads")
