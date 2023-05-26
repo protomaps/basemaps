@@ -44,6 +44,15 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "water",
+      type: "fill",
+      source: source,
+      "source-layer": "water",
+      paint: {
+        "fill-color": c.water,
+      },
+    },
+    {
       id: "landuse_industrial",
       type: "fill",
       source: source,
@@ -126,15 +135,6 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       filter: ["==", "aeroway", "aerodrome"],
       paint: {
         "fill-color": c.aerodrome,
-      },
-    },
-    {
-      id: "water",
-      type: "fill",
-      source: source,
-      "source-layer": "water",
-      paint: {
-        "fill-color": c.water,
       },
     },
     {
