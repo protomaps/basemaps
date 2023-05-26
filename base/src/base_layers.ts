@@ -558,7 +558,17 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       ],
       paint: {
         "line-color": c.minor,
-        "line-width": 1,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          0.5,
+          20,
+          16,
+        ],
       },
     },
     {
