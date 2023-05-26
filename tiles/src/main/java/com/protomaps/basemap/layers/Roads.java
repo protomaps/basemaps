@@ -22,9 +22,24 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("highway") &&
       !(sourceFeature.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))) {
+
       String highway = sourceFeature.getString("highway");
       String shield_text = sourceFeature.getString("ref");
+      String network_val = sourceFeature.getString("network");
+      shield_text = (shield_text == null ? null : shield_text.split(";")[0]);
+      if( shield_text != null ) {
+        if( shield_text.contains("US ") ) {
+          shield_text = shield_text.replaceAll("US ", "");
+          network_val = "US:US";
+        } else if( shield_text.contains("I ") ) {
+          shield_text = shield_text.replaceAll("I ", "");
+          network_val = "US:I";
+        } else {
+          network_val = "other";
+        }
+      }
       Integer shield_text_length = (shield_text == null ? null : shield_text.length());
+
       var feat = features.line("roads")
         .setId(FeatureId.create(sourceFeature))
         .setMinPixelSize(0)
@@ -41,8 +56,10 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
         if (highway.equals("motorway") ) {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 7);
+          feat.setAttrWithMinzoom("network", network_val, 7);
         } else {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 12);
+          feat.setAttrWithMinzoom("network", network_val, 12);
         }
 
         OsmNames.setOsmNames(feat, sourceFeature, 11);
@@ -52,26 +69,32 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
         if (highway.equals("trunk") ) {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 8);
+          feat.setAttrWithMinzoom("network", network_val, 8);
         } else if (highway.equals("primary") ) {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 10);
+          feat.setAttrWithMinzoom("network", network_val, 10);
         } else if (highway.equals("trunk_link") ) {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 12);
+          feat.setAttrWithMinzoom("network", network_val, 12);
         } else {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 13);
+          feat.setAttrWithMinzoom("network", network_val, 13);
         }
 
         OsmNames.setOsmNames(feat, sourceFeature, 12);
       } else if (highway.equals("secondary") || highway.equals("secondary_link") || highway.equals("tertiary") ||
         highway.equals("tertiary_link")) {
-        feat.setAttr("pmap:kind", "medium_road").setZoomRange(9, 15)
-            .setAttrWithMinzoom("ref_length", shield_text_length, 8);
+        feat.setAttr("pmap:kind", "medium_road").setZoomRange(9, 15);
 
         if (highway.equals("secondary") ) {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 11);
+          feat.setAttrWithMinzoom("network", network_val, 11);
         } else if (highway.equals("tertiary") ) {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 12);
+          feat.setAttrWithMinzoom("network", network_val, 12);
         } else {
           feat.setAttrWithMinzoom("ref_length", shield_text_length, 13);
+          feat.setAttrWithMinzoom("network", network_val, 13);
         }
 
         OsmNames.setOsmNames(feat, sourceFeature, 13);
@@ -98,14 +121,6 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         feat.setAttrWithMinzoom("pmap:level", -1, 12);
       } else {
         feat.setAttrWithMinzoom("pmap:level", 0, 12);
-      }
-
-      if (sourceFeature.hasTag("network", "US:US")) {
-        feat.setAttrWithMinzoom("network", "US:US", 7);
-      } else if (sourceFeature.hasTag("network", "US:I")) {
-        feat.setAttrWithMinzoom("network", "US:I", 7);
-      } else if (sourceFeature.hasTag("network")) {
-        feat.setAttrWithMinzoom("network", "other", 7);
       }
     }
   }
