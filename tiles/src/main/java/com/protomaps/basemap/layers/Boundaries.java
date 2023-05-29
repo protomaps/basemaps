@@ -42,7 +42,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
           line.setMinZoom(10);
         }
 
-        if( disputed.getAsInt() == 1 ) {
+        if (disputed.getAsInt() == 1) {
           line.setAttr("disputed", 1);
         }
       }
@@ -51,7 +51,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
   @Override
   public List<OsmRelationInfo> preprocessOsmRelation(OsmElement.Relation relation) {
-    if (relation.hasTag("type", "boundary") && (relation.hasTag("boundary", "administrative") || relation.hasTag("boundary", "disputed"))) {
+    if (relation.hasTag("type", "boundary") &&
+      (relation.hasTag("boundary", "administrative") || relation.hasTag("boundary", "disputed"))) {
       Integer adminLevel = Parse.parseIntOrNull(relation.getString("admin_level"));
       Integer disputed = relation.hasTag("boundary", "disputed") ? 1 : 0;
 

@@ -29,7 +29,7 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
         .setZoomRange(12, 15);
 
-      if( sf.hasTag("intermittent", "yes" ) ) {
+      if (sf.hasTag("intermittent", "yes")) {
         feat.setAttr("intermittent", 1);
       }
 

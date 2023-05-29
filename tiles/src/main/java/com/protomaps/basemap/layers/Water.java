@@ -51,7 +51,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setMinPixelSize(3.0)
         .setBufferPixels(8);
 
-      if( sf.hasTag("intermittent", "yes" ) ) {
+      if (sf.hasTag("intermittent", "yes")) {
         feature.setAttr("intermittent", 1);
       }
 
