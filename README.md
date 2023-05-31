@@ -12,23 +12,33 @@ You will need [Java 17+](https://github.com/onthegomap/planetiler/blob/main/CONT
 Generate and inspect a basemap PMTiles of any named area:
 
 1. Clone this repository.
-```sh
+
+```shell
 git clone git@github.com:protomaps/basemaps.git
 ```
 2. change to the `tiles` directory, download dependencies and compile the JAR:
-```sh
+
+```shell
+cd basemap/tiles
 mvn clean package
 ```
 3. Download and generate `monaco.pmtiles` in the current directory:
-```
+
+```shell
 java -jar target/*-with-deps.jar --download --force --area=monaco
 ```
 
 4. Switch to the `compare/` directory to run the map compare tool:
 
-```
+```shell
 cd compare
 npm run serve
+```
+
+5. Linting to apply code formatting
+
+```shell
+mvn spotless:apply
 ```
 
 ## License
