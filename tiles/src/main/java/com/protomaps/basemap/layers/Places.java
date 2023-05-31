@@ -127,7 +127,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         feat.setSortKey(0);
       }
 
-      Integer population_rank = 0;
+      int population_rank = 0;
 
       int[] pop_breaks = {
         1000000000,
@@ -152,6 +152,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       for (int i = 0; i < pop_breaks.length; i++) {
         if (population >= pop_breaks[i]) {
           population_rank = pop_breaks.length - i;
+          break;
         }
       }
 
