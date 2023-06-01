@@ -23,7 +23,15 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         .setId(FeatureId.create(sf))
         .setAttr("waterway", sf.getString("waterway"))
         .setAttr("natural", sf.getString("natural"))
+        // Add less common attributes only at higher zooms
+        .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
+        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
+        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
         .setZoomRange(12, 15);
+
+      if (sf.hasTag("intermittent", "yes")) {
+        feat.setAttr("intermittent", 1);
+      }
 
       String kind = "other";
       if (sf.hasTag("waterway")) {

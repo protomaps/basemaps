@@ -54,6 +54,7 @@ public class Basemap extends ForwardingProfile {
       var place = new Places();
       registerHandler(place);
       registerSourceHandler("osm", place);
+      registerSourceHandler("ne", place::processNe);
 
       var poi = new Pois();
       registerHandler(poi);

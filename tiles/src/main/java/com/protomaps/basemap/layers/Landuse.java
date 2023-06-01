@@ -38,7 +38,8 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setAttr("place", sf.getString("place"))
         .setAttr("railway", sf.getString("railway"))
         .setAttr("sport", sf.getString("sport"))
-        .setZoomRange(5, 15);
+        .setZoomRange(5, 15)
+        .setMinPixelSize(3.0);
 
       OsmNames.setOsmNames(poly, sf, 0);
 

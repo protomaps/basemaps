@@ -20,6 +20,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
     // todo: exclude railway stations, levels
     if (sf.canBeLine() && (sf.hasTag("railway") ||
       sf.hasTag("aerialway", "cable_car") ||
+      sf.hasTag("man_made", "pier") ||
       sf.hasTag("route", "ferry") ||
       sf.hasTag("aeroway", "runway", "taxiway")) &&
       (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
@@ -35,6 +36,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setAttr("railway", sf.getString("railway"))
         .setAttr("route", sf.getString("route"))
         .setAttr("aeroway", sf.getString("aeroway"))
+        .setAttr("man_made", sf.getString("pier"))
         .setAttr("service", sf.getString("service"))
         .setAttr("aerialway", sf.getString("aerialway"))
         .setAttr("network", sf.getString("network"))
@@ -50,6 +52,8 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = "railway";
       } else if (sf.hasTag("ferry")) {
         kind = "ferry";
+      } else if (sf.hasTag("man_made", "pier")) {
+        kind = "pier";
       } else if (sf.hasTag("aerialway")) {
         kind = "aerialway";
       }

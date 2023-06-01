@@ -164,6 +164,19 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "landuse_pier",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: [
+        "any",
+        ["==", "man_made", "pier"],
+      ],
+      paint: {
+        "fill-color": c.earth,
+      },
+    },
+    {
       id: "roads_tunnels_other_casing",
       type: "line",
       source: source,
@@ -532,6 +545,30 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
       layout: {
         visibility: casingVisibility,
+      },
+    },
+    {
+      id: "transit_pier",
+      type: "line",
+      source: source,
+      "source-layer": "transit",
+      filter: [
+        "any",
+        ["==", "pmap:kind", "pier"],
+      ],
+      paint: {
+        "line-color": c.minor,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          0.5,
+          20,
+          16,
+        ],
       },
     },
     {
@@ -1143,6 +1180,23 @@ export function labels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "pois",
+      type: "symbol",
+      source: source,
+      minzoom: 17,
+      "source-layer": "pois",
+      layout: {
+        "text-font": ["NotoSans-Regular"],
+        "text-field": ["get", "name"],
+        "text-size": 12,
+      },
+      paint: {
+        "text-color": c.subplace_label,
+        "text-halo-color": c.subplace_label_halo,
+        "text-halo-width": 1.5,
+      },
+    },
+    {
       id: "places_subplace",
       type: "symbol",
       source: source,
@@ -1187,10 +1241,16 @@ export function labels_layers(source: string, c: Theme): any[] {
       "source-layer": "places",
       filter: ["==", "pmap:kind", "city"],
       layout: {
+        "symbol-sort-key": ["number", ["get", "pmap:min_zoom"]],
         "text-field": "{name}",
         "text-font": ["NotoSans-Bold"],
         "text-size": ["step", ["get", "pmap:rank"], 0, 1, 12, 2, 10],
-        "text-variable-anchor": ["bottom-left"],
+        "text-anchor": {
+          stops: [
+            [7, "left"],
+            [8, "center"],
+          ],
+        },
         "text-radial-offset": 0.2,
       },
       paint: {

@@ -28,7 +28,8 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setAttr("boundary", sf.getString("boundary"))
         .setAttr("landuse", sf.getString("landuse"))
         .setAttr("leisure", sf.getString("leisure"))
-        .setZoomRange(5, 15);
+        .setZoomRange(5, 15)
+        .setMinPixelSize(3.0);
 
       OsmNames.setOsmNames(feat, sf, 0);
     }

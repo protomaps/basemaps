@@ -43,8 +43,17 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setAttr("leisure", sf.getString("leisure"))
         .setAttr("water", sf.getString("water"))
         .setAttr("waterway", sf.getString("waterway"))
+        // Add less common attributes only at higher zooms
+        .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
+        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
+        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
         .setZoomRange(6, 15)
+        .setMinPixelSize(3.0)
         .setBufferPixels(8);
+
+      if (sf.hasTag("intermittent", "yes")) {
+        feature.setAttr("intermittent", 1);
+      }
 
       OsmNames.setOsmNames(feature, sf, 0);
     }
