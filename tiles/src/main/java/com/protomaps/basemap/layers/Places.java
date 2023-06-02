@@ -1,5 +1,7 @@
 package com.protomaps.basemap.layers;
 
+import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
+
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
@@ -78,7 +80,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     if (sf.isPoint() &&
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))) {
       Integer population =
-        sf.getString("population") == null ? 0 : (int) Double.parseDouble(sf.getString("population"));
+        sf.getString("population") == null ? 0 : parseIntOrNull(sf.getString("population"));
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         .setAttr("place", sf.getString("place"))
