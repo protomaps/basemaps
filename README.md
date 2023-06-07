@@ -19,7 +19,7 @@ git clone git@github.com:protomaps/basemaps.git
 2. change to the `tiles` directory, download dependencies and compile the JAR:
 
 ```shell
-cd basemap/tiles
+cd basemaps/tiles
 mvn clean package
 ```
 3. Download and generate `monaco.pmtiles` in the current directory:
