@@ -798,10 +798,22 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "boundaries_country",
+      type: "line",
+      source: source,
+      "source-layer": "boundaries",
+      filter: ["<=", "pmap:min_admin_level", 2],
+      paint: {
+        "line-color": c.boundaries,
+        "line-width": 1,
+      },
+    },
+    {
       id: "boundaries",
       type: "line",
       source: source,
       "source-layer": "boundaries",
+      filter: [">", "pmap:min_admin_level", 2],
       paint: {
         "line-color": c.boundaries,
         "line-width": 0.5,
