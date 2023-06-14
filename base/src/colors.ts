@@ -494,6 +494,7 @@ export const GRAYSCALE: Theme = {
 };
 
 export default {
+    basic: BASIC,
     light: LIGHT,
     dark: DARK,
     white: WHITE,
