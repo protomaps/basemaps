@@ -32,6 +32,19 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setMinPixelSize(3.0);
 
       OsmNames.setOsmNames(feat, sf, 0);
+
+      String kind = "other";
+      if (sf.hasTag("natural")) {
+        kind = sf.getString("natural");
+      } else if (sf.hasTag("boundary")) {
+        kind = sf.getString("boundary");
+      } else if (sf.hasTag("landuse")) {
+        kind = sf.getString("landuse");
+      } else if (sf.hasTag("leisure")) {
+        kind = sf.getString("leisure");
+      }
+      feat.setAttr("pmap:kind", kind);
+
     }
   }
 
