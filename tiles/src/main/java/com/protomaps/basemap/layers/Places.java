@@ -102,19 +102,19 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           population = 10000;
         }
       } else if (sf.hasTag("place", "town")) {
-        feat.setAttr("pmap:kind", "neighbourhood")
+        feat.setAttr("pmap:kind", "town")
           .setZoomRange(8, 15);
         if (population.equals(0)) {
           population = 5000;
         }
       } else if (sf.hasTag("place", "village")) {
-        feat.setAttr("pmap:kind", "neighbourhood")
+        feat.setAttr("pmap:kind", "village")
           .setZoomRange(10, 15);
         if (population.equals(0)) {
           population = 2000;
         }
       } else if (sf.hasTag("place", "suburb")) {
-        feat.setAttr("pmap:kind", "neighbourhood")
+        feat.setAttr("pmap:kind", "suburb")
           .setZoomRange(8, 15);
       } else {
         feat.setAttr("pmap:kind", "neighbourhood")
@@ -170,7 +170,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     List<VectorTile.Feature> noncities = new ArrayList<>();
 
     for (VectorTile.Feature item : items) {
-      if (item.attrs().get("pmap:kind").equals("city")) {
+      if (item.attrs().get("pmap:kind").equals("city") || item.attrs().get("pmap:kind").equals("town") || item.attrs().get("pmap:kind").equals("village") ) {
         cities.add(item);
       } else {
         noncities.add(item);
