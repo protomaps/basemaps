@@ -1,11 +1,15 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
+import static com.onthegomap.planetiler.collection.FeatureGroup.SORT_KEY_BITS;
 
+import com.carrotsearch.hppc.LongIntMap;
+import com.onthegomap.planetiler.collection.Hppc;
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.SortKey;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
@@ -17,6 +21,20 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   @Override
   public String name() {
     return "places";
+  }
+
+  // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
+  static int getSortKey(long min_zoom, int population_rank, long population, String name) {
+    return SortKey
+            // ORDER BY "min_zoom" ASC NULLS LAST,
+            .orderByInt(min_zoom == null ? 15 : min_zoom, 0, 15)
+            // population_rank DESC NULLS LAST,
+            .thenByInt(population_rank == null ? 15 : population_rank, 0, 15)
+            // population DESC NULLS LAST,
+            .thenByLog(population, 1, 1 << (SORT_KEY_BITS - 13) - 1)
+            // length(name) ASC
+            .thenByInt(name == null ? 0 : name.length(), 0, 31)
+            .get();
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
@@ -69,7 +87,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("population", sf.getString("pop_max"))
         .setAttr("population_rank", sf.getString("rank_max"))
         .setAttr("wikidata_id", sf.getString("wikidata"))
-        .setBufferPixels(128);
+        .setBufferPixels(128)
+        // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+        .setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"))
+        .setPointLabelGridPixelSize(12, 128);
 
       NeNames.setNeNames(feat, sf, 0);
     }
@@ -92,33 +113,44 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       if (place.equals("country")) {
         feat.setAttr("pmap:kind", "country")
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          .setAttr("pmap:min_zoom", 1)
           .setZoomRange(0, 9);
       } else if (place.equals("state") || place.equals("province")) {
         feat.setAttr("pmap:kind", "state")
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
+          .setAttr("pmap:min_zoom", 3)
           .setZoomRange(4, 11);
       } else if (place.equals("city")) {
         feat.setAttr("pmap:kind", "city")
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
+          .setAttr("pmap:min_zoom", 8)
           .setZoomRange(8, 15);
         if (population.equals(0)) {
           population = 10000;
         }
       } else if (place.equals("town")) {
         feat.setAttr("pmap:kind", "city")
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
+          .setAttr("pmap:min_zoom", 8)
           .setZoomRange(8, 15);
         if (population.equals(0)) {
           population = 5000;
         }
       } else if (place.equals("village")) {
         feat.setAttr("pmap:kind", "city")
+          .setAttr("pmap:min_zoom", 10)
           .setZoomRange(10, 15);
         if (population.equals(0)) {
           population = 2000;
         }
       } else if (place.equals("suburb")) {
         feat.setAttr("pmap:kind", "neighbourhood")
-          .setZoomRange(8, 15);
+          .setAttr("pmap:min_zoom", 11)
+          .setZoomRange(11, 15);
       } else {
         feat.setAttr("pmap:kind", "neighbourhood")
+          .setAttr("pmap:min_zoom", 12)
           .setZoomRange(12, 15);
       }
       // always pass thru the original value of place tag
@@ -162,6 +194,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
 
       feat.setAttr("population_rank", population_rank);
+
+      // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+      feat.setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"))
+          .setPointLabelGridPixelSize(12, 128);
     }
   }
 
@@ -185,6 +221,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
     List<VectorTile.Feature> top64 = cities.subList(startIndex, endIndex);
 
+    // This should always be less than 64 now that a label grid is being used
+    // so consider for removal
     for (int i = 0; i < top64.size(); i++) {
       if (top64.size() - i < 16) {
         top64.get(i).attrs().put("pmap:rank", 1);
