@@ -24,12 +24,53 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
-    if (sourceLayer.equals("ne_110m_ocean") || sourceLayer.equals("ne_110m_lakes")) {
-      features.polygon(this.name()).setZoomRange(0, 1);
-    } else if (sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes")) {
-      features.polygon(this.name()).setZoomRange(2, 4);
-    } else if (sourceLayer.equals("ne_10m_ocean") || sourceLayer.equals("ne_10m_lakes")) {
-      features.polygon(this.name()).setZoomRange(5, 5);
+    var kind = "";
+    var alkaline = 0;
+    var reservoir = 0;
+    var theme_min_zoom = 0;
+    var theme_max_zoom = 0;
+
+    if (sourceLayer.equals("ne_110m_ocean") ) {
+      theme_min_zoom = 0;
+      theme_max_zoom = 1;
+    } else if (sourceLayer.equals("ne_110m_lakes") ) {
+      theme_min_zoom = 0;
+      theme_max_zoom = 1;
+    } else if (sourceLayer.equals("ne_50m_ocean")) {
+      theme_min_zoom = 2;
+      theme_max_zoom = 4;
+    } else if (sourceLayer.equals("ne_50m_lakes")) {
+      theme_min_zoom = 2;
+      theme_max_zoom = 4;
+    } else if (sourceLayer.equals("ne_10m_ocean")) {
+      theme_min_zoom = 5;
+      theme_max_zoom = 5;
+    } else if( sourceLayer.equals("ne_10m_lakes")) {
+      theme_min_zoom = 5;
+      theme_max_zoom = 5;
+    }
+
+    switch (sf.getString("featurecla")) {
+      case "Alkaline Lake" -> {
+        kind = "lake";
+        alkaline = 1;
+      }
+      case "Lake" -> kind = "lake";
+      case "Reservoir" -> {
+        kind = "lake";
+        reservoir = 1;
+      }
+      case "Playa" -> kind = "playa";
+      case "Ocean" -> kind = "ocean";
+    }
+
+    if (kind != "" && sf.hasTag("min_zoom")) {
+      var feature = features.polygon(this.name())
+              .setAttr("pmap:kind", kind)
+              .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+              .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom)
+              .setMinPixelSize(3.0)
+              .setBufferPixels(8);
     }
   }
 
@@ -54,6 +95,21 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       if (sf.hasTag("intermittent", "yes")) {
         feature.setAttr("intermittent", 1);
       }
+
+      String kind = "other";
+      // coallese values across tags to single kind value
+      if (sf.hasTag("water")) {
+        kind = sf.getString("water");
+      } else if (sf.hasTag("waterway")) {
+        kind = sf.getString("waterway");
+      } else if (sf.hasTag("natural")) {
+        kind = sf.getString("natural");
+      } else if (sf.hasTag("landuse")) {
+        kind = sf.getString("landuse");
+      } else if (sf.hasTag("leisure")) {
+        kind = sf.getString("leisure");
+      }
+      feature.setAttr("pmap:kind", kind);
 
       OsmNames.setOsmNames(feature, sf, 0);
     }
