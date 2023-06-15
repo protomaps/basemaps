@@ -81,6 +81,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))) {
       Integer population =
         sf.getString("population") == null ? 0 : parseIntOrNull(sf.getString("population"));
+      String place = sf.getString("place");
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         .setAttr("place", sf.getString("place"))
@@ -89,37 +90,39 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       OsmNames.setOsmNames(feat, sf, 0);
 
-      if (sf.hasTag("place", "country")) {
+      if (place.equals("country")) {
         feat.setAttr("pmap:kind", "country")
           .setZoomRange(0, 9);
-      } else if (sf.hasTag("place", "state", "province")) {
+      } else if (place.equals("state") || place.equals("province")) {
         feat.setAttr("pmap:kind", "state")
           .setZoomRange(4, 11);
-      } else if (sf.hasTag("place", "city")) {
+      } else if (place.equals("city")) {
         feat.setAttr("pmap:kind", "city")
           .setZoomRange(8, 15);
         if (population.equals(0)) {
           population = 10000;
         }
-      } else if (sf.hasTag("place", "town")) {
-        feat.setAttr("pmap:kind", "town")
+      } else if (place.equals("town")) {
+        feat.setAttr("pmap:kind", "city")
           .setZoomRange(8, 15);
         if (population.equals(0)) {
           population = 5000;
         }
-      } else if (sf.hasTag("place", "village")) {
-        feat.setAttr("pmap:kind", "village")
+      } else if (place.equals("village")) {
+        feat.setAttr("pmap:kind", "city")
           .setZoomRange(10, 15);
         if (population.equals(0)) {
           population = 2000;
         }
-      } else if (sf.hasTag("place", "suburb")) {
-        feat.setAttr("pmap:kind", "suburb")
+      } else if (place.equals("suburb")) {
+        feat.setAttr("pmap:kind", "neighbourhood")
           .setZoomRange(8, 15);
       } else {
         feat.setAttr("pmap:kind", "neighbourhood")
           .setZoomRange(12, 15);
       }
+      // always pass thru the original value of place tag
+      feat.setAttr("pmap:kind_detail", place);
 
       if (population != null) {
         feat.setAttr("population", population);
@@ -170,7 +173,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     List<VectorTile.Feature> noncities = new ArrayList<>();
 
     for (VectorTile.Feature item : items) {
-      if (item.attrs().get("pmap:kind").equals("city") || item.attrs().get("pmap:kind").equals("town") || item.attrs().get("pmap:kind").equals("village") ) {
+      if (item.attrs().get("pmap:kind").equals("city") ) {
         cities.add(item);
       } else {
         noncities.add(item);
