@@ -15,6 +15,40 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
     return "physical_point";
   }
 
+  public void processNe(SourceFeature sf, FeatureCollector features) {
+    var sourceLayer = sf.getSourceLayer();
+    var kind = "";
+    var alkaline = 0;
+    var reservoir = 0;
+    var theme_min_zoom = 0;
+    var theme_max_zoom = 0;
+
+     if( sourceLayer.equals("ne_10m_lakes")) {
+      theme_min_zoom = 5;
+      theme_max_zoom = 5;
+     }
+
+    switch (sf.getString("featurecla")) {
+      case "Alkaline Lake" -> {
+        kind = "lake";
+        alkaline = 1;
+      }
+      case "Lake" -> kind = "lake";
+      case "Reservoir" -> {
+        kind = "lake";
+        reservoir = 1;
+      }
+      case "Playa" -> kind = "playa";
+    }
+
+    if (kind != "" && sf.hasTag("min_zoom")) {
+      var water_label_position = features.pointOnSurface(this.name())
+              .setAttr("pmap:kind", kind)
+              .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+              .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom);
+    }
+  }
+
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && (sf.hasTag("place", "sea", "ocean") || sf.hasTag("natural", "peak"))) {
