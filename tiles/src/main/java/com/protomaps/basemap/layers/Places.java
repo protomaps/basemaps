@@ -24,10 +24,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   }
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
-  static int getSortKey(long min_zoom, int population_rank, long population, String name) {
+  /*
+  static int getSortKey(float min_zoom, int population_rank, long population, String name) {
     return SortKey
             // ORDER BY "min_zoom" ASC NULLS LAST,
-            .orderByInt(min_zoom == null ? 15 : min_zoom, 0, 15)
+            .orderByDouble(min_zoom == null ? 15.0 : min_zoom, 0.0, 15.0, 1)
             // population_rank DESC NULLS LAST,
             .thenByInt(population_rank == null ? 15 : population_rank, 0, 15)
             // population DESC NULLS LAST,
@@ -36,6 +37,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
             .thenByInt(name == null ? 0 : name.length(), 0, 31)
             .get();
   }
+   */
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
@@ -84,12 +86,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           theme_max_zoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kind_detail)
-        .setAttr("population", sf.getString("pop_max"))
-        .setAttr("population_rank", sf.getString("rank_max"))
+        .setAttr("population", parseIntOrNull(sf.getString("pop_max")))
+        .setAttr("population_rank", parseIntOrNull(sf.getString("rank_max")))
         .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(128)
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        .setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"))
+        //.setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"))
         .setPointLabelGridPixelSize(12, 128);
 
       NeNames.setNeNames(feat, sf, 0);
@@ -100,7 +102,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() &&
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))) {
-      Integer population =
+      long population =
         sf.getString("population") == null ? 0 : parseIntOrNull(sf.getString("population"));
       String place = sf.getString("place");
       var feat = features.point(this.name())
@@ -126,7 +128,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
           .setAttr("pmap:min_zoom", 8)
           .setZoomRange(8, 15);
-        if (population.equals(0)) {
+        if (population == 0)  {
           population = 10000;
         }
       } else if (place.equals("town")) {
@@ -134,14 +136,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
           .setAttr("pmap:min_zoom", 8)
           .setZoomRange(8, 15);
-        if (population.equals(0)) {
+        if (population == 0)  {
           population = 5000;
         }
       } else if (place.equals("village")) {
         feat.setAttr("pmap:kind", "city")
           .setAttr("pmap:min_zoom", 10)
           .setZoomRange(10, 15);
-        if (population.equals(0)) {
+        if (population == 0)  {
           population = 2000;
         }
       } else if (place.equals("suburb")) {
@@ -155,14 +157,6 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
       // always pass thru the original value of place tag
       feat.setAttr("pmap:kind_detail", place);
-
-      if (population != null) {
-        feat.setAttr("population", population);
-        feat.setSortKey((int) Math.log(population));
-        // TODO: use label grid
-      } else {
-        feat.setSortKey(0);
-      }
 
       int population_rank = 0;
 
@@ -195,9 +189,15 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       feat.setAttr("population_rank", population_rank);
 
-      // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"))
-          .setPointLabelGridPixelSize(12, 128);
+      if (population > 0) {
+        feat.setAttr("population", population);
+
+        // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+        feat.setPointLabelGridPixelSize(12, 128);
+        //feat.setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"));
+      } else {
+        feat.setSortKey(0);
+      }
     }
   }
 
