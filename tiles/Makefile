@@ -12,9 +12,9 @@ clean-pmtiles:
 # The default port is: 8080 (use --port to override)
 # Assumes go-pmtiles has been installed locally (eg prebuilt go binary download) & the path is added to your shell env
 # https://github.com/protomaps/go-pmtiles
-# Example tile coord to test with: http://localhost:8080/monaco12/2133/1495.mvt
+# Example tile coord to test with: http://localhost:8080/monaco/12/2133/1495.mvt
 serve:
-	pmtiles serve --cors=* .
+	~/Downloads/pmtiles serve --cors=* .
 
 #
 # Testing areas
