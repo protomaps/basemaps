@@ -57,14 +57,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "Admin-0 capital":
         case "Admin-0 capital alt":
         case "Admin-0 region capital":
-          kind = "city";
+          kind = "locality";
           break;
         case "Admin-1 capital":
         case "Admin-1 region capital":
-          kind = "city";
+          kind = "locality";
           break;
         case "Populated place":
-          kind = "city";
+          kind = "locality";
           break;
         case "Historic place":
           kind = "locality";
@@ -119,12 +119,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           .setAttr("pmap:min_zoom", 1)
           .setZoomRange(0, 9);
       } else if (place.equals("state") || place.equals("province")) {
-        feat.setAttr("pmap:kind", "state")
+        feat.setAttr("pmap:kind", "region")
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
           .setAttr("pmap:min_zoom", 3)
           .setZoomRange(4, 11);
       } else if (place.equals("city")) {
-        feat.setAttr("pmap:kind", "city")
+        feat.setAttr("pmap:kind", "locality")
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
           .setAttr("pmap:min_zoom", 8)
           .setZoomRange(8, 15);
@@ -132,7 +132,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           population = 10000;
         }
       } else if (place.equals("town")) {
-        feat.setAttr("pmap:kind", "city")
+        feat.setAttr("pmap:kind", "locality")
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
           .setAttr("pmap:min_zoom", 8)
           .setZoomRange(8, 15);
@@ -140,7 +140,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           population = 5000;
         }
       } else if (place.equals("village")) {
-        feat.setAttr("pmap:kind", "city")
+        feat.setAttr("pmap:kind", "locality")
           .setAttr("pmap:min_zoom", 10)
           .setZoomRange(10, 15);
         if (population == 0)  {
@@ -209,7 +209,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     List<VectorTile.Feature> noncities = new ArrayList<>();
 
     for (VectorTile.Feature item : items) {
-      if (item.attrs().get("pmap:kind").equals("city") ) {
+      if (item.attrs().get("pmap:kind").equals("locality") ) {
         cities.add(item);
       } else {
         noncities.add(item);
