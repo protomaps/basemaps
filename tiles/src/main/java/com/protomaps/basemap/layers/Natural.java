@@ -31,7 +31,8 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setZoomRange(5, 15)
         .setMinPixelSize(3.0);
 
-      OsmNames.setOsmNames(feat, sf, 0);
+      // NOTE: landuse labels for polygons are found in the pois layer
+      //OsmNames.setOsmNames(feat, sf, 0);
 
       String kind = "other";
       if (sf.hasTag("natural")) {
@@ -50,7 +51,7 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    items = Area.addAreaTag(items);
+    //items = Area.addAreaTag(items);
     if (zoom == 15)
       return items;
     int minArea = 400 / (4096 * 4096) * (256 * 256);
