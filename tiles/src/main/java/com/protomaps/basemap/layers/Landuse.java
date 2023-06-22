@@ -25,7 +25,8 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("place", "neighbourhood") ||
       sf.hasTag("railway", "platform") ||
       (sf.hasTag("area", "yes") &&
-        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))) {
+        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge")))))
+    {
       var poly = features.polygon(layerName)
         .setId(FeatureId.create(sf))
         .setAttr("landuse", sf.getString("landuse"))
@@ -41,13 +42,15 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setZoomRange(5, 15)
         .setMinPixelSize(3.0);
 
-      OsmNames.setOsmNames(poly, sf, 0);
+      // NOTE: landuse labels for polygons are found in the pois layer
+      //OsmNames.setOsmNames(poly, sf, 0);
 
+      // What does this do?
       if (ghostFeatures) {
         poly.setAttr("isGhostFeature", true);
       }
 
-      poly.setAttr("pmap:area", "");
+      //poly.setAttr("pmap:area", "");
 
       String kind = "other";
       if (sf.hasTag("leisure")) {
@@ -104,7 +107,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    items = Area.addAreaTag(items);
+    //items = Area.addAreaTag(items);
     if (zoom == 15)
       return items;
     int minArea = 400 / (4096 * 4096) * (256 * 256);
