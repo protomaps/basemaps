@@ -38,8 +38,25 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
           line.setMinZoom(0);
         } else if (minAdminLevel.getAsInt() <= 4) {
           line.setMinZoom(3);
+        } else if (minAdminLevel.getAsInt() <= 6) {
+          line.setMinZoom(8);
         } else {
           line.setMinZoom(10);
+        }
+
+        switch (minAdminLevel.getAsInt()) {
+          case 2 -> {
+            line.setAttr("pmap:kind", "country");
+          }
+          case 4 -> {
+            line.setAttr("pmap:kind", "region");
+          }
+          case 6 -> {
+            line.setAttr("pmap:kind", "county");
+          }
+          case 8 -> {
+            line.setAttr("pmap:kind", "locality");
+          }
         }
 
         if (disputed.getAsInt() == 1) {
