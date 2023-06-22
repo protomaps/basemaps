@@ -40,6 +40,13 @@ switzerland:
 switzerland-fast:
 	java -jar target/*-with-deps.jar --force --area=switzerland
 
+#Download and generate switzerland.pmtiles in the current directory:
+washington:
+	java -jar target/*-with-deps.jar --download --force --area=washington
+
+# Generate switzerland.pmtiles in the current directory (using already downloaded asset)
+washington-fast:
+	java -jar target/*-with-deps.jar --force --area=washington
 
 # Large
 #
