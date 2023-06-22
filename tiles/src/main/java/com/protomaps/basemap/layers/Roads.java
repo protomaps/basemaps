@@ -112,6 +112,14 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           .setAttrWithMinzoom("ref", shield_text, 12)
           .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
           .setAttrWithMinzoom("network", network_val, 12);
+
+        if( highway.equals("service") ) {
+          feat.setAttr("pmap:kind_detail", "service")
+              .setAttr("service", sourceFeature.getString("service"))
+              // "alley", "driveway", "parking_aisle", "drive-through"
+              .setZoomRange(14, 15);
+        }
+
         OsmNames.setOsmNames(feat, sourceFeature, 14);
       } else if (sourceFeature.hasTag("highway", "pedestrian", "track", "path", "cycleway", "bridleway", "footway",
         "steps", "corridor")) {
@@ -120,6 +128,15 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           .setAttrWithMinzoom("ref", shield_text, 12)
           .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
           .setAttrWithMinzoom("network", network_val, 12);
+
+        if( sourceFeature.hasTag("footway", "sidewalk", "crossing") ) {
+          feat.setZoomRange(14, 15)
+              .setAttr("pmap:kind_detail", sourceFeature.getString("footway"));
+        }
+        if( sourceFeature.hasTag("highway", "corridor") ) {
+          feat.setZoomRange(14, 15);
+        }
+
         OsmNames.setOsmNames(feat, sourceFeature, 14);
       } else {
         feat.setAttr("pmap:kind", "other").setZoomRange(14, 15)
@@ -127,9 +144,8 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           .setAttrWithMinzoom("ref", shield_text, 14)
           .setAttrWithMinzoom("shield_text_length", shield_text_length, 14)
           .setAttrWithMinzoom("network", network_val, 14);
+
         OsmNames.setOsmNames(feat, sourceFeature, 14);
-
-
       }
 
       if (sourceFeature.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
