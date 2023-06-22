@@ -3,10 +3,14 @@ package com.protomaps.basemap.layers;
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.postprocess.Area;
+
 import java.util.List;
 
 public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -16,6 +20,9 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
     return "physical_point";
   }
 
+  private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
+          Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
+
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
     var kind = "";
@@ -24,30 +31,32 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
     var theme_min_zoom = 0;
     var theme_max_zoom = 0;
 
-     if( sourceLayer.equals("ne_10m_lakes")) {
+    if( sourceLayer.equals("ne_10m_lakes")) {
       theme_min_zoom = 5;
       theme_max_zoom = 5;
-     }
 
-    switch (sf.getString("featurecla")) {
-      case "Alkaline Lake" -> {
-        kind = "lake";
-        alkaline = 1;
+      switch (sf.getString("featurecla")) {
+        case "Alkaline Lake" -> {
+          kind = "lake";
+          alkaline = 1;
+        }
+        case "Lake" -> kind = "lake";
+        case "Reservoir" -> {
+          kind = "lake";
+          reservoir = 1;
+        }
+        case "Playa" -> kind = "playa";
       }
-      case "Lake" -> kind = "lake";
-      case "Reservoir" -> {
-        kind = "lake";
-        reservoir = 1;
-      }
-      case "Playa" -> kind = "playa";
-    }
 
-    if (kind != "" && sf.hasTag("min_zoom")) {
-      var water_label_position = features.pointOnSurface(this.name())
-              .setAttr("pmap:kind", kind)
-              .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
-              .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom)
-              .setBufferPixels(128);
+      if (kind != "" && sf.hasTag("min_zoom") && sf.hasTag("name") && sf.getTag( "name") != null ) {
+        var water_label_position = features.pointOnSurface(this.name())
+                .setAttr("pmap:kind", kind)
+                .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+                .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom)
+                .setBufferPixels(128);
+
+        NeNames.setNeNames(water_label_position, sf, 0);
+      }
     }
   }
 
@@ -57,16 +66,25 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
 
       // TODO: rank based on ele
 
+      String kind = "";
+
       int minzoom = 12;
-      if (sf.hasTag("natural", "peak")) {
-        minzoom = 13;
+      if (sf.hasTag("place", "ocean")) {
+        kind = "ocean";
+        minzoom = 0;
       }
       if (sf.hasTag("place", "sea")) {
+        kind = "sea";
         minzoom = 3;
+      }
+      if (sf.hasTag("natural", "peak")) {
+        kind = "peak";
+        minzoom = 13;
       }
 
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
+        .setAttr("pmap:kind", kind)
         .setAttr("place", sf.getString("place"))
         .setAttr("natural", sf.getString("natural"))
         .setAttr("ele", sf.getString("ele"))
@@ -79,40 +97,38 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
             sf.canBePolygon() &&
             (sf.hasTag("water") ||
               sf.hasTag("waterway") ||
+              // bay, straight, fjord are included here only (not in water layer) because
+              // OSM treats them as "overlay" label features over the normal water polys
               sf.hasTag("natural", "water", "bay", "strait", "fjord") ||
               sf.hasTag("landuse", "reservoir") ||
               sf.hasTag("leisure", "swimming_pool")))
     {
       String kind = "other";
+
       Double way_area = 0.0;
-      try { way_area = sf.area(); } catch(GeometryException e) {  System.out.println(e); }
-      var feature_min_zoom = 17;
-      var name_min_zoom = 17;
-      var theme_min_zoom = 17;
+      try {
+        way_area = sf.area() / WORLD_AREA_FOR_70K_SQUARE_METERS;
+      } catch(GeometryException e) {
+        System.out.println(e);
+      }
+
+      var name_min_zoom = 15;
       var kind_detail = "";
       var reservoir = false;
       var alkaline = false;
-
-      var water_label_position = features.pointOnSurface(this.name())
-              // This is the Tilezen way, when put into the "any geom type" water layer
-              // For protomaps v3 this may not be neccesary?
-              .setAttr("pmaps:label_position", true)
-              .setAttr("natural", sf.getString("natural"))
-              .setAttr("landuse", sf.getString("landuse"))
-              .setAttr("leisure", sf.getString("leisure"))
-              .setAttr("water", sf.getString("water"))
-              .setAttr("waterway", sf.getString("waterway"))
-              // Add less common attributes only at higher zooms
-              .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
-              .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
-              .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
-              .setBufferPixels(128);
 
       // coallese values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
           kind_detail = sf.getString("water");
+
+          // This is a bug in Tilezen v1.9 that should be fixed in 2.0
+          // But isn't present in Protomaps v2 so let's fix it preemtively
+          if( kind_detail == "lake" ) {
+            kind = "lake";
+          }
+
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
             kind_detail = "lake";
           }
@@ -133,11 +149,55 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         kind = "swimming_pool";
       }
 
-      water_label_position.setAttr("pmap:kind", kind);
-
-      if ( kind_detail != "" ) {
-        water_label_position.setAttr("pmap:kind_detail", kind_detail);
+      // We don't want to show too many water labels at early zooms else it crowds the map
+      // TODO: (nvkelso 20230621) These numbers are super wonky, they should instead be sq meters in web mercator prj
+      if( way_area >    25000) {    //500000000
+        name_min_zoom = 7;
+      } else
+      if( way_area >    10000) {    //200000000
+        name_min_zoom = 8;
+      } else
+      if( way_area >    2000) {     //40000000
+        name_min_zoom = 9;
+      } else
+      if( way_area >     400) {     //8000000
+        name_min_zoom = 10;
+      } else
+      if( way_area >     30) {     //1000000
+        name_min_zoom = 11;
+      } else
+      if( way_area >      25) {     //500000
+        name_min_zoom = 12;
+      } else
+      if( way_area >       2) {     //50000
+        name_min_zoom = 13;
+      } else
+      if( way_area >       0.5) {     //10000
+        name_min_zoom = 14;
       }
+
+      var water_label_position = features.pointOnSurface(this.name())
+              .setAttr("pmap:kind", kind)
+              .setAttr("pmap:kind_detail", kind_detail)
+              // DEBUG
+              .setAttr("pmap:min_zoom", name_min_zoom)
+              .setAttr("pmap:area", way_area)
+              // This is the Tilezen way, when put into the "any geom type" water layer
+              // For protomaps v3 this may not be neccesary?
+              //.setAttr("pmaps:label_position", true)
+              .setAttr("natural", sf.getString("natural"))
+              .setAttr("landuse", sf.getString("landuse"))
+              .setAttr("leisure", sf.getString("leisure"))
+              .setAttr("water", sf.getString("water"))
+              .setAttr("waterway", sf.getString("waterway"))
+              // Add less common attributes only at higher zooms
+              .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
+              .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
+              .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
+              .setZoomRange(name_min_zoom, 15)
+              .setBufferPixels(128);
+
+      // Optional tags
       if (sf.hasTag("water", "reservoir") || reservoir) {
         water_label_position.setAttr("reservoir", true);
       }
@@ -148,37 +208,15 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         water_label_position.setAttr("intermittent", true);
       }
 
-      if( way_area >    500000000) {
-        name_min_zoom = 8;
-      } else
-      if( way_area >    200000000) {
-        name_min_zoom = 9;
-      } else
-      if( way_area >    40000000) {
-        name_min_zoom = 10;
-      } else
-      if( way_area >     8000000) {
-        name_min_zoom = 11;
-      } else
-      if( way_area >     1000000) {
-        name_min_zoom = 12;
-      } else
-      if( way_area >      500000) {
-        name_min_zoom = 13;
-      } else
-      if( way_area >       50000) {
-        name_min_zoom = 14;
-      } else
-      if( way_area >       10000) {
-        name_min_zoom = 15;
-      }
-
-      OsmNames.setOsmNames(water_label_position, sf, name_min_zoom-1);
+      OsmNames.setOsmNames(water_label_position, sf, 0);
     }
   }
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
+    // DEBUG
+    //items = Area.addAreaTag(items);
+
     return items;
   }
 }
