@@ -29,6 +29,9 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
       if (sf.hasTag("service", "yard", "siding", "crossover")) {
         minzoom = 13;
+      } else
+      if (sf.hasTag("man_made", "pier")) {
+        minzoom = 13;
       }
 
       var feature = features.line(this.name())
@@ -54,6 +57,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = "ferry";
       } else if (sf.hasTag("man_made", "pier")) {
         kind = "pier";
+        feature.setMinPixelSize(2);
       } else if (sf.hasTag("aerialway")) {
         kind = "aerialway";
       }
