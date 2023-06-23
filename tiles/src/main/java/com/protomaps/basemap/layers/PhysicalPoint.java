@@ -48,11 +48,11 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         case "Playa" -> kind = "playa";
       }
 
-      if (kind != "" && sf.hasTag("min_zoom") && sf.hasTag("name") && sf.getTag( "name") != null ) {
+      if (kind != "" && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag( "name") != null ) {
         var water_label_position = features.pointOnSurface(this.name())
                 .setAttr("pmap:kind", kind)
-                .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
-                .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom)
+                .setAttr("pmap:min_zoom", sf.getLong("min_label") + 1)
+                .setZoomRange(sf.getString("min_label") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_label")) + 1, theme_max_zoom)
                 .setBufferPixels(128);
 
         NeNames.setNeNames(water_label_position, sf, 0);
@@ -151,16 +151,20 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
 
       // We don't want to show too many water labels at early zooms else it crowds the map
       // TODO: (nvkelso 20230621) These numbers are super wonky, they should instead be sq meters in web mercator prj
+      // Zoom 5 and earlier from Natural Earth instead (see above)
       if( way_area >    25000) {    //500000000
+        name_min_zoom = 6;
+      } else
+      if( way_area >    8000) {    //500000000
         name_min_zoom = 7;
       } else
-      if( way_area >    10000) {    //200000000
+      if( way_area >    3000) {    //200000000
         name_min_zoom = 8;
       } else
-      if( way_area >    2000) {     //40000000
+      if( way_area >    500) {     //40000000
         name_min_zoom = 9;
       } else
-      if( way_area >     400) {     //8000000
+      if( way_area >     200) {     //8000000
         name_min_zoom = 10;
       } else
       if( way_area >     30) {     //1000000
@@ -179,9 +183,12 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       var water_label_position = features.pointOnSurface(this.name())
               .setAttr("pmap:kind", kind)
               .setAttr("pmap:kind_detail", kind_detail)
+              // While other layers don't need min_zoom, physical point labels do for more
+              // predictable client-side label collisions
+              // 512 px zooms versus 256 px logical zooms
+              .setAttr("pmap:min_zoom", name_min_zoom+1)
               // DEBUG
-              .setAttr("pmap:min_zoom", name_min_zoom)
-              .setAttr("pmap:area", way_area)
+              //.setAttr("pmap:area", way_area)
               // This is the Tilezen way, when put into the "any geom type" water layer
               // For protomaps v3 this may not be neccesary?
               //.setAttr("pmaps:label_position", true)
@@ -198,6 +205,9 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
               .setBufferPixels(128);
 
       // Optional tags
+      if (kind_detail != "") {
+        water_label_position.setAttr("pmap:kind_detail", kind_detail);
+      }
       if (sf.hasTag("water", "reservoir") || reservoir) {
         water_label_position.setAttr("reservoir", true);
       }
