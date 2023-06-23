@@ -220,7 +220,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           // 512 px zooms versus 256 px logical zooms
           .setAttr("pmap:min_zoom", min_zoom+1)
           // DEBUG
-          .setAttr("pmap:area_debug", way_area)
+          //.setAttr("pmap:area_debug", way_area)
           // Core OSM tags for different kinds of places
           .setAttr("amenity", sf.getString("amenity"))
           .setAttr("craft", sf.getString("craft"))
