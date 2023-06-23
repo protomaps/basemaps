@@ -14,7 +14,7 @@ clean-pmtiles:
 # https://github.com/protomaps/go-pmtiles
 # Example tile coord to test with: http://localhost:8080/monaco/12/2133/1495.mvt
 serve:
-	~/Downloads/pmtiles serve --cors=* .
+	pmtiles serve --cors=* .
 
 #
 # Testing areas
@@ -22,31 +22,19 @@ serve:
 
 # Smallest
 #
-#Download and generate monaco.pmtiles in the current directory:
+# Download and generate monaco.pmtiles in the current directory:
 monaco:
 	java -jar target/*-with-deps.jar --download --force --area=monaco
 
-# Generate monaco.pmtiles in the current directory (using already downloaded asset)
-monaco-fast:
-	java -jar target/*-with-deps.jar --force --area=monaco
-
 # Medium
 #
-#Download and generate switzerland.pmtiles in the current directory:
+# Download and generate switzerland.pmtiles in the current directory:
 switzerland:
 	java -jar target/*-with-deps.jar --download --force --area=switzerland
 
-# Generate switzerland.pmtiles in the current directory (using already downloaded asset)
-switzerland-fast:
-	java -jar target/*-with-deps.jar --force --area=switzerland
-
-#Download and generate switzerland.pmtiles in the current directory:
+# Download and generate switzerland.pmtiles in the current directory:
 washington:
 	java -jar target/*-with-deps.jar --download --force --area=washington
-
-# Generate switzerland.pmtiles in the current directory (using already downloaded asset)
-washington-fast:
-	java -jar target/*-with-deps.jar --force --area=washington
 
 # Large
 #
@@ -55,7 +43,4 @@ washington-fast:
 california:
 	java -jar target/*-with-deps.jar --download --force --area=us/california
 
-# Generate ca/california.pmtiles in the current directory (using already downloaded asset)
-# Note: the slash confuses some downstream processes, try a symlink to california
-california-fast:
-	java -jar target/*-with-deps.jar --force --area=us/california
+.PHONY: clean clean-pmtiles serve monaco switzerland washington california
