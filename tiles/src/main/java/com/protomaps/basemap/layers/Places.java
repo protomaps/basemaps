@@ -87,7 +87,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kind_detail)
         .setAttr("population", parseIntOrNull(sf.getString("pop_max")))
-        .setAttr("population_rank", parseIntOrNull(sf.getString("rank_max")))
+        .setAttr("pmap:population_rank", parseIntOrNull(sf.getString("rank_max")))
         .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(128)
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
