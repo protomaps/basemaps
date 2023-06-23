@@ -19,6 +19,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     features.polygon(this.name())
+      .setAttr("pmap:kind", "water")
       .setZoomRange(6, 15).setBufferPixels(8);
   }
 
@@ -31,7 +32,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
     var theme_max_zoom = 0;
 
     // Only process certain Natural Earth layers
-    // Notably the landscan derived urban areas theme causes problems otherwise
+    // Notably the landscan derived urban areas and NA roads supplement themes causes problems otherwise
     if (sourceLayer.equals("ne_110m_ocean") || sourceLayer.equals("ne_110m_lakes") || sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes") || sourceLayer.equals("ne_10m_ocean") || sourceLayer.equals("ne_10m_lakes") ) {
       if (sourceLayer.equals("ne_110m_ocean")) {
         theme_min_zoom = 0;
@@ -101,24 +102,63 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setMinPixelSize(3.0)
         .setBufferPixels(8);
 
-      if (sf.hasTag("intermittent", "yes")) {
-        feature.setAttr("intermittent", 1);
+      String kind = "other";
+      String kind_detail = "";
+      var reservoir = false;
+      var alkaline = false;
+
+      // coallese values across tags to single kind value
+      if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
+        kind = sf.getString("natural");
+        if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
+          kind_detail = sf.getString("water");
+
+          // This is a bug in Tilezen v1.9 that should be fixed in 2.0
+          // But isn't present in Protomaps v2 so let's fix it preemtively
+          if( kind_detail == "lake" ) {
+            kind = "lake";
+          }
+
+          if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
+            kind_detail = "lake";
+          }
+          if (sf.hasTag("water", "reservoir")) {
+            reservoir = true;
+          }
+          if (sf.hasTag("water", "lagoon", "salt", "salt_pool")) {
+            alkaline = true;
+          }
+        }
+      } else if (sf.hasTag("waterway", "riverbank", "dock", "canal", "river", "stream", "ditch", "drain")) {
+        kind = "water";
+        kind_detail = sf.getString("waterway");
+      } else if (sf.hasTag("landuse", "basin")) {
+        kind = sf.getString("landuse");
+      } else if (sf.hasTag("landuse", "reservoir")) {
+        kind = "water";
+        kind_detail = sf.getString("landuse");
+        reservoir = true;
+      } else if (sf.hasTag("leisure", "swimming_pool")) {
+        kind = "swimming_pool";
+      } else if (sf.hasTag("amenity", "swimming_pool")) {
+        kind = "swimming_pool";
       }
 
-      String kind = "other";
-      // coallese values across tags to single kind value
-      if (sf.hasTag("water")) {
-        kind = sf.getString("water");
-      } else if (sf.hasTag("waterway")) {
-        kind = sf.getString("waterway");
-      } else if (sf.hasTag("natural")) {
-        kind = sf.getString("natural");
-      } else if (sf.hasTag("landuse")) {
-        kind = sf.getString("landuse");
-      } else if (sf.hasTag("leisure")) {
-        kind = sf.getString("leisure");
-      }
       feature.setAttr("pmap:kind", kind);
+
+      // Optional tags
+      if (kind_detail != "") {
+        feature.setAttr("pmap:kind_detail", kind_detail);
+      }
+      if (sf.hasTag("water", "reservoir") || reservoir) {
+        feature.setAttr("reservoir", true);
+      }
+      if (sf.hasTag("water", "lagoon", "salt", "salt_pool") || alkaline) {
+        feature.setAttr("alkaline", true);
+      }
+      if (sf.hasTag("intermittent", "yes")) {
+        feature.setAttr("intermittent", true);
+      }
 
       // NOTE: water labels for polygons are found in the physical_point layer (see also physical_line layer)
       //OsmNames.setOsmNames(feature, sf, 0);
@@ -128,14 +168,17 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     items = Area.addAreaTag(items);
+
     if (zoom == 15)
       return items;
+
     int minArea = 400 / (4096 * 4096) * (256 * 256);
     if (zoom == 6)
       minArea = 600 / (4096 * 4096) * (256 * 256);
     else if (zoom <= 5)
       minArea = 800 / (4096 * 4096) * (256 * 256);
     items = Area.filterArea(items, minArea);
+
     return FeatureMerge.mergeOverlappingPolygons(items, 1);
   }
 }
