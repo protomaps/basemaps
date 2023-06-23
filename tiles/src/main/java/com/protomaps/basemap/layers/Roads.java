@@ -52,7 +52,9 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setAttrWithMinzoom("oneway", sourceFeature.getString("oneway"), 14);
 
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
-        feat.setAttr("pmap:kind", "highway").setZoomRange(6, 15);
+        // TODO: (nvkelso 20230622) Use Natural Earth for low zoom roads at zoom 5 and earlier
+        //       as normally OSM roads would start at 6, but we start at 3 to match Protomaps v2
+        feat.setAttr("pmap:kind", "highway").setZoomRange(3, 15);
 
         if (highway.equals("motorway")) {
           feat.setAttrWithMinzoom("ref", shield_text, 7)
@@ -70,7 +72,9 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         feat.setAttr("pmap:kind", "major_road").setZoomRange(7, 15);
 
         if (highway.equals("trunk")) {
-          feat.setAttrWithMinzoom("ref", shield_text, 8)
+          // Just trunk earlier zoom, otherwise road network looks choppy just with motorways then
+          feat.setZoomRange(6, 15)
+            .setAttrWithMinzoom("ref", shield_text, 8)
             .setAttrWithMinzoom("shield_text_length", shield_text_length, 8)
             .setAttrWithMinzoom("network", network_val, 8);
         } else if (highway.equals("primary")) {
@@ -115,9 +119,13 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
         if( highway.equals("service") ) {
           feat.setAttr("pmap:kind_detail", "service")
-              .setAttr("service", sourceFeature.getString("service"))
-              // "alley", "driveway", "parking_aisle", "drive-through"
-              .setZoomRange(14, 15);
+              .setZoomRange(13, 15);
+
+          // push down "alley", "driveway", "parking_aisle", "drive-through" & etc
+          if( sourceFeature.hasTag("service") ) {
+            feat.setZoomRange(14, 15)
+                .setAttr("service", sourceFeature.getString("service"));
+          }
         }
 
         OsmNames.setOsmNames(feat, sourceFeature, 14);
@@ -129,6 +137,9 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
           .setAttrWithMinzoom("network", network_val, 12);
 
+        if( sourceFeature.hasTag("highway", "path", "cycleway", "bridleway", "footway", "steps") ) {
+          feat.setZoomRange(13, 15);
+        }
         if( sourceFeature.hasTag("footway", "sidewalk", "crossing") ) {
           feat.setZoomRange(14, 15)
               .setAttr("pmap:kind_detail", sourceFeature.getString("footway"));
@@ -165,12 +176,14 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
+    if( zoom < 12 ) {
+      items = linkSimplify(items, "highway", "motorway", "motorway_link");
+      items = linkSimplify(items, "highway", "trunk", "trunk_link");
+      items = linkSimplify(items, "highway", "primary", "primary_link");
+      items = linkSimplify(items, "highway", "secondary", "secondary_link");
+    }
 
-    items = linkSimplify(items, "highway", "motorway", "motorway_link");
-    items = linkSimplify(items, "highway", "trunk", "trunk_link");
-    items = linkSimplify(items, "highway", "primary", "primary_link");
-    items = linkSimplify(items, "highway", "secondary", "secondary_link");
-
+    // NOTE: (nvkelso 20230623) Why is this neccesary?
     for (var item : items) {
       item.attrs().remove("highway");
       if (!item.attrs().containsKey("pmap:level")) {
