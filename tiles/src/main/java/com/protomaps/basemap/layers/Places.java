@@ -187,14 +187,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         }
       }
 
-      feat.setAttr("population_rank", population_rank);
+      feat.setAttr("pmap:population_rank", population_rank);
 
       if (population > 0) {
         feat.setAttr("population", population);
 
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
         feat.setPointLabelGridPixelSize(12, 128);
-        //feat.setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"));
+        //feat.setSortKey(getSortKey("pmap:min_zoom",  "pmap:population_rank", "population", "name"));
       } else {
         feat.setSortKey(0);
       }
