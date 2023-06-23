@@ -4,11 +4,18 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.Exceptions;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.postprocess.Area;
+import jnr.ffi.Struct;
+
 import java.util.List;
+
+import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
+import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
 
 public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -17,13 +24,17 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
     return "pois";
   }
 
+  private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
+          Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
+  private static final double LOG2 = Math.log(2);
+
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if ( (sf.isPoint() || sf.canBePolygon()) && (
+            sf.hasTag("aeroway", "aerodrome") ||
             sf.hasTag("amenity") ||
             sf.hasTag("boundary", "national_park", "protected_area") ||
             sf.hasTag("craft") ||
-            sf.hasTag("aeroway", "aerodrome") ||
             sf.hasTag("historic") ||
             sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military") ||
             sf.hasTag("leisure") ||
@@ -38,7 +49,22 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       if (sf.hasTag("aeroway", "aerodrome")) {
         kind = sf.getString("aeroway");
         min_zoom = 13;
-      } else if (sf.hasTag("amenity",  "university","college", "hospital", "library", "post_office", "school", "townhall")) {
+
+        // Emphasize large international airports earlier
+        if( kind == "aerodrome" &&  sf.hasTag("iata")) {
+          min_zoom -= 2;
+        }
+
+        if( sf.hasTag("aerodrome") ) {
+          kind_detail = sf.getString("aerodrome");
+        }
+      } else if (sf.hasTag("amenity",  "university","college")) {
+        kind = sf.getString("amenity");
+        min_zoom = 11;
+      } else if (sf.hasTag("amenity", "hospital")) {
+        kind = sf.getString("amenity");
+        min_zoom = 12;
+      } else if (sf.hasTag("amenity", "library", "post_office", "school", "townhall")) {
         kind = sf.getString("amenity");
         min_zoom = 13;
       } else if (sf.hasTag("amenity", "cafe")) {
@@ -47,9 +73,6 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("landuse", "cemetery")) {
         kind = sf.getString("landuse");
         min_zoom = 14;
-      } else if (sf.hasTag("boundary", "national_park", "protected_area")) {
-        kind = sf.getString("boundary");
-        min_zoom = 11;
       } else if (sf.hasTag("leisure", "golf_course", "marina", "park", "stadium")) {
         kind = sf.getString("leisure");
         min_zoom = 13;
@@ -66,8 +89,6 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         // then add new logic in section above
         if (sf.hasTag("amenity")) {
           kind = sf.getString("amenity");
-        } else if (sf.hasTag("boundary")) {
-          kind = sf.getString("boundary");
         } else if (sf.hasTag("craft")) {
           kind = sf.getString("craft");
         } else if (sf.hasTag("aeroway")) {
@@ -84,6 +105,10 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("shop");
         } else if (sf.hasTag("tourism")) {
           kind = sf.getString("tourism");
+        // Boundary is most generic, so place last else we loose out
+        // on nature_reserve detail versus all the protected_area
+        } else if (sf.hasTag("boundary")) {
+          kind = sf.getString("boundary");
         }
       }
 
@@ -111,24 +136,78 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       }
 
       // try first for polygon -> point representations
-      if (sf.canBePolygon() && sf.hasTag("name" ) && sf.getString("name" ) != null) {
+      if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
         Double way_area = 0.0;
+        try {
+          way_area = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
+        } catch(GeometryException e) {
+          System.out.println(e);
+        }
 
-        try { way_area = sf.area(); } catch(GeometryException e) {  System.out.println(e); }
+        Double height = 0.0;
+        try { height = sf.getString("height") == null ? 0.0 : parseDoubleOrNull(sf.getString("height")); } catch(Exception e) {
+          System.out.println("Problem getting height");
+        }
 
-        // Area zoom grading overrides the kind zoom grading in the section above
-        if (way_area > 400) {     //8000000
-          min_zoom = 9;
-        } else if (way_area > 50) {     //1000000
-          min_zoom = 10;
-        } else if (way_area > 10) {     //500000
-          min_zoom = 11;
-        } else
-        // size of a stadium is 5 to 7 range
-        if (way_area > 2) {     //50000
-          min_zoom = 12;
-        } else if (way_area > 0.5) {     //10000
-          min_zoom = 13;
+        // Area zoom grading overrides the kind zoom grading in the section above.
+        // Roughly shared with the water label area zoom grading in physical points layer
+        if( kind.equals("aerodrome") ||
+            kind.equals("college") ||
+            kind.equals("national_park") ||
+            kind.equals("nature_reserve") ||
+            kind.equals("golf_course") ||
+            kind.equals("park") ||
+            kind.equals("protected_area") ||
+            kind.equals("stadium") ||
+            kind.equals("university")
+        ) {
+          if (way_area > 300000) {    // 500000000 sq meters (web mercator proj)
+            min_zoom = 5;
+          } else if (way_area > 25000)  {     // 500000000 sq meters (web mercator proj)
+            min_zoom = 6;
+          } else if (way_area > 8000) {     // 500000000
+            min_zoom = 7;
+          } else if (way_area > 3000) {     // 200000000
+            min_zoom = 8;
+          } else if (way_area > 200) {     //  40000000
+            min_zoom = 9;
+          } else if (way_area > 25) {     //   8000000
+            min_zoom = 10;
+          } else if (way_area > 2) {     //    500000
+            min_zoom = 11;
+          } else if (way_area > 1) {     //     50000
+            min_zoom = 12;
+          } else if (way_area > 0.2) {     //     10000
+            min_zoom = 13;
+          }
+        } else if( kind.equals("cemetery") ) {
+          if (way_area > 5) {            //     50000
+            min_zoom = 12;
+          } else if (way_area > 1) {     //     10000
+            min_zoom = 13;
+          }
+        // Typically for "building" derived label placements for shops and other businesses
+        } else {
+          if (way_area >   10  ) {            //    500000
+            min_zoom = 11;
+          } else if (way_area >    2  ) {     //     50000
+            min_zoom = 12;
+          } else if (way_area >    0.5) {     //     10000
+            min_zoom = 13;
+          }
+
+          // Small but tall features should show up early as they have regional prominance.
+          // Height measured in meters
+          if( min_zoom >= 13 && height > 0.0) {
+            if (height >= 100) {
+              min_zoom = 11;
+              if (height >= 20) {
+                min_zoom = 12;
+              } else if (height >= 10) {
+                min_zoom = 13;
+              }
+            }
+          }
         }
 
         var poly_label_position = features.pointOnSurface(this.name())
@@ -137,6 +216,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setId(FeatureId.create(sf))
           // Core Tilezen schema properties
           .setAttr("pmap:kind", kind)
+          // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
+          // 512 px zooms versus 256 px logical zooms
+          .setAttr("pmap:min_zoom", min_zoom+1)
           // DEBUG
           .setAttr("pmap:area_debug", way_area)
           // Core OSM tags for different kinds of places
@@ -170,6 +252,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setId(FeatureId.create(sf))
           // Core Tilezen schema properties
           .setAttr("pmap:kind", kind)
+          // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
+          // 512 px zooms versus 256 px logical zooms
+          .setAttr("pmap:min_zoom", min_zoom+1)
           // Core OSM tags for different kinds of places
           .setAttr("amenity", sf.getString("amenity"))
           .setAttr("craft", sf.getString("craft"))
