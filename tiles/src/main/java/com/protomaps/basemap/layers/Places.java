@@ -1,15 +1,11 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
-import static com.onthegomap.planetiler.collection.FeatureGroup.SORT_KEY_BITS;
 
-import com.carrotsearch.hppc.LongIntMap;
-import com.onthegomap.planetiler.collection.Hppc;
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.onthegomap.planetiler.util.SortKey;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
@@ -101,8 +97,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() &&
-      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))
-    ) {
+      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))) {
       String kind = "other";
       int min_zoom = 12;
       int max_zoom = 15;
@@ -130,8 +125,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
           min_zoom = 7;
           max_zoom = 15;
-          if (population == 0)  {
-            if( place.equals("town") ) {
+          if (population == 0) {
+            if (place.equals("town")) {
               population = 10000;
             } else {
               population = 5000;
@@ -143,7 +138,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
           min_zoom = 10;
           max_zoom = 15;
-          if (population == 0)  {
+          if (population == 0) {
             population = 2000;
           }
           break;
@@ -187,22 +182,22 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
 
       var feat = features.point(this.name())
-              .setId(FeatureId.create(sf))
-              // Core Tilezen schema properties
-              .setAttr("pmap:kind", kind)
-              .setAttr("pmap:kind_detail", place)
-              .setAttr("pmap:min_zoom", min_zoom + 1)
-              // Core OSM tags for different kinds of places
-              .setAttr("capital", sf.getString("capital"))
-              // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-              //                      If an explicate value is needed it should be a kind, or included in kind_detail
-              .setAttr("place", sf.getString("place"))
-              .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
-              .setZoomRange(min_zoom, max_zoom);
+        .setId(FeatureId.create(sf))
+        // Core Tilezen schema properties
+        .setAttr("pmap:kind", kind)
+        .setAttr("pmap:kind_detail", place)
+        .setAttr("pmap:min_zoom", min_zoom + 1)
+        // Core OSM tags for different kinds of places
+        .setAttr("capital", sf.getString("capital"))
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should be a kind, or included in kind_detail
+        .setAttr("place", sf.getString("place"))
+        .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
+        .setZoomRange(min_zoom, max_zoom);
 
       if (population > 0) {
         feat.setAttr("population", population)
-            .setAttr("pmap:population_rank", population_rank);
+          .setAttr("pmap:population_rank", population_rank);
 
         //feat.setSortKey(getSortKey("pmap:min_zoom",  "pmap:population_rank", "population", "name"));
       } else {
@@ -224,7 +219,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     List<VectorTile.Feature> noncities = new ArrayList<>();
 
     for (VectorTile.Feature item : items) {
-      if (item.attrs().get("pmap:kind").equals("locality") ) {
+      if (item.attrs().get("pmap:kind").equals("locality")) {
         cities.add(item);
       } else {
         noncities.add(item);

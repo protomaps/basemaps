@@ -17,8 +17,8 @@ public class Earth implements ForwardingProfile.FeaturePostProcessor {
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     features.polygon(this.name())
-        .setAttr("pmap:kind", "earth")
-        .setZoomRange(6, 15).setBufferPixels(8);
+      .setAttr("pmap:kind", "earth")
+      .setZoomRange(6, 15).setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {

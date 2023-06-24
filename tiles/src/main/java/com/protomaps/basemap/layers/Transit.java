@@ -29,14 +29,11 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
       if (sf.hasTag("aeroway", "runway")) {
         minzoom = 9;
-      } else
-      if (sf.hasTag("aeroway", "taxiway")) {
+      } else if (sf.hasTag("aeroway", "taxiway")) {
         minzoom = 10;
-      } else
-      if (sf.hasTag("service", "yard", "siding", "crossover")) {
+      } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
         minzoom = 13;
-      } else
-      if (sf.hasTag("man_made", "pier")) {
+      } else if (sf.hasTag("man_made", "pier")) {
         minzoom = 13;
       }
 
@@ -45,7 +42,8 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       if (sf.hasTag("aeroway")) {
         kind = "aeroway";
         kind_detail = sf.getString("aeroway");
-      } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge", "preserved", "subway", "tram")) {
+      } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge",
+        "preserved", "subway", "tram")) {
         kind = "rail";
         kind_detail = sf.getString("railway");
         minzoom = 14;
@@ -53,11 +51,11 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = "rail";
         kind_detail = sf.getString("railway");
 
-        if( kind_detail.equals("service") ) {
+        if (kind_detail.equals("service")) {
           minzoom = 13;
 
           // eg a rail yard
-          if( sf.hasTag("service") ) {
+          if (sf.hasTag("service")) {
             minzoom = 14;
           }
         }
@@ -91,12 +89,12 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setZoomRange(minzoom, 15);
 
       // Core Tilezen schema properties
-      if( kind_detail != "" ) {
+      if (kind_detail != "") {
         feature.setAttr("pmap:kind_detail", kind_detail);
       }
 
       // Too many small pier lines otherwise
-      if( kind == "pier" ) {
+      if (kind == "pier") {
         feature.setMinPixelSize(2);
       }
 

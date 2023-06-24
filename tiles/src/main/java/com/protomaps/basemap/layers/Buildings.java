@@ -8,9 +8,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.onthegomap.planetiler.util.Exceptions;
 import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
   static int quantize_val(double val, int step) {
     // special case: if val is very small, we don't want it rounding to zero, so
     // round the smallest values up to the first step.
-    if( val < step ) {
+    if (val < step) {
       return (int) step;
     }
 
@@ -33,10 +31,8 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBePolygon() && (
-            ( sf.hasTag("building") && !sf.hasTag("building", "no")) ||
-            ( sf.hasTag("building:part") && !sf.hasTag("building:part", "no"))))
-    {
+    if (sf.canBePolygon() && ((sf.hasTag("building") && !sf.hasTag("building", "no")) ||
+      (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {
       Double height = parseDoubleOrNull(sf.getString("height"));
       Double min_height = parseDoubleOrNull(sf.getString("min_height"));
       Integer min_zoom = 11;
@@ -44,7 +40,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
       // Limit building:part features to later zooms
       // TODO: (nvkelso 20230621) this should be based on area and volume, too
-      if( sf.hasTag("building:part") ) {
+      if (sf.hasTag("building:part")) {
         kind = "building_part";
         min_zoom = 14;
       }
@@ -66,7 +62,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
         .setAttr("height", height)
         .setZoomRange(min_zoom, 15);
 
-      if( kind == "building_part") {
+      if (kind == "building_part") {
         // We don't need to set WithMinzoom because that's implicate with the ZoomRange
         feature.setAttr("pmap:kind_detail", sf.getString("building:part"));
         feature.setAttr("min_height", sf.getString("min_height"));
@@ -98,7 +94,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
           var height = (double) item.attrs().get("height");
 
           // Protected against NULL values
-          if( height > 0 ) {
+          if (height > 0) {
             // at zoom <= 12 round height to nearest 20 meters
             if (zoom <= 12) {
               height = quantize_val(height, 20);
@@ -115,7 +111,8 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
             item.attrs().put("height", height);
           }
         }
-      } catch( Exception e ) { }
+      } catch (Exception e) {
+      }
 
       try {
         if (item.attrs().containsKey("min_height")) {
@@ -126,19 +123,20 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
             if (zoom <= 12) {
               min_height = quantize_val(min_height, 20);
             } else
-              // at zoom 13 round height to nearest 10 meters
-              if (zoom == 13) {
-                min_height = quantize_val(min_height, 10);
-              } else
-                // at zoom 14 round height to nearest 5 meters
-                if (zoom == 14) {
-                  min_height = quantize_val(min_height, 5);
-                }
+            // at zoom 13 round height to nearest 10 meters
+            if (zoom == 13) {
+              min_height = quantize_val(min_height, 10);
+            } else
+            // at zoom 14 round height to nearest 5 meters
+            if (zoom == 14) {
+              min_height = quantize_val(min_height, 5);
+            }
 
             item.attrs().put("min_height", min_height);
           }
         }
-      } catch( Exception e ) { }
+      } catch (Exception e) {
+      }
     }
 
     return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);

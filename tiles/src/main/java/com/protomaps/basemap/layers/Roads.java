@@ -21,8 +21,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   @Override
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("highway") &&
-      !(sourceFeature.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))
-    ) {
+      !(sourceFeature.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))) {
       String kind = "other";
       String kind_detail = "";
       int min_zoom = 15;
@@ -64,8 +63,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
         min_zoom_names = 11;
       } else if (highway.equals("trunk") || highway.equals("trunk_link") || highway.equals("primary") ||
-        highway.equals("primary_link")
-      ) {
+        highway.equals("primary_link")) {
         kind = "major_road";
         min_zoom = 7;
 
@@ -83,8 +81,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
         min_zoom_names = 12;
       } else if (highway.equals("secondary") || highway.equals("secondary_link") || highway.equals("tertiary") ||
-        highway.equals("tertiary_link")
-      ) {
+        highway.equals("tertiary_link")) {
         kind = "medium_road";
         min_zoom = 9;
 
@@ -99,8 +96,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           min_zoom_names = 14;
         }
       } else if (highway.equals("residential") || highway.equals("service") || highway.equals("unclassified") ||
-        highway.equals("road") || highway.equals("raceway")
-      ) {
+        highway.equals("road") || highway.equals("raceway")) {
         kind = "minor_road";
         min_zoom = 12;
         min_zoom_shield_text = 12;
@@ -111,28 +107,27 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           min_zoom = 13;
 
           // push down "alley", "driveway", "parking_aisle", "drive-through" & etc
-          if( sourceFeature.hasTag("service") ) {
+          if (sourceFeature.hasTag("service")) {
             min_zoom = 14;
             service = sourceFeature.getString("service");
           }
         }
       } else if (sourceFeature.hasTag("highway", "pedestrian", "track", "path", "cycleway", "bridleway", "footway",
-        "steps", "corridor")
-      ) {
+        "steps", "corridor")) {
         kind = "path";
         kind_detail = highway;
         min_zoom = 12;
         min_zoom_shield_text = 12;
         min_zoom_names = 14;
 
-        if( sourceFeature.hasTag("highway", "path", "cycleway", "bridleway", "footway", "steps") ) {
+        if (sourceFeature.hasTag("highway", "path", "cycleway", "bridleway", "footway", "steps")) {
           min_zoom = 13;
         }
-        if( sourceFeature.hasTag("footway", "sidewalk", "crossing") ) {
+        if (sourceFeature.hasTag("footway", "sidewalk", "crossing")) {
           min_zoom = 14;
           kind_detail = sourceFeature.getString("footway");
         }
-        if( sourceFeature.hasTag("highway", "corridor") ) {
+        if (sourceFeature.hasTag("highway", "corridor")) {
           min_zoom = 14;
         }
       } else {
@@ -144,32 +139,32 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
       }
 
       var feat = features.line("roads")
-                  .setId(FeatureId.create(sourceFeature))
-                  // Core Tilezen schema properties
-                  .setAttr("pmap:kind", kind)
-                  .setAttr("pmap:kind_detail", kind_detail)
-                  .setAttrWithMinzoom("ref", shield_text, min_zoom_shield_text)
-                  .setAttrWithMinzoom("shield_text_length", shield_text_length, min_zoom_shield_text)
-                  .setAttrWithMinzoom("network", network_val, min_zoom_shield_text)
-                  // Core OSM tags for different kinds of places
-                  .setAttrWithMinzoom("bridge", sourceFeature.getString("bridge"), 12)
-                  .setAttrWithMinzoom("tunnel", sourceFeature.getString("tunnel"), 12)
-                  .setAttrWithMinzoom("layer", sourceFeature.getString("layer"), 12)
-                  .setAttrWithMinzoom("oneway", sourceFeature.getString("oneway"), 14)
-                  // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-                  //                      If an explicate value is needed it should bea kind, or included in kind_detail
-                  .setAttr("highway", highway)
-                  .setMinPixelSize(0)
-                  .setPixelTolerance(0)
-                  .setZoomRange(min_zoom, max_zoom);
+        .setId(FeatureId.create(sourceFeature))
+        // Core Tilezen schema properties
+        .setAttr("pmap:kind", kind)
+        .setAttr("pmap:kind_detail", kind_detail)
+        .setAttrWithMinzoom("ref", shield_text, min_zoom_shield_text)
+        .setAttrWithMinzoom("shield_text_length", shield_text_length, min_zoom_shield_text)
+        .setAttrWithMinzoom("network", network_val, min_zoom_shield_text)
+        // Core OSM tags for different kinds of places
+        .setAttrWithMinzoom("bridge", sourceFeature.getString("bridge"), 12)
+        .setAttrWithMinzoom("tunnel", sourceFeature.getString("tunnel"), 12)
+        .setAttrWithMinzoom("layer", sourceFeature.getString("layer"), 12)
+        .setAttrWithMinzoom("oneway", sourceFeature.getString("oneway"), 14)
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should bea kind, or included in kind_detail
+        .setAttr("highway", highway)
+        .setMinPixelSize(0)
+        .setPixelTolerance(0)
+        .setZoomRange(min_zoom, max_zoom);
 
       // Core OSM tags for different kinds of places
-      if( service != "") {
+      if (service != "") {
         feat.setAttr("service", service);
       }
 
       // Core Tilezen schema properties
-      if( kind_detail != "") {
+      if (kind_detail != "") {
         feat.setAttr("pmap:kind_detail", kind_detail);
       }
 
@@ -192,7 +187,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
-    if( zoom < 12 ) {
+    if (zoom < 12) {
       items = linkSimplify(items, "highway", "motorway", "motorway_link");
       items = linkSimplify(items, "highway", "trunk", "trunk_link");
       items = linkSimplify(items, "highway", "primary", "primary_link");

@@ -6,7 +6,6 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
@@ -33,7 +32,9 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
     // Only process certain Natural Earth layers
     // Notably the landscan derived urban areas and NA roads supplement themes causes problems otherwise
-    if (sourceLayer.equals("ne_110m_ocean") || sourceLayer.equals("ne_110m_lakes") || sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes") || sourceLayer.equals("ne_10m_ocean") || sourceLayer.equals("ne_10m_lakes") ) {
+    if (sourceLayer.equals("ne_110m_ocean") || sourceLayer.equals("ne_110m_lakes") ||
+      sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes") || sourceLayer.equals("ne_10m_ocean") ||
+      sourceLayer.equals("ne_10m_lakes")) {
       if (sourceLayer.equals("ne_110m_ocean")) {
         theme_min_zoom = 0;
         theme_max_zoom = 1;
@@ -70,24 +71,24 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
       if (kind != "" && sf.hasTag("min_zoom")) {
         var feature = features.polygon(this.name())
-                .setAttr("pmap:kind", kind)
-                .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
-                .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom)
-                .setMinPixelSize(3.0)
-                .setBufferPixels(8);
+          .setAttr("pmap:kind", kind)
+          .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+          .setZoomRange(
+            sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+            theme_max_zoom)
+          .setMinPixelSize(3.0)
+          .setBufferPixels(8);
       }
     }
   }
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBePolygon() && (
-              sf.hasTag("water") ||
-              sf.hasTag("waterway") ||
-              sf.hasTag("natural", "water") ||
-              sf.hasTag("landuse", "reservoir") ||
-              sf.hasTag("leisure", "swimming_pool")))
-    {
+    if (sf.canBePolygon() && (sf.hasTag("water") ||
+      sf.hasTag("waterway") ||
+      sf.hasTag("natural", "water") ||
+      sf.hasTag("landuse", "reservoir") ||
+      sf.hasTag("leisure", "swimming_pool"))) {
       String kind = "other";
       String kind_detail = "";
       var reservoir = false;
@@ -101,7 +102,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
           // But isn't present in Protomaps v2 so let's fix it preemtively
-          if( kind_detail == "lake" ) {
+          if (kind_detail == "lake") {
             kind = "lake";
           }
 

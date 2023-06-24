@@ -6,8 +6,6 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
@@ -21,8 +19,7 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("natural", "wood", "glacier", "scrub", "sand", "wetland", "bare_rock") ||
-      sf.hasTag("landuse", "forest", "meadow"))
-    ) {
+      sf.hasTag("landuse", "forest", "meadow"))) {
       String kind = "other";
       if (sf.hasTag("natural")) {
         kind = sf.getString("natural");

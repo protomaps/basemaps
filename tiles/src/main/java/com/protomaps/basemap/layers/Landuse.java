@@ -1,13 +1,11 @@
 package com.protomaps.basemap.layers;
 
 import com.onthegomap.planetiler.FeatureCollector;
-import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
@@ -30,12 +28,12 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("railway", "platform") ||
       sf.hasTag("tourism", "zoo") ||
       (sf.hasTag("area", "yes") &&
-        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))
-    ) {
+        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))) {
       String kind = "other";
       if (sf.hasTag("aeroway", "aerodrome")) {
         kind = sf.getString("aeroway");
-      } else if (sf.hasTag("amenity", "university", "college", "hospital", "library", "post_office", "school", "townhall")) {
+      } else if (sf.hasTag("amenity", "university", "college", "hospital", "library", "post_office", "school",
+        "townhall")) {
         kind = sf.getString("amenity");
       } else if (sf.hasTag("amenity", "cafe")) {
         kind = sf.getString("amenity");
@@ -96,43 +94,48 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
       // National forests
       if (sf.hasTag("boundary", "national_park") &&
-              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
-      ) {
+        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
+          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
+          "United State Forest Service", "U.S. National Forest Service")) {
         kind = "forest";
       } else if (sf.hasTag("boundary", "national_park") &&
-              sf.hasTag("protect_class", "6") &&
-              sf.hasTag("protection_title", "National Forest")
-      ) {
+        sf.hasTag("protect_class", "6") &&
+        sf.hasTag("protection_title", "National Forest")) {
         kind = "forest";
       } else if (sf.hasTag("landuse", "forest") &&
-              sf.hasTag("protect_class", "6")
-      ) {
+        sf.hasTag("protect_class", "6")) {
         kind = "forest";
-      } else if( sf.hasTag("landuse", "forest") &&
-              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
-      ) {
+      } else if (sf.hasTag("landuse", "forest") &&
+        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
+          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
+          "United State Forest Service", "U.S. National Forest Service")) {
         kind = "forest";
-      } else if( sf.hasTag("landuse", "forest") ) {
+      } else if (sf.hasTag("landuse", "forest")) {
         kind = "forest";
-      } else if( sf.hasTag("boundary", "protected_area") &&
-              sf.hasTag("protect_class", "6") &&
-              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
-      ) {
+      } else if (sf.hasTag("boundary", "protected_area") &&
+        sf.hasTag("protect_class", "6") &&
+        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
+          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
+          "United State Forest Service", "U.S. National Forest Service")) {
         kind = "forest";
       }
 
       // National parks
-      if( sf.hasTag("boundary", "national_park") ) {
-        if( !(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service") ||
-                sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")
-        ) &&
-                ( sf.hasTag("protect_class", "2", "3") ||
-                        sf.hasTag("operator", "United States National Park Service", "National Park Service", "US National Park Service", "U.S. National Park Service", "US National Park service") ||
-                        sf.hasTag("operator:en", "Parks Canada") ||
-                        sf.hasTag("designation", "national_park") ||
-                        sf.hasTag("protection_title", "National Park")
-                )
-        ) {
+      if (sf.hasTag("boundary", "national_park")) {
+        if (!(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
+          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
+          "United State Forest Service", "U.S. National Forest Service") ||
+          sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
+            "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
+            "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
+            "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
+            "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")) &&
+          (sf.hasTag("protect_class", "2", "3") ||
+            sf.hasTag("operator", "United States National Park Service", "National Park Service",
+              "US National Park Service", "U.S. National Park Service", "US National Park service") ||
+            sf.hasTag("operator:en", "Parks Canada") ||
+            sf.hasTag("designation", "national_park") ||
+            sf.hasTag("protection_title", "National Park"))) {
           kind = "national_park";
         } else {
           kind = "park";
@@ -140,28 +143,28 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       }
 
       var poly = features.polygon(layerName)
-              .setId(FeatureId.create(sf))
-              // Core Tilezen schema properties
-              .setAttr("pmap:kind", kind)
-              // Core OSM tags for different kinds of places
-              // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-              //                      If an explicate value is needed it should bea kind, or included in kind_detail
-              .setAttr("aeroway", sf.getString("aeroway"))
-              .setAttr("amenity", sf.getString("amenity"))
-              .setAttr("area:aeroway", sf.getString("area:aeroway"))
-              .setAttr("boundary", sf.getString("boundary"))
-              .setAttr("highway", sf.getString("highway"))
-              .setAttr("landuse", sf.getString("landuse"))
-              .setAttr("leisure", sf.getString("leisure"))
-              .setAttr("man_made", sf.getString("man_made"))
-              .setAttr("natural", sf.getString("natural"))
-              .setAttr("place", sf.getString("place"))
-              .setAttr("railway", sf.getString("railway"))
-              .setAttr("sport", sf.getString("sport"))
-              // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
-              //       But to match Protomaps v2 we do earlier
-              .setZoomRange(2, 15)
-              .setMinPixelSize(2.0);
+        .setId(FeatureId.create(sf))
+        // Core Tilezen schema properties
+        .setAttr("pmap:kind", kind)
+        // Core OSM tags for different kinds of places
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should bea kind, or included in kind_detail
+        .setAttr("aeroway", sf.getString("aeroway"))
+        .setAttr("amenity", sf.getString("amenity"))
+        .setAttr("area:aeroway", sf.getString("area:aeroway"))
+        .setAttr("boundary", sf.getString("boundary"))
+        .setAttr("highway", sf.getString("highway"))
+        .setAttr("landuse", sf.getString("landuse"))
+        .setAttr("leisure", sf.getString("leisure"))
+        .setAttr("man_made", sf.getString("man_made"))
+        .setAttr("natural", sf.getString("natural"))
+        .setAttr("place", sf.getString("place"))
+        .setAttr("railway", sf.getString("railway"))
+        .setAttr("sport", sf.getString("sport"))
+        // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
+        //       But to match Protomaps v2 we do earlier
+        .setZoomRange(2, 15)
+        .setMinPixelSize(2.0);
 
       // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
       //OsmNames.setOsmNames(poly, sf, 0);
