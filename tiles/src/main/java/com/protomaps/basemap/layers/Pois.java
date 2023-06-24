@@ -254,9 +254,10 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
               min_zoom = 13;
             }
 
-            // clamp certain kind values so medium tall buildings don't crowd downtown areas
+            // Clamp certain kind values so medium tall buildings don't crowd downtown areas
             // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
-            if( kind.equals("hotel") || kind.equals("hotel") ){
+            // NOTE: (nvkelso 20230624) Turn this into an allowlist instead of a blocklist
+            if( kind.equals("hotel") || kind.equals("hostel") || kind.equals("parking") || kind.equals("bank") || kind.equals("place_of_worship") || kind.equals("jewelry") || kind.equals("yes") || kind.equals("restaurant") || kind.equals("coworking_space") || kind.equals("clothes") || kind.equals("art")){
               if( min_zoom == 12 ) {
                 min_zoom = 13;
               }
