@@ -104,18 +104,17 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
               sf.hasTag("leisure", "swimming_pool")))
     {
       String kind = "other";
-
+      var kind_detail = "";
+      var name_min_zoom = 15;
+      var reservoir = false;
+      var alkaline = false;
       Double way_area = 0.0;
+
       try {
         way_area = sf.area() / WORLD_AREA_FOR_70K_SQUARE_METERS;
       } catch(GeometryException e) {
         System.out.println(e);
       }
-
-      var name_min_zoom = 15;
-      var kind_detail = "";
-      var reservoir = false;
-      var alkaline = false;
 
       // coallese values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
@@ -173,14 +172,15 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       if( way_area >      25) {     //500000
         name_min_zoom = 12;
       } else
-      if( way_area >       2) {     //50000
+      if( way_area >       0.5) {     //50000
         name_min_zoom = 13;
       } else
-      if( way_area >       0.5) {     //10000
+      if( way_area >       0.05) {     //10000
         name_min_zoom = 14;
       }
 
       var water_label_position = features.pointOnSurface(this.name())
+              // Core Tilezen schema properties
               .setAttr("pmap:kind", kind)
               .setAttr("pmap:kind_detail", kind_detail)
               // While other layers don't need min_zoom, physical point labels do for more
@@ -189,22 +189,23 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
               .setAttr("pmap:min_zoom", name_min_zoom+1)
               // DEBUG
               //.setAttr("pmap:area", way_area)
-              // This is the Tilezen way, when put into the "any geom type" water layer
-              // For protomaps v3 this may not be neccesary?
-              //.setAttr("pmaps:label_position", true)
+              //
+              // Core OSM tags for different kinds of places
+              // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+              //                      If an explicate value is needed it should bea kind, or included in kind_detail
               .setAttr("natural", sf.getString("natural"))
               .setAttr("landuse", sf.getString("landuse"))
               .setAttr("leisure", sf.getString("leisure"))
               .setAttr("water", sf.getString("water"))
               .setAttr("waterway", sf.getString("waterway"))
-              // Add less common attributes only at higher zooms
+              // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
               .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
               .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
               .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
               .setZoomRange(name_min_zoom, 15)
               .setBufferPixels(128);
 
-      // Optional tags
+      // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
       if (kind_detail != "") {
         water_label_position.setAttr("pmap:kind_detail", kind_detail);
       }
