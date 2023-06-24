@@ -41,7 +41,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       }
 
       String kind = "other";
-      String kind_detail = "other";
+      String kind_detail = "";
       if (sf.hasTag("aeroway")) {
         kind = "aeroway";
         kind_detail = sf.getString("aeroway");
@@ -76,27 +76,32 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
         // Core OSM tags for different kinds of places
-        .setAttr("aerialway", sf.getString("aerialway"))
-        .setAttr("aeroway", sf.getString("aeroway"))
-        .setAttr("highspeed", sf.getString("highspeed"))
         .setAttr("layer", sf.getString("layer"))
-        .setAttr("man_made", sf.getString("pier"))
         .setAttr("network", sf.getString("network"))
-        .setAttr("railway", sf.getString("railway"))
         .setAttr("ref", sf.getString("ref"))
         .setAttr("route", sf.getString("route"))
         .setAttr("service", sf.getString("service"))
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should bea kind, or included in kind_detail
+        .setAttr("aerialway", sf.getString("aerialway"))
+        .setAttr("aeroway", sf.getString("aeroway"))
+        .setAttr("highspeed", sf.getString("highspeed"))
+        .setAttr("man_made", sf.getString("pier"))
+        .setAttr("railway", sf.getString("railway"))
         .setZoomRange(minzoom, 15);
 
-      if( kind_detail != "other" ) {
+      // Core Tilezen schema properties
+      if( kind_detail != "" ) {
         feature.setAttr("pmap:kind_detail", kind_detail);
       }
 
+      // Too many small pier lines otherwise
       if( kind == "pier" ) {
         feature.setMinPixelSize(2);
       }
 
-      OsmNames.setOsmNames(feature, sf, 0);
+      // TODO: (nvkelso 20230623) This should be variable, but 12 is better than 0 for line merging
+      OsmNames.setOsmNames(feature, sf, 12);
     }
   }
 
