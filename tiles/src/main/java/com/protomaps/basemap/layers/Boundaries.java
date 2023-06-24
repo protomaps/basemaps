@@ -46,6 +46,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
           line.setMinZoom(10);
         }
 
+        // Core Tilezen schema properties
         switch (minAdminLevel.getAsInt()) {
           case 2 -> {
             line.setAttr("pmap:kind", "country");
@@ -61,6 +62,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
           }
         }
 
+        // Core Tilezen schema properties
         if (disputed.getAsInt() == 1) {
           line.setAttr("disputed", 1);
         }
