@@ -36,14 +36,17 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
         // Core OSM tags for different kinds of places
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should bea kind, or included in kind_detail
         .setAttr("waterway", sf.getString("waterway"))
         .setAttr("natural", sf.getString("natural"))
-        // Add less common attributes only at higher zooms
+        // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
         .setZoomRange(min_zoom, 15);
 
+      // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
       if (sf.hasTag("intermittent", "yes")) {
         feat.setAttr("intermittent", true);
       }
