@@ -21,40 +21,21 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("amenity", "hospital", "school", "kindergarten", "university", "college") ||
       sf.hasTag("boundary", "national_park", "protected_area") ||
       sf.hasTag("landuse", "recreation_ground", "industrial", "brownfield", "railway", "cemetery", "commercial",
-        "grass", "orchard", "farmland", "farmyard", "residential") ||
+        "grass", "orchard", "farmland", "farmyard", "residential", "military") ||
       sf.hasTag("leisure", "park", "garden", "golf_course", "dog_park", "playground", "pitch", "nature_reserve") ||
       sf.hasTag("man_made", "pier") ||
-      // TODO: (nvkelso 20230622) This use of the place tag here is dubious
+      sf.hasTag("natural", "beach") ||
+      // TODO: (nvkelso 20230622) This use of the place tag here is dubious, though paired with "residential"
       sf.hasTag("place", "neighbourhood") ||
       sf.hasTag("railway", "platform") ||
+      sf.hasTag("tourism", "zoo") ||
       (sf.hasTag("area", "yes") &&
-        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge")))))
-    {
-      var poly = features.polygon(layerName)
-        .setId(FeatureId.create(sf))
-        .setAttr("aeroway", sf.getString("aeroway"))
-        .setAttr("amenity", sf.getString("amenity"))
-        .setAttr("area:aeroway", sf.getString("area:aeroway"))
-        .setAttr("boundary", sf.getString("boundary"))
-        .setAttr("highway", sf.getString("highway"))
-        .setAttr("landuse", sf.getString("landuse"))
-        .setAttr("leisure", sf.getString("leisure"))
-        .setAttr("man_made", sf.getString("man_made"))
-        .setAttr("place", sf.getString("place"))
-        .setAttr("railway", sf.getString("railway"))
-        .setAttr("sport", sf.getString("sport"))
-        // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
-        //       But to match Protomaps v2 we do earlier
-        .setZoomRange(2, 15)
-        .setMinPixelSize(3.0);
-
-      // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
-      //OsmNames.setOsmNames(poly, sf, 0);
-
+        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))
+    ) {
       String kind = "other";
       if (sf.hasTag("aeroway", "aerodrome")) {
         kind = sf.getString("aeroway");
-      } else if (sf.hasTag("amenity",  "university","college", "hospital", "library", "post_office", "school", "townhall")) {
+      } else if (sf.hasTag("amenity", "university", "college", "hospital", "library", "post_office", "school", "townhall")) {
         kind = sf.getString("amenity");
       } else if (sf.hasTag("amenity", "cafe")) {
         kind = sf.getString("amenity");
@@ -64,8 +45,15 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = sf.getString("landuse");
       } else if (sf.hasTag("landuse", "orchard", "farmland", "farmyard")) {
         kind = "farmland";
+      } else if (sf.hasTag("landuse", "residential")) {
+        kind = "residential";
       } else if (sf.hasTag("landuse", "industrial", "brownfield")) {
         kind = "industrial";
+      } else if (sf.hasTag("landuse", "military")) {
+        kind = "military";
+        if (sf.hasTag("military", "naval_base", "airfield")) {
+          kind = sf.getString("military");
+        }
       } else if (sf.hasTag("leisure", "golf_course", "marina", "park", "stadium")) {
         kind = sf.getString("leisure");
       } else if (sf.hasTag("man_made", "bridge")) {
@@ -91,34 +79,92 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
           kind = sf.getString("landuse");
         } else if (sf.hasTag("leisure")) {
           kind = sf.getString("leisure");
+        } else if (sf.hasTag("natural")) {
+          kind = sf.getString("natural");
         } else if (sf.hasTag("railway")) {
           kind = sf.getString("railway");
         } else if (sf.hasTag("shop")) {
           kind = sf.getString("shop");
         } else if (sf.hasTag("tourism")) {
           kind = sf.getString("tourism");
-        // Boundary is most generic, so place last else we loose out
-        // on nature_reserve detail versus all the protected_area
+          // Boundary is most generic, so place last else we loose out
+          // on nature_reserve detail versus all the protected_area
         } else if (sf.hasTag("boundary")) {
           kind = sf.getString("boundary");
         }
       }
 
-      if( sf.hasTag("boundary", "national_park") &&
-              !(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service") ||
-                      sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")
-              ) &&
-              ( sf.hasTag("protect_class", "2", "3") ||
-                      sf.hasTag("operator", "United States National Park Service", "National Park Service", "US National Park Service", "U.S. National Park Service", "US National Park service") ||
-                      sf.hasTag("operator:en", "Parks Canada") ||
-                      sf.hasTag("designation", "national_park") ||
-                      sf.hasTag("protection_title", "National Park")
-              )
+      // National forests
+      if (sf.hasTag("boundary", "national_park") &&
+              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
       ) {
-        kind = "national_park";
+        kind = "forest";
+      } else if (sf.hasTag("boundary", "national_park") &&
+              sf.hasTag("protect_class", "6") &&
+              sf.hasTag("protection_title", "National Forest")
+      ) {
+        kind = "forest";
+      } else if (sf.hasTag("landuse", "forest") &&
+              sf.hasTag("protect_class", "6")
+      ) {
+        kind = "forest";
+      } else if( sf.hasTag("landuse", "forest") &&
+              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
+      ) {
+        kind = "forest";
+      } else if( sf.hasTag("landuse", "forest") ) {
+        kind = "forest";
+      } else if( sf.hasTag("boundary", "protected_area") &&
+              sf.hasTag("protect_class", "6") &&
+              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
+      ) {
+        kind = "forest";
       }
 
-      poly.setAttr("pmap:kind", kind);
+      // National parks
+      if( sf.hasTag("boundary", "national_park") ) {
+        if( !(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service") ||
+                sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")
+        ) &&
+                ( sf.hasTag("protect_class", "2", "3") ||
+                        sf.hasTag("operator", "United States National Park Service", "National Park Service", "US National Park Service", "U.S. National Park Service", "US National Park service") ||
+                        sf.hasTag("operator:en", "Parks Canada") ||
+                        sf.hasTag("designation", "national_park") ||
+                        sf.hasTag("protection_title", "National Park")
+                )
+        ) {
+          kind = "national_park";
+        } else {
+          kind = "park";
+        }
+      }
+
+      var poly = features.polygon(layerName)
+              .setId(FeatureId.create(sf))
+              // Core Tilezen schema properties
+              .setAttr("pmap:kind", kind)
+              // Core OSM tags for different kinds of places
+              // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+              //                      If an explicate value is needed it should bea kind, or included in kind_detail
+              .setAttr("aeroway", sf.getString("aeroway"))
+              .setAttr("amenity", sf.getString("amenity"))
+              .setAttr("area:aeroway", sf.getString("area:aeroway"))
+              .setAttr("boundary", sf.getString("boundary"))
+              .setAttr("highway", sf.getString("highway"))
+              .setAttr("landuse", sf.getString("landuse"))
+              .setAttr("leisure", sf.getString("leisure"))
+              .setAttr("man_made", sf.getString("man_made"))
+              .setAttr("natural", sf.getString("natural"))
+              .setAttr("place", sf.getString("place"))
+              .setAttr("railway", sf.getString("railway"))
+              .setAttr("sport", sf.getString("sport"))
+              // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
+              //       But to match Protomaps v2 we do earlier
+              .setZoomRange(2, 15)
+              .setMinPixelSize(2.0);
+
+      // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
+      //OsmNames.setOsmNames(poly, sf, 0);
     }
   }
 
@@ -144,6 +190,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       minArea = 800 / (4096 * 4096) * (256 * 256);
     items = Area.filterArea(items, minArea);
 
-    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
+    //return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
+    return items;
   }
 }
