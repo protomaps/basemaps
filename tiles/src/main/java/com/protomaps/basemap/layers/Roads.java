@@ -21,9 +21,17 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   @Override
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (sourceFeature.canBeLine() && sourceFeature.hasTag("highway") &&
-      !(sourceFeature.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))) {
+      !(sourceFeature.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))
+    ) {
+      String kind = "other";
+      String kind_detail = "";
+      int min_zoom = 15;
+      int max_zoom = 15;
+      int min_zoom_shield_text = 10;
+      int min_zoom_names = 14;
 
       String highway = sourceFeature.getString("highway");
+      String service = "";
       String shield_text = sourceFeature.getString("ref");
       String network_val = sourceFeature.getString("network");
       shield_text = (shield_text == null ? null : shield_text.split(";")[0]);
@@ -35,128 +43,134 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
           shield_text = shield_text.replaceAll("I ", "");
           network_val = "US:I";
         } else {
-          network_val = network_val;
+          // This should be replaced by walking the way's relations (which reliably set network)
+          network_val = "other";
         }
       }
       shield_text = (shield_text == null ? null : shield_text.replaceAll("\\s", ""));
       Integer shield_text_length = (shield_text == null ? null : shield_text.length());
 
-      var feat = features.line("roads")
-        .setId(FeatureId.create(sourceFeature))
-        .setMinPixelSize(0)
-        .setPixelTolerance(0)
-        .setAttr("highway", highway)
-        .setAttrWithMinzoom("bridge", sourceFeature.getString("bridge"), 12)
-        .setAttrWithMinzoom("tunnel", sourceFeature.getString("tunnel"), 12)
-        .setAttrWithMinzoom("layer", sourceFeature.getString("layer"), 12)
-        .setAttrWithMinzoom("oneway", sourceFeature.getString("oneway"), 14);
-
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         // TODO: (nvkelso 20230622) Use Natural Earth for low zoom roads at zoom 5 and earlier
         //       as normally OSM roads would start at 6, but we start at 3 to match Protomaps v2
-        feat.setAttr("pmap:kind", "highway").setZoomRange(3, 15);
+        kind = "highway";
+        min_zoom = 3;
 
         if (highway.equals("motorway")) {
-          feat.setAttrWithMinzoom("ref", shield_text, 7)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 7)
-            .setAttrWithMinzoom("network", network_val, 7);
+          min_zoom_shield_text = 7;
         } else {
-          feat.setAttrWithMinzoom("ref", shield_text, 12)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
-            .setAttrWithMinzoom("network", network_val, 12);
+          min_zoom_shield_text = 12;
         }
 
-        OsmNames.setOsmNames(feat, sourceFeature, 11);
+        min_zoom_names = 11;
       } else if (highway.equals("trunk") || highway.equals("trunk_link") || highway.equals("primary") ||
-        highway.equals("primary_link")) {
-        feat.setAttr("pmap:kind", "major_road").setZoomRange(7, 15);
+        highway.equals("primary_link")
+      ) {
+        kind = "major_road";
+        min_zoom = 7;
 
         if (highway.equals("trunk")) {
           // Just trunk earlier zoom, otherwise road network looks choppy just with motorways then
-          feat.setZoomRange(6, 15)
-            .setAttrWithMinzoom("ref", shield_text, 8)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 8)
-            .setAttrWithMinzoom("network", network_val, 8);
+          min_zoom = 6;
+          min_zoom_shield_text = 8;
         } else if (highway.equals("primary")) {
-          feat.setAttrWithMinzoom("ref", shield_text, 10)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 10)
-            .setAttrWithMinzoom("network", network_val, 10);
+          min_zoom_shield_text = 10;
         } else if (highway.equals("trunk_link")) {
-          feat.setAttrWithMinzoom("ref", shield_text, 12)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
-            .setAttrWithMinzoom("network", network_val, 12);
+          min_zoom_shield_text = 12;
         } else {
-          feat.setAttrWithMinzoom("ref", shield_text, 13)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 13)
-            .setAttrWithMinzoom("network", network_val, 13);
+          min_zoom_shield_text = 13;
         }
 
-        OsmNames.setOsmNames(feat, sourceFeature, 12);
+        min_zoom_names = 12;
       } else if (highway.equals("secondary") || highway.equals("secondary_link") || highway.equals("tertiary") ||
-        highway.equals("tertiary_link")) {
-        feat.setAttr("pmap:kind", "medium_road").setZoomRange(9, 15);
+        highway.equals("tertiary_link")
+      ) {
+        kind = "medium_road";
+        min_zoom = 9;
 
         if (highway.equals("secondary")) {
-          feat.setAttrWithMinzoom("ref", shield_text, 11)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 11)
-            .setAttrWithMinzoom("network", network_val, 11);
+          min_zoom_shield_text = 11;
+          min_zoom_names = 12;
         } else if (highway.equals("tertiary")) {
-          feat.setAttrWithMinzoom("ref", shield_text, 12)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
-            .setAttrWithMinzoom("network", network_val, 12);
+          min_zoom_shield_text = 12;
+          min_zoom_names = 13;
         } else {
-          feat.setAttrWithMinzoom("ref", shield_text, 13)
-            .setAttrWithMinzoom("shield_text_length", shield_text_length, 13)
-            .setAttrWithMinzoom("network", network_val, 13);
+          min_zoom_shield_text = 13;
+          min_zoom_names = 14;
         }
-        OsmNames.setOsmNames(feat, sourceFeature, 13);
       } else if (highway.equals("residential") || highway.equals("service") || highway.equals("unclassified") ||
-        highway.equals("road") || highway.equals("raceway")) {
-        feat.setAttr("pmap:kind", "minor_road").setZoomRange(12, 15)
-          .setAttrWithMinzoom("ref", shield_text, 12)
-          .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
-          .setAttrWithMinzoom("network", network_val, 12);
+        highway.equals("road") || highway.equals("raceway")
+      ) {
+        kind = "minor_road";
+        min_zoom = 12;
+        min_zoom_shield_text = 12;
+        min_zoom_names = 14;
 
-        if( highway.equals("service") ) {
-          feat.setAttr("pmap:kind_detail", "service")
-              .setZoomRange(13, 15);
+        if (highway.equals("service")) {
+          kind_detail = "service";
+          min_zoom = 13;
 
           // push down "alley", "driveway", "parking_aisle", "drive-through" & etc
           if( sourceFeature.hasTag("service") ) {
-            feat.setZoomRange(14, 15)
-                .setAttr("service", sourceFeature.getString("service"));
+            min_zoom = 14;
+            service = sourceFeature.getString("service");
           }
         }
-
-        OsmNames.setOsmNames(feat, sourceFeature, 14);
       } else if (sourceFeature.hasTag("highway", "pedestrian", "track", "path", "cycleway", "bridleway", "footway",
-        "steps", "corridor")) {
-        feat.setAttr("pmap:kind", "path").setZoomRange(12, 15)
-          .setAttr("pmap:kind_detail", highway).setZoomRange(12, 15)
-          .setAttrWithMinzoom("ref", shield_text, 12)
-          .setAttrWithMinzoom("shield_text_length", shield_text_length, 12)
-          .setAttrWithMinzoom("network", network_val, 12);
+        "steps", "corridor")
+      ) {
+        kind = "path";
+        kind_detail = highway;
+        min_zoom = 12;
+        min_zoom_shield_text = 12;
+        min_zoom_names = 14;
 
         if( sourceFeature.hasTag("highway", "path", "cycleway", "bridleway", "footway", "steps") ) {
-          feat.setZoomRange(13, 15);
+          min_zoom = 13;
         }
         if( sourceFeature.hasTag("footway", "sidewalk", "crossing") ) {
-          feat.setZoomRange(14, 15)
-              .setAttr("pmap:kind_detail", sourceFeature.getString("footway"));
+          min_zoom = 14;
+          kind_detail = sourceFeature.getString("footway");
         }
         if( sourceFeature.hasTag("highway", "corridor") ) {
-          feat.setZoomRange(14, 15);
+          min_zoom = 14;
         }
-
-        OsmNames.setOsmNames(feat, sourceFeature, 14);
       } else {
-        feat.setAttr("pmap:kind", "other").setZoomRange(14, 15)
-          .setAttr("pmap:kind_detail", sourceFeature.getString("service")).setZoomRange(14, 15)
-          .setAttrWithMinzoom("ref", shield_text, 14)
-          .setAttrWithMinzoom("shield_text_length", shield_text_length, 14)
-          .setAttrWithMinzoom("network", network_val, 14);
+        kind = "other";
+        kind_detail = sourceFeature.getString("service");
+        min_zoom = 14;
+        min_zoom_shield_text = 14;
+        min_zoom_names = 14;
+      }
 
-        OsmNames.setOsmNames(feat, sourceFeature, 14);
+      var feat = features.line("roads")
+                  .setId(FeatureId.create(sourceFeature))
+                  // Core Tilezen schema properties
+                  .setAttr("pmap:kind", kind)
+                  .setAttr("pmap:kind_detail", kind_detail)
+                  .setAttrWithMinzoom("ref", shield_text, min_zoom_shield_text)
+                  .setAttrWithMinzoom("shield_text_length", shield_text_length, min_zoom_shield_text)
+                  .setAttrWithMinzoom("network", network_val, min_zoom_shield_text)
+                  // Core OSM tags for different kinds of places
+                  .setAttrWithMinzoom("bridge", sourceFeature.getString("bridge"), 12)
+                  .setAttrWithMinzoom("tunnel", sourceFeature.getString("tunnel"), 12)
+                  .setAttrWithMinzoom("layer", sourceFeature.getString("layer"), 12)
+                  .setAttrWithMinzoom("oneway", sourceFeature.getString("oneway"), 14)
+                  // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+                  //                      If an explicate value is needed it should bea kind, or included in kind_detail
+                  .setAttr("highway", highway)
+                  .setMinPixelSize(0)
+                  .setPixelTolerance(0)
+                  .setZoomRange(min_zoom, max_zoom);
+
+      // Core OSM tags for different kinds of places
+      if( service != "") {
+        feat.setAttr("service", service);
+      }
+
+      // Core Tilezen schema properties
+      if( kind_detail != "") {
+        feat.setAttr("pmap:kind_detail", kind_detail);
       }
 
       if (sourceFeature.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
@@ -171,6 +185,8 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
       } else {
         feat.setAttrWithMinzoom("pmap:level", 0, 12);
       }
+
+      OsmNames.setOsmNames(feat, sourceFeature, min_zoom_names);
     }
   }
 
