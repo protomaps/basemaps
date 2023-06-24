@@ -6,10 +6,8 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.onthegomap.planetiler.util.Exceptions;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
-import com.protomaps.basemap.postprocess.Area;
 import jnr.ffi.Struct;
 
 import java.util.List;
@@ -260,7 +258,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
             if( kind.equals("hotel") || kind.equals("hotel") ){
               if( min_zoom == 12 ) {
-                min_zoom = 13
+                min_zoom = 13;
               }
             }
           }
