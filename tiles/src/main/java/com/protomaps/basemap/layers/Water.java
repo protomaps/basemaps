@@ -88,20 +88,6 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
               sf.hasTag("landuse", "reservoir") ||
               sf.hasTag("leisure", "swimming_pool")))
     {
-      var feature = features.polygon(this.name())
-        .setAttr("natural", sf.getString("natural"))
-        .setAttr("landuse", sf.getString("landuse"))
-        .setAttr("leisure", sf.getString("leisure"))
-        .setAttr("water", sf.getString("water"))
-        .setAttr("waterway", sf.getString("waterway"))
-        // Add less common attributes only at higher zooms
-        .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
-        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
-        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
-        .setZoomRange(6, 15)
-        .setMinPixelSize(3.0)
-        .setBufferPixels(8);
-
       String kind = "other";
       String kind_detail = "";
       var reservoir = false;
@@ -144,9 +130,26 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         kind = "swimming_pool";
       }
 
-      feature.setAttr("pmap:kind", kind);
+      var feature = features.polygon(this.name())
+        // Core Tilezen schema properties
+        .setAttr("pmap:kind", kind)
+        // Core OSM tags for different kinds of places
+        // Add less common attributes only at higher zooms
+        .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
+        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
+        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should bea kind, or included in kind_detail
+        .setAttr("natural", sf.getString("natural"))
+        .setAttr("landuse", sf.getString("landuse"))
+        .setAttr("leisure", sf.getString("leisure"))
+        .setAttr("water", sf.getString("water"))
+        .setAttr("waterway", sf.getString("waterway"))
+        .setZoomRange(6, 15)
+        .setMinPixelSize(3.0)
+        .setBufferPixels(8);
 
-      // Optional tags
+      // Core Tilezen schema properties
       if (kind_detail != "") {
         feature.setAttr("pmap:kind_detail", kind_detail);
       }
