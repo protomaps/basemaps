@@ -48,7 +48,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     var theme_max_zoom = 0;
     if (sourceLayer.equals("ne_10m_populated_places")) {
       theme_min_zoom = 1;
-      theme_max_zoom = 8;
+      theme_max_zoom = 7;
     }
 
     // Test for props because of Natural Earth funk
@@ -101,64 +101,63 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() &&
-      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))) {
-      long population =
-        sf.getString("population") == null ? 0 : parseIntOrNull(sf.getString("population"));
-      String place = sf.getString("place");
-      var feat = features.point(this.name())
-        .setId(FeatureId.create(sf))
-        .setAttr("place", sf.getString("place"))
-        .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
-        .setAttr("capital", sf.getString("capital"));
-
-      OsmNames.setOsmNames(feat, sf, 0);
-
-      if (place.equals("country")) {
-        feat.setAttr("pmap:kind", "country")
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
-          .setAttr("pmap:min_zoom", 1)
-          .setZoomRange(0, 9);
-      } else if (place.equals("state") || place.equals("province")) {
-        feat.setAttr("pmap:kind", "region")
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
-          .setAttr("pmap:min_zoom", 3)
-          .setZoomRange(4, 11);
-      } else if (place.equals("city")) {
-        feat.setAttr("pmap:kind", "locality")
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
-          .setAttr("pmap:min_zoom", 8)
-          .setZoomRange(8, 15);
-        if (population == 0)  {
-          population = 10000;
-        }
-      } else if (place.equals("town")) {
-        feat.setAttr("pmap:kind", "locality")
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 11
-          .setAttr("pmap:min_zoom", 8)
-          .setZoomRange(8, 15);
-        if (population == 0)  {
-          population = 5000;
-        }
-      } else if (place.equals("village")) {
-        feat.setAttr("pmap:kind", "locality")
-          .setAttr("pmap:min_zoom", 10)
-          .setZoomRange(10, 15);
-        if (population == 0)  {
-          population = 2000;
-        }
-      } else if (place.equals("suburb")) {
-        feat.setAttr("pmap:kind", "neighbourhood")
-          .setAttr("pmap:min_zoom", 11)
-          .setZoomRange(11, 15);
-      } else {
-        feat.setAttr("pmap:kind", "neighbourhood")
-          .setAttr("pmap:min_zoom", 12)
-          .setZoomRange(12, 15);
-      }
-      // always pass thru the original value of place tag
-      feat.setAttr("pmap:kind_detail", place);
-
+      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))
+    ) {
+      String kind = "other";
+      int min_zoom = 12;
+      int max_zoom = 15;
+      long population = sf.getString("population") == null ? 0 : parseIntOrNull(sf.getString("population"));
       int population_rank = 0;
+      String place = sf.getString("place");
+
+      switch (place) {
+        case "country":
+          kind = "country";
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          min_zoom = 0;
+          max_zoom = 9;
+          break;
+        case "state":
+        case "province":
+          kind = "region";
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          min_zoom = 3;
+          max_zoom = 11;
+          break;
+        case "city":
+        case "town":
+          kind = "locality";
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          min_zoom = 7;
+          max_zoom = 15;
+          if (population == 0)  {
+            if( place.equals("town") ) {
+              population = 10000;
+            } else {
+              population = 5000;
+            }
+          }
+          break;
+        case "village":
+          kind = "locality";
+          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          min_zoom = 10;
+          max_zoom = 15;
+          if (population == 0)  {
+            population = 2000;
+          }
+          break;
+        case "suburb":
+          kind = "neighbourhood";
+          min_zoom = 11;
+          max_zoom = 15;
+          break;
+        case "neighbourhood":
+          kind = "neighbourhood";
+          min_zoom = 12;
+          max_zoom = 15;
+          break;
+      }
 
       int[] pop_breaks = {
         1000000000,
@@ -187,17 +186,33 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         }
       }
 
-      feat.setAttr("pmap:population_rank", population_rank);
+      var feat = features.point(this.name())
+              .setId(FeatureId.create(sf))
+              // Core Tilezen schema properties
+              .setAttr("pmap:kind", kind)
+              .setAttr("pmap:kind_detail", place)
+              .setAttr("pmap:min_zoom", min_zoom + 1)
+              // Core OSM tags for different kinds of places
+              .setAttr("capital", sf.getString("capital"))
+              // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+              //                      If an explicate value is needed it should be a kind, or included in kind_detail
+              .setAttr("place", sf.getString("place"))
+              .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
+              .setZoomRange(min_zoom, max_zoom);
 
       if (population > 0) {
-        feat.setAttr("population", population);
+        feat.setAttr("population", population)
+            .setAttr("pmap:population_rank", population_rank);
 
-        // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        feat.setPointLabelGridPixelSize(12, 128);
         //feat.setSortKey(getSortKey("pmap:min_zoom",  "pmap:population_rank", "population", "name"));
       } else {
         feat.setSortKey(0);
       }
+
+      OsmNames.setOsmNames(feat, sf, 0);
+
+      // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+      feat.setPointLabelGridPixelSize(12, 128);
     }
   }
 
@@ -222,7 +237,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     List<VectorTile.Feature> top64 = cities.subList(startIndex, endIndex);
 
     // This should always be less than 64 now that a label grid is being used
-    // so consider for removal
+    // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
     for (int i = 0; i < top64.size(); i++) {
       if (top64.size() - i < 16) {
         top64.get(i).attrs().put("pmap:rank", 1);
