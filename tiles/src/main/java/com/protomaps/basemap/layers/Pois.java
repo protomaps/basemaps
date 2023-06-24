@@ -33,11 +33,13 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
     if ( (sf.isPoint() || sf.canBePolygon()) && (
             sf.hasTag("aeroway", "aerodrome") ||
             sf.hasTag("amenity") ||
+            sf.hasTag("attraction") ||
             sf.hasTag("boundary", "national_park", "protected_area") ||
             sf.hasTag("craft") ||
             sf.hasTag("historic") ||
             sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military") ||
             sf.hasTag("leisure") ||
+            sf.hasTag("natural", "beach") ||
             sf.hasTag("railway", "station") ||
             sf.hasTag("shop") ||
             sf.hasTag("tourism") ))
@@ -60,7 +62,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         }
       } else if (sf.hasTag("amenity",  "university","college")) {
         kind = sf.getString("amenity");
-        min_zoom = 11;
+        // One would think University should be earlier, but there are lots of dinky node only places
+        // So if the university has a large area, it'll naturally improve it's zoom in the next section...
+        min_zoom = 14;
       } else if (sf.hasTag("amenity", "hospital")) {
         kind = sf.getString("amenity");
         min_zoom = 12;
@@ -73,6 +77,11 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("landuse", "cemetery")) {
         kind = sf.getString("landuse");
         min_zoom = 14;
+      } else if (sf.hasTag("landuse", "military")) {
+        kind = "military";
+        if (sf.hasTag("military", "naval_base", "airfield")) {
+          kind = sf.getString("military");
+        }
       } else if (sf.hasTag("leisure", "golf_course", "marina", "park", "stadium")) {
         kind = sf.getString("leisure");
         min_zoom = 13;
@@ -89,6 +98,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         // then add new logic in section above
         if (sf.hasTag("amenity")) {
           kind = sf.getString("amenity");
+        } else if (sf.hasTag("attraction")) {
+          kind = sf.getString("attraction");
         } else if (sf.hasTag("craft")) {
           kind = sf.getString("craft");
         } else if (sf.hasTag("aeroway")) {
@@ -99,6 +110,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("landuse");
         } else if (sf.hasTag("leisure")) {
           kind = sf.getString("leisure");
+        } else if (sf.hasTag("natural")) {
+          kind = sf.getString("natural");
         } else if (sf.hasTag("railway")) {
           kind = sf.getString("railway");
         } else if (sf.hasTag("shop")) {
@@ -112,19 +125,50 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         }
       }
 
-      if( sf.hasTag("boundary", "national_park") &&
-              !(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service") ||
-                      sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")
-              ) &&
-              ( sf.hasTag("protect_class", "2", "3") ||
-                      sf.hasTag("operator", "United States National Park Service", "National Park Service", "US National Park Service", "U.S. National Park Service", "US National Park service") ||
-                      sf.hasTag("operator:en", "Parks Canada") ||
-                      sf.hasTag("designation", "national_park") ||
-                      sf.hasTag("protection_title", "National Park")
-              )
+      // National forests
+      if (sf.hasTag("boundary", "national_park") &&
+              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
       ) {
-        kind = "national_park";
-        min_zoom = 11;
+        kind = "forest";
+      } else if (sf.hasTag("boundary", "national_park") &&
+              sf.hasTag("protect_class", "6") &&
+              sf.hasTag("protection_title", "National Forest")
+      ) {
+        kind = "forest";
+      } else if (sf.hasTag("landuse", "forest") &&
+              sf.hasTag("protect_class", "6")
+      ) {
+        kind = "forest";
+      } else if( sf.hasTag("landuse", "forest") &&
+              sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
+      ) {
+        kind = "forest";
+      } else if( sf.hasTag("landuse", "forest") ) {
+        kind = "forest";
+      } else if( sf.hasTag("boundary", "protected_area") &&
+                  sf.hasTag("protect_class", "6") &&
+                  sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service")
+      ) {
+        kind = "forest";
+      }
+
+      // National parks
+      if( sf.hasTag("boundary", "national_park") ) {
+        if( !(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service") ||
+                sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")
+        ) &&
+                ( sf.hasTag("protect_class", "2", "3") ||
+                        sf.hasTag("operator", "United States National Park Service", "National Park Service", "US National Park Service", "U.S. National Park Service", "US National Park service") ||
+                        sf.hasTag("operator:en", "Parks Canada") ||
+                        sf.hasTag("designation", "national_park") ||
+                        sf.hasTag("protection_title", "National Park")
+                )
+        ) {
+          kind = "national_park";
+          min_zoom = 11;
+        } else {
+          kind = "park";
+        }
       }
 
       if( sf.hasTag("cuisine") ) {
@@ -151,11 +195,16 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
         // Area zoom grading overrides the kind zoom grading in the section above.
         // Roughly shared with the water label area zoom grading in physical points layer
+        //
+        // Allowlist of kind values eligible for early zoom point labels
         if( kind.equals("aerodrome") ||
             kind.equals("college") ||
+            kind.equals("forest") ||
+            kind.equals("golf_course") ||
+            kind.equals("military") ||
             kind.equals("national_park") ||
             kind.equals("nature_reserve") ||
-            kind.equals("golf_course") ||
+            kind.equals("naval_base") ||
             kind.equals("park") ||
             kind.equals("protected_area") ||
             kind.equals("stadium") ||
@@ -201,10 +250,17 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           if( min_zoom >= 13 && height > 0.0) {
             if (height >= 100) {
               min_zoom = 11;
-              if (height >= 20) {
-                min_zoom = 12;
-              } else if (height >= 10) {
-                min_zoom = 13;
+            } else if (height >= 20) {
+              min_zoom = 12;
+            } else if (height >= 10) {
+              min_zoom = 13;
+            }
+
+            // clamp certain kind values so medium tall buildings don't crowd downtown areas
+            // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
+            if( kind.equals("hotel") || kind.equals("hotel") ){
+              if( min_zoom == 12 ) {
+                min_zoom = 13
               }
             }
           }
@@ -219,23 +275,32 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
           .setAttr("pmap:min_zoom", min_zoom+1)
+          //
           // DEBUG
           //.setAttr("pmap:area_debug", way_area)
+          //
           // Core OSM tags for different kinds of places
+          // Special airport only tag (to indicate if it's an airport with regular commercial flights)
+          .setAttr("iata", sf.getString("iata"))
+          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+          //                      If an explicate value is needed it should be a kind, or included in kind_detail
           .setAttr("amenity", sf.getString("amenity"))
+          .setAttr("attraction", sf.getString("attraction"))
           .setAttr("craft", sf.getString("craft"))
           .setAttr("historic", sf.getString("historic"))
+          .setAttr("landuse", sf.getString("landuse"))
           .setAttr("leisure", sf.getString("leisure"))
+          .setAttr("natural", sf.getString("natural"))
           .setAttr("railway", sf.getString("railway"))
           .setAttr("shop", sf.getString("shop"))
           .setAttr("tourism", sf.getString("tourism"))
           // Extra OSM tags for certain kinds of places
           // These are duplicate of what's in the kind_detail tag
+          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+          //                      If an explicate value is needed it should be a kind, or included in kind_detail
           .setAttr("cuisine", sf.getString("cuisine"))
           .setAttr("religion", sf.getString("religion"))
           .setAttr("sport", sf.getString("sport"))
-          // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-          .setAttr("iata", sf.getString("iata"))
           .setZoomRange(min_zoom, 15)
           .setBufferPixels(128);
 
@@ -256,20 +321,27 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           // 512 px zooms versus 256 px logical zooms
           .setAttr("pmap:min_zoom", min_zoom+1)
           // Core OSM tags for different kinds of places
+          // Special airport only tag (to indicate if it's an airport with regular commercial flights)
+          .setAttr("iata", sf.getString("iata"))
+          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+          //                      If an explicate value is needed it should bea kind, or included in kind_detail
           .setAttr("amenity", sf.getString("amenity"))
+          .setAttr("attraction", sf.getString("attraction"))
           .setAttr("craft", sf.getString("craft"))
           .setAttr("historic", sf.getString("historic"))
+          .setAttr("landuse", sf.getString("landuse"))
           .setAttr("leisure", sf.getString("leisure"))
+          .setAttr("natural", sf.getString("natural"))
           .setAttr("railway", sf.getString("railway"))
           .setAttr("shop", sf.getString("shop"))
           .setAttr("tourism", sf.getString("tourism"))
           // Extra OSM tags for certain kinds of places
           // These are duplicate of what's in the kind_detail tag
+          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+          //                      If an explicate value is needed it should bea kind, or included in kind_detail
           .setAttr("cuisine", sf.getString("cuisine"))
           .setAttr("religion", sf.getString("religion"))
           .setAttr("sport", sf.getString("sport"))
-          // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-          .setAttr("iata", sf.getString("iata"))
           .setZoomRange(min_zoom, 15)
           .setBufferPixels(128);
 
@@ -304,6 +376,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
+
+    // TODO: (nvkelso 20230623) Consider adding a "pmap:rank" here for POIs, like for Places
+
     //items = Area.addAreaTag(items);
     return items;
   }
