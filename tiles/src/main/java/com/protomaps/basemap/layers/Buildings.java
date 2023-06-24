@@ -58,7 +58,9 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
       var feature = features.polygon(this.name())
         .setId(FeatureId.create(sf))
+        // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
+        // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", sf.getString("layer"), 13)
         // NOTE: Height is quantized by zoom in a post-process step
         .setAttr("height", height)
