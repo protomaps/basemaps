@@ -21,19 +21,8 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("natural", "wood", "glacier", "scrub", "sand", "wetland", "bare_rock") ||
-      sf.hasTag("landuse", "forest", "meadow"))) {
-      var feat = features.polygon(this.name())
-        .setId(FeatureId.create(sf))
-        .setAttr("natural", sf.getString("natural"))
-        .setAttr("landuse", sf.getString("landuse"))
-        // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
-        //       But to match Protomaps v2 we do earlier
-        .setZoomRange(2, 15)
-        .setMinPixelSize(3.0);
-
-      // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
-      //OsmNames.setOsmNames(feat, sf, 0);
-
+      sf.hasTag("landuse", "forest", "meadow"))
+    ) {
       String kind = "other";
       if (sf.hasTag("natural")) {
         kind = sf.getString("natural");
@@ -41,8 +30,22 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = sf.getString("landuse");
       }
 
-      feat.setAttr("pmap:kind", kind);
+      var feat = features.polygon(this.name())
+        //.setId(FeatureId.create(sf))
+        // Core Tilezen schema properties
+        .setAttr("pmap:kind", kind)
+        // Core OSM tags for different kinds of places
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should bea kind, or included in kind_detail
+        .setAttr("natural", sf.getString("natural"))
+        .setAttr("landuse", sf.getString("landuse"))
+        // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
+        //       But to match Protomaps v2 we do earlier
+        .setZoomRange(2, 15)
+        .setMinPixelSize(2.0);
 
+      // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
+      //OsmNames.setOsmNames(feat, sf, 0);
     }
   }
 
