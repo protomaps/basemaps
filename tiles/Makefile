@@ -56,7 +56,7 @@ planet:
 	java -Xmx24g \
 		-jar target/*-with-deps.jar \
 		`# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
-		--area=planet --bounds=world --download \
+		--area=planet --bounds=planet --download \
 		`# Accelerate the download by fetching the 10 1GB chunks at a time in parallel` \
 		--download-threads=10 --download-chunk-size-mb=1000 \
 		`# Also download name translations from wikidata` \
