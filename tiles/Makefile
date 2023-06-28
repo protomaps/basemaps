@@ -14,7 +14,7 @@ clean-pmtiles:
 # https://github.com/protomaps/go-pmtiles
 # Example tile coord to test with: http://localhost:8080/monaco/12/2133/1495.mvt
 serve:
-	pmtiles serve --cors=* .
+	~/Downloads/pmtiles serve --cors=* .
 
 #
 # Testing areas
@@ -25,6 +25,10 @@ serve:
 # Download and generate monaco.pmtiles in the current directory:
 monaco:
 	java -jar target/*-with-deps.jar --download --force --area=monaco
+
+# Download and generate california.pmtiles in the current directory, clipped to SF bay area
+sf:
+	java -jar target/*-with-deps.jar --download --force --area=us/california --bounds=-122.9913,37.2377,-121.5265,38.2519
 
 # Medium
 #
@@ -42,5 +46,10 @@ washington:
 # Note: the slash confuses some downstream processes, try a symlink to california
 california:
 	java -jar target/*-with-deps.jar --download --force --area=us/california
+
+# Download and generate ca/new-york.pmtiles in the current directory:
+# Note: the slash confuses some downstream processes, try a symlink to california
+ny:
+	java -jar target/*-with-deps.jar --download --force --area=us/new-york
 
 .PHONY: clean clean-pmtiles serve monaco switzerland washington california
