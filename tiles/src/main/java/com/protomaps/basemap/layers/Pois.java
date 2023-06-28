@@ -8,9 +8,12 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -22,6 +25,13 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
   private static final double LOG2 = Math.log(2);
+
+  /*
+   * Assign every toilet a monotonically increasing ID so that we can limit output at low zoom levels to only the
+   * highest ID toilet nodes. Be sure to use thread-safe data structures any time a profile holds state since multiple
+   * threads invoke processFeature concurrently.
+   */
+  private final AtomicInteger poiNumber = new AtomicInteger(0);
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
@@ -36,7 +46,10 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("natural", "beach") ||
       sf.hasTag("railway", "station") ||
       sf.hasTag("shop") ||
-      sf.hasTag("tourism"))) {
+      sf.hasTag("tourism") &&
+      (!sf.hasTag("historic", "district"))
+    )
+    ) {
       String kind = "other";
       String kind_detail = "";
       Integer min_zoom = 15;
@@ -61,9 +74,12 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("amenity", "hospital")) {
         kind = sf.getString("amenity");
         min_zoom = 12;
-      } else if (sf.hasTag("amenity", "library", "post_office", "school", "townhall")) {
+      } else if (sf.hasTag("amenity", "library", "post_office", "townhall")) {
         kind = sf.getString("amenity");
         min_zoom = 13;
+      } else if (sf.hasTag("amenity", "school")) {
+        kind = sf.getString("amenity");
+        min_zoom = 15;
       } else if (sf.hasTag("amenity", "cafe")) {
         kind = sf.getString("amenity");
         min_zoom = 15;
@@ -97,8 +113,6 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("craft");
         } else if (sf.hasTag("aeroway")) {
           kind = sf.getString("aeroway");
-        } else if (sf.hasTag("historic")) {
-          kind = sf.getString("historic");
         } else if (sf.hasTag("landuse")) {
           kind = sf.getString("landuse");
         } else if (sf.hasTag("leisure")) {
@@ -113,6 +127,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("tourism");
           // Boundary is most generic, so place last else we loose out
           // on nature_reserve detail versus all the protected_area
+        } else if (sf.hasTag("historic") && ! sf.hasTag("historic", "yes")) {
+          kind = sf.getString("historic");
         } else if (sf.hasTag("boundary")) {
           kind = sf.getString("boundary");
         }
@@ -197,44 +213,121 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         // Roughly shared with the water label area zoom grading in physical points layer
         //
         // Allowlist of kind values eligible for early zoom point labels
-        if (kind.equals("aerodrome") ||
-          kind.equals("college") ||
-          kind.equals("forest") ||
-          kind.equals("golf_course") ||
-          kind.equals("military") ||
-          kind.equals("national_park") ||
-          kind.equals("nature_reserve") ||
-          kind.equals("naval_base") ||
-          kind.equals("park") ||
-          kind.equals("protected_area") ||
-          kind.equals("stadium") ||
-          kind.equals("university")) {
+        if( kind.equals("national_park") ) {
           if (way_area > 300000) { // 500000000 sq meters (web mercator proj)
             min_zoom = 5;
           } else if (way_area > 25000) { // 500000000 sq meters (web mercator proj)
             min_zoom = 6;
-          } else if (way_area > 8000) { // 500000000
+          } else if (way_area > 10000) { // 500000000
             min_zoom = 7;
-          } else if (way_area > 3000) { // 200000000
+          } else if (way_area > 2000) { // 200000000
             min_zoom = 8;
-          } else if (way_area > 200) { //  40000000
+          } else if (way_area > 250) { //  40000000
             min_zoom = 9;
-          } else if (way_area > 25) { //   8000000
+          } else if (way_area > 100) { //   8000000
             min_zoom = 10;
-          } else if (way_area > 2) { //    500000
+          } else if (way_area > 20) { //    500000
             min_zoom = 11;
           } else if (way_area > 1) { //     50000
             min_zoom = 12;
           } else if (way_area > 0.2) { //     10000
             min_zoom = 13;
           }
-        } else if (kind.equals("cemetery")) {
+        } else if (kind.equals("aerodrome") ||
+          kind.equals("golf_course") ||
+          kind.equals("military") ||
+          kind.equals("naval_base") ||
+          kind.equals("stadium") ||
+          kind.equals("zoo")
+        ) {
+          //if (way_area > 300000) { // 500000000 sq meters (web mercator proj)
+          //  min_zoom = 5;
+          //} else if (way_area > 25000) { // 500000000 sq meters (web mercator proj)
+          //  min_zoom = 6;
+          //} else
+          if (way_area > 20000) { // 500000000
+            min_zoom = 7;
+          } else if (way_area > 5000) { // 200000000
+            min_zoom = 8;
+          } else if (way_area > 250) { //  40000000
+            min_zoom = 9;
+          } else if (way_area > 100) { //   8000000
+            min_zoom = 10;
+          } else if (way_area > 20) { //    500000
+            min_zoom = 11;
+          } else if (way_area > 1) { //     50000
+            min_zoom = 12;
+          } else if (way_area > 0.2) { //     10000
+            min_zoom = 13;
+          }
+        } else if( kind.equals("college") ||
+                kind.equals("university")
+        ) {
+          if (way_area > 20000) {
+            min_zoom = 7;
+          } else if (way_area > 5000) {
+            min_zoom = 8;
+          } else if (way_area > 250) {
+            min_zoom = 9;
+          } else if (way_area > 150) {
+            min_zoom = 10;
+          } else if (way_area > 100) {
+            min_zoom = 11;
+          } else if (way_area > 50) {
+            min_zoom = 12;
+          } else if (way_area > 20) {
+            min_zoom = 13;
+          } else if (way_area > 5) {
+            min_zoom = 14;
+          } else {
+            min_zoom = 15;
+          }
+        } else if( kind.equals("forest") ||
+            kind.equals("park") ||
+            kind.equals("protected_area") ||
+            kind.equals("nature_reserve")
+        ) {
+          //if (way_area > 300000) { // 500000000 sq meters (web mercator proj)
+          //  min_zoom = 5;
+          //} else if (way_area > 30000) { // 500000000 sq meters (web mercator proj)
+          //  min_zoom = 6;
+          //} else
+          if (way_area > 10000) { // 500000000
+            min_zoom = 7;
+          } else if (way_area > 4000) { // 200000000
+            min_zoom = 8;
+          } else if (way_area > 1000) { //  40000000
+            min_zoom = 9;
+          } else if (way_area > 250) { //   8000000
+            min_zoom = 10;
+          } else if (way_area > 20) { //    500000
+            min_zoom = 11;
+          } else if (way_area > 10) { //     50000
+            min_zoom = 12;
+          } else if (way_area > 1) { //     10000
+            min_zoom = 13;
+          } else if (way_area > 0.1) { //     10000
+            min_zoom = 14;
+          } else if (way_area > 0.01) { //     10000
+            min_zoom = 15;
+          } else {
+            min_zoom = 16;
+          }
+        } else if (kind.equals("cemetery") ||
+                kind.equals("school")
+        ) {
           if (way_area > 5) { //     50000
             min_zoom = 12;
           } else if (way_area > 1) { //     10000
             min_zoom = 13;
+          } else if (way_area > 0.1) { //     10000
+            min_zoom = 14;
+          } else if (way_area > 0.01) { //     10000
+            min_zoom = 15;
+          } else {
+            min_zoom = 16;
           }
-          // Typically for "building" derived label placements for shops and other businesses
+        // Typically for "building" derived label placements for shops and other businesses
         } else {
           if (way_area > 10) { //    500000
             min_zoom = 11;
@@ -261,7 +354,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             if (kind.equals("hotel") || kind.equals("hostel") || kind.equals("parking") || kind.equals("bank") ||
               kind.equals("place_of_worship") || kind.equals("jewelry") || kind.equals("yes") ||
               kind.equals("restaurant") || kind.equals("coworking_space") || kind.equals("clothes") ||
-              kind.equals("art")) {
+              kind.equals("art") || kind.equals("school")) {
               if (min_zoom == 12) {
                 min_zoom = 13;
               }
@@ -277,7 +370,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("pmap:kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", min_zoom + 1)
+          .setAttr("pmap:min_zoom", (int)(min_zoom + 1))
           //
           // DEBUG
           //.setAttr("pmap:area_debug", way_area)
@@ -313,6 +406,18 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         }
 
         OsmNames.setOsmNames(poly_label_position, sf, 0);
+
+        // NOTE: (nvkelso 20230627) This could also include other params like the name
+        poly_label_position.setSortKey(min_zoom * 1000 + poiNumber.incrementAndGet());
+
+        // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
+        // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
+        poly_label_position.setPointLabelGridSizeAndLimit(14, 12, 1);
+
+        // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
+        // label grid squares will be the consistent between adjacent tiles
+        poly_label_position.setBufferPixelOverrides(ZoomFunction.maxZoom(14, 32));
+
       } else if (sf.isPoint()) {
         var point_feature = features.point(this.name())
           // all POIs should receive their IDs at all zooms
@@ -322,7 +427,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("pmap:kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", min_zoom + 1)
+          .setAttr("pmap:min_zoom", (int)(min_zoom + 1))
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
@@ -385,6 +490,17 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             "guest_house", "hostel")) {
           point_feature.setAttr("pmap:min_zoom", 17);
         }
+
+        // NOTE: (nvkelso 20230627) This could also include other params like the name
+        point_feature.setSortKey(min_zoom * 1000 + poiNumber.incrementAndGet());
+
+        // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
+        // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
+        point_feature.setPointLabelGridSizeAndLimit(14, 12, 1);
+
+        // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
+        // label grid squares will be the consistent between adjacent tiles
+        point_feature.setBufferPixelOverrides(ZoomFunction.maxZoom(14, 32));
       }
     }
   }
