@@ -61,7 +61,7 @@ planet:
 		--download-threads=10 --download-chunk-size-mb=1000 \
 		`# Also download name translations from wikidata` \
 		--fetch-wikidata \
-		--output=output.\pbtiles \
+		--output=output.\pmtiles \
 		--nodemap-type=sparsearray --nodemap-storage=ram 2>&1 | tee logs.txt
 
 .PHONY: clean clean-pmtiles serve monaco sf switzerland washington california planet
