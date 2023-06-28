@@ -6,11 +6,14 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -18,6 +21,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   public String name() {
     return "places";
   }
+
+  private final AtomicInteger placeNumber = new AtomicInteger(0);
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
   /*
@@ -44,7 +49,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     var theme_max_zoom = 0;
     if (sourceLayer.equals("ne_10m_populated_places")) {
       theme_min_zoom = 1;
-      theme_max_zoom = 7;
+      theme_max_zoom = 6;
     }
 
     // Test for props because of Natural Earth funk
@@ -73,6 +78,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
     }
 
+    var min_zoom = sf.getString("min_zoom") == null ? 10 : (int) Double.parseDouble(sf.getString("min_zoom"));
+    int population_rank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
     if (kind != "") {
       var feat = features.point(this.name())
         .setAttr("name", sf.getString("name"))
@@ -83,12 +90,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kind_detail)
         .setAttr("population", parseIntOrNull(sf.getString("pop_max")))
-        .setAttr("pmap:population_rank", parseIntOrNull(sf.getString("rank_max")))
+        .setAttr("pmap:population_rank", population_rank)
         .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(128)
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        //.setSortKey(getSortKey("pmap:min_zoom",  "population_rank", "population", "name"))
-        .setPointLabelGridPixelSize(12, 128);
+        .setSortKey(min_zoom)
+        .setPointLabelGridPixelSize(7, 16);
 
       NeNames.setNeNames(feat, sf, 0);
     }
@@ -197,17 +204,22 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       if (population > 0) {
         feat.setAttr("population", population)
-          .setAttr("pmap:population_rank", population_rank);
+            .setAttr("pmap:population_rank", population_rank);
 
+        feat.setSortKey(min_zoom * 1000 + 400 - population_rank * 200 + placeNumber.incrementAndGet());
         //feat.setSortKey(getSortKey("pmap:min_zoom",  "pmap:population_rank", "population", "name"));
       } else {
-        feat.setSortKey(0);
+        feat.setSortKey(min_zoom * 1000);
       }
 
       OsmNames.setOsmNames(feat, sf, 0);
 
       // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setPointLabelGridPixelSize(12, 128);
+      feat.setPointLabelGridSizeAndLimit(12, 5, 2);
+
+      // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
+      // label grid squares will be the consistent between adjacent tiles
+      feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32));
     }
   }
 
