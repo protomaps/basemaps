@@ -18,8 +18,8 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBePolygon() && (sf.hasTag("natural", "wood", "glacier", "scrub", "sand", "wetland", "bare_rock") ||
-      sf.hasTag("landuse", "forest", "meadow"))) {
+    if (sf.canBePolygon() && (sf.hasTag("natural", "wood", "glacier", "grass", "scrub", "sand", "wetland", "bare_rock") ||
+      sf.hasTag("landuse", "forest", "meadow", "grass"))) {
       String kind = "other";
       if (sf.hasTag("natural")) {
         kind = sf.getString("natural");
