@@ -28,7 +28,8 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("railway", "platform") ||
       sf.hasTag("tourism", "zoo") ||
       (sf.hasTag("area", "yes") &&
-        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))) {
+        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))
+    ) {
       String kind = "other";
       if (sf.hasTag("aeroway", "aerodrome")) {
         kind = sf.getString("aeroway");
@@ -56,6 +57,8 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = sf.getString("leisure");
       } else if (sf.hasTag("man_made", "bridge")) {
         kind = "pedestrian";
+      } else if (sf.hasTag("man_made", "pier")) {
+        kind = "pier";
       } else if (sf.hasTag("shop", "grocery", "supermarket")) {
         kind = sf.getString("shop");
       } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
@@ -77,6 +80,8 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
           kind = sf.getString("landuse");
         } else if (sf.hasTag("leisure")) {
           kind = sf.getString("leisure");
+        } else if (sf.hasTag("man_made")) {
+          kind = sf.getString("man_made");
         } else if (sf.hasTag("natural")) {
           kind = sf.getString("natural");
         } else if (sf.hasTag("railway")) {
