@@ -53,15 +53,15 @@ ny:
 	java -jar target/*-with-deps.jar --download --force --area=us/new-york
 
 planet:
-    java -Xmx24g \
-      -jar target/*-with-deps.jar \
-      `# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
-      --area=planet --bounds=world --download \
-      `# Accelerate the download by fetching the 10 1GB chunks at a time in parallel` \
-      --download-threads=10 --download-chunk-size-mb=1000 \
-      `# Also download name translations from wikidata` \
-      --fetch-wikidata \
-      --output=output.\pbtiles \
-      --nodemap-type=sparsearray --nodemap-storage=ram 2>&1 | tee logs.txt
+	java -Xmx24g \
+		-jar target/*-with-deps.jar \
+		`# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
+		--area=planet --bounds=world --download \
+		`# Accelerate the download by fetching the 10 1GB chunks at a time in parallel` \
+		--download-threads=10 --download-chunk-size-mb=1000 \
+		`# Also download name translations from wikidata` \
+		--fetch-wikidata \
+		--output=output.\pbtiles \
+		--nodemap-type=sparsearray --nodemap-storage=ram 2>&1 | tee logs.txt
 
 .PHONY: clean clean-pmtiles serve monaco sf switzerland washington california planet
