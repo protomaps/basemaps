@@ -8,6 +8,8 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.feature.CountryNameZooms;
+import com.protomaps.basemap.feature.RegionNameZooms;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 
@@ -115,16 +117,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       switch (place) {
         case "country":
           kind = "country";
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
-          min_zoom = 0;
-          max_zoom = 9;
+          min_zoom = (int)CountryNameZooms.getMinMaxZooms(sf)[0];
+          max_zoom = (int)CountryNameZooms.getMinMaxZooms(sf)[1];
           break;
         case "state":
         case "province":
           kind = "region";
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
-          min_zoom = 3;
-          max_zoom = 11;
+          min_zoom = (int)RegionNameZooms.getMinMaxZooms(sf)[0];
+          max_zoom = (int)RegionNameZooms.getMinMaxZooms(sf)[1];
           break;
         case "city":
         case "town":
