@@ -26,7 +26,8 @@ serve:
 monaco:
 	java -jar target/*-with-deps.jar --download --force --area=monaco
 
-# Download and generate california.pmtiles in the current directory, clipped to SF bay area
+# Download and generate us/california.pmtiles in the current directory, clipped to the SF bay area
+# Note: the slash confuses some downstream processes, try a symlink to california
 sf:
 	java -jar target/*-with-deps.jar --download --force --area=us/california --bounds=-122.9913,37.2377,-121.5265,38.2519
 
@@ -42,15 +43,31 @@ washington:
 
 # Large
 #
-# Download and generate ca/california.pmtiles in the current directory:
+# Download and generate us/california.pmtiles in the current directory:
 # Note: the slash confuses some downstream processes, try a symlink to california
 california:
 	java -jar target/*-with-deps.jar --download --force --area=us/california
 
-# Download and generate ca/new-york.pmtiles in the current directory:
-# Note: the slash confuses some downstream processes, try a symlink to california
+# Download and generate us/new-york.pmtiles in the current directory:
+# Note: the slash confuses some downstream processes, try a symlink to new-york
 ny:
 	java -jar target/*-with-deps.jar --download --force --area=us/new-york
+
+# Download and generate us/new-york.pmtiles in the current directory,
+# clipped to the NYC metro area (including New Jersey)
+# Note: the slash confuses some downstream processes, try a symlink to northeast
+nyc:
+	java -jar target/*-with-deps.jar --download --force --area=us/northeast --bounds=-75.896703,39.530403,-73.260767,41.217394
+
+# Download and generate japan.pmtiles in the current directory:
+japan:
+	java -jar target/*-with-deps.jar --download --force --area=japan --maxzoom=10 --render_maxzoom=10
+
+us-lowzoom:
+	java -jar target/*-with-deps.jar --download --force --area=us/california --bounds=-129.525228,18.870954,-59.212729,50.664092 --maxzoom=7 --render_maxzoom=7
+
+eu-lowzoom:
+	java -jar target/*-with-deps.jar --download --force --area=us/california --bounds=-32.318197,31.705746,53.287269,72.937699 --maxzoom=7 --render_maxzoom=7
 
 planet:
 	java -Xmx24g \
@@ -64,4 +81,4 @@ planet:
 		--output=output.\pmtiles \
 		--nodemap-type=sparsearray --nodemap-storage=ram 2>&1 | tee logs.txt
 
-.PHONY: clean clean-pmtiles serve monaco sf switzerland washington california planet
+.PHONY: clean clean-pmtiles serve monaco sf switzerland washington california ny ny-metro japan us-lowzoom eu-lowzoom planet
