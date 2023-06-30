@@ -2,14 +2,17 @@ package com.protomaps.basemap.feature;
 
 import com.onthegomap.planetiler.reader.SourceFeature;
 
+import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
+
 public class CountryNameZooms {
 
     public static float[] getMinMaxZooms(SourceFeature feature) {
         float min_zoom = 8.0f;   // default for unrecognized countries
         float max_zoom = 11.0f;  // default for all countries
 
-        if( feature.hasTag("name:en") && feature.getTag("name:en") != null ) {
-            switch (feature.getString("name:en")) {
+        if( feature.hasTag("name") ) {
+            var name = feature.getString("name:en") == null ? feature.getString("name") : feature.getString("name:en");
+            switch (name) {
                 case "Andorra" -> {
                     // AD country code
                     min_zoom = 11.0f;
@@ -80,7 +83,7 @@ public class CountryNameZooms {
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
                 }
-                case "Åland" -> {
+                case "Aland" -> {
                     // AX country code
                     min_zoom = 9.0f;
                     max_zoom = 11.0f;
@@ -135,7 +138,7 @@ public class CountryNameZooms {
                     min_zoom = 7.7f;
                     max_zoom = 11.0f;
                 }
-                case "St-Barthélemy" -> {
+                case "St-Barthelemy" -> {
                     // BL country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -190,17 +193,17 @@ public class CountryNameZooms {
                     min_zoom = 3.5f;
                     max_zoom = 7.5f;
                 }
-                case "Dem. Rep. Congo" -> {
+                case "Democratic Republic of the Congo" -> {
                     // CD country code
                     min_zoom = 6.0f;
                     max_zoom = 11.0f;
                 }
-                case "Central African Rep" -> {
+                case "Central African Republic" -> {
                     // CF country code
                     min_zoom = 7.0f;
                     max_zoom = 11.0f;
                 }
-                case "Congo" -> {
+                case "Republic of the Congo" -> {
                     // CG country code
                     min_zoom = 7.6f;
                     max_zoom = 11.0f;
@@ -210,12 +213,13 @@ public class CountryNameZooms {
                     min_zoom = 8.7f;
                     max_zoom = 11.0f;
                 }
-                case "Côte d'Ivoire" -> {
+                // Côte d'Ivoire
+                case "Ivory Coast" -> {
                     // CI country code
                     min_zoom = 7.7f;
                     max_zoom = 11.0f;
                 }
-                case "Cook Is" -> {
+                case "Cook Islands" -> {
                     // CK country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -255,7 +259,8 @@ public class CountryNameZooms {
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
                 }
-                case "Curaçao" -> {
+                // Curaçao
+                case "Curacao" -> {
                     // CW country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -315,7 +320,7 @@ public class CountryNameZooms {
                     min_zoom = 7.7f;
                     max_zoom = 11.0f;
                 }
-                case "W. Sahara" -> {
+                case "Western Sahara" -> {
                     // EH country code
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
@@ -345,7 +350,7 @@ public class CountryNameZooms {
                     min_zoom = 8.0f;
                     max_zoom = 11.0f;
                 }
-                case "Falkland Is" -> {
+                case "Falkland Islands" -> {
                     // FK country code
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
@@ -355,7 +360,7 @@ public class CountryNameZooms {
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
                 }
-                case "Faeroe Is" -> {
+                case "Faeroe Islands" -> {
                     // FO country code
                     min_zoom = 8.0f;
                     max_zoom = 11.0f;
@@ -410,7 +415,7 @@ public class CountryNameZooms {
                     min_zoom = 8.0f;
                     max_zoom = 11.0f;
                 }
-                case "Eq. Guinea" -> {
+                case "Equatorial Guinea" -> {
                     // GQ country code
                     min_zoom = 8.7f;
                     max_zoom = 11.0f;
@@ -420,7 +425,7 @@ public class CountryNameZooms {
                     min_zoom = 7.7f;
                     max_zoom = 11.0f;
                 }
-                case "S. Geo. and the Is" -> {
+                case "South Georgia and the Islands" -> {
                     // GS country code
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
@@ -450,7 +455,7 @@ public class CountryNameZooms {
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
                 }
-                case "Heard I. and McDonald Is" -> {
+                case "Heard Island and McDonald Islands" -> {
                     // HM country code
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
@@ -500,7 +505,7 @@ public class CountryNameZooms {
                     min_zoom = 4.6f;
                     max_zoom = 10.1f;
                 }
-                case "Br. Indian Ocean Ter" -> {
+                case "British Indian Ocean Territory" -> {
                     // IO country code
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
@@ -590,7 +595,7 @@ public class CountryNameZooms {
                     min_zoom = 8.7f;
                     max_zoom = 11.0f;
                 }
-                case "Cayman Is" -> {
+                case "Cayman Islands" -> {
                     // KY country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -685,7 +690,7 @@ public class CountryNameZooms {
                     min_zoom = 7.0f;
                     max_zoom = 11.0f;
                 }
-                case "Marshall Is" -> {
+                case "Marshall Islands" -> {
                     // MH country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -715,7 +720,7 @@ public class CountryNameZooms {
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
                 }
-                case "N. Mariana Is" -> {
+                case "Northern Mariana Islands" -> {
                     // MP country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -835,7 +840,7 @@ public class CountryNameZooms {
                     min_zoom = 6.6f;
                     max_zoom = 11.0f;
                 }
-                case "Fr. Polynesia" -> {
+                case "French Polynesia" -> {
                     // PF country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -860,12 +865,12 @@ public class CountryNameZooms {
                     min_zoom = 6.7f;
                     max_zoom = 11.0f;
                 }
-                case "St. Pierre and Miquelon" -> {
+                case "Saint Pierre and Miquelon" -> {
                     // PM country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
                 }
-                case "Pitcairn Is" -> {
+                case "Pitcairn Islands" -> {
                     // PN country code
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
@@ -925,7 +930,7 @@ public class CountryNameZooms {
                     min_zoom = 6.6f;
                     max_zoom = 11.0f;
                 }
-                case "Solomon Is" -> {
+                case "Solomon Islands" -> {
                     // SB country code
                     min_zoom = 7.0f;
                     max_zoom = 11.0f;
@@ -990,12 +995,13 @@ public class CountryNameZooms {
                     min_zoom = 8.0f;
                     max_zoom = 11.0f;
                 }
-                case "S. Sudan" -> {
+                case "South Sudan" -> {
                     // SS country code
                     min_zoom = 6.6f;
                     max_zoom = 11.0f;
                 }
-                case "São Tomé and Principe" -> {
+                // São Tomé and Principe
+                case "Sao Tome and Principe" -> {
                     // ST country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -1020,7 +1026,7 @@ public class CountryNameZooms {
                     min_zoom = 8.7f;
                     max_zoom = 11.0f;
                 }
-                case "Turks and Caicos Is" -> {
+                case "Turks and Caicos Islands" -> {
                     // TC country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -1030,7 +1036,7 @@ public class CountryNameZooms {
                     min_zoom = 6.6f;
                     max_zoom = 11.0f;
                 }
-                case "Fr. S. Antarctic Lands" -> {
+                case "French Southern Antarctic Lands" -> {
                     // TF country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -1070,7 +1076,8 @@ public class CountryNameZooms {
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
                 }
-                case "Turkey" -> {
+                // Turkey
+                case "Turkiye" -> {
                     // TR country code
                     min_zoom = 7.0f;
                     max_zoom = 11.0f;
@@ -1105,7 +1112,7 @@ public class CountryNameZooms {
                     min_zoom = 10.0f;
                     max_zoom = 11.0f;
                 }
-                case "U.S. Minor Outlying Is" -> {
+                case "U.S. Minor Outlying Islands" -> {
                     // UM country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -1130,7 +1137,7 @@ public class CountryNameZooms {
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
                 }
-                case "St. Vin. and Gren" -> {
+                case "Saint Vincent and Grenadines" -> {
                     // VC country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -1140,12 +1147,12 @@ public class CountryNameZooms {
                     min_zoom = 7.1f;
                     max_zoom = 11.3f;
                 }
-                case "British Virgin Is" -> {
+                case "British Virgin Islands" -> {
                     // VG country code
                     min_zoom = 18.0f;
                     max_zoom = 18.0f;
                 }
-                case "U.S. Virgin Is" -> {
+                case "U.S. Virgin Islands" -> {
                     // VI country code
                     min_zoom = 11.0f;
                     max_zoom = 11.0f;
@@ -1160,7 +1167,7 @@ public class CountryNameZooms {
                     min_zoom = 9.0f;
                     max_zoom = 11.0f;
                 }
-                case "Wallis and Futuna Is" -> {
+                case "Wallis and Futuna Islands" -> {
                     // WF country code
                     min_zoom = 9.0f;
                     max_zoom = 11.0f;
