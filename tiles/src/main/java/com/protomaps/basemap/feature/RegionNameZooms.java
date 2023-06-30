@@ -8,8 +8,9 @@ public class RegionNameZooms {
         float min_zoom = 8.0f;   // default for all regions
         float max_zoom = 11.0f;  // default for all regions
 
-        if( feature.hasTag("name:en") && feature.getTag("name:en") != null ) {
-            switch (feature.getString("name:en")) {
+        if( feature.hasTag("name") ) {
+            var name = feature.getString("name:en") == null ? feature.getString("name") : feature.getString("name:en");
+            switch (name) {
                 // United States
                 case "Alabama" -> {
                     min_zoom = 3.5f;
