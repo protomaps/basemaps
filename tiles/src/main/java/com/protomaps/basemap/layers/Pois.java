@@ -287,54 +287,53 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             kind.equals("protected_area") ||
             kind.equals("nature_reserve")
         ) {
-          //if (way_area > 300000) { // 500000000 sq meters (web mercator proj)
-          //  min_zoom = 5;
-          //} else if (way_area > 30000) { // 500000000 sq meters (web mercator proj)
-          //  min_zoom = 6;
-          //} else
-          if (way_area > 10000) { // 500000000
+          if (way_area > 10000) {
             min_zoom = 7;
-          } else if (way_area > 4000) { // 200000000
+          } else if (way_area > 4000) {
             min_zoom = 8;
-          } else if (way_area > 1000) { //  40000000
+          } else if (way_area > 1000) {
             min_zoom = 9;
-          } else if (way_area > 250) { //   8000000
+          } else if (way_area > 250) {
             min_zoom = 10;
-          } else if (way_area > 20) { //    500000
+          } else if (way_area > 20) {
             min_zoom = 11;
-          } else if (way_area > 10) { //     50000
+          } else if (way_area > 12) {
             min_zoom = 12;
-          } else if (way_area > 1) { //     10000
+          } else if (way_area > 8) {
             min_zoom = 13;
-          } else if (way_area > 0.1) { //     10000
+          } else if (way_area > 4) {
             min_zoom = 14;
-          } else if (way_area > 0.01) { //     10000
+          } else if (way_area > 1) {
             min_zoom = 15;
-          } else {
+          } else if (way_area > 0.1) {
             min_zoom = 16;
+          } else {
+            min_zoom = 17;
           }
         } else if (kind.equals("cemetery") ||
                 kind.equals("school")
         ) {
-          if (way_area > 5) { //     50000
+          if (way_area > 5) {
             min_zoom = 12;
-          } else if (way_area > 1) { //     10000
+          } else if (way_area > 1) {
             min_zoom = 13;
-          } else if (way_area > 0.1) { //     10000
+          } else if (way_area > 0.1) {
             min_zoom = 14;
-          } else if (way_area > 0.01) { //     10000
+          } else if (way_area > 0.01) {
             min_zoom = 15;
           } else {
             min_zoom = 16;
           }
         // Typically for "building" derived label placements for shops and other businesses
         } else {
-          if (way_area > 10) { //    500000
+          if (way_area > 10) {
             min_zoom = 11;
-          } else if (way_area > 2) { //     50000
+          } else if (way_area > 2) {
             min_zoom = 12;
-          } else if (way_area > 0.5) { //     10000
+          } else if (way_area > 0.5) {
             min_zoom = 13;
+          } else if (way_area > 0.01) {
+            min_zoom = 14;
           }
 
           // Small but tall features should show up early as they have regional prominance.
@@ -352,12 +351,17 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
             // NOTE: (nvkelso 20230624) Turn this into an allowlist instead of a blocklist
             if (kind.equals("hotel") || kind.equals("hostel") || kind.equals("parking") || kind.equals("bank") ||
-              kind.equals("place_of_worship") || kind.equals("jewelry") || kind.equals("yes") ||
-              kind.equals("restaurant") || kind.equals("coworking_space") || kind.equals("clothes") ||
-              kind.equals("art") || kind.equals("school")) {
+                    kind.equals("place_of_worship") || kind.equals("jewelry") || kind.equals("yes") ||
+                    kind.equals("restaurant") || kind.equals("coworking_space") || kind.equals("clothes") ||
+                    kind.equals("art") || kind.equals("school")) {
               if (min_zoom == 12) {
                 min_zoom = 13;
               }
+            }
+
+            // Discount tall university buildings, require a related university landuse AOI
+            if (kind.equals("university")) {
+              min_zoom = 13;
             }
           }
         }
@@ -479,7 +483,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           "hunting_stand", "studio", "boat_storage", "gambling", "adult_gaming_centre", "sanitary_dump_station",
           "attraction", "animal", "water_slide", "roller_coaster", "summer_toboggan", "carousel", "amusement_ride",
           "maze") ||
-          sf.hasTag("historic", "memorial") ||
+          sf.hasTag("historic", "memorial", "district") ||
           sf.hasTag("leisure", "pitch", "playground", "slipway") ||
           sf.hasTag("shop", "scuba_diving", "atv", "motorcycle", "snowmobile", "art", "bakery", "beauty", "bookmaker",
             "books", "butcher", "car", "car_parts", "car_repair", "clothes", "computer", "convenience", "fashion",
