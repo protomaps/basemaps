@@ -297,15 +297,15 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             min_zoom = 10;
           } else if (way_area > 20) {
             min_zoom = 11;
-          } else if (way_area > 12) {
+          } else if (way_area > 5) {
             min_zoom = 12;
-          } else if (way_area > 8) {
+          } else if (way_area > 0.5) {
             min_zoom = 13;
-          } else if (way_area > 4) {
-            min_zoom = 14;
-          } else if (way_area > 1) {
-            min_zoom = 15;
           } else if (way_area > 0.1) {
+            min_zoom = 14;
+          } else if (way_area > 0.01) {
+            min_zoom = 15;
+          } else if (way_area > 0.001) {
             min_zoom = 16;
           } else {
             min_zoom = 17;
