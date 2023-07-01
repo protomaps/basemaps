@@ -138,7 +138,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
           }
         }
 
-        if (kind != "") {
+        if (kind != "" && kind_detail != "") {
           var line = features.line(this.name())
                           .setId(FeatureId.create(sf))
                           .setMinPixelSize(0)
