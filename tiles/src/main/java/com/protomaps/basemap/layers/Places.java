@@ -106,7 +106,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() &&
-      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "city", "country", "state", "province"))) {
+      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state", "province"))) {
       String kind = "other";
       int min_zoom = 12;
       int max_zoom = 15;
@@ -152,6 +152,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "suburb":
           kind = "neighbourhood";
           min_zoom = 11;
+          max_zoom = 15;
+          break;
+        case "quarter":
+          kind = "macrohood";
+          min_zoom = 10;
           max_zoom = 15;
           break;
         case "neighbourhood":
