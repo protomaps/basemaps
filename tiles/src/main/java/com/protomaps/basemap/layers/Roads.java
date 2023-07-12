@@ -170,7 +170,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
       if (sf.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
         "tertiary_link")) {
-        feat.setAttr("pmap:link", 1).setZoomRange(12, 15);
+        feat.setAttr("pmap:link", 1);
       }
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
