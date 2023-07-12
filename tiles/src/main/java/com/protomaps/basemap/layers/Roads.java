@@ -142,6 +142,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
+        .setAttr("pmap:min_zoom", min_zoom + 1)
         .setAttrWithMinzoom("ref", shield_text, min_zoom_shield_text)
         .setAttrWithMinzoom("shield_text_length", shield_text_length, min_zoom_shield_text)
         .setAttrWithMinzoom("network", network_val, min_zoom_shield_text)
