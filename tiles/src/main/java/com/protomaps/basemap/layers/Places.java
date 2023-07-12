@@ -7,12 +7,11 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.ZoomFunction;
-import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.CountryNameZooms;
+import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.RegionNameZooms;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -106,7 +105,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() &&
-      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state", "province"))) {
+      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
+        "province"))) {
       String kind = "other";
       int min_zoom = 12;
       int max_zoom = 15;
@@ -117,14 +117,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       switch (place) {
         case "country":
           kind = "country";
-          min_zoom = (int)CountryNameZooms.getMinMaxZooms(sf)[0];
-          max_zoom = (int)CountryNameZooms.getMinMaxZooms(sf)[1];
+          min_zoom = (int) CountryNameZooms.getMinMaxZooms(sf)[0];
+          max_zoom = (int) CountryNameZooms.getMinMaxZooms(sf)[1];
           break;
         case "state":
         case "province":
           kind = "region";
-          min_zoom = (int)RegionNameZooms.getMinMaxZooms(sf)[0];
-          max_zoom = (int)RegionNameZooms.getMinMaxZooms(sf)[1];
+          min_zoom = (int) RegionNameZooms.getMinMaxZooms(sf)[0];
+          max_zoom = (int) RegionNameZooms.getMinMaxZooms(sf)[1];
           break;
         case "city":
         case "town":
@@ -209,7 +209,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       if (population > 0) {
         feat.setAttr("population", population)
-            .setAttr("pmap:population_rank", population_rank);
+          .setAttr("pmap:population_rank", population_rank);
 
         feat.setSortKey(min_zoom * 1000 + 400 - population_rank * 200 + placeNumber.incrementAndGet());
         //feat.setSortKey(getSortKey("pmap:min_zoom",  "pmap:population_rank", "population", "name"));

@@ -7,6 +7,10 @@ clean:
 clean-pmtiles:
 	rm -rf *.pmtiles
 
+# Run linting to apply code formatting for clean PR merges in CI
+lint:
+	mvn spotless:apply
+
 # This is optimized for local dev serving PMTiles out of directory local to this Makefile
 # Don't use this for production (instead set --cors=ORIGIN)
 # The default port is: 8080 (use --port to override)
@@ -81,4 +85,4 @@ planet:
 		--output=output.\pmtiles \
 		--nodemap-type=sparsearray --nodemap-storage=ram 2>&1 | tee logs.txt
 
-.PHONY: clean clean-pmtiles serve monaco sf switzerland washington california ny ny-metro japan us-lowzoom eu-lowzoom planet
+.PHONY: clean clean-pmtiles lint serve monaco sf switzerland washington california ny ny-metro japan us-lowzoom eu-lowzoom planet

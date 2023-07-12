@@ -30,11 +30,18 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
     var theme_min_zoom = 0;
     var theme_max_zoom = 0;
 
-    if (sourceLayer.equals("ne_50m_admin_0_boundary_lines_land") || sourceLayer.equals("ne_50m_admin_0_boundary_lines_disputed_areas") || sourceLayer.equals("ne_50m_admin_0_boundary_lines_maritime_indicator_chn") || sourceLayer.equals("ne_50m_admin_1_states_provinces_lines")) {
+    if (sourceLayer.equals("ne_50m_admin_0_boundary_lines_land") ||
+      sourceLayer.equals("ne_50m_admin_0_boundary_lines_disputed_areas") ||
+      sourceLayer.equals("ne_50m_admin_0_boundary_lines_maritime_indicator_chn") ||
+      sourceLayer.equals("ne_50m_admin_1_states_provinces_lines")) {
       theme_min_zoom = 1;
       theme_max_zoom = 3;
       kind = "tz_boundary";
-    } else if (sourceLayer.equals("ne_10m_admin_0_boundary_lines_land") || sourceLayer.equals("ne_10m_admin_0_boundary_lines_map_units") || sourceLayer.equals("ne_10m_admin_0_boundary_lines_disputed_areas") || sourceLayer.equals("ne_10m_admin_0_boundary_lines_maritime_indicator_chn") || sourceLayer.equals("ne_10m_admin_1_states_provinces_lines")) {
+    } else if (sourceLayer.equals("ne_10m_admin_0_boundary_lines_land") ||
+      sourceLayer.equals("ne_10m_admin_0_boundary_lines_map_units") ||
+      sourceLayer.equals("ne_10m_admin_0_boundary_lines_disputed_areas") ||
+      sourceLayer.equals("ne_10m_admin_0_boundary_lines_maritime_indicator_chn") ||
+      sourceLayer.equals("ne_10m_admin_1_states_provinces_lines")) {
       theme_min_zoom = 4;
       theme_max_zoom = 5;
       kind = "tz_boundary";
@@ -42,48 +49,117 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
     // TODO (nvkelso 2023-03-26)
     //      Compiler is fussy about booleans and strings, beware
-    if( kind != "") {
+    if (kind != "") {
       switch (sf.getString("featurecla")) {
-        case "Disputed (please verify)" -> { kind = "country"; kind_detail = "disputed"; disputed = true; }
-        case "Indefinite (please verify)" -> { kind = "country"; kind_detail = "indefinite"; disputed = true; }
-        case "Indeterminant frontier" -> { kind = "country"; kind_detail = "indeterminant"; disputed = true; }
+        case "Disputed (please verify)" -> {
+          kind = "country";
+          kind_detail = "disputed";
+          disputed = true;
+        }
+        case "Indefinite (please verify)" -> {
+          kind = "country";
+          kind_detail = "indefinite";
+          disputed = true;
+        }
+        case "Indeterminant frontier" -> {
+          kind = "country";
+          kind_detail = "indeterminant";
+          disputed = true;
+        }
         case "International boundary (verify)" -> kind = "country";
-        case "Lease limit" -> { kind = "lease_limit"; admin_level = 3; }
-        case "Line of control (please verify)" -> { kind = "country"; kind_detail = "line_of_control"; disputed = true; }
-        case "Overlay limit" -> { kind = "overlay_limit"; admin_level = 3; }
+        case "Lease limit" -> {
+          kind = "lease_limit";
+          admin_level = 3;
+        }
+        case "Line of control (please verify)" -> {
+          kind = "country";
+          kind_detail = "line_of_control";
+          disputed = true;
+        }
+        case "Overlay limit" -> {
+          kind = "overlay_limit";
+          admin_level = 3;
+        }
         case "Unrecognized" -> kind = "unrecognized_country";
-        case "Map unit boundary" -> { kind = "map_unit"; admin_level = 3; }
-        case "Breakaway" -> { kind = "unrecognized_country"; kind_detail = "disputed_breakaway"; admin_level = 3; }
-        case "Claim boundary" -> { kind = "unrecognized_country"; kind_detail = "disputed_claim"; admin_level = 3; }
-        case "Elusive frontier" -> { kind = "unrecognized_country"; kind_detail = "disputed_elusive"; admin_level = 3; }
-        case "Reference line" -> { kind = "unrecognized_country"; kind_detail = "disputed_reference_line"; admin_level = 3; }
-        case "Admin-1 region boundary" -> { kind = "macroregion"; admin_level = 3; }
-        case "Admin-1 boundary" -> { kind = "region"; admin_level = 4; }
-        case "Admin-1 statistical boundary" -> { kind = "region"; admin_level = 4; }
-        case "Admin-1 statistical meta bounds" -> { kind = "region"; admin_level = 4; }
-        case "1st Order Admin Lines" -> { kind = "region"; admin_level = 4; }
-        case "Unrecognized Admin-1 region boundary" -> { kind = "unrecognized_macroregion"; admin_level = 4; }
-        case "Unrecognized Admin-1 boundary" -> { kind = "unrecognized_region"; admin_level = 4; }
-        case "Unrecognized Admin-1 statistical boundary" -> { kind = "unrecognized_region"; admin_level = 4; }
-        case "Unrecognized Admin-1 statistical meta bounds" -> { kind = "unrecognized_region"; admin_level = 4; }
+        case "Map unit boundary" -> {
+          kind = "map_unit";
+          admin_level = 3;
+        }
+        case "Breakaway" -> {
+          kind = "unrecognized_country";
+          kind_detail = "disputed_breakaway";
+          admin_level = 3;
+        }
+        case "Claim boundary" -> {
+          kind = "unrecognized_country";
+          kind_detail = "disputed_claim";
+          admin_level = 3;
+        }
+        case "Elusive frontier" -> {
+          kind = "unrecognized_country";
+          kind_detail = "disputed_elusive";
+          admin_level = 3;
+        }
+        case "Reference line" -> {
+          kind = "unrecognized_country";
+          kind_detail = "disputed_reference_line";
+          admin_level = 3;
+        }
+        case "Admin-1 region boundary" -> {
+          kind = "macroregion";
+          admin_level = 3;
+        }
+        case "Admin-1 boundary" -> {
+          kind = "region";
+          admin_level = 4;
+        }
+        case "Admin-1 statistical boundary" -> {
+          kind = "region";
+          admin_level = 4;
+        }
+        case "Admin-1 statistical meta bounds" -> {
+          kind = "region";
+          admin_level = 4;
+        }
+        case "1st Order Admin Lines" -> {
+          kind = "region";
+          admin_level = 4;
+        }
+        case "Unrecognized Admin-1 region boundary" -> {
+          kind = "unrecognized_macroregion";
+          admin_level = 4;
+        }
+        case "Unrecognized Admin-1 boundary" -> {
+          kind = "unrecognized_region";
+          admin_level = 4;
+        }
+        case "Unrecognized Admin-1 statistical boundary" -> {
+          kind = "unrecognized_region";
+          admin_level = 4;
+        }
+        case "Unrecognized Admin-1 statistical meta bounds" -> {
+          kind = "unrecognized_region";
+          admin_level = 4;
+        }
         default -> kind = "";
       }
     }
 
-    if (sf.canBeLine() && sf.hasTag("min_zoom") && (kind.equals("") == false && kind.equals("tz_boundary") == false))
-    {
+    if (sf.canBeLine() && sf.hasTag("min_zoom") && (kind.equals("") == false && kind.equals("tz_boundary") == false)) {
       features.line(this.name())
-              // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
-              //.setAttr("name", sf.getString("name"))
-              .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
-              .setAttr("pmap:min_admin_level", admin_level)
-              .setZoomRange(sf.getString("min_zoom") == null ? theme_min_zoom : (int)Double.parseDouble(sf.getString("min_zoom")), theme_max_zoom)
-              .setAttr("pmap:ne_id", sf.getString("ne_id"))
-              .setAttr("pmap:brk_a3", sf.getString("brk_a3"))
-              .setAttr("pmap:kind", kind)
-              .setAttr("pmap:kind_detail", kind_detail)
-              .setAttr("disputed", disputed)
-              .setBufferPixels(8);
+        // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
+        //.setAttr("name", sf.getString("name"))
+        .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+        .setAttr("pmap:min_admin_level", admin_level)
+        .setZoomRange(
+          sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+          theme_max_zoom)
+        .setAttr("pmap:ne_id", sf.getString("ne_id"))
+        .setAttr("pmap:brk_a3", sf.getString("brk_a3"))
+        .setAttr("pmap:kind", kind)
+        .setAttr("pmap:kind_detail", kind_detail)
+        .setAttr("disputed", disputed)
+        .setBufferPixels(8);
     }
   }
 
@@ -140,13 +216,13 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
         if (kind != "" && kind_detail != "") {
           var line = features.line(this.name())
-                          .setId(FeatureId.create(sf))
-                          .setMinPixelSize(0)
-                          .setAttr("pmap:min_admin_level", minAdminLevel.getAsInt())
-                          .setAttr("pmap:kind", kind)
-                          .setAttr("pmap:kind_detail", kind_detail)
-                          .setAttr("pmap:min_zoom", min_zoom)
-                          .setMinZoom( theme_min_zoom );
+            .setId(FeatureId.create(sf))
+            .setMinPixelSize(0)
+            .setAttr("pmap:min_admin_level", minAdminLevel.getAsInt())
+            .setAttr("pmap:kind", kind)
+            .setAttr("pmap:kind_detail", kind_detail)
+            .setAttr("pmap:min_zoom", min_zoom)
+            .setMinZoom(theme_min_zoom);
 
           // Core Tilezen schema properties
           if (disputed.getAsInt() == 1) {

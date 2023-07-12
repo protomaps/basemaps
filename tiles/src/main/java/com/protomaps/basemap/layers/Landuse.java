@@ -28,8 +28,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("railway", "platform") ||
       sf.hasTag("tourism", "zoo") ||
       (sf.hasTag("area", "yes") &&
-        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))
-    ) {
+        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))) {
       String kind = "other";
       if (sf.hasTag("aeroway", "aerodrome")) {
         kind = sf.getString("aeroway");

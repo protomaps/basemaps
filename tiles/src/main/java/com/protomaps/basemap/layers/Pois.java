@@ -11,7 +11,6 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
-
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,9 +46,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("railway", "station") ||
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
-      (!sf.hasTag("historic", "district"))
-    )
-    ) {
+        (!sf.hasTag("historic", "district")))) {
       String kind = "other";
       String kind_detail = "";
       Integer min_zoom = 15;
@@ -127,7 +124,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("tourism");
           // Boundary is most generic, so place last else we loose out
           // on nature_reserve detail versus all the protected_area
-        } else if (sf.hasTag("historic") && ! sf.hasTag("historic", "yes")) {
+        } else if (sf.hasTag("historic") && !sf.hasTag("historic", "yes")) {
           kind = sf.getString("historic");
         } else if (sf.hasTag("boundary")) {
           kind = sf.getString("boundary");
@@ -213,7 +210,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         // Roughly shared with the water label area zoom grading in physical points layer
         //
         // Allowlist of kind values eligible for early zoom point labels
-        if( kind.equals("national_park") ) {
+        if (kind.equals("national_park")) {
           if (way_area > 300000) { // 500000000 sq meters (web mercator proj)
             min_zoom = 5;
           } else if (way_area > 25000) { // 500000000 sq meters (web mercator proj)
@@ -238,8 +235,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind.equals("military") ||
           kind.equals("naval_base") ||
           kind.equals("stadium") ||
-          kind.equals("zoo")
-        ) {
+          kind.equals("zoo")) {
           //if (way_area > 300000) { // 500000000 sq meters (web mercator proj)
           //  min_zoom = 5;
           //} else if (way_area > 25000) { // 500000000 sq meters (web mercator proj)
@@ -260,9 +256,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           } else if (way_area > 0.2) { //     10000
             min_zoom = 13;
           }
-        } else if( kind.equals("college") ||
-                kind.equals("university")
-        ) {
+        } else if (kind.equals("college") ||
+          kind.equals("university")) {
           if (way_area > 20000) {
             min_zoom = 7;
           } else if (way_area > 5000) {
@@ -282,11 +277,10 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           } else {
             min_zoom = 15;
           }
-        } else if( kind.equals("forest") ||
-            kind.equals("park") ||
-            kind.equals("protected_area") ||
-            kind.equals("nature_reserve")
-        ) {
+        } else if (kind.equals("forest") ||
+          kind.equals("park") ||
+          kind.equals("protected_area") ||
+          kind.equals("nature_reserve")) {
           if (way_area > 10000) {
             min_zoom = 7;
           } else if (way_area > 4000) {
@@ -311,8 +305,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             min_zoom = 17;
           }
         } else if (kind.equals("cemetery") ||
-                kind.equals("school")
-        ) {
+          kind.equals("school")) {
           if (way_area > 5) {
             min_zoom = 12;
           } else if (way_area > 1) {
@@ -324,7 +317,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           } else {
             min_zoom = 16;
           }
-        // Typically for "building" derived label placements for shops and other businesses
+          // Typically for "building" derived label placements for shops and other businesses
         } else {
           if (way_area > 10) {
             min_zoom = 11;
@@ -351,9 +344,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
             // NOTE: (nvkelso 20230624) Turn this into an allowlist instead of a blocklist
             if (kind.equals("hotel") || kind.equals("hostel") || kind.equals("parking") || kind.equals("bank") ||
-                    kind.equals("place_of_worship") || kind.equals("jewelry") || kind.equals("yes") ||
-                    kind.equals("restaurant") || kind.equals("coworking_space") || kind.equals("clothes") ||
-                    kind.equals("art") || kind.equals("school")) {
+              kind.equals("place_of_worship") || kind.equals("jewelry") || kind.equals("yes") ||
+              kind.equals("restaurant") || kind.equals("coworking_space") || kind.equals("clothes") ||
+              kind.equals("art") || kind.equals("school")) {
               if (min_zoom == 12) {
                 min_zoom = 13;
               }
@@ -374,7 +367,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("pmap:kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", (int)(min_zoom + 1))
+          .setAttr("pmap:min_zoom", (int) (min_zoom + 1))
           //
           // DEBUG
           //.setAttr("pmap:area_debug", way_area)
@@ -431,7 +424,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("pmap:kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", (int)(min_zoom + 1))
+          .setAttr("pmap:min_zoom", (int) (min_zoom + 1))
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))

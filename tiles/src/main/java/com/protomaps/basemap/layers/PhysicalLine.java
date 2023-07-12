@@ -53,9 +53,9 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
       // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
-      if (sf.hasTag("bridge") && ! sf.hasTag("bridge", "no")) {
+      if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
         feat.setAttrWithMinzoom("pmap:level", 1, 12);
-      } else if (sf.hasTag("tunnel") && ! sf.hasTag("tunnel", "no")) {
+      } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
         feat.setAttrWithMinzoom("pmap:level", -1, 12);
       } else {
         feat.setAttrWithMinzoom("pmap:level", 0, 12);
