@@ -131,7 +131,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
       if (sourceFeature.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
         "tertiary_link")) {
-        feat.setAttrWithMinzoom("pmap:link", 1, 12);
+        feat.setAttr("pmap:link", 1);
       }
 
       if (sourceFeature.hasTag("bridge", "yes")) {
