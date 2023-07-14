@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 public class LinkSimplifyTest {
