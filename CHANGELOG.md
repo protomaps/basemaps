@@ -145,7 +145,7 @@ v2.0.0
 
 v1.0.0
 ------
-- **Release date:** 2021-01-01.
+- **Release date:** 2020-03-05.
 - **Credits:** [@bdon](https://github.com/bdon)
 
 - Initiial closed source version of the Protomaps Basemap vector tile schema
