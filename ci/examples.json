@@ -1,0 +1,16 @@
+[
+  {
+    "name":"oakland-ca-road-network",
+    "description":"Compare the appearance of highways",
+    "tags":["highway"],
+    "center":[121.333,24.320],
+    "zoom":8
+  },
+  {
+    "name":"jakarta-buildings",
+    "description":"Compare the appearance of buildings",
+    "tags":["buildings","indonesia"],
+    "center":[121.4818, 25.0271],
+    "zoom": 16
+  }
+]
