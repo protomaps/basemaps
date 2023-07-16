@@ -1,0 +1,29 @@
+name: Visual CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build_app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: echo {{ github.sha }}
+      - run: cd base && npm install && npm run --silent generate-layers 
+      - uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ secrets.CI_STORAGE_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.CI_STORAGE_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.CI_STORAGE_BUCKET }}
+          source_dir: 'light.json'
+          endpoint: ${{ secrets.CI_STORAGE_ENDPOINT }}
