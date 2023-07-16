@@ -9,16 +9,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_app:
+  visual-ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - run: echo {{ github.sha }}
+      - run: echo ${{ github.sha }}
       - run: cd base && npm install && npm run --silent generate-layers 
       - uses: shallwefootball/s3-upload-action@master
         with:
