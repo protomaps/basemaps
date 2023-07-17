@@ -17,6 +17,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: 'maven'
       - run: cd base && npm install && npm run --silent generate-layers > light.json
       - run: |
-          curl -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
+          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
