@@ -26,8 +26,10 @@ jobs:
           cache: 'maven'
       - run: cd base && npm install && npm run --silent generate-layers > light.json
       - run : |
-          mvn -DskipTests=true clean package
+          cd tiles && mvn -DskipTests=true clean package
       - run : |
-          java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download
+          cd tiles && java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download
       - run: |
-          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
+          curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
+      - run: |
+          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/tiles.pmtiles
