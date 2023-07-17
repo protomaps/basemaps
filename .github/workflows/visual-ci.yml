@@ -41,4 +41,4 @@ jobs:
         with:
           recreate: true
           message: |
-            Comparison images at <https://protomaps.github.io/basemaps/ci/?left={{ github.event.pull_request.base.sha }}&right=${{ env.NAME }}>
+            Comparison: <https://protomaps.github.io/basemaps/ci/?left=${{ github.event.pull_request.base.sha }}&right=${{ env.NAME }}>
