@@ -222,6 +222,7 @@
             const showDifferencesOnly = queryParams.get("showDifferencesOnly");
 
             const REMOTE_URL = "https://basemaps-ci.protomaps.com";
+            const PMTILES_NAME = "smalltestregion_vector.pmtiles";
 
             // get all JSONs first - we don't want to initialize the map without a starting position
             let [examples, left_layers, right_layers] = await Promise.all([
@@ -241,14 +242,14 @@
             // one for each version, so we don't have to re-initialize the map on changing view.
             const left_map = createMap(
                 "left-map",
-                left ? `${REMOTE_URL}/${left}/tiles.pmtiles` : 'smalltestregion_vector.pmtiles',
+                left ? `${REMOTE_URL}/${left}/${PMTILES_NAME}` : PMTILES_NAME,
                 left_layers,
                 example.center,
                 example.zoom
             );
             const right_map = createMap(
                 "right-map",
-                right ? `${REMOTE_URL}/${right}/tiles.pmtiles` : 'smalltestregion_vector.pmtiles',
+                right ? `${REMOTE_URL}/${right}/${PMTILES_NAME}` : PMTILES_NAME,
                 right_layers,
                 example.center,
                 example.zoom
