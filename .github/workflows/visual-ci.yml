@@ -10,6 +10,7 @@ on:
 
 jobs:
   visual-ci:
+    name: Generate Visual CI Artifacts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,4 +18,5 @@ jobs:
         with:
           node-version: 18.x
       - run: cd base && npm install && npm run --silent generate-layers > light.json
-      - run: curl -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
+      - run: |
+          curl -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
