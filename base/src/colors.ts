@@ -102,7 +102,7 @@ export const LIGHT: Theme = {
     major_casing: "#e3cfd3",
     major: "#ffffff",
     highway_casing: "#ebcea2",
-    highway: "#fefffc",
+    highway: "red",
     railway: "#b3bcc9",
     railway_tracks: "#ffffff",
     boundaries: "#5c4a6b",
