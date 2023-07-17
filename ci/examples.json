@@ -1,15 +1,15 @@
 [
   {
-    "name":"oakland-ca-road-network",
+    "name":"taiwan-z8",
     "description":"Compare the appearance of highways",
-    "tags":["highway"],
+    "tags":["highway", "cjk"],
     "center":[121.333,24.320],
     "zoom":8
   },
   {
-    "name":"jakarta-buildings",
+    "name":"taiwan-z16-buildings",
     "description":"Compare the appearance of buildings",
-    "tags":["buildings","indonesia"],
+    "tags":["buildings","cjk"],
     "center":[121.4818, 25.0271],
     "zoom": 16
   }
