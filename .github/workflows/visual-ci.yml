@@ -36,7 +36,7 @@ jobs:
       - run: |
           curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/light.json
       - run: |
-          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/tiles.pmtiles
+          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/smalltestregion.pmtiles
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
           recreate: true
