@@ -12,6 +12,7 @@ jobs:
   visual-ci:
     name: Generate Visual CI Artifacts
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -24,5 +25,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - run: cd base && npm install && npm run --silent generate-layers > light.json
+      - run : |
+          mvn -DskipTests=true clean package
+      - run : |
+          java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download
       - run: |
           curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
