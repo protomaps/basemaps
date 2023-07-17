@@ -241,14 +241,14 @@
             // one for each version, so we don't have to re-initialize the map on changing view.
             const left_map = createMap(
                 "left-map",
-                left ? `${REMOTE_URL}/${left}/tiles.pmtiles` : 'tiles.pmtiles',
+                left ? `${REMOTE_URL}/${left}/tiles.pmtiles` : 'smalltestregion_vector.pmtiles',
                 left_layers,
                 example.center,
                 example.zoom
             );
             const right_map = createMap(
                 "right-map",
-                right ? `${REMOTE_URL}/${right}/tiles.pmtiles` : 'tiles.pmtiles',
+                right ? `${REMOTE_URL}/${right}/tiles.pmtiles` : 'smalltestregion_vector.pmtiles',
                 right_layers,
                 example.center,
                 example.zoom
