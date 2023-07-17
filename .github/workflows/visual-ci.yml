@@ -30,13 +30,13 @@ jobs:
       - run: echo ${{ env.NAME }}
       - run: cd base && npm install && npm run --silent generate-layers > light.json
       - run : |
-          cd tiles && mvn -DskipTests=true clean package
+          cd tiles && mvn -DskipTests package
       - run : |
           cd tiles && java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download
       - run: |
           curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/light.json
       - run: |
-          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/smalltestregion.pmtiles
+          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/smalltestregion_vector.pmtiles
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
           recreate: true
