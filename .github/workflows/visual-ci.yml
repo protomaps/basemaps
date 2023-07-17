@@ -19,4 +19,4 @@ jobs:
           node-version: 18.x
       - run: cd base && npm install && npm run --silent generate-layers > light.json
       - run: |
-          curl -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
+          curl -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ github.sha }}/light.json
