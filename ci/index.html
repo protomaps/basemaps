@@ -148,7 +148,7 @@
                 return promise;
             };
 
-            const showExample = async (left_map, right_map, example, showDifferencesOnly) => {
+            const showExample = async (left_map, right_map, queryParams, example, showDifferencesOnly) => {
                 let [left_data, right_data] = await Promise.all([
                     moveAndRenderMap(left_map, example.center, example.zoom),
                     moveAndRenderMap(right_map, example.center, example.zoom),
@@ -189,7 +189,12 @@
 
                 const nameLink = document.createElement('a');
                 nameLink.innerText = example.name; 
-                nameLink.href = `?name=${example.name}`;
+
+                let q = new URLSearchParams(queryParams);
+                q.delete("tag");
+                q.set("name", example.name);
+                nameLink.href = '?' + q.toString();
+
                 annotation.appendChild(nameLink);
 
                 const description = document.createElement('span');
@@ -199,7 +204,10 @@
                 for (const tag of example.tags) {
                     const tagLink = document.createElement('a');
                     tagLink.innerText = tag;
-                    tagLink.href = `?tag=${tag}`;
+                    let q = new URLSearchParams(queryParams);
+                    q.delete("name");
+                    q.set("tag", tag);
+                    tagLink.href = '?' + q.toString();
                     annotation.appendChild(tagLink);
                 }
 
@@ -256,7 +264,7 @@
             );
 
             for (let example of examples) {
-                await showExample(left_map, right_map, example, showDifferencesOnly);
+                await showExample(left_map, right_map, queryParams, example, showDifferencesOnly);
             }
         </script>
     </body>
