@@ -17,17 +17,18 @@ public class Earth implements ForwardingProfile.FeaturePostProcessor {
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     features.polygon(this.name())
+      .setAttr("pmap:kind", "earth")
       .setZoomRange(6, 15).setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
     if (sourceLayer.equals("ne_110m_land")) {
-      features.polygon(this.name()).setZoomRange(0, 1);
+      features.polygon(this.name()).setZoomRange(0, 1).setBufferPixels(8).setAttr("pmap:kind", "earth");
     } else if (sourceLayer.equals("ne_50m_land")) {
-      features.polygon(this.name()).setZoomRange(2, 4);
+      features.polygon(this.name()).setZoomRange(2, 4).setBufferPixels(8).setAttr("pmap:kind", "earth");
     } else if (sourceLayer.equals("ne_10m_land")) {
-      features.polygon(this.name()).setZoomRange(5, 5);
+      features.polygon(this.name()).setZoomRange(5, 5).setBufferPixels(8).setAttr("pmap:kind", "earth");
     }
   }
 

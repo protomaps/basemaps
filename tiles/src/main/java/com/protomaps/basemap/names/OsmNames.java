@@ -5,12 +5,12 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.Map;
 
 public class OsmNames {
-  public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature source,
+  public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
     int minzoom) {
-    for (Map.Entry<String, Object> tag : source.tags().entrySet()) {
+    for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
       if (key.equals("name") || key.startsWith("name:")) {
-        feature.setAttrWithMinzoom(key, source.getTag(key), minzoom);
+        feature.setAttrWithMinzoom(key, sf.getTag(key), minzoom);
       }
     }
 

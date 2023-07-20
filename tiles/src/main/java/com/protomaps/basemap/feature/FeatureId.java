@@ -5,8 +5,8 @@ import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmSourceFeature;
 
 public class FeatureId {
-  public static long create(SourceFeature feature) {
-    if (feature instanceof OsmSourceFeature osmFeature) {
+  public static long create(SourceFeature sf) {
+    if (sf instanceof OsmSourceFeature osmFeature) {
       long elemType;
       var element = osmFeature.originalElement();
       if (element instanceof OsmElement.Relation) {
@@ -18,6 +18,6 @@ public class FeatureId {
       }
       return (elemType << 44) | element.id();
     }
-    return feature.id();
+    return sf.id();
   }
 }

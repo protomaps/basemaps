@@ -30,6 +30,7 @@ public class Basemap extends ForwardingProfile {
       var admin = new Boundaries();
       registerHandler(admin);
       registerSourceHandler("osm", admin);
+      registerSourceHandler("ne", admin::processNe);
 
       var buildings = new Buildings();
       registerHandler(buildings);
@@ -50,6 +51,7 @@ public class Basemap extends ForwardingProfile {
       var physical_point = new PhysicalPoint();
       registerHandler(physical_point);
       registerSourceHandler("osm", physical_point);
+      registerSourceHandler("ne", physical_point::processNe);
 
       var place = new Places();
       registerHandler(place);

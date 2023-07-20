@@ -26,8 +26,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       "source-layer": "landuse",
       filter: [
         "any",
-        ["==", "pmap:kind", "park"],
-        ["==", "landuse", "cemetery"],
+        ["in", "pmap:kind", "national_park", "park", "cemetery", "protected_area", "nature_reserve", "forest", "golf_course"],
       ],
       paint: {
         "fill-color": c.park,
@@ -58,9 +57,39 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "pmap:kind", "school"]],
+      filter: ["any", ["in", "pmap:kind", "school", "university", "college"]],
       paint: {
         "fill-color": c.school,
+      },
+    },
+    {
+      id: "landuse_beach",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: ["any", ["in", "pmap:kind", "beach"]],
+      paint: {
+        "fill-color": c.sand,
+      },
+    },
+    {
+      id: "landuse_zoo",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: ["any", ["in", "pmap:kind", "zoo"]],
+      paint: {
+        "fill-color": c.zoo,
+      },
+    },
+    {
+      id: "landuse_military",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: ["any", ["in", "pmap:kind", "military", "naval_base", "airfield"]],
+      paint: {
+        "fill-color": c.zoo,
       },
     },
     {
@@ -70,9 +99,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       "source-layer": "natural",
       filter: [
         "any",
-        ["==", "natural", "wood"],
-        ["==", "leisure", "nature_reserve"],
-        ["==", "landuse", "forest"],
+        ["in", "pmap:kind", "wood", "nature_reserve", "forest"],
       ],
       paint: {
         "fill-color": c.wood,
@@ -83,7 +110,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "highway", "footway"]],
+      filter: ["any", ["==", "pmap:kind", "pedestrian"]],
       paint: {
         "fill-color": c.pedestrian,
       },
@@ -93,7 +120,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "natural",
-      filter: ["in", "natural", "scrub", "grassland"],
+      filter: ["in", "pmap:kind", "scrub", "grassland", "grass"],
       paint: {
         "fill-color": c.scrub,
       },
@@ -103,7 +130,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "natural",
-      filter: ["==", "natural", "glacier"],
+      filter: ["==", "pmap:kind", "glacier"],
       paint: {
         "fill-color": c.glacier,
       },
@@ -113,7 +140,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "natural",
-      filter: ["==", "natural", "sand"],
+      filter: ["==", "pmap:kind", "sand"],
       paint: {
         "fill-color": c.sand,
       },
@@ -123,7 +150,10 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["==", "aeroway", "aerodrome"],
+      filter: [
+        "any",
+        ["in", "pmap:kind", "aerodrome"],
+      ],
       paint: {
         "fill-color": c.aerodrome,
       },
@@ -133,10 +163,48 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "transit",
-      filter: ["has", "aeroway"],
+      filter: [
+        "any",
+        ["in", "pmap:kind_detail", "runway"],
+      ],
       paint: {
         "line-color": c.runway,
-        "line-width": 6,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          10,
+          0,
+          10.5,
+          2,
+          15,
+          6,
+        ],
+      },
+    },
+    {
+      id: "transit_taxiway",
+      type: "line",
+      source: source,
+      "source-layer": "transit",
+      min_zoom: 13,
+      filter: [
+        "any",
+        ["in", "pmap:kind_detail", "taxiway"],
+      ],
+      paint: {
+        "line-color": c.runway,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          13,
+          0,
+          13.5,
+          1,
+          15,
+          6,
+        ],
       },
     },
     {
@@ -144,11 +212,10 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "landuse",
+      min_zoom: 14,
       filter: [
         "any",
-        ["==", "aeroway", "runway"],
-        ["==", "area:aeroway", "runway"],
-        ["==", "area:aeroway", "taxiway"],
+        ["in", "pmap:kind_detail", "runway", "taxiway"],
       ],
       paint: {
         "fill-color": c.runway,
@@ -170,7 +237,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       "source-layer": "landuse",
       filter: [
         "any",
-        ["==", "man_made", "pier"],
+        ["==", "pmap:kind", "pier"],
       ],
       paint: {
         "fill-color": c.earth,
@@ -181,7 +248,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:kind", "other"]],
+      filter: ["all", ["<", "pmap:level", 0], ["in", "pmap:kind", "other", "path"]],
       paint: {
         "line-color": c.tunnel_other_casing,
         "line-gap-width": [
@@ -209,6 +276,44 @@ export function nolabels_layers(source: string, c: Theme): any[] {
         "all",
         ["<", "pmap:level", 0],
         ["==", "pmap:kind", "minor_road"],
+      ],
+      paint: {
+        "line-color": c.tunnel_minor_casing,
+        "line-dasharray": [3, 2],
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          0.5,
+          20,
+          32,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          1,
+        ],
+      },
+      layout: {
+        visibility: casingVisibility,
+      },
+    },
+    {
+      id: "roads_tunnels_link_casing",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      filter: [
+        "all",
+        ["<", "pmap:level", 0],
+        ["==", "pmap:link", 1]
       ],
       paint: {
         "line-color": c.tunnel_minor_casing,
@@ -319,7 +424,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:kind", "highway"]],
+      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.tunnel_highway_casing,
         "line-dasharray": [3, 2],
@@ -353,7 +458,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:kind", "other"]],
+      filter: ["all", ["<", "pmap:level", 0], ["in", "pmap:kind", "other", "path"]],
       paint: {
         "line-color": c.tunnel_other,
         "line-dasharray": [1, 1],
@@ -389,6 +494,31 @@ export function nolabels_layers(source: string, c: Theme): any[] {
           12,
           0,
           12.5,
+          0.5,
+          20,
+          32,
+        ],
+      },
+    },
+    {
+      id: "roads_tunnels_link",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      filter: [
+        "all",
+        ["<", "pmap:level", 0],
+        ["==", "pmap:link", 1],
+      ],
+      paint: {
+        "line-color": c.tunnel_minor,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          7,
+          0,
+          7.5,
           0.5,
           20,
           32,
@@ -450,7 +580,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:kind", "highway"]],
+      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.tunnel_highway,
         "line-width": [
@@ -467,14 +597,37 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "physical_line_waterway",
+      id: "physical_line_stream",
       type: "line",
       source: source,
       "source-layer": "physical_line",
-      filter: ["==", ["get", "pmap:kind"], "waterway"],
+      min_zoom: 14,
+      filter: ["all", ["in", "pmap:kind", "stream"]],
       paint: {
         "line-color": c.water,
         "line-width": 0.5,
+      },
+    },
+    {
+      id: "physical_line_river",
+      type: "line",
+      source: source,
+      "source-layer": "physical_line",
+      min_zoom: 9,
+      filter: ["all", ["in", "pmap:kind", "river"]],
+      paint: {
+        "line-color": c.water,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          9,
+          0,
+          9.5,
+          1.0,
+          18,
+          12,
+        ],
       },
     },
     {
@@ -489,6 +642,69 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "transit_pier",
+      type: "line",
+      source: source,
+      "source-layer": "transit",
+      filter: [
+        "any",
+        ["==", "pmap:kind", "pier"],
+      ],
+      paint: {
+        "line-color": c.minor,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          0.5,
+          20,
+          16,
+        ],
+      },
+    },
+    {
+      id: "roads_minor_service_casing",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      minzoom: 13,
+      filter: [
+        "all",
+        ["==", "pmap:level", 0],
+        ["==", "pmap:kind", "minor_road"],
+        ["==", "pmap:kind_detail", "service"],
+      ],
+      paint: {
+        "line-color": c.minor_casing,
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          13,
+          0,
+          13.5,
+          0.25,
+          20,
+          24,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          13,
+          0,
+          13.5,
+          0.8,
+        ],
+      },
+      layout: {
+        visibility: casingVisibility,
+      },
+    },
+    {
       id: "roads_minor_casing",
       type: "line",
       source: source,
@@ -497,6 +713,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
         "all",
         ["==", "pmap:level", 0],
         ["==", "pmap:kind", "minor_road"],
+        ["!=", "pmap:kind_detail", "service"],
       ],
       paint: {
         "line-color": c.minor_casing,
@@ -509,7 +726,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
           12.5,
           0.5,
           20,
-          32,
+          24,
         ],
         "line-width": [
           "interpolate",
@@ -518,7 +735,44 @@ export function nolabels_layers(source: string, c: Theme): any[] {
           12,
           0,
           12.5,
-          1,
+          .6,
+        ],
+      },
+      layout: {
+        visibility: casingVisibility,
+      },
+    },
+    {
+      id: "roads_link_casing",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      minzoom: 13,
+      filter: [
+        "all",
+        ["==", "pmap:link", 1],
+      ],
+      paint: {
+        "line-color": c.minor_casing,
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          13,
+          0,
+          13.5,
+          0.5,
+          20,
+          24,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          13,
+          0,
+          13.5,
+          2,
         ],
       },
       layout: {
@@ -563,10 +817,11 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "roads_major_casing",
+      id: "roads_major_casing_late",
       type: "line",
       source: source,
       "source-layer": "roads",
+      minzoom: 12,
       filter: [
         "all",
         ["==", "pmap:level", 0],
@@ -600,11 +855,12 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "roads_highway_casing",
+      id: "roads_highway_casing_late",
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "highway"]],
+      minzoom: 12,
+      filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.highway_casing,
         "line-gap-width": [
@@ -637,7 +893,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "other"]],
+      filter: ["all", ["==", "pmap:level", 0], ["in", "pmap:kind", "other", "path"]],
       paint: {
         "line-color": c.other,
         "line-dasharray": [2, 1],
@@ -655,13 +911,13 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "transit_pier",
+      id: "roads_link",
       type: "line",
       source: source,
-      "source-layer": "transit",
+      "source-layer": "roads",
       filter: [
-        "any",
-        ["==", "pmap:kind", "pier"],
+        "all",
+        ["==", "pmap:link", 1],
       ],
       paint: {
         "line-color": c.minor,
@@ -669,12 +925,38 @@ export function nolabels_layers(source: string, c: Theme): any[] {
           "interpolate",
           ["exponential", 1.6],
           ["zoom"],
-          12,
+          13,
           0,
-          12.5,
-          0.5,
+          13.5,
+          1,
           20,
-          16,
+          24,
+        ],
+      },
+    },
+    {
+      id: "roads_minor_service",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      filter: [
+        "all",
+        ["==", "pmap:level", 0],
+        ["==", "pmap:kind", "minor_road"],
+        ["==", "pmap:kind_detail", "service"],
+      ],
+      paint: {
+        "line-color": c.minor,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          13,
+          0,
+          13.5,
+          0.25,
+          20,
+          24,
         ],
       },
     },
@@ -687,6 +969,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
         "all",
         ["==", "pmap:level", 0],
         ["==", "pmap:kind", "minor_road"],
+        ["!=", "pmap:kind_detail", "service"],
       ],
       paint: {
         "line-color": c.minor,
@@ -729,6 +1012,44 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "roads_major_casing_early",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      maxzoom: 12,
+      filter: [
+        "all",
+        ["==", "pmap:level", 0],
+        ["==", "pmap:kind", "major_road"],
+      ],
+      paint: {
+        "line-color": c.major_casing,
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          7,
+          0,
+          7.5,
+          0.5,
+          19,
+          32,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          9,
+          0,
+          9.5,
+          1,
+        ],
+      },
+      layout: {
+        visibility: casingVisibility,
+      },
+    },
+    {
       id: "roads_major",
       type: "line",
       source: source,
@@ -744,9 +1065,9 @@ export function nolabels_layers(source: string, c: Theme): any[] {
           "interpolate",
           ["exponential", 1.6],
           ["zoom"],
-          7,
+          6,
           0,
-          7.5,
+          6.5,
           0.5,
           19,
           32,
@@ -754,11 +1075,45 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "roads_highway_casing_early",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      maxzoom: 12,
+      filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
+      paint: {
+        "line-color": c.highway_casing,
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          3,
+          0,
+          3.5,
+          0.5,
+          18,
+          32,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          7,
+          0,
+          7.5,
+          1,
+        ],
+      },
+      layout: {
+        visibility: casingVisibility,
+      },
+    },
+    {
       id: "roads_highway",
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "highway"]],
+      filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.highway,
         "line-width": [
@@ -779,7 +1134,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "transit",
-      filter: ["all", ["==", "pmap:kind", "railway"]],
+      filter: ["all", ["==", "pmap:kind", "rail"]],
       paint: {
         "line-color": c.railway,
         "line-width": 2,
@@ -790,7 +1145,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "transit",
-      filter: ["all", ["==", "pmap:kind", "railway"]],
+      filter: ["all", ["==", "pmap:kind", "rail"]],
       paint: {
         "line-color": c.railway_tracks,
         "line-width": 0.8,
@@ -813,7 +1168,8 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:kind", "other"]],
+      minzoom: 12,
+      filter: ["all", [">", "pmap:level", 0], ["in", "pmap:kind", "other", "path"]],
       paint: {
         "line-color": c.bridges_other_casing,
         "line-gap-width": [
@@ -833,10 +1189,49 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "roads_bridges_link_casing",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      minzoom: 12,
+      filter: [
+        "all",
+        [">", "pmap:level", 0],
+        ["==", "pmap:link", 1],
+      ],
+      paint: {
+        "line-color": c.bridges_minor_casing,
+        "line-gap-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          1,
+          20,
+          32,
+        ],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          2,
+        ],
+      },
+      layout: {
+        visibility: casingVisibility,
+      },
+    },
+    {
       id: "roads_bridges_minor_casing",
       type: "line",
       source: source,
       "source-layer": "roads",
+      minzoom: 12,
       filter: [
         "all",
         [">", "pmap:level", 0],
@@ -874,6 +1269,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
+      minzoom: 12,
       filter: [
         "all",
         [">", "pmap:level", 0],
@@ -911,6 +1307,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
+      minzoom: 12,
       filter: [
         "all",
         [">", "pmap:level", 0],
@@ -948,7 +1345,8 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:kind", "highway"]],
+      minzoom: 12,
+      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.bridges_highway_casing,
         "line-gap-width": [
@@ -981,7 +1379,8 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:kind", "other"]],
+      minzoom: 12,
+      filter: ["all", [">", "pmap:level", 0], ["in", "pmap:kind", "other", "path"]],
       paint: {
         "line-color": c.bridges_other,
         "line-dasharray": [2, 1],
@@ -1003,6 +1402,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
+      minzoom: 12,
       filter: [
         "all",
         [">", "pmap:level", 0],
@@ -1024,10 +1424,37 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       },
     },
     {
+      id: "roads_bridges_link",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      minzoom: 12,
+      filter: [
+        "all",
+        [">", "pmap:level", 0],
+        ["==", "pmap:link", 1],
+      ],
+      paint: {
+        "line-color": c.bridges_minor,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          12,
+          0,
+          12.5,
+          1,
+          20,
+          32,
+        ],
+      },
+    },
+    {
       id: "roads_bridges_medium",
       type: "line",
       source: source,
       "source-layer": "roads",
+      minzoom: 12,
       filter: [
         "all",
         [">", "pmap:level", 0],
@@ -1053,6 +1480,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
+      minzoom: 12,
       filter: [
         "all",
         [">", "pmap:level", 0],
@@ -1078,7 +1506,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:kind", "highway"]],
+      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.bridges_highway,
         "line-width": [
@@ -1104,12 +1532,13 @@ export function labels_layers(source: string, c: Theme): any[] {
       type: "symbol",
       source: source,
       "source-layer": "physical_line",
-      minzoom: 14,
+      minzoom: 13,
+      filter: ["all", ["in", "pmap:kind", "river", "stream"]],
       layout: {
         "symbol-placement": "line",
         "text-font": ["NotoSans-Regular"],
         "text-field": ["get", "name"],
-        "text-size": 14,
+        "text-size": 12,
         "text-letter-spacing": 0.3,
       },
       paint: {
@@ -1119,11 +1548,32 @@ export function labels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "roads_labels",
+      id: "physical_point_peak",
+      type: "symbol",
+      source: source,
+      "source-layer": "physical_point",
+      filter: ["any", ["==", "pmap:kind", "peak"]],
+      layout: {
+        "text-font": ["NotoSans-Regular"],
+        "text-field": ["get", "name"],
+        "text-size": 11,
+        "text-max-width": 9
+      },
+      paint: {
+        "text-color": c.peak_label,
+        "text-halo-color": c.peak_label_halo,
+        "text-halo-width": 1.5,
+      },
+    },
+    {
+      id: "roads_labels_minor",
       type: "symbol",
       source: source,
       "source-layer": "roads",
+      minzoom: 15,
+      filter: ["any", ["in", "pmap:kind", "minor_road", "other", "path"]],
       layout: {
+        "symbol-sort-key": ["get", "pmap:min_zoom"],
         "symbol-placement": "line",
         "text-font": ["NotoSans-Regular"],
         "text-field": ["get", "name"],
@@ -1133,6 +1583,29 @@ export function labels_layers(source: string, c: Theme): any[] {
         "text-color": c.roads_label,
         "text-halo-color": c.roads_label_halo,
         "text-halo-width": 2,
+      },
+    },
+    {
+      id: "pois_high_zooms",
+      type: "symbol",
+      source: source,
+      minzoom: 15,
+      "source-layer": "pois",
+      "filter": ["any", [">=", ["get", "pmap:min_zoom"], 13]],
+      layout: {
+        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "text-font": ["NotoSans-Regular"],
+        "text-field": ["get", "name"],
+        "text-size": 11,
+        "text-max-width": 9,
+        "icon-padding": ["interpolate", ["linear"],
+          ["zoom"], 0, 2, 14, 2, 16, 20, 17, 2, 22, 2
+        ],
+      },
+      paint: {
+        "text-color": c.subplace_label,
+        "text-halo-color": c.subplace_label_halo,
+        "text-halo-width": 1.5,
       },
     },
     {
@@ -1149,12 +1622,13 @@ export function labels_layers(source: string, c: Theme): any[] {
       type: "symbol",
       source: source,
       "source-layer": "physical_point",
-      filter: ["any", ["==", "place", "sea"], ["==", "place", "ocean"]],
+      filter: ["any", ["in", "pmap:kind", "sea", "ocean", "lake", "water", "bay", "strait", "fjord"]],
       layout: {
         "text-font": ["NotoSans-Regular"],
         "text-field": ["get", "name"],
-        "text-size": 13,
+        "text-size": 11,
         "text-letter-spacing": 0.1,
+        "text-max-width": 9
       },
       paint: {
         "text-color": c.ocean_label,
@@ -1163,37 +1637,23 @@ export function labels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "physical_point_peak",
+      id: "roads_labels_major",
       type: "symbol",
       source: source,
-      "source-layer": "physical_point",
-      filter: ["any", ["==", "natural", "peak"]],
+      "source-layer": "roads",
+      minzoom: 11,
+      filter: ["any", ["in", "pmap:kind", "highway", "major_road", "medium_road"]],
       layout: {
-        "text-font": ["NotoSans-Regular"],
-        "text-field": ["get", "name"],
-        "text-size": 14,
-      },
-      paint: {
-        "text-color": c.peak_label,
-        "text-halo-color": c.peak_label_halo,
-        "text-halo-width": 1.5,
-      },
-    },
-    {
-      id: "pois",
-      type: "symbol",
-      source: source,
-      minzoom: 17,
-      "source-layer": "pois",
-      layout: {
+        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "symbol-placement": "line",
         "text-font": ["NotoSans-Regular"],
         "text-field": ["get", "name"],
         "text-size": 12,
       },
       paint: {
-        "text-color": c.subplace_label,
-        "text-halo-color": c.subplace_label_halo,
-        "text-halo-width": 1.5,
+        "text-color": c.roads_label,
+        "text-halo-color": c.roads_label_halo,
+        "text-halo-width": 2,
       },
     },
     {
@@ -1203,8 +1663,11 @@ export function labels_layers(source: string, c: Theme): any[] {
       "source-layer": "places",
       filter: ["==", "pmap:kind", "neighbourhood"],
       layout: {
+        "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
         "text-font": ["NotoSans-Regular"],
+        "text-max-width": 7,
+        "text-padding": 4,
         "text-size": {
           base: 1.2,
           stops: [
@@ -1217,15 +1680,37 @@ export function labels_layers(source: string, c: Theme): any[] {
       paint: {
         "text-color": c.subplace_label,
         "text-halo-color": c.subplace_label_halo,
-        "text-halo-width": 0.5,
+        "text-halo-width": 1.0,
       },
     },
     {
-      id: "places_city_circle",
+      id: "pois_important",
+      type: "symbol",
+      source: source,
+      "source-layer": "pois",
+      "filter": ["any", ["<", ["get", "pmap:min_zoom"], 13]],
+      layout: {
+        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "text-font": ["NotoSans-Regular"],
+        "text-field": ["get", "name"],
+        "text-size": 11,
+        "text-max-width": 9,
+        "icon-padding": ["interpolate", ["linear"],
+          ["zoom"], 0, 2, 14, 2, 16, 20, 17, 2, 22, 2
+        ],
+      },
+      paint: {
+        "text-color": c.subplace_label,
+        "text-halo-color": c.subplace_label_halo,
+        "text-halo-width": 1.5,
+      },
+    },
+    {
+      id: "places_locality_circle",
       type: "circle",
       source: source,
       "source-layer": "places",
-      filter: ["==", "pmap:kind", "city"],
+      filter: ["==", "pmap:kind", "locality"],
       paint: {
         "circle-radius": 2,
         "circle-stroke-width": 2,
@@ -1235,16 +1720,30 @@ export function labels_layers(source: string, c: Theme): any[] {
       maxzoom: 8,
     },
     {
-      id: "places_city",
+      id: "places_locality",
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "pmap:kind", "city"],
+      filter: ["==", "pmap:kind", "locality"],
       layout: {
-        "symbol-sort-key": ["number", ["get", "pmap:min_zoom"]],
+        "symbol-sort-key": ["to-number", ["concat", ["get", "pmap:min_zoom"],
+              ["+", 1, ["/", 1, ["get", "pmap:population_rank"]]]
+            ]],
         "text-field": "{name}",
-        "text-font": ["NotoSans-Bold"],
-        "text-size": ["step", ["get", "pmap:rank"], 0, 1, 12, 2, 10],
+        "text-font": ["NotoSans-Regular"],
+        "text-size": ["interpolate", ["linear"],
+          ["zoom"],
+          4, ["case", ["<", ["get", "pmap:population_rank"], 10], 11,
+                      [">=", ["get", "pmap:population_rank"], 10], 12, 0],
+          6.99, ["case", ["<", ["get", "pmap:population_rank"], 9], 11,
+                         [">=", ["get", "pmap:population_rank"], 9], 13, 0],
+          15,   ["case", ["<", ["get", "pmap:population_rank"], 8], 12,
+                         [">=", ["get", "pmap:population_rank"], 8], 14, 0
+          ]
+        ],
+        "icon-padding": ["interpolate", ["linear"],
+          ["zoom"], 0, 2, 8, 4, 10, 8, 12, 6, 22, 2
+        ],
         "text-anchor": {
           stops: [
             [7, "left"],
@@ -1260,12 +1759,13 @@ export function labels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "places_state",
+      id: "places_region",
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "pmap:kind", "state"],
+      filter: ["==", "pmap:kind", "region"],
       layout: {
+        "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
         "text-font": ["NotoSans-Regular"],
         "text-size": 12,
@@ -1284,18 +1784,24 @@ export function labels_layers(source: string, c: Theme): any[] {
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "place", "country"],
+      filter: ["==", "pmap:kind", "country"],
       layout: {
+        "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
         "text-font": ["NotoSans-Bold"],
-        "text-size": {
-          base: 1.2,
-          stops: [
-            [2, 13],
-            [6, 13],
-            [8, 20],
-          ],
-        },
+        "text-size": ["interpolate", ["linear"],
+          ["zoom"],
+          2, ["case", ["<", ["get", "pmap:population_rank"], 10], 11,
+                      [">=", ["get", "pmap:population_rank"], 10], 12, 0],
+          6, ["case", ["<", ["get", "pmap:population_rank"], 8], 11,
+                         [">=", ["get", "pmap:population_rank"], 8], 14, 0],
+          8,   ["case", ["<", ["get", "pmap:population_rank"], 7], 12,
+                         [">=", ["get", "pmap:population_rank"], 7], 20, 0
+          ]
+        ],
+        "icon-padding": ["interpolate", ["linear"],
+          ["zoom"], 0, 2, 14, 2, 16, 20, 17, 2, 22, 2
+        ],
         "text-transform": "uppercase",
       },
       paint: {
