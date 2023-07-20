@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
@@ -190,7 +191,9 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   }
 
   @Override
-  public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
+  public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
+    // limit the application of LinkSimplify to where cloverleafs are unlikely to be at tile edges.
+    // TODO: selectively apply each class depending on zoom level.
     if (zoom < 12) {
       items = linkSimplify(items, "highway", "motorway", "motorway_link");
       items = linkSimplify(items, "highway", "trunk", "trunk_link");
@@ -198,7 +201,6 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
       items = linkSimplify(items, "highway", "secondary", "secondary_link");
     }
 
-    // NOTE: (nvkelso 20230623) Why is this neccesary?
     for (var item : items) {
       item.attrs().remove("highway");
       if (!item.attrs().containsKey("pmap:level")) {

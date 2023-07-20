@@ -1,0 +1,44 @@
+name: Visual CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  NAME: ${{ github.event.number || github.sha }}
+
+jobs:
+  visual-ci:
+    name: Generate Visual CI Artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: 'maven'
+      - run: echo ${{ env.NAME }}
+      - run: cd base && npm install && npm run --silent generate-layers > light.json
+      - run : |
+          cd tiles && mvn -DskipTests package
+      - run : |
+          cd tiles && java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download
+      - run: |
+          curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/light.json
+      - run: |
+          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/smalltestregion_vector.pmtiles
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          message: |
+            Comparison: <https://protomaps.github.io/basemaps/ci/?left=${{ github.event.pull_request.base.sha }}&right=${{ env.NAME }}>
