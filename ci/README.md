@@ -11,6 +11,11 @@ The test suite depends on the existence of a public HTTP endpoint with these pat
 * `ci-storage.protomaps.com/artifacts/ARTIFACT_SHA/light.json`
 
 `smalltestregion_vector.pmtiles` is the java tiler output at SHA run on `smalltestregion.osm.pbf`.
+
+```sh
+./osmx extract planet.osmx smalltestregion.osm.pbf --region smalltestregion.geojson
+```
+
 `light.json` is the generated `layers` of the GL JSON (not the full style).
 
 *Later we will add more than just light.json*

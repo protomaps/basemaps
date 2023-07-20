@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - name: Cache data/sources
+        uses: ./.github/cache-sources-action
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
@@ -30,7 +32,7 @@ jobs:
       - run: echo ${{ env.NAME }}
       - run: cd base && npm install && npm run --silent generate-layers > light.json
       - run : |
-          cd tiles && mvn -DskipTests package
+          cd tiles && mvn --batch-mode -no-transfer-progress -DskipTests package
       - run : |
           cd tiles && java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download
       - run: |
