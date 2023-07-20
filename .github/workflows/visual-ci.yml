@@ -21,8 +21,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - name: Cache data/sources
-        uses: ./.github/cache-sources-action
+      - uses: actions/cache@v2
+        with:
+          path: tiles/data/sources
+          key: tiles-data-sources-1
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
