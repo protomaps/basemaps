@@ -31,12 +31,11 @@ jobs:
           java-version: 17
           distribution: 'temurin'
           cache: 'maven'
-      - run: echo ${{ env.NAME }}
       - run: cd base && npm install && npm run --silent generate-layers > light.json
       - run : |
           cd tiles && mvn --batch-mode -no-transfer-progress -DskipTests package
       - run : |
-          cd tiles && java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download
+          cd tiles && java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download --keep-unzipped
       - run: |
           curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/light.json
       - run: |
