@@ -31,7 +31,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
           return;
         }
       } catch (GeometryException e) {
-        e.log("Geometry exception in OSM earth");
+        e.log("Geometry exception in OSM water");
       }
     }
 

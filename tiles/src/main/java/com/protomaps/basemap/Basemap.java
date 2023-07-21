@@ -112,12 +112,11 @@ public class Basemap extends ForwardingProfile {
     Path dataDir = Path.of("data");
     Path sourcesDir = dataDir.resolve("sources");
 
-    // this is used for Visual CI,
-    // generating all Natural Earth featuers 0-6
-    // as well as high zooms from OSM.
-    // It means visual CI tests should not include coastal regions
+    // Limit the output of prepared OSM earth/water to a bounding box.
+    // Used in combination with the `--bounds` argument to generate a complete planet based on NE at low zooms,
+    // and a complete high-zoom tileset without having to tile earth/water outside the bbox.
     Optional<Envelope> earthWaterBounds =
-      Optional.ofNullable(args.bounds("osmEarthWaterBounds", "spatial bbox of osm earth/water"));
+      Optional.ofNullable(args.bounds("osm-earth-water-bounds", "spatial bbox of osm earth+water"));
 
     String area = args.getString("area", "geofabrik area to download", "monaco");
 
