@@ -12,5 +12,19 @@
     "tags":["buildings","cjk"],
     "center":[121.4818, 25.0271],
     "zoom": 16
+  },
+  {
+    "name":"world",
+    "description":"Country labels",
+    "tags":[],
+    "center":[121, 25],
+    "zoom": 4
+  },
+  {
+    "name":"world2",
+    "description":"Country labels",
+    "tags":[],
+    "center":[0,0],
+    "zoom": 2
   }
 ]
