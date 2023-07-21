@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 
-public class SpatialFilterTest {
+class SpatialFilterTest {
   @Test
   void testContains() {
     var sf = SimpleFeature.create(newPoint(10, 10), Map.of("name", "Mexico"), "testsource", null, 0);
