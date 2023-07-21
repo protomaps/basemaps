@@ -7,9 +7,9 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.ZoomFunction;
-import com.protomaps.basemap.feature.CountryNameZooms;
+import com.protomaps.basemap.feature.CountryInfos;
 import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.feature.RegionNameZooms;
+import com.protomaps.basemap.feature.RegionInfos;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.ArrayList;
@@ -117,14 +117,16 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       switch (place) {
         case "country":
           kind = "country";
-          min_zoom = (int) CountryNameZooms.getMinMaxZooms(sf)[0];
-          max_zoom = (int) CountryNameZooms.getMinMaxZooms(sf)[1];
+          var countryInfo = CountryInfos.getByName(sf);
+          min_zoom = (int) countryInfo.minZoom();
+          max_zoom = (int) countryInfo.maxZoom();
           break;
         case "state":
         case "province":
           kind = "region";
-          min_zoom = (int) RegionNameZooms.getMinMaxZooms(sf)[0];
-          max_zoom = (int) RegionNameZooms.getMinMaxZooms(sf)[1];
+          var regionInfo = RegionInfos.getByName(sf);
+          min_zoom = (int) regionInfo.minZoom();
+          max_zoom = (int) regionInfo.maxZoom();
           break;
         case "city":
         case "town":
