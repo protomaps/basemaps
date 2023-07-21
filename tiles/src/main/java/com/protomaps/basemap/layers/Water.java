@@ -8,15 +8,33 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
+import java.util.Optional;
+import org.locationtech.jts.geom.Envelope;
 
 public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+
+  private Optional<Envelope> bounds;
+
+  public Water(Optional<Envelope> bounds) {
+    this.bounds = bounds;
+  }
 
   @Override
   public String name() {
     return "water";
   }
 
-  public void processOsm(SourceFeature sf, FeatureCollector features) {
+  public void processPreparedOsm(SourceFeature sf, FeatureCollector features) {
+    if (this.bounds.isPresent()) {
+      try {
+        if (!this.bounds.get().intersects(sf.latLonGeometry().getEnvelopeInternal())) {
+          return;
+        }
+      } catch (GeometryException e) {
+        e.log("Geometry exception in OSM earth");
+      }
+    }
+
     features.polygon(this.name())
       .setAttr("pmap:kind", "water")
       .setZoomRange(6, 15).setBufferPixels(8);

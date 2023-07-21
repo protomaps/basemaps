@@ -16,71 +16,68 @@ import com.protomaps.basemap.layers.Roads;
 import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
 import java.nio.file.Path;
+import java.util.Optional;
+import org.locationtech.jts.geom.Envelope;
 
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(Boolean useTilezen) {
+  public Basemap(Optional<Envelope> earthWaterBounds) {
 
-    if (useTilezen) {
-      var water = new com.protomaps.basemap.tilezen.Water();
-      registerHandler(water);
-      registerSourceHandler("osm", water);
-    } else {
-      var admin = new Boundaries();
-      registerHandler(admin);
-      registerSourceHandler("osm", admin);
-      registerSourceHandler("ne", admin::processNe);
+    var admin = new Boundaries();
+    registerHandler(admin);
+    registerSourceHandler("osm", admin);
+    registerSourceHandler("ne", admin::processNe);
 
-      var buildings = new Buildings();
-      registerHandler(buildings);
-      registerSourceHandler("osm", buildings);
+    var buildings = new Buildings();
+    registerHandler(buildings);
+    registerSourceHandler("osm", buildings);
 
-      var landuse = new Landuse();
-      registerHandler(landuse);
-      registerSourceHandler("osm", landuse);
+    var landuse = new Landuse();
+    registerHandler(landuse);
+    registerSourceHandler("osm", landuse);
 
-      var natural = new Natural();
-      registerHandler(natural);
-      registerSourceHandler("osm", natural);
+    var natural = new Natural();
+    registerHandler(natural);
+    registerSourceHandler("osm", natural);
 
-      var physical_line = new PhysicalLine();
-      registerHandler(physical_line);
-      registerSourceHandler("osm", physical_line);
+    var physical_line = new PhysicalLine();
+    registerHandler(physical_line);
+    registerSourceHandler("osm", physical_line);
 
-      var physical_point = new PhysicalPoint();
-      registerHandler(physical_point);
-      registerSourceHandler("osm", physical_point);
-      registerSourceHandler("ne", physical_point::processNe);
+    var physical_point = new PhysicalPoint();
+    registerHandler(physical_point);
+    registerSourceHandler("osm", physical_point);
+    registerSourceHandler("ne", physical_point::processNe);
 
-      var place = new Places();
-      registerHandler(place);
-      registerSourceHandler("osm", place);
-      registerSourceHandler("ne", place::processNe);
+    var place = new Places();
+    registerHandler(place);
+    registerSourceHandler("osm", place);
+    registerSourceHandler("ne", place::processNe);
 
-      var poi = new Pois();
-      registerHandler(poi);
-      registerSourceHandler("osm", poi);
+    var poi = new Pois();
+    registerHandler(poi);
+    registerSourceHandler("osm", poi);
 
-      var roads = new Roads();
-      registerHandler(roads);
-      registerSourceHandler("osm", roads);
+    var roads = new Roads();
+    registerHandler(roads);
+    registerSourceHandler("osm", roads);
 
-      var transit = new Transit();
-      registerHandler(transit);
-      registerSourceHandler("osm", transit);
+    var transit = new Transit();
+    registerHandler(transit);
+    registerSourceHandler("osm", transit);
 
-      var water = new Water();
-      registerHandler(water);
-      registerSourceHandler("osm", water);
-      registerSourceHandler("osm_water", water::processOsm);
-      registerSourceHandler("ne", water::processNe);
+    var water = new Water(earthWaterBounds);
+    registerHandler(water);
+    registerSourceHandler("osm", water);
+    registerSourceHandler("osm_water", water::processPreparedOsm);
+    registerSourceHandler("ne", water::processNe);
 
-      var earth = new Earth();
-      registerHandler(earth);
-      registerSourceHandler("osm_land", earth::processOsm);
-      registerSourceHandler("ne", earth::processNe);
-    }
+    var earth = new Earth(earthWaterBounds);
+    registerHandler(earth);
+    registerSourceHandler("osm_land", earth::processPreparedOsm);
+    registerSourceHandler("ne", earth::processNe);
+
   }
 
   @Override
@@ -115,20 +112,25 @@ public class Basemap extends ForwardingProfile {
     Path dataDir = Path.of("data");
     Path sourcesDir = dataDir.resolve("sources");
 
-    Boolean tilezen = args.getBoolean("tilezen", "Create the Tilezen 1.9 profile", false);
+    // this is used for Visual CI,
+    // generating all Natural Earth featuers 0-6
+    // as well as high zooms from OSM.
+    // It means visual CI tests should not include coastal regions
+    Optional<Envelope> earthWaterBounds =
+      Optional.ofNullable(args.bounds("osmEarthWaterBounds", "spatial bbox of osm earth/water"));
 
     String area = args.getString("area", "geofabrik area to download", "monaco");
 
-    Planetiler.create(args)
-      .setProfile(new Basemap(tilezen))
+    var planetiler = Planetiler.create(args)
+      .setProfile(new Basemap(earthWaterBounds))
       .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
       .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
         "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
-      .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
-        "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
+      .setOutput(Path.of(area + ".pmtiles"));
+    planetiler.addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
+      "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
       .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
 }
