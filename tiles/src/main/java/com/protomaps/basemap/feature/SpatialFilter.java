@@ -5,6 +5,9 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import org.locationtech.jts.geom.Envelope;
 
 public class SpatialFilter {
+
+  private SpatialFilter() {}
+
   public static boolean withinBounds(Envelope bounds, SourceFeature sf) {
     if (bounds != null) {
       try {
