@@ -14,7 +14,7 @@ import org.locationtech.jts.geom.Envelope;
 
 public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
-  private Envelope bounds;
+  private final Envelope bounds;
 
   public Water(Envelope bounds) {
     this.bounds = bounds;

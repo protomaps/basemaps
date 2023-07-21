@@ -13,7 +13,7 @@ import org.locationtech.jts.geom.Envelope;
 
 public class Earth implements ForwardingProfile.FeaturePostProcessor {
 
-  private Envelope bounds;
+  private final Envelope bounds;
 
   public Earth(Envelope bounds) {
     this.bounds = bounds;
