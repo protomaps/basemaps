@@ -16,13 +16,12 @@ import com.protomaps.basemap.layers.Roads;
 import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
 import java.nio.file.Path;
-import java.util.Optional;
 import org.locationtech.jts.geom.Envelope;
 
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(Optional<Envelope> earthWaterBounds) {
+  public Basemap(Envelope earthWaterBounds) {
 
     var admin = new Boundaries();
     registerHandler(admin);
@@ -115,8 +114,7 @@ public class Basemap extends ForwardingProfile {
     // Limit the output of prepared OSM earth/water to a bounding box.
     // Used in combination with the `--bounds` argument to generate a complete planet based on NE at low zooms,
     // and a complete high-zoom tileset without having to tile earth/water outside the bbox.
-    Optional<Envelope> earthWaterBounds =
-      Optional.ofNullable(args.bounds("osm-earth-water-bounds", "spatial bbox of osm earth+water"));
+    Envelope earthWaterBounds = args.bounds("osm-earth-water-bounds", "spatial bbox of osm earth+water");
 
     String area = args.getString("area", "geofabrik area to download", "monaco");
 

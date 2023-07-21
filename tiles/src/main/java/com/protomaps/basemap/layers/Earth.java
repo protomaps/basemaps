@@ -1,5 +1,7 @@
 package com.protomaps.basemap.layers;
 
+import static com.protomaps.basemap.feature.SpatialFilter.withinBounds;
+
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
@@ -7,14 +9,13 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.List;
-import java.util.Optional;
 import org.locationtech.jts.geom.Envelope;
 
 public class Earth implements ForwardingProfile.FeaturePostProcessor {
 
-  private Optional<Envelope> bounds;
+  private Envelope bounds;
 
-  public Earth(Optional<Envelope> bounds) {
+  public Earth(Envelope bounds) {
     this.bounds = bounds;
   }
 
@@ -24,19 +25,11 @@ public class Earth implements ForwardingProfile.FeaturePostProcessor {
   }
 
   public void processPreparedOsm(SourceFeature sf, FeatureCollector features) {
-    if (this.bounds.isPresent()) {
-      try {
-        if (!this.bounds.get().intersects(sf.latLonGeometry().getEnvelopeInternal())) {
-          return;
-        }
-      } catch (GeometryException e) {
-        e.log("Geometry exception in OSM earth");
-      }
+    if (withinBounds(this.bounds, sf)) {
+      features.polygon(this.name())
+        .setAttr("pmap:kind", "earth")
+        .setZoomRange(6, 15).setBufferPixels(8);
     }
-
-    features.polygon(this.name())
-      .setAttr("pmap:kind", "earth")
-      .setZoomRange(6, 15).setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
