@@ -40,14 +40,14 @@ public class Basemap extends ForwardingProfile {
     registerHandler(natural);
     registerSourceHandler("osm", natural);
 
-    var physical_line = new PhysicalLine();
-    registerHandler(physical_line);
-    registerSourceHandler("osm", physical_line);
+    var physicalLine = new PhysicalLine();
+    registerHandler(physicalLine);
+    registerSourceHandler("osm", physicalLine);
 
-    var physical_point = new PhysicalPoint();
-    registerHandler(physical_point);
-    registerSourceHandler("osm", physical_point);
-    registerSourceHandler("ne", physical_point::processNe);
+    var physicalPoint = new PhysicalPoint();
+    registerHandler(physicalPoint);
+    registerSourceHandler("osm", physicalPoint);
+    registerSourceHandler("ne", physicalPoint::processNe);
 
     var place = new Places();
     registerHandler(place);

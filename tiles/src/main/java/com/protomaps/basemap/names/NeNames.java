@@ -6,13 +6,13 @@ import java.util.Map;
 
 public class NeNames {
   public static FeatureCollector.Feature setNeNames(FeatureCollector.Feature feature, SourceFeature sf,
-    int minzoom) {
+    int minZoom) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
       if (key.equals("name")) {
-        feature.setAttrWithMinzoom(key, sf.getTag(key), minzoom);
+        feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
       } else if (key.startsWith("name_")) {
-        feature.setAttrWithMinzoom(key.replace("_", ":"), sf.getTag(key), minzoom);
+        feature.setAttrWithMinzoom(key.replace("_", ":"), sf.getTag(key), minZoom);
       }
     }
 

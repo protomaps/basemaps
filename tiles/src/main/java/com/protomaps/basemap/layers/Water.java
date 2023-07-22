@@ -38,8 +38,8 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
     var kind = "";
     var alkaline = 0;
     var reservoir = 0;
-    var theme_min_zoom = 0;
-    var theme_max_zoom = 0;
+    var themeMinZoom = 0;
+    var themeMaxZoom = 0;
 
     // Only process certain Natural Earth layers
     // Notably the landscan derived urban areas and NA roads supplement themes causes problems otherwise
@@ -47,23 +47,23 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes") || sourceLayer.equals("ne_10m_ocean") ||
       sourceLayer.equals("ne_10m_lakes")) {
       if (sourceLayer.equals("ne_110m_ocean")) {
-        theme_min_zoom = 0;
-        theme_max_zoom = 1;
+        themeMinZoom = 0;
+        themeMaxZoom = 1;
       } else if (sourceLayer.equals("ne_110m_lakes")) {
-        theme_min_zoom = 0;
-        theme_max_zoom = 1;
+        themeMinZoom = 0;
+        themeMaxZoom = 1;
       } else if (sourceLayer.equals("ne_50m_ocean")) {
-        theme_min_zoom = 2;
-        theme_max_zoom = 4;
+        themeMinZoom = 2;
+        themeMaxZoom = 4;
       } else if (sourceLayer.equals("ne_50m_lakes")) {
-        theme_min_zoom = 2;
-        theme_max_zoom = 4;
+        themeMinZoom = 2;
+        themeMaxZoom = 4;
       } else if (sourceLayer.equals("ne_10m_ocean")) {
-        theme_min_zoom = 5;
-        theme_max_zoom = 5;
+        themeMinZoom = 5;
+        themeMaxZoom = 5;
       } else if (sourceLayer.equals("ne_10m_lakes")) {
-        theme_min_zoom = 5;
-        theme_max_zoom = 5;
+        themeMinZoom = 5;
+        themeMaxZoom = 5;
       }
 
       switch (sf.getString("featurecla")) {
@@ -85,8 +85,8 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
           .setAttr("pmap:kind", kind)
           .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
           .setZoomRange(
-            sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")),
-            theme_max_zoom)
+            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+            themeMaxZoom)
           .setMinPixelSize(3.0)
           .setBufferPixels(8);
       }
@@ -101,7 +101,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       sf.hasTag("landuse", "reservoir") ||
       sf.hasTag("leisure", "swimming_pool"))) {
       String kind = "other";
-      String kind_detail = "";
+      String kindDetail = "";
       var reservoir = false;
       var alkaline = false;
 
@@ -109,16 +109,16 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
-          kind_detail = sf.getString("water");
+          kindDetail = sf.getString("water");
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
           // But isn't present in Protomaps v2 so let's fix it preemtively
-          if (kind_detail == "lake") {
+          if (kindDetail == "lake") {
             kind = "lake";
           }
 
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
-            kind_detail = "lake";
+            kindDetail = "lake";
           }
           if (sf.hasTag("water", "reservoir")) {
             reservoir = true;
@@ -129,12 +129,12 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         }
       } else if (sf.hasTag("waterway", "riverbank", "dock", "canal", "river", "stream", "ditch", "drain")) {
         kind = "water";
-        kind_detail = sf.getString("waterway");
+        kindDetail = sf.getString("waterway");
       } else if (sf.hasTag("landuse", "basin")) {
         kind = sf.getString("landuse");
       } else if (sf.hasTag("landuse", "reservoir")) {
         kind = "water";
-        kind_detail = sf.getString("landuse");
+        kindDetail = sf.getString("landuse");
         reservoir = true;
       } else if (sf.hasTag("leisure", "swimming_pool")) {
         kind = "swimming_pool";
@@ -162,8 +162,8 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setBufferPixels(8);
 
       // Core Tilezen schema properties
-      if (kind_detail != "") {
-        feature.setAttr("pmap:kind_detail", kind_detail);
+      if (kindDetail != "") {
+        feature.setAttr("pmap:kind_detail", kindDetail);
       }
       if (sf.hasTag("water", "reservoir") || reservoir) {
         feature.setAttr("reservoir", true);

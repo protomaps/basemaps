@@ -9,6 +9,8 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class LinkSimplify {
 
+  private LinkSimplify() {}
+
   /**
    * Post-processing to remove "hairballs" from road networks.
    * <p>
