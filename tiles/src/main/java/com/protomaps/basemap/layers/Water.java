@@ -80,7 +80,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         case "Ocean" -> kind = "ocean";
       }
 
-      if (kind != "" && sf.hasTag("min_zoom")) {
+      if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
         var feature = features.polygon(this.name())
           .setAttr("pmap:kind", kind)
           .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
@@ -113,7 +113,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
           // But isn't present in Protomaps v2 so let's fix it preemtively
-          if (kindDetail == "lake") {
+          if (kindDetail.equals("lake")) {
             kind = "lake";
           }
 
@@ -162,7 +162,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setBufferPixels(8);
 
       // Core Tilezen schema properties
-      if (kindDetail != "") {
+      if (!kindDetail.isEmpty()) {
         feature.setAttr("pmap:kind_detail", kindDetail);
       }
       if (sf.hasTag("water", "reservoir") || reservoir) {

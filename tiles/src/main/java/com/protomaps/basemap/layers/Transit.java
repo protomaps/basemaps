@@ -93,7 +93,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setZoomRange(minZoom, 15);
 
       // Core Tilezen schema properties
-      if (kindDetail != "") {
+      if (!kindDetail.isEmpty()) {
         feature.setAttr("pmap:kind_detail", kindDetail);
       }
 
@@ -109,7 +109,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       }
 
       // Too many small pier lines otherwise
-      if (kind == "pier") {
+      if (kind.equals("pier")) {
         feature.setMinPixelSize(2);
       }
 

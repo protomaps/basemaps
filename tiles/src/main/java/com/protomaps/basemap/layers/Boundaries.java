@@ -49,7 +49,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
     // TODO (nvkelso 2023-03-26)
     //      Compiler is fussy about booleans and strings, beware
-    if (kind != "") {
+    if (!kind.isEmpty()) {
       switch (sf.getString("featurecla")) {
         case "Disputed (please verify)" -> {
           kind = "country";
@@ -145,7 +145,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
       }
     }
 
-    if (sf.canBeLine() && sf.hasTag("min_zoom") && (kind.equals("") == false && kind.equals("tz_boundary") == false)) {
+    if (sf.canBeLine() && sf.hasTag("min_zoom") && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
       features.line(this.name())
         // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
         //.setAttr("name", sf.getString("name"))

@@ -81,7 +81,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
     var min_zoom = sf.getString("min_zoom") == null ? 10 : (int) Double.parseDouble(sf.getString("min_zoom"));
     int population_rank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
-    if (kind != "") {
+    if (!kind.isEmpty()) {
       var feat = features.point(this.name())
         .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))

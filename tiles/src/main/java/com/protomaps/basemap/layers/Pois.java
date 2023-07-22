@@ -56,7 +56,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         minZoom = 13;
 
         // Emphasize large international airports earlier
-        if (kind == "aerodrome" && sf.hasTag("iata")) {
+        if (kind.equals("aerodrome") && sf.hasTag("iata")) {
           minZoom -= 2;
         }
 
@@ -398,7 +398,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setBufferPixels(128);
 
         // Core Tilezen schema properties
-        if (kindDetail != "") {
+        if (!kindDetail.isEmpty()) {
           polyLabelPosition.setAttr("pmap:kind_detail", kindDetail);
         }
 
@@ -451,7 +451,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setBufferPixels(128);
 
         // Core Tilezen schema properties
-        if (kindDetail != "") {
+        if (!kindDetail.isEmpty()) {
           pointFeature.setAttr("pmap:kind_detail", kindDetail);
         }
 
