@@ -108,30 +108,30 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
       String kind = "other";
-      int min_zoom = 12;
-      int max_zoom = 15;
+      int minZoom = 12;
+      int maxZoom = 15;
       long population = sf.getString("population") == null ? 0 : parseIntOrNull(sf.getString("population"));
-      int population_rank = 0;
+      int populationRank = 0;
       String place = sf.getString("place");
 
       switch (place) {
         case "country":
           kind = "country";
-          min_zoom = (int) CountryNameZooms.getMinMaxZooms(sf)[0];
-          max_zoom = (int) CountryNameZooms.getMinMaxZooms(sf)[1];
+          minZoom = (int) CountryNameZooms.getMinMaxZooms(sf)[0];
+          maxZoom = (int) CountryNameZooms.getMinMaxZooms(sf)[1];
           break;
         case "state":
         case "province":
           kind = "region";
-          min_zoom = (int) RegionNameZooms.getMinMaxZooms(sf)[0];
-          max_zoom = (int) RegionNameZooms.getMinMaxZooms(sf)[1];
+          minZoom = (int) RegionNameZooms.getMinMaxZooms(sf)[0];
+          maxZoom = (int) RegionNameZooms.getMinMaxZooms(sf)[1];
           break;
         case "city":
         case "town":
           kind = "locality";
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
-          min_zoom = 7;
-          max_zoom = 15;
+          minZoom = 7;
+          maxZoom = 15;
           if (population == 0) {
             if (place.equals("town")) {
               population = 10000;
@@ -143,26 +143,26 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "village":
           kind = "locality";
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
-          min_zoom = 10;
-          max_zoom = 15;
+          minZoom = 10;
+          maxZoom = 15;
           if (population == 0) {
             population = 2000;
           }
           break;
         case "suburb":
           kind = "neighbourhood";
-          min_zoom = 11;
-          max_zoom = 15;
+          minZoom = 11;
+          maxZoom = 15;
           break;
         case "quarter":
           kind = "macrohood";
-          min_zoom = 10;
-          max_zoom = 15;
+          minZoom = 10;
+          maxZoom = 15;
           break;
         case "neighbourhood":
           kind = "neighbourhood";
-          min_zoom = 12;
-          max_zoom = 15;
+          minZoom = 12;
+          maxZoom = 15;
           break;
       }
 
@@ -188,7 +188,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       for (int i = 0; i < pop_breaks.length; i++) {
         if (population >= pop_breaks[i]) {
-          population_rank = pop_breaks.length - i;
+          populationRank = pop_breaks.length - i;
           break;
         }
       }
@@ -198,23 +198,23 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", place)
-        .setAttr("pmap:min_zoom", min_zoom + 1)
+        .setAttr("pmap:min_zoom", minZoom + 1)
         // Core OSM tags for different kinds of places
         .setAttr("capital", sf.getString("capital"))
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should be a kind, or included in kind_detail
         .setAttr("place", sf.getString("place"))
         .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
-        .setZoomRange(min_zoom, max_zoom);
+        .setZoomRange(minZoom, maxZoom);
 
       if (population > 0) {
         feat.setAttr("population", population)
-          .setAttr("pmap:population_rank", population_rank);
+          .setAttr("pmap:population_rank", populationRank);
 
-        feat.setSortKey(min_zoom * 1000 + 400 - population_rank * 200 + placeNumber.incrementAndGet());
+        feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
         //feat.setSortKey(getSortKey("pmap:min_zoom",  "pmap:population_rank", "population", "name"));
       } else {
-        feat.setSortKey(min_zoom * 1000);
+        feat.setSortKey(minZoom * 1000);
       }
 
       OsmNames.setOsmNames(feat, sf, 0);

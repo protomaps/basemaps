@@ -5,6 +5,9 @@ import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmSourceFeature;
 
 public class FeatureId {
+
+  private FeatureId() {}
+
   public static long create(SourceFeature sf) {
     if (sf instanceof OsmSourceFeature osmFeature) {
       long elemType;

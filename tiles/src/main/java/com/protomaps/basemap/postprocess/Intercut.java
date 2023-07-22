@@ -15,6 +15,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 public class Intercut {
+
+  private Intercut() {}
+
   public static LinkedHashMap<String, Geometry> groupByKind(
     List<VectorTile.Feature> features
   ) {
