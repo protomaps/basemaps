@@ -46,7 +46,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         case "Playa" -> kind = "playa";
       }
 
-      if (kind != "" && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
+      if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
         var water_label_position = features.pointOnSurface(this.name())
           .setAttr("pmap:kind", kind)
           .setAttr("pmap:min_zoom", sf.getLong("min_label") + 1)
@@ -122,7 +122,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
           // But isn't present in Protomaps v2 so let's fix it preemtively
-          if (kindDetail == "lake") {
+          if (kindDetail.equals("lake")) {
             kind = "lake";
           }
 
@@ -196,7 +196,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         .setBufferPixels(128);
 
       // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
-      if (kindDetail != "") {
+      if (!kindDetail.isEmpty()) {
         waterLabelPosition.setAttr("pmap:kind_detail", kindDetail);
       }
       if (sf.hasTag("water", "reservoir") || reservoir) {

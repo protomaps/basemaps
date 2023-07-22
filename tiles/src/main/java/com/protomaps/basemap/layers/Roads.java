@@ -159,14 +159,14 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setZoomRange(minZoom, maxZoom);
 
       // Core Tilezen schema properties
-      if (kindDetail != "") {
+      if (!kindDetail.isEmpty()) {
         feat.setAttr("pmap:kind_detail", kindDetail);
       } else {
         feat.setAttr("pmap:kind_detail", highway);
       }
 
       // Core OSM tags for different kinds of places
-      if (service != "") {
+      if (!service.isEmpty()) {
         feat.setAttr("service", service);
       }
 

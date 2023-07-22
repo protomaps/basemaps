@@ -62,7 +62,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
         .setAttr("height", height)
         .setZoomRange(minZoom, 15);
 
-      if (kind == "building_part") {
+      if (kind.equals("building_part")) {
         // We don't need to set WithMinzoom because that's implicate with the ZoomRange
         feature.setAttr("pmap:kind_detail", sf.getString("building:part"));
         feature.setAttr("min_height", sf.getString("min_height"));
