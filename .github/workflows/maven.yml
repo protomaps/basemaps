@@ -10,8 +10,8 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
-    name: Check formatting
+  test_and_lint:
+    name: Run unit tests and check formatting
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -22,6 +22,9 @@ jobs:
         java-version: 17
         distribution: 'temurin'
         cache: 'maven'
+    - name: Run unit tests
+      working-directory: tiles
+      run: mvn --batch-mode -no-transfer-progress test
     - name: Ensure code formatted with mvn spotless:apply
       working-directory: tiles
-      run: mvn -DskipTests --batch-mode -no-transfer-progress spotless:check
+      run: mvn spotless:check

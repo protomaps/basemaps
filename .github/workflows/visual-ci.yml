@@ -31,11 +31,15 @@ jobs:
           java-version: 17
           distribution: 'temurin'
           cache: 'maven'
-      - run: cd base && npm install && npm run --silent generate-layers > light.json
+      - run: npm install && npm run --silent generate-layers > light.json
+        working-directory: base
       - run : |
-          cd tiles && mvn --batch-mode -no-transfer-progress -DskipTests package
+          mvn --batch-mode -no-transfer-progress -DskipTests package
+        working-directory: tiles
+      # the osm-earth-water-bounds should match the input .osm.pbf.
       - run : |
-          cd tiles && java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download --keep-unzipped
+          java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download --keep-unzipped --bounds=-180,-85,180,85 --osm-earth-water-bounds=118.1036,20.72799,122.9312,26.60305
+        working-directory: tiles
       - run: |
           curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/light.json
       - run: |
