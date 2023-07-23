@@ -25,52 +25,52 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("aeroway", "runway", "taxiway")) &&
       (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
 
-      int minzoom = 11;
+      int minZoom = 11;
 
       if (sf.hasTag("aeroway", "runway")) {
-        minzoom = 9;
+        minZoom = 9;
       } else if (sf.hasTag("aeroway", "taxiway")) {
-        minzoom = 10;
+        minZoom = 10;
       } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
-        minzoom = 13;
+        minZoom = 13;
       } else if (sf.hasTag("man_made", "pier")) {
-        minzoom = 13;
+        minZoom = 13;
       }
 
       String kind = "other";
-      String kind_detail = "";
+      String kindDetail = "";
       if (sf.hasTag("aeroway")) {
         kind = "aeroway";
-        kind_detail = sf.getString("aeroway");
+        kindDetail = sf.getString("aeroway");
       } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge",
         "preserved", "subway", "tram")) {
         kind = "rail";
-        kind_detail = sf.getString("railway");
-        minzoom = 14;
+        kindDetail = sf.getString("railway");
+        minZoom = 14;
 
         if (sf.hasTag("railway", "disused")) {
-          minzoom = 15;
+          minZoom = 15;
         }
       } else if (sf.hasTag("railway")) {
         kind = "rail";
-        kind_detail = sf.getString("railway");
+        kindDetail = sf.getString("railway");
 
-        if (kind_detail.equals("service")) {
-          minzoom = 13;
+        if (kindDetail.equals("service")) {
+          minZoom = 13;
 
           // eg a rail yard
           if (sf.hasTag("service")) {
-            minzoom = 14;
+            minZoom = 14;
           }
         }
       } else if (sf.hasTag("ferry")) {
         kind = "ferry";
-        kind_detail = sf.getString("ferry");
+        kindDetail = sf.getString("ferry");
       } else if (sf.hasTag("man_made", "pier")) {
         kind = "pier";
       } else if (sf.hasTag("aerialway")) {
         kind = "aerialway";
-        kind_detail = sf.getString("aerialway");
+        kindDetail = sf.getString("aerialway");
       }
 
       var feature = features.line(this.name())
@@ -90,11 +90,11 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setAttr("highspeed", sf.getString("highspeed"))
         .setAttr("man_made", sf.getString("pier"))
         .setAttr("railway", sf.getString("railway"))
-        .setZoomRange(minzoom, 15);
+        .setZoomRange(minZoom, 15);
 
       // Core Tilezen schema properties
-      if (kind_detail != "") {
-        feature.setAttr("pmap:kind_detail", kind_detail);
+      if (!kindDetail.isEmpty()) {
+        feature.setAttr("pmap:kind_detail", kindDetail);
       }
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
@@ -109,7 +109,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       }
 
       // Too many small pier lines otherwise
-      if (kind == "pier") {
+      if (kind.equals("pier")) {
         feature.setMinPixelSize(2);
       }
 

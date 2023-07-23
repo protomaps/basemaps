@@ -6,11 +6,11 @@ import java.util.Map;
 
 public class OsmNames {
   public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
-    int minzoom) {
+    int minZoom) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
       if (key.equals("name") || key.startsWith("name:")) {
-        feature.setAttrWithMinzoom(key, sf.getTag(key), minzoom);
+        feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
       }
     }
 

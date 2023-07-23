@@ -34,15 +34,15 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     if (sf.canBePolygon() && ((sf.hasTag("building") && !sf.hasTag("building", "no")) ||
       (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {
       Double height = parseDoubleOrNull(sf.getString("height"));
-      Double min_height = parseDoubleOrNull(sf.getString("min_height"));
-      Integer min_zoom = 11;
+      Double minHeight = parseDoubleOrNull(sf.getString("min_height"));
+      Integer minZoom = 11;
       String kind = "building";
 
       // Limit building:part features to later zooms
       // TODO: (nvkelso 20230621) this should be based on area and volume, too
       if (sf.hasTag("building:part")) {
         kind = "building_part";
-        min_zoom = 14;
+        minZoom = 14;
       }
 
       if (height == null) {
@@ -60,9 +60,9 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
         .setAttrWithMinzoom("layer", sf.getString("layer"), 13)
         // NOTE: Height is quantized by zoom in a post-process step
         .setAttr("height", height)
-        .setZoomRange(min_zoom, 15);
+        .setZoomRange(minZoom, 15);
 
-      if (kind == "building_part") {
+      if (kind.equals("building_part")) {
         // We don't need to set WithMinzoom because that's implicate with the ZoomRange
         feature.setAttr("pmap:kind_detail", sf.getString("building:part"));
         feature.setAttr("min_height", sf.getString("min_height"));
@@ -116,23 +116,23 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
       try {
         if (item.attrs().containsKey("min_height")) {
-          var min_height = (double) item.attrs().get("min_height");
+          var minHeight = (double) item.attrs().get("min_height");
 
           // Protected against NULL values
-          if (min_height > 0) {
+          if (minHeight > 0) {
             if (zoom <= 12) {
-              min_height = quantize_val(min_height, 20);
+              minHeight = quantize_val(minHeight, 20);
             } else
             // at zoom 13 round height to nearest 10 meters
             if (zoom == 13) {
-              min_height = quantize_val(min_height, 10);
+              minHeight = quantize_val(minHeight, 10);
             } else
             // at zoom 14 round height to nearest 5 meters
             if (zoom == 14) {
-              min_height = quantize_val(min_height, 5);
+              minHeight = quantize_val(minHeight, 5);
             }
 
-            item.attrs().put("min_height", min_height);
+            item.attrs().put("min_height", minHeight);
           }
         }
       } catch (Exception e) {

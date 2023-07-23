@@ -26,12 +26,12 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
     var kind = "";
     var alkaline = 0;
     var reservoir = 0;
-    var theme_min_zoom = 0;
-    var theme_max_zoom = 0;
+    var themeMinZoom = 0;
+    var themeMaxZoom = 0;
 
     if (sourceLayer.equals("ne_10m_lakes")) {
-      theme_min_zoom = 5;
-      theme_max_zoom = 5;
+      themeMinZoom = 5;
+      themeMaxZoom = 5;
 
       switch (sf.getString("featurecla")) {
         case "Alkaline Lake" -> {
@@ -46,12 +46,12 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         case "Playa" -> kind = "playa";
       }
 
-      if (kind != "" && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
+      if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
         var water_label_position = features.pointOnSurface(this.name())
           .setAttr("pmap:kind", kind)
           .setAttr("pmap:min_zoom", sf.getLong("min_label") + 1)
-          .setZoomRange(sf.getString("min_label") == null ? theme_min_zoom :
-            (int) Double.parseDouble(sf.getString("min_label")) + 1, theme_max_zoom)
+          .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
+            (int) Double.parseDouble(sf.getString("min_label")) + 1, themeMaxZoom)
           .setBufferPixels(128);
 
         NeNames.setNeNames(water_label_position, sf, 0);
@@ -67,18 +67,18 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
 
       String kind = "";
 
-      int minzoom = 12;
+      int minZoom = 12;
       if (sf.hasTag("place", "ocean")) {
         kind = "ocean";
-        minzoom = 0;
+        minZoom = 0;
       }
       if (sf.hasTag("place", "sea")) {
         kind = "sea";
-        minzoom = 3;
+        minZoom = 3;
       }
       if (sf.hasTag("natural", "peak")) {
         kind = "peak";
-        minzoom = 13;
+        minZoom = 13;
       }
 
       var feat = features.point(this.name())
@@ -87,7 +87,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         .setAttr("place", sf.getString("place"))
         .setAttr("natural", sf.getString("natural"))
         .setAttr("ele", sf.getString("ele"))
-        .setZoomRange(minzoom, 15);
+        .setZoomRange(minZoom, 15);
 
       OsmNames.setOsmNames(feat, sf, 0);
     }
@@ -102,14 +102,14 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         sf.hasTag("landuse", "reservoir") ||
         sf.hasTag("leisure", "swimming_pool"))) {
       String kind = "other";
-      var kind_detail = "";
-      var name_min_zoom = 15;
+      var kindDetail = "";
+      var nameMinZoom = 15;
       var reservoir = false;
       var alkaline = false;
-      Double way_area = 0.0;
+      Double wayArea = 0.0;
 
       try {
-        way_area = sf.area() / WORLD_AREA_FOR_70K_SQUARE_METERS;
+        wayArea = sf.area() / WORLD_AREA_FOR_70K_SQUARE_METERS;
       } catch (GeometryException e) {
         System.out.println(e);
       }
@@ -118,16 +118,16 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
-          kind_detail = sf.getString("water");
+          kindDetail = sf.getString("water");
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
           // But isn't present in Protomaps v2 so let's fix it preemtively
-          if (kind_detail == "lake") {
+          if (kindDetail.equals("lake")) {
             kind = "lake";
           }
 
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
-            kind_detail = "lake";
+            kindDetail = "lake";
           }
           if (sf.hasTag("water", "reservoir")) {
             reservoir = true;
@@ -149,34 +149,34 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       // We don't want to show too many water labels at early zooms else it crowds the map
       // TODO: (nvkelso 20230621) These numbers are super wonky, they should instead be sq meters in web mercator prj
       // Zoom 5 and earlier from Natural Earth instead (see above)
-      if (way_area > 25000) { //500000000
-        name_min_zoom = 6;
-      } else if (way_area > 8000) { //500000000
-        name_min_zoom = 7;
-      } else if (way_area > 3000) { //200000000
-        name_min_zoom = 8;
-      } else if (way_area > 500) { //40000000
-        name_min_zoom = 9;
-      } else if (way_area > 200) { //8000000
-        name_min_zoom = 10;
-      } else if (way_area > 30) { //1000000
-        name_min_zoom = 11;
-      } else if (way_area > 25) { //500000
-        name_min_zoom = 12;
-      } else if (way_area > 0.5) { //50000
-        name_min_zoom = 13;
-      } else if (way_area > 0.05) { //10000
-        name_min_zoom = 14;
+      if (wayArea > 25000) { //500000000
+        nameMinZoom = 6;
+      } else if (wayArea > 8000) { //500000000
+        nameMinZoom = 7;
+      } else if (wayArea > 3000) { //200000000
+        nameMinZoom = 8;
+      } else if (wayArea > 500) { //40000000
+        nameMinZoom = 9;
+      } else if (wayArea > 200) { //8000000
+        nameMinZoom = 10;
+      } else if (wayArea > 30) { //1000000
+        nameMinZoom = 11;
+      } else if (wayArea > 25) { //500000
+        nameMinZoom = 12;
+      } else if (wayArea > 0.5) { //50000
+        nameMinZoom = 13;
+      } else if (wayArea > 0.05) { //10000
+        nameMinZoom = 14;
       }
 
-      var water_label_position = features.pointOnSurface(this.name())
+      var waterLabelPosition = features.pointOnSurface(this.name())
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
-        .setAttr("pmap:kind_detail", kind_detail)
+        .setAttr("pmap:kind_detail", kindDetail)
         // While other layers don't need min_zoom, physical point labels do for more
         // predictable client-side label collisions
         // 512 px zooms versus 256 px logical zooms
-        .setAttr("pmap:min_zoom", name_min_zoom + 1)
+        .setAttr("pmap:min_zoom", nameMinZoom + 1)
         // DEBUG
         //.setAttr("pmap:area", way_area)
         //
@@ -192,24 +192,24 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
-        .setZoomRange(name_min_zoom, 15)
+        .setZoomRange(nameMinZoom, 15)
         .setBufferPixels(128);
 
       // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
-      if (kind_detail != "") {
-        water_label_position.setAttr("pmap:kind_detail", kind_detail);
+      if (!kindDetail.isEmpty()) {
+        waterLabelPosition.setAttr("pmap:kind_detail", kindDetail);
       }
       if (sf.hasTag("water", "reservoir") || reservoir) {
-        water_label_position.setAttr("reservoir", true);
+        waterLabelPosition.setAttr("reservoir", true);
       }
       if (sf.hasTag("water", "lagoon", "salt", "salt_pool") || alkaline) {
-        water_label_position.setAttr("alkaline", true);
+        waterLabelPosition.setAttr("alkaline", true);
       }
       if (sf.hasTag("intermittent", "yes")) {
-        water_label_position.setAttr("intermittent", true);
+        waterLabelPosition.setAttr("intermittent", true);
       }
 
-      OsmNames.setOsmNames(water_label_position, sf, 0);
+      OsmNames.setOsmNames(waterLabelPosition, sf, 0);
     }
   }
 
