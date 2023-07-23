@@ -19,7 +19,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     return "buildings";
   }
 
-  static int quantize_val(double val, int step) {
+  static int quantizeVal(double val, int step) {
     // special case: if val is very small, we don't want it rounding to zero, so
     // round the smallest values up to the first step.
     if (val < step) {
@@ -97,15 +97,15 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
           if (height > 0) {
             // at zoom <= 12 round height to nearest 20 meters
             if (zoom <= 12) {
-              height = quantize_val(height, 20);
+              height = quantizeVal(height, 20);
             } else
             // at zoom 13 round height to nearest 10 meters
             if (zoom == 13) {
-              height = quantize_val(height, 10);
+              height = quantizeVal(height, 10);
             } else
             // at zoom 14 round height to nearest 5 meters
             if (zoom == 14) {
-              height = quantize_val(height, 5);
+              height = quantizeVal(height, 5);
             }
 
             item.attrs().put("height", height);
@@ -121,15 +121,15 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
           // Protected against NULL values
           if (minHeight > 0) {
             if (zoom <= 12) {
-              minHeight = quantize_val(minHeight, 20);
+              minHeight = quantizeVal(minHeight, 20);
             } else
             // at zoom 13 round height to nearest 10 meters
             if (zoom == 13) {
-              minHeight = quantize_val(minHeight, 10);
+              minHeight = quantizeVal(minHeight, 10);
             } else
             // at zoom 14 round height to nearest 5 meters
             if (zoom == 14) {
-              minHeight = quantize_val(minHeight, 5);
+              minHeight = quantizeVal(minHeight, 5);
             }
 
             item.attrs().put("min_height", minHeight);

@@ -172,7 +172,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         return;
       }
       List<OsmReader.RelationMember<AdminRecord>> recs = sf.relationInfo(AdminRecord.class);
-      if (recs.size() > 0) {
+      if (!recs.isEmpty()) {
         OptionalInt minAdminLevel = recs.stream().mapToInt(r -> r.relation().adminLevel).min();
         OptionalInt disputed = recs.stream().mapToInt(r -> r.relation().disputed).max();
 
@@ -214,7 +214,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
           }
         }
 
-        if (kind != "" && kindDetail != "") {
+        if (!kind.isEmpty() && !kindDetail.isEmpty()) {
           var line = features.line(this.name())
             .setId(FeatureId.create(sf))
             .setMinPixelSize(0)

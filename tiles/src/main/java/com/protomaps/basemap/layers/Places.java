@@ -44,13 +44,13 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
     var kind = "";
-    var kind_detail = "";
+    var kindDetail = "";
 
-    var theme_min_zoom = 0;
-    var theme_max_zoom = 0;
+    var themeMinZoom = 0;
+    var themeMaxZoom = 0;
     if (sourceLayer.equals("ne_10m_populated_places")) {
-      theme_min_zoom = 1;
-      theme_max_zoom = 6;
+      themeMinZoom = 1;
+      themeMaxZoom = 6;
     }
 
     // Test for props because of Natural Earth funk
@@ -70,32 +70,32 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           break;
         case "Historic place":
           kind = "locality";
-          kind_detail = "hamlet";
+          kindDetail = "hamlet";
           break;
         case "Scientific station":
           kind = "locality";
-          kind_detail = "scientific_station";
+          kindDetail = "scientific_station";
           break;
       }
     }
 
-    var min_zoom = sf.getString("min_zoom") == null ? 10 : (int) Double.parseDouble(sf.getString("min_zoom"));
-    int population_rank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
+    var minZoom = sf.getString("min_zoom") == null ? 10 : (int) Double.parseDouble(sf.getString("min_zoom"));
+    int populationRank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
     if (!kind.isEmpty()) {
       var feat = features.point(this.name())
         .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
         .setZoomRange(
-          sf.getString("min_zoom") == null ? theme_min_zoom : (int) Double.parseDouble(sf.getString("min_zoom")),
-          theme_max_zoom)
+          sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+          themeMaxZoom)
         .setAttr("pmap:kind", kind)
-        .setAttr("pmap:kind_detail", kind_detail)
+        .setAttr("pmap:kind_detail", kindDetail)
         .setAttr("population", parseIntOrNull(sf.getString("pop_max")))
-        .setAttr("pmap:population_rank", population_rank)
+        .setAttr("pmap:population_rank", populationRank)
         .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(128)
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        .setSortKey(min_zoom)
+        .setSortKey(minZoom)
         .setPointLabelGridPixelSize(7, 16);
 
       NeNames.setNeNames(feat, sf, 0);
@@ -168,7 +168,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           break;
       }
 
-      int[] pop_breaks = {
+      int[] popBreaks = {
         1000000000,
         100000000,
         50000000,
@@ -188,9 +188,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         200,
         0};
 
-      for (int i = 0; i < pop_breaks.length; i++) {
-        if (population >= pop_breaks[i]) {
-          populationRank = pop_breaks.length - i;
+      for (int i = 0; i < popBreaks.length; i++) {
+        if (population >= popBreaks[i]) {
+          populationRank = popBreaks.length - i;
           break;
         }
       }
