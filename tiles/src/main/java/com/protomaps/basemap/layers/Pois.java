@@ -196,14 +196,15 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         try {
           wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
         } catch (GeometryException e) {
-          System.out.println(e);
+          e.log("Exception in POI way calculation");
         }
 
-        Double height = 0.0;
-        try {
-          height = sf.getString("height") == null ? 0.0 : parseDoubleOrNull(sf.getString("height"));
-        } catch (Exception e) {
-          System.out.println("Problem getting height");
+        double height = 0.0;
+        if (sf.hasTag("height")) {
+          Double parsed = parseDoubleOrNull(sf.getString("height"));
+          if (parsed != null) {
+            height = parsed;
+          }
         }
 
         // Area zoom grading overrides the kind zoom grading in the section above.
