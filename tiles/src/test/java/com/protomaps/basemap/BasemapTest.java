@@ -19,6 +19,7 @@ public class BasemapTest {
     Basemap.run(Arguments.of(
       "osm_path", osmPath,
       "tmp", tmpDir.toString(),
+      "download","true",
       "output", archivePath.toString()
     ));
   }
