@@ -1,11 +1,9 @@
 package com.protomaps.basemap;
 
-import com.onthegomap.planetiler.TestUtils;
 import com.onthegomap.planetiler.config.Arguments;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
-import java.nio.file.Path;
 
 public class BasemapTest {
 
@@ -19,7 +17,7 @@ public class BasemapTest {
     Basemap.run(Arguments.of(
       "osm_path", osmPath,
       "tmp", tmpDir.toString(),
-      "download","true",
+      "download", "true",
       "output", archivePath.toString()
     ));
   }

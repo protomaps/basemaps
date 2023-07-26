@@ -86,7 +86,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
         .setZoomRange(
-          Math.min(themeMaxZoom,sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom"))),
+          Math.min(themeMaxZoom,
+            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom"))),
           themeMaxZoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
