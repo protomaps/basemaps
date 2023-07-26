@@ -126,14 +126,14 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         }
         if (sf.hasTag("footway", "sidewalk", "crossing")) {
           minZoom = 14;
-          kindDetail = sf.getString("footway");
+          kindDetail = sf.getString("footway", "");
         }
         if (sf.hasTag("highway", "corridor")) {
           minZoom = 14;
         }
       } else {
         kind = "other";
-        kindDetail = sf.getString("service");
+        kindDetail = sf.getString("service", "");
         minZoom = 14;
         minZoomShieldText = 14;
         minZoomNames = 14;

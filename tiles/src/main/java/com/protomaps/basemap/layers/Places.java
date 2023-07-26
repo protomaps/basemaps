@@ -86,7 +86,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
         .setZoomRange(
-          sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+          Math.min(themeMaxZoom,
+            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom"))),
           themeMaxZoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
@@ -110,7 +111,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       String kind = "other";
       int minZoom = 12;
       int maxZoom = 15;
-      long population = sf.getString("population") == null ? 0 : parseIntOrNull(sf.getString("population"));
+      long population = 0;
+      if (sf.hasTag("population")) {
+        Integer parsed = parseIntOrNull(sf.getString("population"));
+        if (parsed != null) {
+          population = parsed;
+        }
+      }
+
       int populationRank = 0;
       String place = sf.getString("place");
 
