@@ -149,7 +149,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
       features.line(this.name())
         // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
         //.setAttr("name", sf.getString("name"))
-        .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+        // Preview v4 schema (disabled)
+        //.setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
         .setAttr("pmap:min_admin_level", adminLevel)
         .setZoomRange(
           sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")),
@@ -221,7 +222,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
             .setAttr("pmap:min_admin_level", minAdminLevel.getAsInt())
             .setAttr("pmap:kind", kind)
             .setAttr("pmap:kind_detail", kindDetail)
-            .setAttr("pmap:min_zoom", minZoom)
+            // Preview v4 schema (disabled)
+            //.setAttr("pmap:min_zoom", min_zoom)
             .setMinZoom(themeMinZoom);
 
           // Core Tilezen schema properties
