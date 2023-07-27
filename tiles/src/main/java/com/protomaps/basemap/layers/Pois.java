@@ -278,6 +278,11 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           } else {
             minZoom = 15;
           }
+
+          // Hack for weird San Francisco university
+          if (sf.getString("name").equals("Academy of Art University")) {
+            minZoom = 14;
+          }
         } else if (kind.equals("forest") ||
           kind.equals("park") ||
           kind.equals("protected_area") ||
@@ -290,13 +295,13 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             minZoom = 9;
           } else if (wayArea > 250) {
             minZoom = 10;
-          } else if (wayArea > 20) {
+          } else if (wayArea > 15) {
             minZoom = 11;
           } else if (wayArea > 5) {
             minZoom = 12;
-          } else if (wayArea > 0.5) {
+          } else if (wayArea > 0.25) {
             minZoom = 13;
-          } else if (wayArea > 0.1) {
+          } else if (wayArea > 0.05) {
             minZoom = 14;
           } else if (wayArea > 0.01) {
             minZoom = 15;
@@ -353,12 +358,31 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
               }
             }
 
+            // Discount tall self storage buildings
+            if (kind.equals("storage_rental")) {
+              minZoom = 14;
+            }
+
             // Discount tall university buildings, require a related university landuse AOI
             if (kind.equals("university")) {
               minZoom = 13;
             }
           }
         }
+
+        // very long text names should only be shown at later zooms
+        if (minZoom < 14) {
+          var nameLength = sf.getString("name").length();
+
+          if (nameLength > 30) {
+            if (nameLength > 45) {
+              minZoom += 2;
+            } else {
+              minZoom += 1;
+            }
+          }
+        }
+
 
         var polyLabelPosition = features.pointOnSurface(this.name())
           // all POIs should receive their IDs at all zooms
