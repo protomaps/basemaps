@@ -84,6 +84,8 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         .setAttr("pmap:kind", kind)
+        // Used for client-side label collisions
+        .setAttr("pmap:min_zoom", minZoom + 1)
         .setAttr("place", sf.getString("place"))
         .setAttr("natural", sf.getString("natural"))
         .setAttr("ele", sf.getString("ele"))
