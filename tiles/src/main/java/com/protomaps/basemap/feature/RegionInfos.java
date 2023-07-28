@@ -14,99 +14,99 @@ import java.util.Scanner;
 public class RegionInfos {
 
   private static String data = """
-    Alabama|US|3.5|7.5
-    Alaska|US|3.5|7.5
-    Arizona|US|3.5|7.5
-    Arkansas|US|3.5|7.5
-    California|US|3.5|7.5
-    Colorado|US|3.5|7.5
-    Connecticut|US|3.5|7.5
-    Delaware|US|3.5|7.5
-    Florida|US|3.5|7.5
-    Georgia|US|3.5|7.5
-    Hawaii|US|3.5|7.5
-    Idaho|US|3.5|7.5
-    Illinois|US|3.5|7.5
-    Indiana|US|3.5|7.5
-    Iowa|US|3.5|7.5
-    Kansas|US|3.5|7.5
-    Kentucky|US|3.5|7.5
-    Louisiana|US|3.5|7.5
-    Maine|US|3.5|7.5
-    Maryland|US|3.5|7.5
-    Massachusetts|US|3.5|7.5
-    Michigan|US|3.5|7.5
-    Minnesota|US|3.5|7.5
-    Mississippi|US|3.5|7.5
-    Missouri|US|3.5|7.5
-    Montana|US|3.5|7.5
-    Nebraska|US|3.5|7.5
-    Nevada|US|3.5|7.5
-    New Hampshire|US|3.5|7.5
-    New Jersey|US|3.5|7.5
-    New Mexico|US|3.5|7.5
-    New York|US|3.5|7.5
-    North Carolina|US|3.5|7.5
-    North Dakota|US|3.5|7.5
-    Ohio|US|3.5|7.5
-    Oklahoma|US|3.5|7.5
-    Oregon|US|3.5|7.5
-    Pennsylvania|US|3.5|7.5
-    Rhode Island|US|3.5|7.5
-    South Carolina|US|3.5|7.5
-    South Dakota|US|3.5|7.5
-    Tennessee|US|3.5|7.5
-    Texas|US|3.5|7.5
-    Utah|US|3.5|7.5
-    Vermont|US|3.5|7.5
-    Virginia|US|3.5|7.5
-    Washington|US|3.5|7.5
-    West Virginia|US|3.5|7.5
-    Wisconsin|US|3.5|7.5
-    Wyoming|US|3.5|7.5
-    Alberta|CA|3.5|7.5
-    British Columbia|CA|3.5|7.5
-    Manitoba|CA|3.5|7.5
-    New Brunswick|CA|3.5|7.5
-    Newfoundland and Labrador|CA|3.5|7.5
-    Northwest Territories|CA|3.5|7.5
-    Nova Scotia|CA|3.5|7.5
-    Nunavut|CA|3.5|7.5
-    Ontario|CA|3.5|7.5
-    Prince Edward Island|CA|3.5|7.5
-    Quebec|CA|3.5|7.5
-    Saskatchewan|CA|3.5|7.5
-    Yukon|CA|3.5|7.5
-    New South Wales|AU|4.6|8.1
-    Queensland|AU|4.6|8.1
-    South Australia|AU|4.6|8.1
-    Tasmania|AU|4.6|8.1
-    Victoria|AU|4.6|8.1
-    Western Australia|AU|4.6|8.1
-    Australian Capital Territory|AU|4.6|8.1
-    Northern Territory|AU|4.6|8.1
+    Alabama|US-AL|3.5|7.5
+    Alaska|US-AK|3.5|7.5
+    Arizona|US-AZ|3.5|7.5
+    Arkansas|US-AR|3.5|7.5
+    California|US-CA|3.5|7.5
+    Colorado|US-CO|3.5|7.5
+    Connecticut|US-CT|3.5|7.5
+    Delaware|US-DE|3.5|7.5
+    Florida|US-FL|3.5|7.5
+    Georgia|US-GA|3.5|7.5
+    Hawaii|US-HI|3.5|7.5
+    Idaho|US-ID|3.5|7.5
+    Illinois|US-IL|3.5|7.5
+    Indiana|US-IN|3.5|7.5
+    Iowa|US-IA|3.5|7.5
+    Kansas|US-KS|3.5|7.5
+    Kentucky|US-KY|3.5|7.5
+    Louisiana|US-LA|3.5|7.5
+    Maine|US-ME|3.5|7.5
+    Maryland|US-MD|3.5|7.5
+    Massachusetts|US-MA|3.5|7.5
+    Michigan|US-MI|3.5|7.5
+    Minnesota|US-MN|3.5|7.5
+    Mississippi|US-MS|3.5|7.5
+    Missouri|US-MO|3.5|7.5
+    Montana|US-MT|3.5|7.5
+    Nebraska|US-NE|3.5|7.5
+    Nevada|US-NV|3.5|7.5
+    New Hampshire|US-NH|3.5|7.5
+    New Jersey|US-NJ|3.5|7.5
+    New Mexico|US-NM|3.5|7.5
+    New York|US-NY|3.5|7.5
+    North Carolina|US-NC|3.5|7.5
+    North Dakota|US-ND|3.5|7.5
+    Ohio|US-OH|3.5|7.5
+    Oklahoma|US-OK|3.5|7.5
+    Oregon|US-OR|3.5|7.5
+    Pennsylvania|US-PA|3.5|7.5
+    Rhode Island|US-RI|3.5|7.5
+    South Carolina|US-SC|3.5|7.5
+    South Dakota|US-SD|3.5|7.5
+    Tennessee|US-TN|3.5|7.5
+    Texas|US-TX|3.5|7.5
+    Utah|US-UT|3.5|7.5
+    Vermont|US-VT|3.5|7.5
+    Virginia|US-VA|3.5|7.5
+    Washington|US-WA|3.5|7.5
+    West Virginia|US-WV|3.5|7.5
+    Wisconsin|US-WI|3.5|7.5
+    Wyoming|US-WY|3.5|7.5
+    Alberta|CA-AB|3.5|7.5
+    British Columbia|CA-BC|3.5|7.5
+    Manitoba|CA-MB|3.5|7.5
+    New Brunswick|CA-NB|3.5|7.5
+    Newfoundland and Labrador|CA-NL|3.5|7.5
+    Northwest Territories|CA-NT|3.5|7.5
+    Nova Scotia|CA-NS|3.5|7.5
+    Nunavut|CA-NU|3.5|7.5
+    Ontario|CA-ON|3.5|7.5
+    Prince Edward Island|CA-PE|3.5|7.5
+    Quebec|CA-QC|3.5|7.5
+    Saskatchewan|CA-SK|3.5|7.5
+    Yukon|CA-YT|3.5|7.5
+    New South Wales|AU-NSW|4.6|8.1
+    Queensland|AU-QLD|4.6|8.1
+    South Australia|AU-SA|4.6|8.1
+    Tasmania|AU-TAS|4.6|8.1
+    Victoria|AU-VIC|4.6|8.1
+    Western Australia|AU-WA|4.6|8.1
+    Australian Capital Territory|AU-ACT|4.6|8.1
+    Northern Territory|AU-NT|4.6|8.1
     """;
 
-  public record RegionInfo(String name, String countryIsoCode, double minZoom, double maxZoom) {}
+  public record RegionInfo(String name, String regionIsoCode, double minZoom, double maxZoom) {}
 
-  private static final HashMap<String, RegionInfo> regionInfoByName;
+  private static final HashMap<String, RegionInfo> regionInfoByISO;
   static RegionInfo unknownInfo = new RegionInfo("UNKNOWN_REGION", "XX", 8.0, 11.0);
 
   static {
-    regionInfoByName = new HashMap<>();
+    regionInfoByISO = new HashMap<>();
     Scanner s = new Scanner(data);
     while (s.hasNextLine()) {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
-      regionInfoByName.put(parts[0],
+      regionInfoByISO.put(parts[1],
         new RegionInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0));
     }
   }
 
-  public static RegionInfo getByName(SourceFeature sf) {
-    var name = sf.hasTag("name:en") ? sf.getString("name:en") : sf.getString("name");
-    if (regionInfoByName.containsKey(name)) {
-      return regionInfoByName.get(name);
+  public static RegionInfos.RegionInfo getByISO(SourceFeature sf) {
+    var isoCode = sf.hasTag("ISO3166-2") ? sf.getString("ISO3166-2") : "XX-XX";
+    if (regionInfoByISO.containsKey(isoCode)) {
+      return regionInfoByISO.get(isoCode);
     }
     return unknownInfo;
   }

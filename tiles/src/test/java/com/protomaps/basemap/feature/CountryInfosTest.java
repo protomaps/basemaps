@@ -11,25 +11,25 @@ class CountryInfosTest {
 
   @Test
   void testLookup() {
-    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("name", "Mexico"), "testsource", null, 0);
-    var info = CountryInfos.getByName(sf);
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-1:alpha2", "MX"), "testsource", null, 0);
+    var info = CountryInfos.getByISO(sf);
     assertEquals(5.9, info.minZoom());
     assertEquals(10.2, info.maxZoom());
   }
 
   @Test
   void testAlternateNameTag() {
-    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("name:en", "Mexico", "name", "NotMexico"), "testsource",
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-1", "MX"), "testsource",
       null, 0);
-    var info = CountryInfos.getByName(sf);
+    var info = CountryInfos.getByISO(sf);
     assertEquals(5.9, info.minZoom());
     assertEquals(10.2, info.maxZoom());
   }
 
   @Test
   void testNotFoundCountry() {
-    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("name", "Null Island"), "testsource", null, 0);
-    var info = CountryInfos.getByName(sf);
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-1:alpha2", "XX"), "testsource", null, 0);
+    var info = CountryInfos.getByISO(sf);
     assertEquals(8.0, info.minZoom());
     assertEquals(11.0, info.maxZoom());
   }

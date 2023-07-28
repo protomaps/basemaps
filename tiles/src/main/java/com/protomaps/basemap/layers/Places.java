@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.CountryInfos;
 import com.protomaps.basemap.feature.FeatureId;
@@ -26,20 +27,21 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   private final AtomicInteger placeNumber = new AtomicInteger(0);
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
-  /*
   static int getSortKey(float min_zoom, int population_rank, long population, String name) {
     return SortKey
-            // ORDER BY "min_zoom" ASC NULLS LAST,
-            .orderByDouble(min_zoom == null ? 15.0 : min_zoom, 0.0, 15.0, 1)
-            // population_rank DESC NULLS LAST,
-            .thenByInt(population_rank == null ? 15 : population_rank, 0, 15)
-            // population DESC NULLS LAST,
-            .thenByLog(population, 1, 1 << (SORT_KEY_BITS - 13) - 1)
-            // length(name) ASC
-            .thenByInt(name == null ? 0 : name.length(), 0, 31)
-            .get();
+      // ORDER BY "min_zoom" ASC NULLS LAST,
+      //min_zoom.isEmpty() ? 15.0 : min_zoom.getAsInt()
+      .orderByDouble(min_zoom, 0.0, 15.0, 16)
+      // population_rank DESC NULLS LAST,
+      //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
+      .thenByInt(population_rank, 0, 15)
+      // population DESC NULLS LAST,
+      // population.isEmpty() ? 0 : population.getAsLong()
+      .thenByLog(population, 1, 1000000000, 1000)
+      // length(name) ASC
+      .thenByInt(name == null ? 0 : name.length(), 0, 31)
+      .get();
   }
-   */
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
@@ -87,7 +89,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
         .setZoomRange(
           Math.min(themeMaxZoom,
-            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom"))),
+            sf.getString("min_zoom") == null ? themeMinZoom : minZoom),
           themeMaxZoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
@@ -125,14 +127,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       switch (place) {
         case "country":
           kind = "country";
-          var countryInfo = CountryInfos.getByName(sf);
+          var countryInfo = CountryInfos.getByISO(sf);
           minZoom = (int) countryInfo.minZoom();
           maxZoom = (int) countryInfo.maxZoom();
           break;
         case "state":
         case "province":
           kind = "region";
-          var regionInfo = RegionInfos.getByName(sf);
+          var regionInfo = RegionInfos.getByISO(sf);
           minZoom = (int) regionInfo.minZoom();
           maxZoom = (int) regionInfo.maxZoom();
           break;
@@ -211,30 +213,25 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("pmap:min_zoom", minZoom + 1)
         // Core OSM tags for different kinds of places
         .setAttr("capital", sf.getString("capital"))
+        .setAttr("population", population)
+        .setAttr("pmap:population_rank", populationRank)
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should be a kind, or included in kind_detail
         .setAttr("place", sf.getString("place"))
         .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
         .setZoomRange(minZoom, maxZoom);
 
-      if (population > 0) {
-        feat.setAttr("population", population)
-          .setAttr("pmap:population_rank", populationRank);
-
-        feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
-        //feat.setSortKey(getSortKey("pmap:min_zoom",  "pmap:population_rank", "population", "name"));
-      } else {
-        feat.setSortKey(minZoom * 1000);
-      }
-
-      OsmNames.setOsmNames(feat, sf, 0);
+      //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
+      feat.setSortKey(getSortKey(minZoom,  populationRank, population, sf.getString("name")));
 
       // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setPointLabelGridSizeAndLimit(12, 5, 2);
+      feat.setPointLabelGridSizeAndLimit(12, 3, 2);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
       // label grid squares will be the consistent between adjacent tiles
       feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32));
+
+      OsmNames.setOsmNames(feat, sf, 0);
     }
   }
 

@@ -253,24 +253,24 @@ public class CountryInfos {
 
   public record CountryInfo(String name, String isoCode, double minZoom, double maxZoom) {}
 
-  private static final HashMap<String, CountryInfo> countryInfoByName;
+  private static final HashMap<String, CountryInfo> countryInfoByISO;
   static CountryInfo unknownInfo = new CountryInfo("UNKNOWN_COUNTRY", "XX", 8.0, 11.0);
 
   static {
-    countryInfoByName = new HashMap<>();
+    countryInfoByISO = new HashMap<>();
     Scanner s = new Scanner(data);
     while (s.hasNextLine()) {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
-      countryInfoByName.put(parts[0],
+      countryInfoByISO.put(parts[1],
         new CountryInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0));
     }
   }
 
-  public static CountryInfo getByName(SourceFeature sf) {
-    var name = sf.hasTag("name:en") ? sf.getString("name:en") : sf.getString("name");
-    if (countryInfoByName.containsKey(name)) {
-      return countryInfoByName.get(name);
+  public static CountryInfo getByISO(SourceFeature sf) {
+    var isoCode = sf.hasTag("ISO3166-1:alpha2") ? sf.getString("ISO3166-1:alpha2") : (sf.hasTag("ISO3166-1") ? sf.getString("ISO3166-1") : "XX");
+    if (countryInfoByISO.containsKey(isoCode)) {
+      return countryInfoByISO.get(isoCode);
     }
     return unknownInfo;
   }
