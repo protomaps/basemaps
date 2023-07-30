@@ -18,7 +18,7 @@ class RegionInfosTest {
   }
 
   @Test
-  void testNotFoundRegion() {
+  void testNotFoundRegionIso() {
     var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("name", "Null Island"), "testsource", null, 0);
     var info = RegionInfos.getByISO(sf);
     assertEquals(8.0, info.minZoom());
