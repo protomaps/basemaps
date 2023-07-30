@@ -81,15 +81,16 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
     }
 
-    var minZoom = sf.getString("min_zoom") == null ? 10 : (int) Double.parseDouble(sf.getString("min_zoom"));
+    var minZoom = sf.getString("min_zoom") == null ? 10.0f : Double.parseDouble(sf.getString("min_zoom"));
     int populationRank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
     if (!kind.isEmpty()) {
       var feat = features.point(this.name())
         .setAttr("name", sf.getString("name"))
-        .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+        .setAttr("pmap:min_zoom", minZoom)
+        // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
         .setZoomRange(
           Math.min(themeMaxZoom,
-            sf.getString("min_zoom") == null ? themeMinZoom : minZoom),
+            sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom -1),
           themeMaxZoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
@@ -98,7 +99,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(128)
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        .setSortKey(minZoom)
+        .setSortKey( (int) minZoom )
         .setPointLabelGridPixelSize(7, 16);
 
       NeNames.setNeNames(feat, sf, 0);
@@ -111,8 +112,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
       String kind = "other";
-      int minZoom = 12;
-      int maxZoom = 15;
+      float minZoom = 12.0f;
+      float maxZoom = 15.0f;
       long population = 0;
       if (sf.hasTag("population")) {
         Integer parsed = parseIntOrNull(sf.getString("population"));
@@ -128,22 +129,22 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "country":
           kind = "country";
           var countryInfo = CountryInfos.getByISO(sf);
-          minZoom = (int) countryInfo.minZoom();
-          maxZoom = (int) countryInfo.maxZoom();
+          minZoom = (float) countryInfo.minZoom();
+          maxZoom = (float) countryInfo.maxZoom();
           break;
         case "state":
         case "province":
           kind = "region";
           var regionInfo = RegionInfos.getByISO(sf);
-          minZoom = (int) regionInfo.minZoom();
-          maxZoom = (int) regionInfo.maxZoom();
+          minZoom = (float) regionInfo.minZoom();
+          maxZoom = (float) regionInfo.maxZoom();
           break;
         case "city":
         case "town":
           kind = "locality";
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
-          minZoom = 7;
-          maxZoom = 15;
+          minZoom = 7.0f;
+          maxZoom = 15.0f;
           if (population == 0) {
             if (place.equals("town")) {
               population = 10000;
@@ -155,26 +156,26 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "village":
           kind = "locality";
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
-          minZoom = 10;
-          maxZoom = 15;
+          minZoom = 10.0f;
+          maxZoom = 15.0f;
           if (population == 0) {
             population = 2000;
           }
           break;
         case "suburb":
           kind = "neighbourhood";
-          minZoom = 11;
-          maxZoom = 15;
+          minZoom = 11.0f;
+          maxZoom = 15.0f;
           break;
         case "quarter":
           kind = "macrohood";
-          minZoom = 10;
-          maxZoom = 15;
+          minZoom = 10.0f;
+          maxZoom = 15.0f;
           break;
         case "neighbourhood":
           kind = "neighbourhood";
-          minZoom = 12;
-          maxZoom = 15;
+          minZoom = 12.0f;
+          maxZoom = 15.0f;
           break;
       }
 
@@ -219,7 +220,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         //                      If an explicate value is needed it should be a kind, or included in kind_detail
         .setAttr("place", sf.getString("place"))
         .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
-        .setZoomRange(minZoom, maxZoom);
+        .setZoomRange( (int) minZoom, (int) maxZoom);
 
       //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
       feat.setSortKey(getSortKey(minZoom,  populationRank, population, sf.getString("name")));
@@ -255,14 +256,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
     List<VectorTile.Feature> top64 = cities.subList(startIndex, endIndex);
 
-    // This should always be less than 64 now that a label grid is being used
+    // This should always be less than 32 now that a label grid is being used
     // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
     for (int i = 0; i < top64.size(); i++) {
-      if (top64.size() - i < 16) {
+      if (top64.size() - i < 8) {
         top64.get(i).attrs().put("pmap:rank", 1);
-      } else if (top64.size() - i < 32) {
+      } else if (top64.size() - i < 16) {
         top64.get(i).attrs().put("pmap:rank", 2);
-      } else if (top64.size() - i < 48) {
+      } else if (top64.size() - i < 24) {
         top64.get(i).attrs().put("pmap:rank", 3);
       } else {
         top64.get(i).attrs().put("pmap:rank", 4);
