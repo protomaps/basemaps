@@ -41,9 +41,13 @@ sf:
 switzerland:
 	java -jar target/*-with-deps.jar --download --force --area=switzerland
 
-# Download and generate switzerland.pmtiles in the current directory:
+# Download and generate washington.pmtiles in the current directory:
 washington:
 	java -jar target/*-with-deps.jar --download --force --area=washington
+
+# Download and generate kansas.pmtiles in the current directory (with USA label):
+kansas:
+	java -jar target/*-with-deps.jar --download --force --area=kansas
 
 # Large
 #
