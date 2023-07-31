@@ -77,29 +77,26 @@ us-lowzoom:
 eu-lowzoom:
 	java -jar target/*-with-deps.jar --download --force --area=us/california --bounds=-32.318197,31.705746,53.287269,72.937699 --maxzoom=7 --render_maxzoom=7
 
-planet:
+# Planetiler docs say it'll download planet.pbf for you from S3, but that doesn't work in Protomaps/basemap
+
+data/sources/planet-latest.osm.pbf:
+  aws s3 cp --no-sign-request s3://osm-pds/planet-latest.osm.pbf data/sources/
+
+planet: data/sources/planet-latest.osm.pbf
 	java -Xmx24g \
   	-jar target/*-with-deps.jar \
-    `# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
-    --area=planet --bounds=planet --download \
-		`# Accelerate the download by fetching the 10 1GB chunks at a time in parallel` \
-		--download-threads=10 --download-chunk-size-mb=1000 \
-		`# Also download name translations from wikidata` \
-		#--fetch-wikidata \
+  	--download --bounds=planet \
+  	--osm-path=data/sources/planet-latest.osm.pbf \
 		--output=planet.pmtiles \
 		--nodemap-type=sparsearray --nodemap-storage=mmap 2>&1 | tee logs.txt
 
-planet-xl:
+planet-xl: data/sources/planet-latest.osm.pbf
 	java -Xmx384g \
     `# return unused heap memory to the OS` \
     -XX:MaxHeapFreeRatio=40 \
 		-jar target/*-with-deps.jar \
-		`# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
-		--area=planet --bounds=planet --download \
-		`# Accelerate the download by fetching the 10 1GB chunks at a time in parallel` \
-		--download-threads=10 --download-chunk-size-mb=1000 \
-		`# Also download name translations from wikidata` \
-		#--fetch-wikidata \
+  	--download --bounds=planet \
+  	--osm-path=data/sources/planet-latest.osm.pbf \
 		--output=planet.pmtiles \
 		--nodemap-type=array --storage=ram 2>&1 | tee logs.txt
 
