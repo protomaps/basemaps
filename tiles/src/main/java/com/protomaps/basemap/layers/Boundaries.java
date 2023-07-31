@@ -146,6 +146,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
     }
 
     if (sf.canBeLine() && sf.hasTag("min_zoom") && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
+      var minZoom = Double.parseDouble(sf.getString("min_zoom")) - 1.0;
+
       features.line(this.name())
         // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
         //.setAttr("name", sf.getString("name"))
@@ -153,7 +155,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         //.setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
         .setAttr("pmap:min_admin_level", adminLevel)
         .setZoomRange(
-          sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+          sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
           themeMaxZoom)
         .setAttr("pmap:ne_id", sf.getString("ne_id"))
         .setAttr("pmap:brk_a3", sf.getString("brk_a3"))
