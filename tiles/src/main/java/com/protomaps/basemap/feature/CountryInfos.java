@@ -268,7 +268,10 @@ public class CountryInfos {
   }
 
   public static CountryInfo getByISO(SourceFeature sf) {
-    var isoCode = sf.hasTag("ISO3166-1:alpha2") ? sf.getString("ISO3166-1:alpha2") : (sf.hasTag("ISO3166-1") ? sf.getString("ISO3166-1") : "XX");
+    var isoCode = sf.hasTag("ISO3166-1:alpha2") ? sf.getString("ISO3166-1:alpha2") : (
+      sf.hasTag("country_code_iso3166_1_alpha_2") ? sf.getString("country_code_iso3166_1_alpha_2") : (
+        sf.hasTag("ISO3166-1") ? sf.getString("ISO3166-1") : "XX")
+    );
     if (countryInfoByISO.containsKey(isoCode)) {
       return countryInfoByISO.get(isoCode);
     }
