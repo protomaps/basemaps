@@ -102,13 +102,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setSortKey( (int) minZoom )
         .setPointLabelGridPixelSize(7, 16);
 
+      if( sf.hasTag("wikidata") ) {
+        feat.setAttr("wikidata", sf.getString("wikidata"));
+      }
+
       NeNames.setNeNames(feat, sf, 0);
     }
   }
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.isPoint() &&
+    if (sf.isPoint() && sf.hasTag("name") &&
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
       String kind = "other";
@@ -135,7 +139,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "state":
         case "province":
           kind = "region";
-          var regionInfo = RegionInfos.getByISO(sf);
+          var regionInfo = RegionInfos.getByWikidata(sf);
           minZoom = (float) regionInfo.minZoom();
           maxZoom = (float) regionInfo.maxZoom();
           break;
@@ -221,6 +225,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("place", sf.getString("place"))
         .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
         .setZoomRange( (int) minZoom, (int) maxZoom);
+
+      if( sf.hasTag("wikidata") ) {
+        feat.setAttr("wikidata", sf.getString("wikidata"));
+      }
 
       //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
       feat.setSortKey(getSortKey(minZoom,  populationRank, population, sf.getString("name")));
