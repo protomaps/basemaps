@@ -81,9 +81,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
     }
 
-    var minZoom = sf.getString("min_zoom") == null ? 10.0f : Double.parseDouble(sf.getString("min_zoom"));
-    int populationRank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
     if (!kind.isEmpty()) {
+      float minZoom = sf.getString("min_zoom") == null ? 10.0f : (float) Double.parseDouble(sf.getString("min_zoom"));
+      int populationRank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
+      int population = parseIntOrNull(sf.getString("pop_max"));
+
       var feat = features.point(this.name())
         .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", minZoom)
@@ -94,13 +96,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           themeMaxZoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
-        .setAttr("population", parseIntOrNull(sf.getString("pop_max")))
+        .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
         .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(128)
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        .setSortKey( (int) minZoom )
         .setPointLabelGridPixelSize(7, 16);
+
+      feat.setSortKey(getSortKey(minZoom, populationRank, population, sf.getString("name")));
 
       if( sf.hasTag("wikidata") ) {
         feat.setAttr("wikidata", sf.getString("wikidata"));
