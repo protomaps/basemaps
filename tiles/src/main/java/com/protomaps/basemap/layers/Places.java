@@ -132,7 +132,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       switch (place) {
         case "country":
           kind = "country";
-          var countryInfo = CountryInfos.getByISO(sf);
+          var countryInfo = CountryInfos.getByWikidata(sf);
           minZoom = (float) countryInfo.minZoom();
           maxZoom = (float) countryInfo.maxZoom();
           break;
