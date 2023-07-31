@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 class RegionInfosTest {
 
   @Test
-  void testLookup() {
-    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-2", "CA-YT"), "testsource", null, 0);
+  void testLookupRegionIso() {
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-2", "CA-YT", "name", "Yukon", "wikidata", "Q2009"), "testsource", null, 0);
     var info = RegionInfos.getByISO(sf);
     assertEquals(2.5, info.minZoom());
     assertEquals(6.5, info.maxZoom());
@@ -19,9 +19,34 @@ class RegionInfosTest {
 
   @Test
   void testNotFoundRegionIso() {
-    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("name", "Null Island"), "testsource", null, 0);
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-2", "XX-XX", "name", "Null Island trap street"), "testsource", null, 0);
     var info = RegionInfos.getByISO(sf);
     assertEquals(8.0, info.minZoom());
     assertEquals(11.0, info.maxZoom());
   }
+
+  @Test
+  void testLookupRegionWikidataYukon() {
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-2", "CA-YT", "name", "Yukon", "wikidata", "Q2009"), "testsource", null, 0);
+    var info = RegionInfos.getByISO(sf);
+    assertEquals(2.5, info.minZoom());
+    assertEquals(6.5, info.maxZoom());
+  }
+
+  @Test
+  void testLookupRegionWikidataKansas() {
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-2", "US-KS", "name", "Kansas", "wikidata", "Q1558"), "testsource", null, 0);
+    var info = RegionInfos.getByISO(sf);
+    assertEquals(2.5, info.minZoom());
+    assertEquals(6.5, info.maxZoom());
+  }
+
+  @Test
+  void testNotFoundRegionWikidata() {
+    var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT, Map.of("ISO3166-2", "XX-XX", "name", "Null Island trap street"), "testsource", null, 0);
+    var info = RegionInfos.getByISO(sf);
+    assertEquals(8.0, info.minZoom());
+    assertEquals(11.0, info.maxZoom());
+  }
+
 }
