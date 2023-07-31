@@ -12,249 +12,259 @@ import java.util.Scanner;
  */
 public class CountryInfos {
   private static String data = """
-    Andorra|AD|11.0|11.0
-    United Arab Emirates|AE|8.7|11.0
-    Afghanistan|AF|6.7|11.0
-    Antigua and Barb|AG|11.0|11.0
-    Anguilla|AI|11.5|11.5
-    Albania|AL|9.0|11.0
-    Armenia|AM|9.0|11.0
-    Angola|AO|6.6|11.0
-    Antarctica|AQ|14.5|14.5
-    Argentina|AR|6.0|11.0
-    American Samoa|AS|9.0|11.0
-    Austria|AT|7.8|11.0
-    Australia|AU|4.6|8.1
-    Aruba|AW|11.0|11.0
-    Aland|AX|9.0|11.0
-    Azerbaijan|AZ|9.2|11.0
-    Bosnia and Herz|BA|9.0|11.0
-    Barbados|BB|11.0|11.0
-    Bangladesh|BD|7.7|11.0
-    Belgium|BE|8.7|11.0
-    Burkina Faso|BF|9.0|11.0
-    Bulgaria|BG|8.0|11.0
-    Bahrain|BH|11.0|11.0
-    Burundi|BI|10.0|11.0
-    Benin|BJ|7.7|11.0
-    St-Barthelemy|BL|11.0|11.0
-    Bermuda|BM|11.0|11.0
-    Brunei|BN|9.0|11.0
-    Bolivia|BO|6.6|11.0
-    Brazil|BR|3.7|8.5
-    Bahamas|BS|8.0|11.0
-    Bhutan|BT|8.7|11.0
-    Botswana|BW|6.0|11.0
-    Belarus|BY|6.6|11.0
-    Belize|BZ|8.0|11.0
-    Canada|CA|3.5|7.5
-    Democratic Republic of the Congo|CD|6.0|11.0
-    Central African Republic|CF|7.0|11.0
-    Republic of the Congo|CG|7.6|11.0
-    Switzerland|CH|8.7|11.0
-    Ivory Coast|CI|7.7|11.0
-    Cook Islands|CK|11.0|11.0
-    Chile|CL|6.0|11.0
-    Cameroon|CM|6.7|11.0
-    China|CN|5.0|10.3
-    Colombia|CO|7.0|11.2
-    Costa Rica|CR|7.7|11.0
-    Cuba|CU|7.7|11.0
-    Cabo Verde|CV|11.0|11.0
-    Curacao|CW|11.0|11.0
-    Cyprus|CY|8.7|11.0
-    Czechia|CZ|7.7|11.0
-    Germany|DE|6.6|11.0
-    Djibouti|DJ|9.0|11.0
-    Denmark|DK|7.7|11.0
-    Dominica|DM|11.0|11.0
-    Dominican Rep|DO|10.0|11.0
-    Algeria|DZ|7.7|11.0
-    Ecuador|EC|8.0|11.0
-    Estonia|EE|7.0|11.0
-    Egypt|EG|7.7|11.0
-    Western Sahara|EH|18.0|18.0
-    Eritrea|ER|8.7|11.0
-    Spain|ES|7.7|11.0
-    Ethiopia|ET|6.6|11.0
-    Finland|FI|6.7|11.0
-    Fiji|FJ|8.0|11.0
-    Falkland Islands|FK|18.0|18.0
-    Micronesia|FM|11.0|11.0
-    Faeroe Islands|FO|8.0|11.0
-    Gabon|GA|7.7|11.0
-    United Kingdom|GB|10.0|11.0
-    Grenada|GD|11.0|11.0
-    Georgia|GE|7.7|11.0
-    Guernsey|GG|18.0|18.0
-    Ghana|GH|7.7|11.0
-    Gibraltar|GI|18.0|18.0
-    Greenland|GL|8.0|11.0
-    Gambia|GM|8.0|11.0
-    Guinea|GN|8.0|11.0
-    Equatorial Guinea|GQ|8.7|11.0
-    Greece|GR|7.7|11.0
-    South Georgia and the Islands|GS|18.0|18.0
-    Guatemala|GT|8.0|11.0
-    Guam|GU|18.0|18.0
-    Guinea-Bissau|GW|8.7|11.0
-    Guyana|GY|8.0|11.0
-    Hong Kong|HK|11.0|11.0
-    Heard Island and McDonald Islands|HM|18.0|18.0
-    Honduras|HN|8.0|11.0
-    Croatia|HR|9.0|11.0
-    Haiti|HT|7.7|11.0
-    Hungary|HU|8.5|11.0
-    Indonesia|ID|5.0|10.1
-    Ireland|IE|8.2|11.0
-    Israel|IL|8.4|11.0
-    Isle of Man|IM|18.0|18.0
-    India|IN|4.6|10.1
-    British Indian Ocean Territory|IO|18.0|18.0
-    Iraq|IQ|6.7|11.0
-    Iran|IR|6.6|11.0
-    Iceland|IS|6.0|11.0
-    Italy|IT|9.0|11.0
-    Jersey|JE|18.0|18.0
-    Jamaica|JM|10.0|11.0
-    Jordan|JO|8.7|11.0
-    Japan|JP|7.0|11.0
-    Kenya|KE|6.6|11.0
-    Kyrgyzstan|KG|6.7|11.0
-    Cambodia|KH|8.1|11.0
-    Kiribati|KI|18.0|18.0
-    Comoros|KM|11.0|11.0
-    St. Kitts and Nevis|KN|11.0|11.0
-    North Korea|KP|8.0|11.0
-    South Korea|KR|8.0|11.0
-    Kuwait|KW|8.7|11.0
-    Cayman Islands|KY|11.0|11.0
-    Kazakhstan|KZ|6.0|11.0
-    Laos|LA|8.0|11.0
-    Lebanon|LB|8.7|11.0
-    Saint Lucia|LC|11.0|11.0
-    Liechtenstein|LI|11.0|11.0
-    Sri Lanka|LK|8.7|11.0
-    Liberia|LR|8.0|11.0
-    Lesotho|LS|8.7|11.0
-    Lithuania|LT|7.0|11.0
-    Luxembourg|LU|8.7|11.0
-    Latvia|LV|10.0|11.0
-    Libya|LY|7.7|11.0
-    Morocco|MA|7.7|11.0
-    Monaco|MC|18.0|18.0
-    Moldova|MD|10.0|11.0
-    Montenegro|ME|10.0|11.0
-    St-Martin|MF|11.0|11.0
-    Madagascar|MG|7.0|11.0
-    Marshall Islands|MH|11.0|11.0
-    Macedonia|MK|10.0|11.0
-    Mali|ML|6.6|11.0
-    Myanmar|MM|7.0|11.0
-    Mongolia|MN|6.0|11.0
-    Macao|MO|18.0|18.0
-    Northern Mariana Islands|MP|11.0|11.0
-    Mauritania|MR|6.6|11.0
-    Montserrat|MS|11.0|11.0
-    Malta|MT|11.0|11.0
-    Mauritius|MU|11.0|11.0
-    Maldives|MV|10.0|11.0
-    Malawi|MW|8.7|11.0
-    Mexico|MX|6.9|11.2
-    Malaysia|MY|7.2|11.0
-    Mozambique|MZ|6.6|11.0
-    Namibia|NA|6.0|11.0
-    New Caledonia|NC|6.7|11.0
-    Niger|NE|6.6|11.0
-    Norfolk Island|NF|9.0|11.0
-    Nigeria|NG|6.6|11.0
-    Nicaragua|NI|7.7|11.0
-    Netherlands|NL|8.6|11.0
-    Nepal|NP|7.7|11.0
-    Nauru|NR|9.0|11.0
-    Niue|NU|18.0|18.0
-    New Zealand|NZ|8.5|11.3
-    Oman|OM|8.7|11.0
-    Panama|PA|7.7|11.0
-    Peru|PE|6.6|11.0
-    French Polynesia|PF|11.0|11.0
-    Papua New Guinea|PG|7.0|11.0
-    Philippines|PH|8.0|11.0
-    Pakistan|PK|5.0|10.5
-    Poland|PL|6.7|11.0
-    Saint Pierre and Miquelon|PM|11.0|11.0
-    Pitcairn Islands|PN|18.0|18.0
-    Puerto Rico|PR|11.0|11.0
-    Palestine|PS|18.0|18.0
-    Portugal|PT|8.0|11.0
-    Palau|PW|11.0|11.0
-    Paraguay|PY|6.7|11.0
-    Qatar|QA|8.7|11.0
-    Romania|RO|8.0|11.0
-    Serbia|RS|9.0|11.0
-    Russia|RU|5.0|10.2
-    Rwanda|RW|8.7|11.0
-    Saudi Arabia|SA|6.6|11.0
-    Solomon Islands|SB|7.0|11.0
-    Seychelles|SC|11.0|11.0
-    Sudan|SD|6.6|11.0
-    Sweden|SE|6.7|11.0
-    Singapore|SG|11.0|11.0
-    Saint Helena|SH|11.0|11.0
-    Slovenia|SI|11.0|11.0
-    Slovakia|SK|7.7|11.0
-    Sierra Leone|SL|7.8|11.0
-    San Marino|SM|11.0|11.0
-    Senegal|SN|7.7|11.0
-    Somalia|SO|7.0|11.0
-    Suriname|SR|8.0|11.0
-    South Sudan|SS|6.6|11.0
-    Sao Tome and Principe|ST|11.0|11.0
-    El Salvador|SV|10.0|11.0
-    Sint Maarten|SX|11.0|11.0
-    Syria|SY|7.7|11.5
-    eSwatini|SZ|8.7|11.0
-    Turks and Caicos Islands|TC|11.0|11.0
-    Chad|TD|6.6|11.0
-    French Southern Antarctic Lands|TF|11.0|11.0
-    Togo|TG|7.7|11.0
-    Thailand|TH|8.2|11.0
-    Tajikistan|TJ|6.7|11.0
-    Timor-Leste|TL|9.0|11.0
-    Turkmenistan|TM|6.6|11.0
-    Tunisia|TN|7.7|11.0
-    Tonga|TO|11.0|11.0
-    Turkiye|TR|7.0|11.0
-    Trinidad and Tobago|TT|10.0|11.0
-    Tuvalu|TV|18.0|18.0
-    Taiwan|TW|8.7|11.0
-    Tanzania|TZ|6.7|11.0
-    Ukraine|UA|6.7|11.0
-    Uganda|UG|10.0|11.0
-    U.S. Minor Outlying Islands|UM|11.0|11.0
-    United States of America|US|3.5|7.5
-    Uruguay|UY|8.0|11.0
-    Uzbekistan|UZ|6.6|11.0
-    Vatican|VA|18.0|18.0
-    Saint Vincent and Grenadines|VC|11.0|11.0
-    Venezuela|VE|7.1|11.3
-    British Virgin Islands|VG|18.0|18.0
-    U.S. Virgin Islands|VI|11.0|11.0
-    Vietnam|VN|8.3|11.0
-    Vanuatu|VU|9.0|11.0
-    Wallis and Futuna Islands|WF|9.0|11.0
-    Samoa|WS|9.0|11.0
-    Kosovo|XK|10.0|11.0
-    Yemen|YE|8.7|11.0
-    South Africa|ZA|4.6|10.1
-    Zambia|ZM|6.6|11.0
-    Zimbabwe|ZW|6.7|11.0
+    Afghanistan|AF|3|7|Q889
+    Åland|AX|5|10|Q5689
+    Albania|AL|5|10|Q222
+    Algeria|DZ|2.5|7|Q262
+    American Samoa|AS|4|9|Q16641
+    Andorra|AD|5|10|Q228
+    Angola|AO|3|7|Q916
+    Anguilla|AI|5|10|Q25228
+    Antarctica|AQ|4|9|Q51
+    Antigua and Barb.|AG|5|9.5|Q781
+    Argentina|AR|2|7|Q414
+    Armenia|AM|5|10|Q399
+    Aruba|AW|5|10|Q21203
+    Ashmore and Cartier Is.|AU|4.5|9.5|Q133888
+    Australia|AU|1.7|5.7|Q408
+    Austria|AT|3|8|Q40
+    Azerbaijan|AZ|4|9|Q227
+    Bahamas|BS|4|9|Q778
+    Bahrain|BH|4|9|Q398
+    Baikonur|KZ|6|9.5|Q165413
+    Bangladesh|BD|3|8|Q902
+    Barbados|BB|4.5|9.5|Q244
+    Belarus|BY|3|8|Q184
+    Belgium|BE|4|9|Q31
+    Belize|BZ|5|10|Q242
+    Benin|BJ|4|9|Q962
+    Bermuda|BM|4|9|Q23635
+    Bhutan|BT|4|9|Q917
+    Bolivia|BO|3|7.5|Q750
+    Bosnia and Herz.|BA|4.5|6.8|Q225
+    Botswana|BW|4|9|Q963
+    Br. Indian Ocean Ter.|IO|5|9.5|Q43448
+    Brazil|BR|1.7|5.7|Q155
+    Brazilian I.|BR|7.7|9|Q2093778
+    British Virgin Is.|VG|5|9.5|Q25305
+    Brunei|BN|4|9|Q921
+    Bulgaria|BG|4|9|Q219
+    Burkina Faso|BF|3|8|Q965
+    Burundi|BI|4|9|Q967
+    Cabo Verde|CV|4|9|Q1011
+    Cambodia|KH|3|8|Q424
+    Cameroon|CM|3|8|Q1009
+    Canada|CA|1.7|5.7|Q16
+    Cayman Is.|KY|5|9.5|Q5785
+    Central African Rep.|CF|4|9|Q929
+    Chad|TD|3|8|Q657
+    Chile|CL|1.7|6.7|Q298
+    China|CN|1.7|5.7|Q148
+    Clipperton I.|FR|5|9.5|Q161258
+    Colombia|CO|3|7|Q739
+    Comoros|KM|4|9|Q970
+    Congo|CG|4|9|Q971
+    Cook Is.|CK|4|9|Q26988
+    Coral Sea Is.|AU|4.5|9.5|Q172216
+    Costa Rica|CR|2.5|8|Q800
+    Côte d'Ivoire|CI|2.5|8|Q1008
+    Croatia|HR|4|9|Q224
+    Cuba|CU|2.7|8|Q241
+    Curaçao|CW|5|10|Q25279
+    Cyprus|CY|4.5|9.5|Q229
+    Czechia|CZ|4|9|Q213
+    Dem. Rep. Congo|CD|2|7|Q974
+    Denmark|DK|3|8|Q35
+    Djibouti|DJ|4|9|Q977
+    Dominica|DM|4|9|Q784
+    Dominican Rep.|DO|4.5|9.5|Q786
+    Ecuador|EC|3|8|Q736
+    Egypt|EG|1.7|6.7|Q79
+    El Salvador|SV|5|10|Q792
+    Eq. Guinea|GQ|4|9|Q983
+    Eritrea|ER|4|9|Q986
+    Estonia|EE|3|8|Q191
+    eSwatini|SZ|4|9|Q1050
+    Ethiopia|ET|2|7|Q115
+    Faeroe Is.|FO|4|9|Q4628
+    Falkland Is.|FK|4.5|9|Q9648
+    Fiji|FJ|3|8|Q712
+    Finland|FI|3|8|Q33
+    Fr. Polynesia|PF|3.5|8.5|Q30971
+    Fr. S. Antarctic Lands|TF|4|9|Q129003
+    France|FR|1.7|6.7|Q142
+    Gabon|GA|3|8|Q1000
+    Gambia|GM|5|10|Q1005
+    Georgia|GE|4|9|Q230
+    Germany|DE|1.7|6.7|Q183
+    Ghana|GH|2.7|8|Q117
+    Gibraltar|GI|5|9.5|Q1410
+    Greece|GR|2.7|8|Q41
+    Greenland|GL|1.7|6.7|Q223
+    Grenada|GD|4|9|Q769
+    Guam|GU|3|10|Q16635
+    Guatemala|GT|3|8|Q774
+    Guernsey|GG|5|10|Q25230
+    Guinea-Bissau|GW|5|10|Q1007
+    Guinea|GN|3|8|Q1006
+    Guyana|GY|4|9|Q734
+    Haiti|HT|4|9|Q790
+    Heard I. and McDonald Is.|HM|4.5|9.5|Q131198
+    Honduras|HN|4.5|9.5|Q783
+    Hong Kong|HK|4|9|Q8646
+    Hungary|HU|4|9|Q28
+    Iceland|IS|2|7|Q189
+    India|IN|1.7|6.7|Q668
+    Indian Ocean Ter.|AU|5|9.5|Q4824275
+    Indonesia|ID|1.7|6.7|Q252
+    Iran|IR|2.5|6.7|Q794
+    Iraq|IQ|3|7.5|Q796
+    Ireland|IE|3|8|Q27
+    Isle of Man|IM|5|10|Q9676
+    Israel|IL|3|8|Q801
+    Italy|IT|2|7|Q38
+    Jamaica|JM|4|9|Q766
+    Japan|JP|1.7|7|Q17
+    Jersey|JE|5|10|Q785
+    Jordan|JO|4|9|Q810
+    Kazakhstan|KZ|2.7|7|Q232
+    Kenya|KE|1.7|6.7|Q114
+    Kiribati|KI|5|10|Q710
+    Kosovo|XK|5|10|Q1246
+    Kuwait|KW|5|10|Q817
+    Kyrgyzstan|KG|3|8|Q813
+    Laos|LA|4|9|Q819
+    Latvia|LV|4|9|Q211
+    Lebanon|LB|4|9|Q822
+    Lesotho|LS|4|9|Q1013
+    Liberia|LR|4|9|Q1014
+    Libya|LY|3|8|Q1016
+    Liechtenstein|LI|5|10|Q347
+    Lithuania|LT|4|9|Q37
+    Luxembourg|LU|5.7|10|Q32
+    Macao|MO|4|9|Q14773
+    Madagascar|MG|2.7|7|Q1019
+    Malawi|MW|4|9|Q1020
+    Malaysia|MY|3|8|Q833
+    Maldives|MV|4|9|Q826
+    Mali|ML|3|7|Q912
+    Malta|MT|4|9|Q233
+    Marshall Is.|MH|5|10|Q709
+    Mauritania|MR|3|8|Q1025
+    Mauritius|MU|4|9|Q1027
+    Mexico|MX|2|6.7|Q96
+    Micronesia|FM|5|10|Q702
+    Moldova|MD|5|10|Q217
+    Monaco|MC|5|10|Q235
+    Mongolia|MN|3|7|Q711
+    Montenegro|ME|5|10|Q236
+    Montserrat|MS|5|10|Q13353
+    Morocco|MA|2.7|8|Q1028
+    Mozambique|MZ|3|8|Q1029
+    Myanmar|MM|3|8|Q836
+    N. Mariana Is.|MP|5|10|Q16644
+    Namibia|NA|3|7.5|Q1030
+    Nauru|NR|5|10|Q697
+    Nepal|NP|3|8|Q837
+    Netherlands|NL|4|10|Q55
+    New Caledonia|NC|4.6|8|Q33788
+    New Zealand|NZ|2|6.7|Q664
+    Nicaragua|NI|4|9|Q811
+    Niger|NE|3|8|Q1032
+    Nigeria|NG|1.7|6.7|Q1033
+    Niue|NU|4|9|Q34020
+    Norfolk Island|NF|4.5|9.5|Q31057
+    North Korea|KP|3|8|Q423
+    North Macedonia|MK|5|10|Q221
+    Norway|NO|3|7|Q20
+    Oman|OM|4|9|Q842
+    Pakistan|PK|2.7|7|Q843
+    Palau|PW|5|10|Q695
+    Palestine|PS|4.5|9.5|Q23792
+    Panama|PA|4|9|Q804
+    Papua New Guinea|PG|2.5|7.5|Q691
+    Paraguay|PY|3|8|Q733
+    Peru|PE|2|7|Q419
+    Philippines|PH|2.5|7|Q928
+    Pitcairn Is.|PN|5|9|Q35672
+    Poland|PL|2.5|7|Q36
+    Portugal|PT|3|8|Q45
+    Puerto Rico|PR|3|8|Q1183
+    Qatar|QA|4|9|Q846
+    Romania|RO|3|8|Q218
+    Russia|RU|1.7|5.2|Q159
+    Rwanda|RW|3|8|Q1037
+    S. Geo. and the Is.|GS|5|9|Q35086
+    S. Sudan|SS|3|8|Q958
+    Saint Helena|SH|5|10|Q192184
+    Saint Lucia|LC|5|9.5|Q760
+    Samoa|WS|3|8|Q683
+    San Marino|SM|5|10|Q238
+    São Tomé and Principe|ST|5|10|Q1039
+    Saudi Arabia|SA|1.7|7|Q851
+    Senegal|SN|2.7|8|Q1041
+    Serbia|RS|4|7|Q403
+    Seychelles|SC|5|10|Q1042
+    Sierra Leone|SL|4|9|Q1044
+    Singapore|SG|4|9|Q334
+    Sint Maarten|SX|5|10|Q26273
+    Slovakia|SK|4|9|Q214
+    Slovenia|SI|5|10|Q215
+    Solomon Is.|SB|3|8|Q685
+    Somalia|SO|4|9|Q1045
+    South Africa|ZA|1.7|6.7|Q258
+    South Korea|KR|2.5|7|Q884
+    Spain|ES|2|7|Q29
+    Sri Lanka|LK|3|8|Q854
+    St-Barthélemy|BL|5.7|10|Q25362
+    St-Martin|MF|5|10|Q126125
+    St. Kitts and Nevis|KN|5|10|Q763
+    St. Pierre and Miquelon|PM|5|10|Q34617
+    St. Vin. and Gren.|VC|5|10|Q757
+    Sudan|SD|2.5|8|Q1049
+    Suriname|SR|4|9|Q730
+    Sweden|SE|2|7|Q34
+    Switzerland|CH|4|9|Q39
+    Syria|SY|3|8|Q858
+    Taiwan|TW|4.5|8|Q865
+    Tajikistan|TJ|4|9|Q863
+    Tanzania|TZ|3|8|Q924
+    Thailand|TH|2.7|8|Q869
+    Timor-Leste|TL|4|9|Q574
+    Togo|TG|5|10|Q945
+    Tonga|TO|4|9|Q678
+    Trinidad and Tobago|TT|4.5|9.5|Q754
+    Tunisia|TN|3|8|Q948
+    Turkey|TR|2|7|Q43
+    Turkmenistan|TM|3|8|Q874
+    Turks and Caicos Is.|TC|5|10|Q18221
+    Tuvalu|TV|5|10|Q672
+    U.S. Minor Outlying Is.|UM|7|11|Q16645
+    U.S. Virgin Is.|VI|5|10|Q11703
+    Uganda|UG|3|8|Q1036
+    Ukraine|UA|2.7|7|Q212
+    United Arab Emirates|AE|4|9|Q878
+    United Kingdom|GB|1.7|6.7|Q145
+    United States of America|US|1.7|5.7|Q30
+    Uruguay|UY|3|8|Q77
+    Uzbekistan|UZ|3|8|Q265
+    Vanuatu|VU|4|9|Q686
+    Vatican|VA|5|10|Q237
+    Venezuela|VE|2.5|7.5|Q717
+    Vietnam|VN|2|7|Q881
+    W. Sahara|EH|6|11|Q6250
+    Wallis and Futuna Is.|WF|4.7|9|Q35555
+    Yemen|YE|3|8|Q805
+    Zambia|ZM|3|8|Q953
+    Zimbabwe|ZW|2.5|8|Q954
     """;
 
-  public record CountryInfo(String name, String isoCode, double minZoom, double maxZoom) {}
+  public record CountryInfo(String name, String isoCode, double minZoom, double maxZoom, String wikidata) {}
 
   private static final HashMap<String, CountryInfo> countryInfoByISO;
-  static CountryInfo unknownInfo = new CountryInfo("UNKNOWN_COUNTRY", "XX", 8.0, 11.0);
+  private static final HashMap<String, CountryInfo> countryInfoByWikidata;
+
+  static CountryInfo unknownInfo = new CountryInfo("UNKNOWN_COUNTRY", "XX", 7.0, 10.0, "QXXX");
 
   static {
     countryInfoByISO = new HashMap<>();
@@ -263,7 +273,18 @@ public class CountryInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       countryInfoByISO.put(parts[1],
-        new CountryInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0));
+        new CountryInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0, parts[4]));
+    }
+  }
+
+  static {
+    countryInfoByWikidata = new HashMap<>();
+    Scanner s = new Scanner(data);
+    while (s.hasNextLine()) {
+      String line = s.nextLine();
+      String[] parts = line.split("\\|");
+      countryInfoByWikidata.put(parts[4],
+        new CountryInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0, parts[4]));
     }
   }
 
@@ -274,6 +295,16 @@ public class CountryInfos {
     );
     if (countryInfoByISO.containsKey(isoCode)) {
       return countryInfoByISO.get(isoCode);
+    }
+    return unknownInfo;
+  }
+
+  public static CountryInfos.CountryInfo getByWikidata(SourceFeature sf) {
+    var wikidata = sf.hasTag("wikidata") ? sf.getString("wikidata") : (
+      sf.hasTag("wikidataid") ? sf.getString("wikidataid") : "QXXX"
+    );
+    if (countryInfoByWikidata.containsKey(wikidata)) {
+      return countryInfoByWikidata.get(wikidata);
     }
     return unknownInfo;
   }
