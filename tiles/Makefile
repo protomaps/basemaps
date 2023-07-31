@@ -79,14 +79,28 @@ eu-lowzoom:
 
 planet:
 	java -Xmx24g \
+  	-jar target/*-with-deps.jar \
+    `# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
+    --area=planet --bounds=planet --download \
+		`# Accelerate the download by fetching the 10 1GB chunks at a time in parallel` \
+		--download-threads=10 --download-chunk-size-mb=1000 \
+		`# Also download name translations from wikidata` \
+		#--fetch-wikidata \
+		--output=planet.pmtiles \
+		--nodemap-type=sparsearray --nodemap-storage=mmap 2>&1 | tee logs.txt
+
+planet-xl:
+	java -Xmx384g \
+    `# return unused heap memory to the OS` \
+    -XX:MaxHeapFreeRatio=40 \
 		-jar target/*-with-deps.jar \
 		`# Download the latest planet.osm.pbf from s3://osm-pds bucket` \
 		--area=planet --bounds=planet --download \
 		`# Accelerate the download by fetching the 10 1GB chunks at a time in parallel` \
 		--download-threads=10 --download-chunk-size-mb=1000 \
 		`# Also download name translations from wikidata` \
-		--fetch-wikidata \
-		--output=output.\pmtiles \
-		--nodemap-type=sparsearray --nodemap-storage=ram 2>&1 | tee logs.txt
+		#--fetch-wikidata \
+		--output=planet.pmtiles \
+		--nodemap-type=array --storage=ram 2>&1 | tee logs.txt
 
-.PHONY: clean clean-pmtiles lint serve monaco sf switzerland washington california ny ny-metro japan us-lowzoom eu-lowzoom planet
+.PHONY: clean clean-pmtiles lint serve monaco sf switzerland washington california ny ny-metro japan us-lowzoom eu-lowzoom planet planet-xl
