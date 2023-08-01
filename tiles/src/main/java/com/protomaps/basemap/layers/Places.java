@@ -31,13 +31,13 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     return SortKey
       // ORDER BY "min_zoom" ASC NULLS LAST,
       //min_zoom.isEmpty() ? 15.0 : min_zoom.getAsInt()
-      .orderByDouble((double) min_zoom, 0.0, 15.0, 32)
+      .orderByInt((int) min_zoom * 10, 0, 150)
       // population_rank DESC NULLS LAST,
       //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
       .thenByInt(population_rank, 0, 15)
       // population DESC NULLS LAST,
       // population.isEmpty() ? 0 : population.getAsLong()
-      .thenByLog(population, 1, 1000000000, 500)
+      .thenByLog(population, 1, 1000000000, 100)
       // length(name) ASC
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
