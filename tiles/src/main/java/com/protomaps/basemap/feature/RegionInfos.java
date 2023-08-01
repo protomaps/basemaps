@@ -955,9 +955,7 @@ public class RegionInfos {
   }
 
   public static RegionInfos.RegionInfo getByWikidata(SourceFeature sf) {
-    var wikidata = sf.hasTag("wikidata") ? sf.getString("wikidata") : (
-      sf.hasTag("wikidataid") ? sf.getString("wikidataid") : "QXXX"
-    );
+    var wikidata = sf.hasTag("wikidata") ? sf.getString("wikidata") : "QXXX";
     if (regionInfoByWikidata.containsKey(wikidata)) {
       return regionInfoByWikidata.get(wikidata);
     }
