@@ -7,8 +7,8 @@ import java.util.Scanner;
 /**
  * Query hardcoded information about sub-national regions.
  * <p>
- * Embedded hand-curated data on sub-national regions of significant extents, to assist in labeling.
- * Includes US states, AU states and territories, CA provinces and territories, and other significant regions globally
+ * Embedded hand-curated data on sub-national regions of significant extents, to assist in labeling. Includes US states,
+ * AU states and territories, CA provinces and territories, and other significant regions globally
  * </p>
  */
 public class RegionInfos {
@@ -925,7 +925,8 @@ public class RegionInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       regionInfoByISO.put(parts[1],
-        new RegionInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0, parts[4]));
+        new RegionInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0,
+          parts[4]));
     }
   }
 
@@ -936,7 +937,8 @@ public class RegionInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       regionInfoByWikidata.put(parts[4],
-        new RegionInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0, parts[4]));
+        new RegionInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0,
+          parts[4]));
     }
   }
 
@@ -944,10 +946,8 @@ public class RegionInfos {
     // ISO codes aren't always included in extracts, oddly, so introspect which tags are
     //sf.tags().forEach((key, value) -> System.out.printf("%s: %s\n", key, value));
 
-    var isoCode = sf.hasTag("ISO3166-2") ? sf.getString("ISO3166-2") : (
-      sf.hasTag("region_code_iso3166_2") ? sf.getString("region_code_iso3166_2") : (
-        sf.hasTag("ISO3166-2") ? sf.getString("ISO3166-2") : "XX-XX")
-    );
+    var isoCode = sf.hasTag("ISO3166-2") ? sf.getString("ISO3166-2") : (sf.hasTag("region_code_iso3166_2") ?
+      sf.getString("region_code_iso3166_2") : (sf.hasTag("ISO3166-2") ? sf.getString("ISO3166-2") : "XX-XX"));
     if (regionInfoByISO.containsKey(isoCode)) {
       return regionInfoByISO.get(isoCode);
     }
