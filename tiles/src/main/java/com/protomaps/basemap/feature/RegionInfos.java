@@ -912,23 +912,11 @@ public class RegionInfos {
     Mayotte|FR-YT|8|11|Q17063
     """;
 
-  public record RegionInfo(String name, String regionIsoCode, double minZoom, double maxZoom, String wikidata) {}
+  public record RegionInfo(String name, String wikidata, String regionIsoCode, double minZoom, double maxZoom) {}
 
   private static final HashMap<String, RegionInfo> regionInfoByISO;
   private static final HashMap<String, RegionInfo> regionInfoByWikidata;
-  static RegionInfo unknownInfo = new RegionInfo("UNKNOWN_REGION", "XX", 8.0, 11.0, "QXXX");
-
-  static {
-    regionInfoByISO = new HashMap<>();
-    Scanner s = new Scanner(data);
-    while (s.hasNextLine()) {
-      String line = s.nextLine();
-      String[] parts = line.split("\\|");
-      regionInfoByISO.put(parts[1],
-        new RegionInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0,
-          parts[4]));
-    }
-  }
+  static RegionInfo unknownInfo = new RegionInfo("UNKNOWN_REGION", "QXXX", "XX", 8.0, 11.0);
 
   static {
     regionInfoByWikidata = new HashMap<>();
@@ -937,9 +925,27 @@ public class RegionInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       regionInfoByWikidata.put(parts[4],
-        new RegionInfo(parts[0], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0,
-          parts[4]));
+        new RegionInfo(parts[0], parts[4], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0));
     }
+  }
+
+  static {
+    regionInfoByISO = new HashMap<>();
+    Scanner s = new Scanner(data);
+    while (s.hasNextLine()) {
+      String line = s.nextLine();
+      String[] parts = line.split("\\|");
+      regionInfoByISO.put(parts[1],
+        new RegionInfo(parts[0], parts[4], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0));
+    }
+  }
+
+  public static RegionInfos.RegionInfo getByWikidata(SourceFeature sf) {
+    var wikidata = sf.hasTag("wikidata") ? sf.getString("wikidata") : "QXXX";
+    if (regionInfoByWikidata.containsKey(wikidata)) {
+      return regionInfoByWikidata.get(wikidata);
+    }
+    return unknownInfo;
   }
 
   public static RegionInfos.RegionInfo getByISO(SourceFeature sf) {
@@ -953,13 +959,4 @@ public class RegionInfos {
     }
     return unknownInfo;
   }
-
-  public static RegionInfos.RegionInfo getByWikidata(SourceFeature sf) {
-    var wikidata = sf.hasTag("wikidata") ? sf.getString("wikidata") : "QXXX";
-    if (regionInfoByWikidata.containsKey(wikidata)) {
-      return regionInfoByWikidata.get(wikidata);
-    }
-    return unknownInfo;
-  }
-
 }
