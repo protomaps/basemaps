@@ -82,10 +82,12 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
       if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
         var feature = features.polygon(this.name())
+          // Core Tilezen schema properties
           .setAttr("pmap:kind", kind)
-          .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+          // Preview v4 schema (disabled)
+          //.setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
           .setZoomRange(
-            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")) - 1,
             themeMaxZoom)
           .setMinPixelSize(3.0)
           .setBufferPixels(8);
