@@ -925,7 +925,8 @@ public class RegionInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       regionInfoByWikidata.put(parts[4],
-        new RegionInfo(parts[0], parts[4], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0));
+        new RegionInfo(parts[0], parts[4], parts[1], Double.parseDouble(parts[2]) - 1.0,
+          Double.parseDouble(parts[3]) - 1.0));
     }
   }
 
@@ -936,7 +937,8 @@ public class RegionInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       regionInfoByISO.put(parts[1],
-        new RegionInfo(parts[0], parts[4], parts[1], Double.parseDouble(parts[2]) - 1.0, Double.parseDouble(parts[3]) - 1.0));
+        new RegionInfo(parts[0], parts[4], parts[1], Double.parseDouble(parts[2]) - 1.0,
+          Double.parseDouble(parts[3]) - 1.0));
     }
   }
 
