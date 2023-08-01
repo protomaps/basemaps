@@ -259,7 +259,8 @@ public class CountryInfos {
     Zimbabwe|Zimbabwe|Q954|ZW|2.5|8
     """;
 
-  public record CountryInfo(String nameEnglish, String nameLocal, String wikidata, String isoCode, double minZoom, double maxZoom) {}
+  public record CountryInfo(String nameEnglish, String nameLocal, String wikidata, String isoCode, double minZoom,
+    double maxZoom) {}
 
   private static final HashMap<String, CountryInfo> countryInfoByWikidata;
   private static final HashMap<String, CountryInfo> countryInfoByISO;
@@ -273,7 +274,8 @@ public class CountryInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       countryInfoByWikidata.put(parts[2],
-        new CountryInfo(parts[0], parts[1], parts[2], parts[3], Double.parseDouble(parts[4]) - 1.0, Double.parseDouble(parts[5]) - 1.0));
+        new CountryInfo(parts[0], parts[1], parts[2], parts[3], Double.parseDouble(parts[4]) - 1.0,
+          Double.parseDouble(parts[5]) - 1.0));
     }
   }
 
@@ -284,7 +286,8 @@ public class CountryInfos {
       String line = s.nextLine();
       String[] parts = line.split("\\|");
       countryInfoByISO.put(parts[3],
-        new CountryInfo(parts[0], parts[1], parts[2], parts[3], Double.parseDouble(parts[4]) - 1.0, Double.parseDouble(parts[5]) - 1.0));
+        new CountryInfo(parts[0], parts[1], parts[2], parts[3], Double.parseDouble(parts[4]) - 1.0,
+          Double.parseDouble(parts[5]) - 1.0));
     }
   }
 
@@ -301,10 +304,9 @@ public class CountryInfos {
   // (nvkelso 20230731) 50% of country nodes have ISO3166-1:alpha2
   // (nvkelso 20230731) 28% of country nodes have ISO3166-1
   public static CountryInfos.CountryInfo getByISO(SourceFeature sf) {
-    var isoCode = sf.hasTag("ISO3166-1:alpha2") ? sf.getString("ISO3166-1:alpha2") : (
-      sf.hasTag("country_code_iso3166_1_alpha_2") ? sf.getString("country_code_iso3166_1_alpha_2") : (
-        sf.hasTag("ISO3166-1") ? sf.getString("ISO3166-1") : "XX")
-    );
+    var isoCode =
+      sf.hasTag("ISO3166-1:alpha2") ? sf.getString("ISO3166-1:alpha2") : (sf.hasTag("country_code_iso3166_1_alpha_2") ?
+        sf.getString("country_code_iso3166_1_alpha_2") : (sf.hasTag("ISO3166-1") ? sf.getString("ISO3166-1") : "XX"));
     if (countryInfoByISO.containsKey(isoCode)) {
       return countryInfoByISO.get(isoCode);
     }
