@@ -248,6 +248,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32));
 
       OsmNames.setOsmNames(feat, sf, 0);
+      OsmNames.setOsmRefs(feat, sf, 0);
     }
   }
 
