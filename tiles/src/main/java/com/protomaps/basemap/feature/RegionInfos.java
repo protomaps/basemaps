@@ -942,6 +942,8 @@ public class RegionInfos {
     }
   }
 
+  // (nvkelso 20230801) 65% of country nodes have Wikidata IDs
+  // (nvkelso 20230801) 99% of country nodes have names (but they aren't unique)
   public static RegionInfos.RegionInfo getByWikidata(SourceFeature sf) {
     var wikidata = sf.hasTag("wikidata") ? sf.getString("wikidata") : "QXXX";
     if (regionInfoByWikidata.containsKey(wikidata)) {
@@ -950,6 +952,7 @@ public class RegionInfos {
     return unknownInfo;
   }
 
+  // (nvkelso 20230801) 24% of country nodes have ISO codes (majority also have Wikidata IDs)
   public static RegionInfos.RegionInfo getByISO(SourceFeature sf) {
     // ISO codes aren't always included in extracts, oddly, so introspect which tags are
     //sf.tags().forEach((key, value) -> System.out.printf("%s: %s\n", key, value));
