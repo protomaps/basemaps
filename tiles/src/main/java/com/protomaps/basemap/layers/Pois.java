@@ -257,6 +257,12 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           } else if (wayArea > 0.2) { //     10000
             minZoom = 13;
           }
+
+          // Emphasize large international airports earlier
+          // Because the area grading resets the earlier dispensation
+          if (kind.equals("aerodrome") && sf.hasTag("iata")) {
+            minZoom -= 2;
+          }
         } else if (kind.equals("college") ||
           kind.equals("university")) {
           if (wayArea > 20000) {
@@ -309,6 +315,13 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             minZoom = 16;
           } else {
             minZoom = 17;
+          }
+
+          // Discount wilderness areas within US national forests and parks
+          if (kind.equals("nature_reserve")) {
+            if (sf.getString("name").contains("Wilderness")) {
+              minZoom = minZoom + 1;
+            }
           }
         } else if (kind.equals("cemetery") ||
           kind.equals("school")) {
@@ -434,7 +447,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
         // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
         // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-        polyLabelPosition.setPointLabelGridSizeAndLimit(14, 12, 1);
+        polyLabelPosition.setPointLabelGridSizeAndLimit(14, 10, 1);
 
         // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
         // label grid squares will be the consistent between adjacent tiles
@@ -518,7 +531,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
         // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
         // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-        pointFeature.setPointLabelGridSizeAndLimit(14, 12, 1);
+        pointFeature.setPointLabelGridSizeAndLimit(14, 10, 1);
 
         // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
         // label grid squares will be the consistent between adjacent tiles
