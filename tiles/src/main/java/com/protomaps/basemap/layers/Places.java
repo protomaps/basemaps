@@ -31,13 +31,13 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     return SortKey
       // ORDER BY "min_zoom" ASC NULLS LAST,
       //min_zoom.isEmpty() ? 15.0 : min_zoom.getAsInt()
-      .orderByDouble(min_zoom, 0.0, 15.0, 16)
+      .orderByDouble((double) min_zoom, 0.0, 15.0, 32)
       // population_rank DESC NULLS LAST,
       //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
       .thenByInt(population_rank, 0, 15)
       // population DESC NULLS LAST,
       // population.isEmpty() ? 0 : population.getAsLong()
-      .thenByLog(population, 1, 1000000000, 1000)
+      .thenByLog(population, 1, 1000000000, 500)
       // length(name) ASC
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
@@ -91,8 +91,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("pmap:min_zoom", minZoom)
         // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
         .setZoomRange(
-          Math.min(themeMaxZoom,
-            sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom -1),
+          Math.min((int) minZoom - 1, themeMaxZoom),
           themeMaxZoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
@@ -105,7 +104,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       feat.setSortKey(getSortKey(minZoom, populationRank, population, sf.getString("name")));
 
-      if( sf.hasTag("wikidata") ) {
+      if (sf.hasTag("wikidata")) {
         feat.setAttr("wikidata", sf.getString("wikidata"));
       }
 
@@ -119,6 +118,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
       String kind = "other";
+      int themeMinZoom = 7;
       float minZoom = 12.0f;
       float maxZoom = 15.0f;
       long population = 0;
@@ -213,6 +213,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         }
       }
 
+      if (minZoom < themeMinZoom) {
+        minZoom = themeMinZoom;
+      }
+
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
@@ -226,15 +230,15 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should be a kind, or included in kind_detail
         .setAttr("place", sf.getString("place"))
-        .setAttr("country_code_iso3166_1_alpha_2", sf.getString("country_code_iso3166_1_alpha_2"))
-        .setZoomRange( (int) minZoom, (int) maxZoom);
+        .setZoomRange((int) minZoom, (int) maxZoom);
 
-      if( sf.hasTag("wikidata") ) {
+      // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
+      if (sf.hasTag("wikidata")) {
         feat.setAttr("wikidata", sf.getString("wikidata"));
       }
 
       //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
-      feat.setSortKey(getSortKey(minZoom,  populationRank, population, sf.getString("name")));
+      feat.setSortKey(getSortKey(minZoom, populationRank, population, sf.getString("name")));
 
       // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
       feat.setPointLabelGridSizeAndLimit(12, 3, 2);
