@@ -3,6 +3,9 @@
 clean:
 	mvn clean package
 
+clean-fast:
+	mvn clean package -DskipTests
+
 # is a build only partially finishes, the PMTiles can be corrupted
 clean-pmtiles:
 	rm -rf *.pmtiles
@@ -100,4 +103,4 @@ planet-xl: data/sources/planet-latest.osm.pbf
 		--output=planet.pmtiles \
 		--nodemap-type=array --storage=ram 2>&1 | tee logs.txt
 
-.PHONY: clean clean-pmtiles lint serve monaco sf switzerland washington california ny ny-metro japan us-lowzoom eu-lowzoom planet planet-xl
+.PHONY: clean clean-fast clean-pmtiles lint serve monaco sf switzerland washington california ny ny-metro japan us-lowzoom eu-lowzoom planet planet-xl

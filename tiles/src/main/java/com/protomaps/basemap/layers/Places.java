@@ -53,10 +53,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     if (sourceLayer.equals("ne_10m_populated_places")) {
       themeMinZoom = 1;
       themeMaxZoom = 6;
+      kind = "tz_place";
     }
 
     // Test for props because of Natural Earth funk
-    if (sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom")) {
+    // Test for tz_place because of zoom 0 funk
+    if (sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom") && !kind.equals("tz_place")) {
       switch (sf.getString("featurecla")) {
         case "Admin-0 capital":
         case "Admin-0 capital alt":
@@ -77,6 +79,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "Scientific station":
           kind = "locality";
           kindDetail = "scientific_station";
+          break;
+        default:
+          // Important to reset to empty string here
+          kind = "";
           break;
       }
     }
@@ -134,6 +140,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       switch (place) {
         case "country":
+          // (nvkelso 20230802) OSM countries are allowlisted to show up at earlier zooms
+          //                    TODO: Really these should switch over to NE source
+          themeMinZoom = 0;
           kind = "country";
           var countryInfo = CountryInfos.getByWikidata(sf);
           minZoom = (float) countryInfo.minZoom();
@@ -141,6 +150,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           break;
         case "state":
         case "province":
+          // (nvkelso 20230802) OSM regions are allowlisted to show up at earlier zooms
+          //                    TODO: Really these should switch over to NE source
+          themeMinZoom = 0;
           kind = "region";
           var regionInfo = RegionInfos.getByWikidata(sf);
           minZoom = (float) regionInfo.minZoom();
@@ -211,10 +223,6 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           populationRank = popBreaks.length - i;
           break;
         }
-      }
-
-      if (minZoom < themeMinZoom) {
-        minZoom = themeMinZoom;
       }
 
       var feat = features.point(this.name())
