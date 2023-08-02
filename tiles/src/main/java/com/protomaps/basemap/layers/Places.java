@@ -95,15 +95,13 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       var feat = features.point(this.name())
         .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", minZoom)
-        // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
-        .setZoomRange(
-          Math.min((int) minZoom - 1, themeMaxZoom),
-          themeMaxZoom)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
         .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
         .setAttr("wikidata_id", sf.getString("wikidata"))
+        // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
+        .setZoomRange((int) minZoom - 1, themeMaxZoom)
         .setBufferPixels(128)
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
         .setPointLabelGridPixelSize(7, 16);
@@ -249,7 +247,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       feat.setSortKey(getSortKey(minZoom, populationRank, population, sf.getString("name")));
 
       // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setPointLabelGridSizeAndLimit(12, 3, 2);
+      feat.setPointLabelGridSizeAndLimit(12, 4, 2);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
       // label grid squares will be the consistent between adjacent tiles
