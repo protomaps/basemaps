@@ -18,8 +18,9 @@ public class OsmNames {
     }
     return feature;
   }
+
   public static FeatureCollector.Feature setOsmRefs(FeatureCollector.Feature feature, SourceFeature sf,
-                                                     int minZoom) {
+    int minZoom) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
       // Short codes (CA not Calif.)
