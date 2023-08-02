@@ -40,14 +40,10 @@ jobs:
       - run : |
           java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download --keep-unzipped --bounds=-180,-85,180,85 --osm-earth-water-bounds=118.1036,20.72799,122.9312,26.60305
         working-directory: tiles
-      - uses: actions/upload-artifact@v3
-        with:
-          name: light.json
-          path: base/light.json
-      - uses: actions/upload-artifact@v3
-        with:
-          name: smalltestregion_vector.pmtiles
-          path: tiles/taiwan.pmtiles
+      - run: |
+          curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/light.json
+      - run: |
+          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/smalltestregion_vector.pmtiles
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
           recreate: true
