@@ -149,20 +149,25 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
       var minZoom = Double.parseDouble(sf.getString("min_zoom")) - 1.0;
 
       var line = features.line(this.name())
+        // Core Tilezen schema properties
+        .setAttr("pmap:kind", kind)
         // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
         //.setAttr("name", sf.getString("name"))
         // Preview v4 schema (disabled)
         //.setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
         .setAttr("pmap:min_admin_level", adminLevel)
-        .setZoomRange(
-          sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
-          themeMaxZoom)
         // Reduce file size at low zooms
         //.setAttr("pmap:ne_id", sf.getString("ne_id"))
         .setAttr("pmap:brk_a3", sf.getString("brk_a3"))
-        .setAttr("pmap:kind", kind)
-        .setAttr("pmap:kind_detail", kindDetail)
+        .setZoomRange(
+          sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
+          themeMaxZoom)
         .setBufferPixels(8);
+
+      // Core Tilezen schema properties
+      if (!kindDetail.isEmpty()) {
+        line.setAttr("pmap:kind_detail", kindDetail);
+      }
 
       if( disputed ) {
         line.setAttr("disputed", disputed);
@@ -224,13 +229,18 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         if (!kind.isEmpty() && !kindDetail.isEmpty()) {
           var line = features.line(this.name())
             .setId(FeatureId.create(sf))
-            .setMinPixelSize(0)
-            .setAttr("pmap:min_admin_level", minAdminLevel.getAsInt())
+            // Core Tilezen schema properties
             .setAttr("pmap:kind", kind)
-            .setAttr("pmap:kind_detail", kindDetail)
+            .setAttr("pmap:min_admin_level", minAdminLevel.getAsInt())
+            .setMinPixelSize(0)
             // Preview v4 schema (disabled)
             //.setAttr("pmap:min_zoom", min_zoom)
             .setMinZoom(themeMinZoom);
+
+          // Core Tilezen schema properties
+          if (!kindDetail.isEmpty()) {
+            line.setAttr("pmap:kind_detail", kindDetail);
+          }
 
           // Core Tilezen schema properties
           if (disputed.getAsInt() == 1) {
