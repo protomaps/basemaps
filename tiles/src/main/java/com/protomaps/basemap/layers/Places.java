@@ -26,15 +26,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   private final AtomicInteger placeNumber = new AtomicInteger(0);
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
-  static int getSortKey(float min_zoom, int kind_rank, int population_rank, long population, String name) {
+  static int getSortKey(float minZoom, int kindRank, int populationRank, long population, String name) {
     return SortKey
       // ORDER BY "min_zoom" ASC NULLS LAST,
       //min_zoom.isEmpty() ? 15.0 : min_zoom.getAsInt()
-      .orderByInt((int) min_zoom * 10, 0, 150)
-      .thenByInt(kind_rank, 0, 3)
+      // (nvkelso 20230803) floats with significant single decimal precision
+      //                    but results in "Too many possible values"
+      .orderByInt((int) minZoom, 0, 15)
+      .thenByInt(kindRank, 0, 3)
       // population_rank DESC NULLS LAST,
       //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
-      .thenByInt(population_rank, 15, 0)
+      .thenByInt(populationRank, 15, 0)
       // population DESC NULLS LAST,
       // population.isEmpty() ? 0 : population.getAsLong()
       .thenByLog(population, 1000000000, 1, 100)
