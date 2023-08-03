@@ -83,7 +83,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
           .setZoomRange(
             sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")) - 1,
             themeMaxZoom)
-          .setMinPixelSize(3.0)
+          // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
           .setBufferPixels(8);
       }
     }
