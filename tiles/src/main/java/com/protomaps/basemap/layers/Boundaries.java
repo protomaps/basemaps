@@ -165,7 +165,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         .setBufferPixels(8);
 
       if( disputed ) {
-        line.setAttr("disputed", disputed)
+        line.setAttr("disputed", disputed);
       }
     }
   }
