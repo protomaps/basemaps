@@ -28,19 +28,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
   static int getSortKey(float minZoom, int kindRank, int populationRank, long population, String name) {
     return SortKey
-      // ORDER BY "min_zoom" ASC NULLS LAST,
-      //min_zoom.isEmpty() ? 15.0 : min_zoom.getAsInt()
       // (nvkelso 20230803) floats with significant single decimal precision
       //                    but results in "Too many possible values"
+      // Order ASCENDING (smaller manually curated Natural Earth min_zoom win over larger values, across kinds)
       .orderByInt((int) minZoom, 0, 15)
-      .thenByInt(kindRank, 0, 3)
-      // population_rank DESC NULLS LAST,
-      //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
+      // Order ASCENDING (smaller values win, countries then locality then neighbourhood, breaks ties for same minZoom)
+      .thenByInt(kindRank, 0, 6)
+      // Order DESCENDING (larger values win, San Francisco rank 11 wins over Oakland rank 10)
       .thenByInt(populationRank, 15, 0)
-      // population DESC NULLS LAST,
-      // population.isEmpty() ? 0 : population.getAsLong()
+      // Order DESCENDING (larger values win, Millbrea 40k wins over San Bruno 20k, both rank 7)
       .thenByLog(population, 1000000000, 1, 100)
-      // length(name) ASC
+      // Order ASCENDING (shorter strings are better than longer strings for map display and adds predictability)
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
   }
@@ -107,6 +105,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setPointLabelGridPixelSize(7, 64) // 64 pixels is 1/4 the tile, so a 4x4 grid
         .setPointLabelGridSizeAndLimit(7, 64, 8) // each cell in the 4x4 grid can have 8 items
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+        // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
 
       if (sf.hasTag("wikidata")) {
@@ -123,7 +122,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
       String kind = "other";
-      int kindRank = 3;
+      int kindRank = 6;
 
       int themeMinZoom = 7;
       float minZoom = 12.0f;
@@ -167,6 +166,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
           minZoom = 7.0f;
           maxZoom = 15.0f;
+          kindRank = 2;
           if (population == 0) {
             if (place.equals("town")) {
               population = 10000;
@@ -180,6 +180,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
           minZoom = 10.0f;
           maxZoom = 15.0f;
+          kindRank = 3;
           if (population == 0) {
             population = 2000;
           }
@@ -188,16 +189,19 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           kind = "neighbourhood";
           minZoom = 11.0f;
           maxZoom = 15.0f;
+          kindRank = 4;
           break;
         case "quarter":
           kind = "macrohood";
           minZoom = 10.0f;
           maxZoom = 15.0f;
+          kindRank = 5;
           break;
         case "neighbourhood":
           kind = "neighbourhood";
           minZoom = 12.0f;
           maxZoom = 15.0f;
+          kindRank = 6;
           break;
       }
 
