@@ -1,6 +1,7 @@
 package com.protomaps.basemap.layers;
 
 import com.onthegomap.planetiler.FeatureCollector;
+import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
@@ -197,7 +198,11 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       minArea = 800 / (4096 * 4096) * (256 * 256);
     items = Area.filterArea(items, minArea);
 
-    //return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
+    // We only care about park boundaries inside groups of adjacent parks at higher zooms when they are labeled
+    // so at lower zooms we merge them to reduce file size
+    if (zoom <= 6) {
+      return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
+    }
     return items;
   }
 }
