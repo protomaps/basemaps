@@ -103,8 +103,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(64)
         .setPointLabelGridPixelSize(7, 64) // 64 pixels is 1/4 the tile, so a 4x4 grid
-        .setPointLabelGridSizeAndLimit(7, 64, 8) // each cell in the 4x4 grid can have 8 items
-        // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+        .setPointLabelGridSizeAndLimit(7, 64, 4) // each cell in the 4x4 grid can have 4 items
+        // Server sort features so client label collisions are pre-sorted
+        // we also set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
         // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
 
@@ -256,7 +257,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       feat.setSortKey(getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name")));
 
       // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setPointLabelGridSizeAndLimit(12, 64, 8);
+      feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
       feat.setBufferPixels(64);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no

@@ -396,7 +396,6 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           }
         }
 
-
         var polyLabelPosition = features.pointOnSurface(this.name())
           // all POIs should receive their IDs at all zooms
           // (there is no merging of POIs like with lines and polygons in other layers)
@@ -442,6 +441,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
         OsmNames.setOsmNames(polyLabelPosition, sf, 0);
 
+        // Server sort features so client label collisions are pre-sorted
         // NOTE: (nvkelso 20230627) This could also include other params like the name
         polyLabelPosition.setSortKey(minZoom * 1000 + poiNumber.incrementAndGet());
 
@@ -526,6 +526,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           pointFeature.setAttr("pmap:min_zoom", 17);
         }
 
+        // Server sort features so client label collisions are pre-sorted
         // NOTE: (nvkelso 20230627) This could also include other params like the name
         pointFeature.setSortKey(minZoom * 1000 + poiNumber.incrementAndGet());
 

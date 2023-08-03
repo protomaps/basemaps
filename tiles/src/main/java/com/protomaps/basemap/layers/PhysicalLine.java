@@ -63,6 +63,9 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         feat.setAttr("pmap:level", 0);
       }
 
+      // Server sort features so client label collisions are pre-sorted
+      feat.setSortKey(minZoom);
+
       OsmNames.setOsmNames(feat, sf, 0);
     }
   }

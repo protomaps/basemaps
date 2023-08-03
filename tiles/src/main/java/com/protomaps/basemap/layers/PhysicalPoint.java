@@ -46,13 +46,18 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         case "Playa" -> kind = "playa";
       }
 
+      var minZoom = sf.getLong("min_label");
+
       if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
         var water_label_position = features.pointOnSurface(this.name())
           .setAttr("pmap:kind", kind)
-          .setAttr("pmap:min_zoom", sf.getLong("min_label") + 1)
+          .setAttr("pmap:min_zoom", minZoom + 1)
           .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
             (int) Double.parseDouble(sf.getString("min_label")) + 1, themeMaxZoom)
           .setBufferPixels(128);
+
+        // Server sort features so client label collisions are pre-sorted
+        water_label_position.setSortKey(minZoom);
 
         NeNames.setNeNames(water_label_position, sf, 0);
       }
@@ -90,6 +95,9 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         .setAttr("natural", sf.getString("natural"))
         .setAttr("ele", sf.getString("ele"))
         .setZoomRange(minZoom, 15);
+
+      // Server sort features so client label collisions are pre-sorted
+      feat.setSortKey(minZoom);
 
       OsmNames.setOsmNames(feat, sf, 0);
     }
@@ -210,6 +218,9 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       if (sf.hasTag("intermittent", "yes")) {
         waterLabelPosition.setAttr("intermittent", true);
       }
+
+      // Server sort features so client label collisions are pre-sorted
+      waterLabelPosition.setSortKey(nameMinZoom);
 
       OsmNames.setOsmNames(waterLabelPosition, sf, 0);
     }
