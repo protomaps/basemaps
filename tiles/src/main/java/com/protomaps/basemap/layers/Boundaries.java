@@ -169,7 +169,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         line.setAttr("pmap:kind_detail", kindDetail);
       }
 
-      if( disputed ) {
+      if (disputed) {
         line.setAttr("disputed", disputed);
       }
     }

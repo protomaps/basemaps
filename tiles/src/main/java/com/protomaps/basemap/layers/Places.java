@@ -13,7 +13,6 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.RegionInfos;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,11 +26,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   private final AtomicInteger placeNumber = new AtomicInteger(0);
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
-  static int getSortKey(float min_zoom, int population_rank, long population, String name) {
+  static int getSortKey(int kind_rank, float min_zoom, int population_rank, long population, String name) {
     return SortKey
       // ORDER BY "min_zoom" ASC NULLS LAST,
       //min_zoom.isEmpty() ? 15.0 : min_zoom.getAsInt()
-      .orderByInt((int) min_zoom * 10, 0, 150)
+      .orderByInt(kind_rank, 0, 3)
+      .thenByInt((int) min_zoom, 0, 15)
       // population_rank DESC NULLS LAST,
       //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
       .thenByInt(population_rank, 15, 0)
@@ -43,21 +43,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       .get();
   }
 
+  /*
+  This generates zoom 0 to zoom 6.
+   */
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
+
+    if (!sourceLayer.equals("ne_10m_populated_places")) {
+      return;
+    }
     var kind = "";
     var kindDetail = "";
-
-    var themeMinZoom = 0;
-    var themeMaxZoom = 0;
-    // (nvkelso 20230802) Beware there are also "ne_10m_populated_places_simple" and related 50m and 110m themes
-    //                    in the Natural Earth SQLite distro that can cause confusion we need to gaurd against.
-    //                    Or switch over to different approach for accessing NE themes...
-    if (sourceLayer.equals("ne_10m_populated_places")) {
-      themeMinZoom = 1;
-      themeMaxZoom = 6;
-      kind = "tz_place";
-    }
 
     // Test for props because of Natural Earth funk
     // Test for tz_place because of zoom 0 funk
@@ -98,18 +94,18 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       var feat = features.point(this.name())
         .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", minZoom)
+        // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
+        .setZoomRange((int) minZoom - 1, 6)
         .setAttr("pmap:kind", kind)
         .setAttr("pmap:kind_detail", kindDetail)
         .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
         .setAttr("wikidata_id", sf.getString("wikidata"))
-        // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
-        .setZoomRange((int) minZoom - 1, themeMaxZoom)
-        .setBufferPixels(128)
+        .setBufferPixels(64)
+        .setPointLabelGridPixelSize(7, 64) // 64 pixels is 1/4 the tile, so a 4x4 grid
+        .setPointLabelGridSizeAndLimit(7, 64, 8) // each cell in the 4x4 grid can have 8 items
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        .setPointLabelGridPixelSize(7, 16);
-
-      feat.setSortKey(getSortKey(minZoom, populationRank, population, sf.getString("name")));
+        .setSortKey(getSortKey(2, minZoom, populationRank, population, sf.getString("name")));
 
       if (sf.hasTag("wikidata")) {
         feat.setAttr("wikidata", sf.getString("wikidata"));
@@ -125,6 +121,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
       String kind = "other";
+      int kindRank = 3;
+
       int themeMinZoom = 7;
       float minZoom = 12.0f;
       float maxZoom = 15.0f;
@@ -148,6 +146,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           var countryInfo = CountryInfos.getByWikidata(sf);
           minZoom = (float) countryInfo.minZoom();
           maxZoom = (float) countryInfo.maxZoom();
+          kindRank = 0;
           break;
         case "state":
         case "province":
@@ -158,6 +157,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           var regionInfo = RegionInfos.getByWikidata(sf);
           minZoom = (float) regionInfo.minZoom();
           maxZoom = (float) regionInfo.maxZoom();
+          kindRank = 1;
           break;
         case "city":
         case "town":
@@ -226,6 +226,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         }
       }
 
+      if (minZoom > themeMinZoom) {
+        minZoom = themeMinZoom;
+      }
+
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
@@ -247,14 +251,15 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
 
       //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
-      feat.setSortKey(getSortKey(minZoom, populationRank, population, sf.getString("name")));
+      feat.setSortKey(getSortKey(kindRank, minZoom, populationRank, population, sf.getString("name")));
 
       // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setPointLabelGridSizeAndLimit(12, 4, 2);
+      feat.setPointLabelGridSizeAndLimit(12, 64, 8);
+      feat.setBufferPixels(64);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
       // label grid squares will be the consistent between adjacent tiles
-      feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 32));
+      feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 64));
 
       OsmNames.setOsmNames(feat, sf, 0);
       OsmNames.setOsmRefs(feat, sf, 0);
