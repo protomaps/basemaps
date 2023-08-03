@@ -1727,9 +1727,6 @@ export function labels_layers(source: string, c: Theme): any[] {
       "source-layer": "places",
       filter: ["==", "pmap:kind", "locality"],
       layout: {
-        "symbol-sort-key": ["to-number", ["concat", ["get", "pmap:min_zoom"],
-              ["+", 1, ["/", 1, ["get", "pmap:population_rank"]]]
-            ]],
         "text-field": "{name}",
         "text-font": ["NotoSans-Regular"],
         "text-size": ["interpolate", ["linear"],

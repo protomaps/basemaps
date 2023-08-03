@@ -263,7 +263,6 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
-    // the ordering will match the sortrank for cities
     return items;
   }
 }
