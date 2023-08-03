@@ -57,7 +57,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
     // Test for props because of Natural Earth funk
     // Test for tz_place because of zoom 0 funk
-    if (sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom") && kind.equals("tz_place")) {
+    if (sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom")) {
       switch (sf.getString("featurecla")) {
         case "Admin-0 capital":
         case "Admin-0 capital alt":
