@@ -264,38 +264,6 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
     // the ordering will match the sortrank for cities
-
-    List<VectorTile.Feature> cities = new ArrayList<>();
-    List<VectorTile.Feature> noncities = new ArrayList<>();
-
-    for (VectorTile.Feature item : items) {
-      if (item.attrs().get("pmap:kind").equals("locality")) {
-        cities.add(item);
-      } else {
-        noncities.add(item);
-      }
-    }
-
-    int endIndex = cities.size();
-    int startIndex = Math.max(0, endIndex - 64);
-
-    List<VectorTile.Feature> top64 = cities.subList(startIndex, endIndex);
-
-    // This should always be less than 32 now that a label grid is being used
-    // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-    for (int i = 0; i < top64.size(); i++) {
-      if (top64.size() - i < 8) {
-        top64.get(i).attrs().put("pmap:rank", 1);
-      } else if (top64.size() - i < 16) {
-        top64.get(i).attrs().put("pmap:rank", 2);
-      } else if (top64.size() - i < 24) {
-        top64.get(i).attrs().put("pmap:rank", 3);
-      } else {
-        top64.get(i).attrs().put("pmap:rank", 4);
-      }
-    }
-
-    noncities.addAll(top64);
-    return noncities;
+    return items;
   }
 }
