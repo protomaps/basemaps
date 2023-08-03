@@ -57,7 +57,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
           .setBufferPixels(128);
 
         // Server sort features so client label collisions are pre-sorted
-        water_label_position.setSortKey(minZoom);
+        water_label_position.setSortKey((int) minZoom);
 
         NeNames.setNeNames(water_label_position, sf, 0);
       }
