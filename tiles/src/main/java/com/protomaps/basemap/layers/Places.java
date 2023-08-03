@@ -232,10 +232,6 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         }
       }
 
-      if (minZoom > themeMinZoom) {
-        minZoom = themeMinZoom;
-      }
-
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
