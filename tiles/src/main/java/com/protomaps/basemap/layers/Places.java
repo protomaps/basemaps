@@ -26,12 +26,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   private final AtomicInteger placeNumber = new AtomicInteger(0);
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
-  static int getSortKey(int kind_rank, float min_zoom, int population_rank, long population, String name) {
+  static int getSortKey(float min_zoom, int kind_rank, int population_rank, long population, String name) {
     return SortKey
       // ORDER BY "min_zoom" ASC NULLS LAST,
       //min_zoom.isEmpty() ? 15.0 : min_zoom.getAsInt()
-      .orderByInt(kind_rank, 0, 3)
-      .thenByInt((int) min_zoom, 0, 15)
+      .orderByInt((int) min_zoom * 10, 0, 150)
+      .thenByInt(kind_rank, 0, 3)
       // population_rank DESC NULLS LAST,
       //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
       .thenByInt(population_rank, 15, 0)
@@ -105,7 +105,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setPointLabelGridPixelSize(7, 64) // 64 pixels is 1/4 the tile, so a 4x4 grid
         .setPointLabelGridSizeAndLimit(7, 64, 8) // each cell in the 4x4 grid can have 8 items
         // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        .setSortKey(getSortKey(2, minZoom, populationRank, population, sf.getString("name")));
+        .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
 
       if (sf.hasTag("wikidata")) {
         feat.setAttr("wikidata", sf.getString("wikidata"));
@@ -251,7 +251,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       }
 
       //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
-      feat.setSortKey(getSortKey(kindRank, minZoom, populationRank, population, sf.getString("name")));
+      feat.setSortKey(getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name")));
 
       // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
       feat.setPointLabelGridSizeAndLimit(12, 64, 8);
