@@ -50,6 +50,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
     var themeMinZoom = 0;
     var themeMaxZoom = 0;
+    // (nvkelso 20230802) Beware there are also "ne_10m_populated_places_simple" and related 50m and 110m themes
+    //                    in the Natural Earth SQLite distro that can cause confusion we need to gaurd against.
+    //                    Or switch over to different approach for accessing NE themes...
     if (sourceLayer.equals("ne_10m_populated_places")) {
       themeMinZoom = 1;
       themeMaxZoom = 6;
@@ -58,7 +61,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
     // Test for props because of Natural Earth funk
     // Test for tz_place because of zoom 0 funk
-    if (sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom") && !kind.equals("tz_place")) {
+    if (sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom") && kind.equals("tz_place")) {
       switch (sf.getString("featurecla")) {
         case "Admin-0 capital":
         case "Admin-0 capital alt":
