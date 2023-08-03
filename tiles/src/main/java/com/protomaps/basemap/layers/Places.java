@@ -34,10 +34,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       .orderByInt((int) min_zoom * 10, 0, 150)
       // population_rank DESC NULLS LAST,
       //population_rank.isEmpty() ? 15 : population_rank.getAsInt()
-      .thenByInt(population_rank, 0, 15)
+      .thenByInt(population_rank, 15, 0)
       // population DESC NULLS LAST,
       // population.isEmpty() ? 0 : population.getAsLong()
-      .thenByLog(population, 1, 1000000000, 100)
+      .thenByLog(population, 1000000000, 1, 100)
       // length(name) ASC
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
