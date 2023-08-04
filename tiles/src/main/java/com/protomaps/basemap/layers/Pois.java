@@ -88,7 +88,11 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         if (sf.hasTag("military", "naval_base", "airfield")) {
           kind = sf.getString("military");
         }
-      } else if (sf.hasTag("leisure", "golf_course", "marina", "park", "stadium")) {
+      } else if (sf.hasTag("leisure", "park")) {
+        kind = "park";
+        // Lots of pocket parks and NODE parks, show those later than rest of leisure
+        minZoom = 14;
+      } else if (sf.hasTag("leisure", "golf_course", "marina", "stadium")) {
         kind = sf.getString("leisure");
         minZoom = 13;
       } else if (sf.hasTag("shop", "grocery", "supermarket")) {
@@ -226,10 +230,12 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             minZoom = 10;
           } else if (wayArea > 20) { //    500000
             minZoom = 11;
-          } else if (wayArea > 1) { //     50000
+          } else if (wayArea > 5) {
             minZoom = 12;
-          } else if (wayArea > 0.2) { //     10000
+          } else if (wayArea > 1) {
             minZoom = 13;
+          } else if (wayArea > 0.25) {
+            minZoom = 14;
           }
         } else if (kind.equals("aerodrome") ||
           kind.equals("golf_course") ||
@@ -252,10 +258,12 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             minZoom = 10;
           } else if (wayArea > 20) { //    500000
             minZoom = 11;
-          } else if (wayArea > 1) { //     50000
+          } else if (wayArea > 5) {
             minZoom = 12;
-          } else if (wayArea > 0.2) { //     10000
+          } else if (wayArea > 1) {
             minZoom = 13;
+          } else if (wayArea > 0.25) {
+            minZoom = 14;
           }
 
           // Emphasize large international airports earlier
@@ -305,9 +313,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             minZoom = 11;
           } else if (wayArea > 5) {
             minZoom = 12;
-          } else if (wayArea > 0.25) {
+          } else if (wayArea > 1) {
             minZoom = 13;
-          } else if (wayArea > 0.05) {
+          } else if (wayArea > 0.25) {
             minZoom = 14;
           } else if (wayArea > 0.01) {
             minZoom = 15;
@@ -336,7 +344,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           } else {
             minZoom = 16;
           }
-          // Typically for "building" derived label placements for shops and other businesses
+        // Typically for "building" derived label placements for shops and other businesses
         } else {
           if (wayArea > 10) {
             minZoom = 11;
@@ -407,7 +415,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("pmap:min_zoom", (int) (minZoom + 1))
           //
           // DEBUG
-          //.setAttr("pmap:area_debug", way_area)
+          //.setAttr("pmap:area_debug", wayArea)
           //
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
