@@ -59,6 +59,8 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         feat.setAttr("pmap:level", 1);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
         feat.setAttr("pmap:level", -1);
+      } else if (sf.hasTag("layer", "-6", "-5", "-4", "-3", "-2", "-1")) {
+        feat.setAttr("pmap:level", -1);
       } else {
         feat.setAttr("pmap:level", 0);
       }
