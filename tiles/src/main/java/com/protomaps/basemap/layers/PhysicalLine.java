@@ -34,6 +34,8 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
+        // Used for client-side label collisions
+        .setAttr("pmap:min_zoom", minZoom + 1)
         // Core OSM tags for different kinds of places
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should bea kind, or included in kind_detail
@@ -54,12 +56,17 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
       // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
       if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
-        feat.setAttrWithMinzoom("pmap:level", 1, 12);
+        feat.setAttr("pmap:level", 1);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
-        feat.setAttrWithMinzoom("pmap:level", -1, 12);
+        feat.setAttr("pmap:level", -1);
+      } else if (sf.hasTag("layer", "-6", "-5", "-4", "-3", "-2", "-1")) {
+        feat.setAttr("pmap:level", -1);
       } else {
-        feat.setAttrWithMinzoom("pmap:level", 0, 12);
+        feat.setAttr("pmap:level", 0);
       }
+
+      // Server sort features so client label collisions are pre-sorted
+      feat.setSortKey(minZoom);
 
       OsmNames.setOsmNames(feat, sf, 0);
     }

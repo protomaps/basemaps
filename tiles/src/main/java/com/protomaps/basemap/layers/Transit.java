@@ -77,6 +77,8 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
+        // Used for client-side label collisions
+        .setAttr("pmap:min_zoom", minZoom + 1)
         // Core OSM tags for different kinds of places
         .setAttr("layer", sf.getString("layer"))
         .setAttr("network", sf.getString("network"))
@@ -101,17 +103,20 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
       // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
       if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
-        feature.setAttrWithMinzoom("pmap:level", 1, 12);
+        feature.setAttr("pmap:level", 1);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
-        feature.setAttrWithMinzoom("pmap:level", -1, 12);
+        feature.setAttr("pmap:level", -1);
       } else {
-        feature.setAttrWithMinzoom("pmap:level", 0, 12);
+        feature.setAttr("pmap:level", 0);
       }
 
       // Too many small pier lines otherwise
       if (kind.equals("pier")) {
         feature.setMinPixelSize(2);
       }
+
+      // Server sort features so client label collisions are pre-sorted
+      feature.setSortKey(minZoom);
 
       // TODO: (nvkelso 20230623) This should be variable, but 12 is better than 0 for line merging
       OsmNames.setOsmNames(feature, sf, 12);

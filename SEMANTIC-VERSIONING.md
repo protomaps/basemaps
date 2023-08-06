@@ -106,12 +106,11 @@ We do not version data features, but we do attempt to indicate the data source a
 
 ### Frequency of data updates
 
-Tilezen has 4 primary sources:
+Protomaps basemaps have 3 primary sources:
 
 - **Natural Earth** (used for zooms 0-8 for most everything) updates infrequently (often annually)
 - **OpenStreetMap** (used for zooms 9+ for most everything, sometimes earlier) updates frequently (at least daily)
 - **OpenStreetMapData** (used for zooms 9+ in the earth and water layers only) updates infrequently (optimistically monthly)
-- **Who’s On First** (used for zooms 12+ for places layer) updates frequently (at least daily)
 
 
 ### INDIVIDUAL FEATURES are not versioned

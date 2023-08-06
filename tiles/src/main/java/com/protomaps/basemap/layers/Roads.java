@@ -186,6 +186,9 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         feat.setAttrWithMinzoom("pmap:level", 0, 12);
       }
 
+      // Server sort features so client label collisions are pre-sorted
+      feat.setSortKey(minZoom);
+
       OsmNames.setOsmNames(feat, sf, minZoomNames);
     }
   }

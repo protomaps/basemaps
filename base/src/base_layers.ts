@@ -859,7 +859,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      minzoom: 12,
+      minzoom: 13,
       filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.highway_casing,
@@ -1016,7 +1016,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      maxzoom: 12,
+      maxzoom: 13,
       filter: [
         "all",
         ["==", "pmap:level", 0],
@@ -1079,7 +1079,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "roads",
-      maxzoom: 12,
+      maxzoom: 13,
       filter: ["all", ["==", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
       paint: {
         "line-color": c.highway_casing,
@@ -1552,6 +1552,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       type: "symbol",
       source: source,
       "source-layer": "physical_point",
+      minzoom: 15,
       filter: ["any", ["==", "pmap:kind", "peak"]],
       layout: {
         "text-font": ["NotoSans-Regular"],
@@ -1726,9 +1727,6 @@ export function labels_layers(source: string, c: Theme): any[] {
       "source-layer": "places",
       filter: ["==", "pmap:kind", "locality"],
       layout: {
-        "symbol-sort-key": ["to-number", ["concat", ["get", "pmap:min_zoom"],
-              ["+", 1, ["/", 1, ["get", "pmap:population_rank"]]]
-            ]],
         "text-field": "{name}",
         "text-font": ["NotoSans-Regular"],
         "text-size": ["interpolate", ["linear"],

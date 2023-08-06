@@ -43,20 +43,14 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
     // Only process certain Natural Earth layers
     // Notably the landscan derived urban areas and NA roads supplement themes causes problems otherwise
-    if (sourceLayer.equals("ne_110m_ocean") || sourceLayer.equals("ne_110m_lakes") ||
-      sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes") || sourceLayer.equals("ne_10m_ocean") ||
+    if (sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes") ||
+      sourceLayer.equals("ne_10m_ocean") ||
       sourceLayer.equals("ne_10m_lakes")) {
-      if (sourceLayer.equals("ne_110m_ocean")) {
+      if (sourceLayer.equals("ne_50m_ocean")) {
         themeMinZoom = 0;
-        themeMaxZoom = 1;
-      } else if (sourceLayer.equals("ne_110m_lakes")) {
-        themeMinZoom = 0;
-        themeMaxZoom = 1;
-      } else if (sourceLayer.equals("ne_50m_ocean")) {
-        themeMinZoom = 2;
         themeMaxZoom = 4;
       } else if (sourceLayer.equals("ne_50m_lakes")) {
-        themeMinZoom = 2;
+        themeMinZoom = 0;
         themeMaxZoom = 4;
       } else if (sourceLayer.equals("ne_10m_ocean")) {
         themeMinZoom = 5;
@@ -82,12 +76,14 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
       if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
         var feature = features.polygon(this.name())
+          // Core Tilezen schema properties
           .setAttr("pmap:kind", kind)
-          .setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
+          // Preview v4 schema (disabled)
+          //.setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
           .setZoomRange(
-            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")),
+            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")) - 1,
             themeMaxZoom)
-          .setMinPixelSize(3.0)
+          // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
           .setBufferPixels(8);
       }
     }
