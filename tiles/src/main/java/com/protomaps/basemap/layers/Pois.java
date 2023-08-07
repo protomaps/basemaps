@@ -344,7 +344,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           } else {
             minZoom = 16;
           }
-        // Typically for "building" derived label placements for shops and other businesses
+          // Typically for "building" derived label placements for shops and other businesses
         } else {
           if (wayArea > 10) {
             minZoom = 11;
