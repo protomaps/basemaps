@@ -85,6 +85,7 @@ export const CONTRAST: Theme = {
     aerodrome: "#dbe7e7",
     runway: "#d1d9d9",
     water: "#84b7cf",
+    zoo: "#EBE6ED",
     tunnel_other_casing: "#ffffff",
     tunnel_other: "#f7f7f7",
     tunnel_minor_casing: "#e2e2e2",
@@ -136,6 +137,7 @@ export const CONTRAST: Theme = {
     state_label_halo: "white",
     country_label: "#9590aa",
     country_label_halo: "white",
+    debug: "red",
 };
 
 export const LIGHT: Theme = {
