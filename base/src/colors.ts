@@ -69,11 +69,11 @@ export interface Theme {
     debug: string;
 }
 
-export const BASIC: Theme = {
+export const CONTRAST: Theme = {
     hasCasings: true,
     background: "#dddddd",
     earth: "#ededed",
-    park: "#c2f7d1",
+    park: "#bfc99c",
     hospital: "#ffeae8",
     industrial: "#f8ffed",
     school: "#f2fef9",
@@ -494,7 +494,7 @@ export const GRAYSCALE: Theme = {
 };
 
 export default {
-    basic: BASIC,
+    contrast: CONTRAST,
     light: LIGHT,
     dark: DARK,
     white: WHITE,
