@@ -25,42 +25,101 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("aeroway", "runway", "taxiway")) &&
       (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
 
-      int minzoom = 11;
+      int minZoom = 11;
 
-      if (sf.hasTag("service", "yard", "siding", "crossover")) {
-        minzoom = 13;
+      if (sf.hasTag("aeroway", "runway")) {
+        minZoom = 9;
+      } else if (sf.hasTag("aeroway", "taxiway")) {
+        minZoom = 10;
+      } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
+        minZoom = 13;
+      } else if (sf.hasTag("man_made", "pier")) {
+        minZoom = 13;
       }
 
-      var feature = features.line(this.name())
-        .setId(FeatureId.create(sf))
-        .setAttr("railway", sf.getString("railway"))
-        .setAttr("route", sf.getString("route"))
-        .setAttr("aeroway", sf.getString("aeroway"))
-        .setAttr("man_made", sf.getString("pier"))
-        .setAttr("service", sf.getString("service"))
-        .setAttr("aerialway", sf.getString("aerialway"))
-        .setAttr("network", sf.getString("network"))
-        .setAttr("ref", sf.getString("ref"))
-        .setAttr("highspeed", sf.getString("highspeed"))
-        .setAttr("layer", sf.getString("layer"))
-        .setZoomRange(minzoom, 15);
-
       String kind = "other";
+      String kindDetail = "";
       if (sf.hasTag("aeroway")) {
         kind = "aeroway";
+        kindDetail = sf.getString("aeroway");
+      } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge",
+        "preserved", "subway", "tram")) {
+        kind = "rail";
+        kindDetail = sf.getString("railway");
+        minZoom = 14;
+
+        if (sf.hasTag("railway", "disused")) {
+          minZoom = 15;
+        }
       } else if (sf.hasTag("railway")) {
-        kind = "railway";
+        kind = "rail";
+        kindDetail = sf.getString("railway");
+
+        if (kindDetail.equals("service")) {
+          minZoom = 13;
+
+          // eg a rail yard
+          if (sf.hasTag("service")) {
+            minZoom = 14;
+          }
+        }
       } else if (sf.hasTag("ferry")) {
         kind = "ferry";
+        kindDetail = sf.getString("ferry");
       } else if (sf.hasTag("man_made", "pier")) {
         kind = "pier";
       } else if (sf.hasTag("aerialway")) {
         kind = "aerialway";
+        kindDetail = sf.getString("aerialway");
       }
 
-      feature.setAttr("pmap:kind", kind);
+      var feature = features.line(this.name())
+        .setId(FeatureId.create(sf))
+        // Core Tilezen schema properties
+        .setAttr("pmap:kind", kind)
+        // Used for client-side label collisions
+        .setAttr("pmap:min_zoom", minZoom + 1)
+        // Core OSM tags for different kinds of places
+        .setAttr("layer", sf.getString("layer"))
+        .setAttr("network", sf.getString("network"))
+        .setAttr("ref", sf.getString("ref"))
+        .setAttr("route", sf.getString("route"))
+        .setAttr("service", sf.getString("service"))
+        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
+        //                      If an explicate value is needed it should bea kind, or included in kind_detail
+        .setAttr("aerialway", sf.getString("aerialway"))
+        .setAttr("aeroway", sf.getString("aeroway"))
+        .setAttr("highspeed", sf.getString("highspeed"))
+        .setAttr("man_made", sf.getString("pier"))
+        .setAttr("railway", sf.getString("railway"))
+        .setZoomRange(minZoom, 15);
 
-      OsmNames.setOsmNames(feature, sf, 0);
+      // Core Tilezen schema properties
+      if (!kindDetail.isEmpty()) {
+        feature.setAttr("pmap:kind_detail", kindDetail);
+      }
+
+      // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
+      // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
+      // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
+      if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
+        feature.setAttr("pmap:level", 1);
+      } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
+        feature.setAttr("pmap:level", -1);
+      } else {
+        feature.setAttr("pmap:level", 0);
+      }
+
+      // Too many small pier lines otherwise
+      if (kind.equals("pier")) {
+        feature.setMinPixelSize(2);
+      }
+
+      // Server sort features so client label collisions are pre-sorted
+      feature.setSortKey(minZoom);
+
+      // TODO: (nvkelso 20230623) This should be variable, but 12 is better than 0 for line merging
+      OsmNames.setOsmNames(feature, sf, 12);
     }
   }
 

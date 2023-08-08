@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 public class Area {
+
+  private Area() {}
+
   public static List<VectorTile.Feature> filterArea(List<VectorTile.Feature> items, double minArea)
     throws GeometryException {
     List<VectorTile.Feature> result = new ArrayList(items.size());

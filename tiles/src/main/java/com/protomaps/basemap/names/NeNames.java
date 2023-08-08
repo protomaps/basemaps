@@ -5,14 +5,14 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.Map;
 
 public class NeNames {
-  public static FeatureCollector.Feature setNeNames(FeatureCollector.Feature feature, SourceFeature source,
-    int minzoom) {
-    for (Map.Entry<String, Object> tag : source.tags().entrySet()) {
+  public static FeatureCollector.Feature setNeNames(FeatureCollector.Feature feature, SourceFeature sf,
+    int minZoom) {
+    for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
       if (key.equals("name")) {
-        feature.setAttrWithMinzoom(key, source.getTag(key), minzoom);
+        feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
       } else if (key.startsWith("name_")) {
-        feature.setAttrWithMinzoom(key.replace("_", ":"), source.getTag(key), minzoom);
+        feature.setAttrWithMinzoom(key.replace("_", ":"), sf.getTag(key), minZoom);
       }
     }
 

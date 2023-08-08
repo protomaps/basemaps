@@ -15,6 +15,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 public class Intercut {
+
+  private Intercut() {}
+
   public static LinkedHashMap<String, Geometry> groupByKind(
     List<VectorTile.Feature> features
   ) {
@@ -62,7 +65,7 @@ public class Intercut {
     coverageUnion.entrySet().removeIf(i -> i.getValue().isEmpty());
 
     GeometryFactory gf = GeoUtils.JTS_FACTORY;
-    Geometry outside = gf.toGeometry(new Envelope(-4, 256 + 4, -4, 256 + 4));
+    Geometry outside = gf.toGeometry(new Envelope(-4, 256 + 4.0, -4, 256 + 4.0));
     outside = outside.difference(total);
 
 

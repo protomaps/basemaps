@@ -1,7 +1,7 @@
 # Derived from planetiler (Apache License)
 # https://github.com/onthegomap/planetiler/blob/main/.github/workflows/sonar.yml
 
-name: Analyze
+name: Analyze Code Quality
 
 on:
   push:

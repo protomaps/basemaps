@@ -14,6 +14,7 @@ export interface Theme {
     aerodrome: string;
     runway: string;
     water: string;
+    zoo: string;
     tunnel_other_casing: string;
     tunnel_other: string;
     tunnel_minor_casing: string;
@@ -65,6 +66,7 @@ export interface Theme {
     state_label_halo: string;
     country_label: string;
     country_label_halo: string;
+    debug: string;
 }
 
 export const LIGHT: Theme = {
@@ -83,6 +85,7 @@ export const LIGHT: Theme = {
     aerodrome: "#dbe7e7",
     runway: "#d1d9d9",
     water: "#a4cae1",
+    zoo: "#EBE6ED",
     tunnel_other_casing: "#ffffff",
     tunnel_other: "#f7f7f7",
     tunnel_minor_casing: "#e2e2e2",
@@ -134,6 +137,7 @@ export const LIGHT: Theme = {
     state_label_halo: "White",
     country_label: "#9590aa",
     country_label_halo: "white",
+    debug: "red",
 };
 
 export const DARK: Theme = {
@@ -152,6 +156,7 @@ export const DARK: Theme = {
     aerodrome: "#000000",
     runway: "#000000",
     water: "#1e293b",
+    zoo: "#EBE6ED",
     tunnel_other_casing: "#ffffff",
     tunnel_other: "#000000",
     tunnel_minor_casing: "#ffffff",
@@ -203,6 +208,7 @@ export const DARK: Theme = {
     state_label_halo: "#000000",
     country_label: "#ffffff",
     country_label_halo: "#000000",
+    debug: "red",
 };
 
 export const WHITE: Theme = {
@@ -221,6 +227,7 @@ export const WHITE: Theme = {
     aerodrome: "#eee",
     runway: "#eee",
     water: "#eeeeee",
+    zoo: "#EBE6ED",
     tunnel_other_casing: "#ff00ff",
     tunnel_other: "#c8c8c8",
     tunnel_minor_casing: "#ff00ff",
@@ -272,6 +279,7 @@ export const WHITE: Theme = {
     state_label_halo: "#ffffff",
     country_label: "#bbb",
     country_label_halo: "#ffffff",
+    debug: "red",
 };
 
 export const BLACK: Theme = {
@@ -290,6 +298,7 @@ export const BLACK: Theme = {
     aerodrome: "#060606",
     runway: "#060606",
     water: "#333",
+    zoo: "#EBE6ED",
     tunnel_other_casing: "#ff00ff",
     tunnel_other: "#222",
     tunnel_minor_casing: "#ff00ff",
@@ -341,6 +350,7 @@ export const BLACK: Theme = {
     state_label_halo: "#000000",
     country_label: "#555",
     country_label_halo: "#000000",
+    debug: "red",
 };
 
 export const GRAYSCALE: Theme = {
@@ -359,6 +369,7 @@ export const GRAYSCALE: Theme = {
     aerodrome: "#e8e8e8",
     runway: "#e8e8e8",
     water: "#ddd",
+    zoo: "#EBE6ED",
     tunnel_other_casing: "#ff00ff",
     tunnel_other: "#ffffff",
     tunnel_minor_casing: "#ff00ff",
@@ -410,6 +421,7 @@ export const GRAYSCALE: Theme = {
     state_label_halo: "#ffffff",
     country_label: "#888",
     country_label_halo: "#ffffff",
+    debug: "red",
 };
 
 export default {
