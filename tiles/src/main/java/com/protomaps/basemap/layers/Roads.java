@@ -8,6 +8,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
@@ -149,7 +150,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setAttrWithMinzoom("shield_text_length", shieldTextLength, minZoomShieldText)
         .setAttrWithMinzoom("network", networkVal, minZoomShieldText)
         // Core OSM tags for different kinds of places
-        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should bea kind, or included in kind_detail
