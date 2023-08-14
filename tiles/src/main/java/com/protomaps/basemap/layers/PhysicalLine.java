@@ -18,7 +18,7 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && (sf.hasTag("waterway") ||
-      sf.hasTag("natural", "strait", "cliff")) && (!sf.hasTag("waterway", "riverbank", "reservoir"))) {
+      sf.hasTag("natural", "cliff")) && (!sf.hasTag("waterway", "riverbank", "reservoir"))) {
       int minZoom = 12;
       String kind = "other";
       if (sf.hasTag("waterway")) {

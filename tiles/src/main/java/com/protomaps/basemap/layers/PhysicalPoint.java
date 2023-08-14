@@ -96,7 +96,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       sf.canBePolygon() &&
       (sf.hasTag("water") ||
         sf.hasTag("waterway") ||
-        // bay, straight, fjord are included here only (not in water layer) because
+        // bay, strait, fjord are included here only (not in water layer) because
         // OSM treats them as "overlay" label features over the normal water polys
         sf.hasTag("natural", "water", "bay", "strait", "fjord") ||
         sf.hasTag("landuse", "reservoir") ||
