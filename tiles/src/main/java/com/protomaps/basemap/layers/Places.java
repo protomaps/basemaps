@@ -4,6 +4,9 @@ import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
+import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.GeoUtils;
+import com.onthegomap.planetiler.geo.PointIndex;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.SortKey;
@@ -15,6 +18,7 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.locationtech.jts.geom.Point;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -24,6 +28,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   }
 
   private final AtomicInteger placeNumber = new AtomicInteger(0);
+
+  // To have consistent min_zoom and other attr between Natural Earth (low zooms) and OpenStreetMap (high zooms)
+  // we need to store the NE places with a spatial indexes for later joins with OSM
+  private PointIndex<NaturalEarthPlace> ne_populated_places = PointIndex.create();
+
+  // Data structure for any Natural Earth place (eg for data joins between NE and OSM)
+  private record NaturalEarthPlace(String name, String wikidataId, float minZoom, int populationRank) {}
+
+  // Search window size for NE <> OSM data joins
+  private static final double LOCALITY_JOIN_DISTANCE = GeoUtils.metersToPixelAtEquator(0, 50_000) / 256d;
+
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
   static int getSortKey(float minZoom, int kindRank, int populationRank, long population, String name) {
@@ -43,6 +58,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       .get();
   }
 
+  @Override
+  public void release() {
+    ne_populated_places = null;
+  }
+
   /*
   This generates zoom 0 to zoom 6.
    */
@@ -52,6 +72,22 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     if (!sourceLayer.equals("ne_10m_populated_places")) {
       return;
     }
+
+    // Setup for high zoom content
+    // Collect Natural Earth populated places for use later in OSM data joins
+    try {
+      ne_populated_places.put(sf.worldGeometry(), new NaturalEarthPlace(
+        sf.getString("name"),
+        sf.getString("wikidataid"),
+        // Offset by 1 here because of 256 versus 512 pixel tile sizes
+        // and how the OSM processing assumes 512 tile size (while NE is 256)
+        (float) Double.parseDouble(sf.getString("min_zoom")) - 1,
+        (int) Double.parseDouble(sf.getString("rank_max"))
+      ));
+    } catch (GeometryException e) {
+      e.log("Geometry exception in NE populated places setup");
+    }
+    // Setup low zoom content
     var kind = "";
     var kindDetail = "";
 
@@ -164,7 +200,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "city":
         case "town":
           kind = "locality";
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          // This minZoom can be changed to smaller value in the NE data join step below
           minZoom = 7.0f;
           maxZoom = 15.0f;
           kindRank = 2;
@@ -178,7 +214,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           break;
         case "village":
           kind = "locality";
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          // This minZoom can be changed to smaller value in the NE data join step below
           minZoom = 10.0f;
           maxZoom = 15.0f;
           kindRank = 3;
@@ -230,6 +266,31 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         if (population >= popBreaks[i]) {
           populationRank = popBreaks.length - i;
           break;
+        }
+      }
+
+      // Join OSM locality with nearby NE localities based on Wikidata ID and
+      // harvest the min_zoom to achieve consistent label collisions at zoom 7+
+      //
+      // First scope down the NE <> OSM data join (to speed up total build time)
+      if( kind.equals("locality") ) {
+        try {
+          Point point = sf.worldGeometry().getCentroid();
+          List<NaturalEarthPlace> neLocalities = ne_populated_places.getWithin(point, LOCALITY_JOIN_DISTANCE);
+          String wikidata = sf.getString("wikidata", "");
+          for (NaturalEarthPlace neLocality : neLocalities) {
+            // We could add more fallback equivelancy tests here, but 98% of NE places have a Wikidata ID
+            if (wikidata.equals(neLocality.wikidataId)) {
+              minZoom = neLocality.minZoom;
+              // (nvkelso 20230815) We could set the population value here, too
+              //                    But by the OSM zooms the value should be the incorporated value
+              //                    While symbology should be for the metro population value
+              populationRank = neLocality.populationRank;
+              break;
+            }
+          }
+        } catch (GeometryException e) {
+          e.log("Geometry exception in NE <> OSM data joins");
         }
       }
 
