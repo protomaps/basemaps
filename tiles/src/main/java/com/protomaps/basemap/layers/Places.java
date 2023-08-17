@@ -43,6 +43,16 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       .get();
   }
 
+  private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION = ZoomFunction.fromMaxZoomThresholds(Map.of(
+    6, 32,
+    7, 64
+  ), 0);
+
+  private static final ZoomFunction<Number> LOCALITY_GRID_LIMIT_ZOOM_FUNCTION = ZoomFunction.fromMaxZoomThresholds(Map.of(
+    6, 8,
+    7, 4
+  ), 0);
+
   /*
   This generates zoom 0 to zoom 6.
    */
@@ -256,9 +266,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
       feat.setSortKey(getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name")));
 
-      // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
-      feat.setBufferPixels(64);
+      // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+      // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
+      //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
+      feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
+          .getPointLabelGridLimitAtZoom(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
+          .setBufferPixels(64);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
       // label grid squares will be the consistent between adjacent tiles
