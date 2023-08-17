@@ -11,6 +11,8 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.postprocess.HighRoadPlus;
+
 import java.util.*;
 
 public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -212,11 +214,16 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
       }
     }
 
+
+
     items = FeatureMerge.mergeLineStrings(items,
       0.5, // after merging, remove lines that are still less than 0.5px long
       0.1, // simplify output linestrings using a 0.1px tolerance
       4 // remove any detail more than 4px outside the tile boundary
     );
+
+
+    items = HighRoadPlus.duplicate(items);
 
     return items;
   }
