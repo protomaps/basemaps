@@ -268,8 +268,21 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
           // Emphasize large international airports earlier
           // Because the area grading resets the earlier dispensation
-          if (kind.equals("aerodrome") && sf.hasTag("iata")) {
-            minZoom -= 2;
+          if (kind.equals("aerodrome") ) {
+            if( sf.hasTag("iata")) {
+              // prioritize international airports over regional airports
+              minZoom -= 2;
+
+              // but don't show international airports tooooo early
+              if ( minZoom < 10 ) {
+                minZoom = 10;
+              }
+            } else {
+              // and show other airports only once their polygon begins to be visible
+              if ( minZoom < 12 ) {
+                minZoom = 12;
+              }
+            }
           }
         } else if (kind.equals("college") ||
           kind.equals("university")) {
