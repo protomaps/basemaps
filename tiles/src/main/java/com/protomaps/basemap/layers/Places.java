@@ -51,7 +51,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
   private static final ZoomFunction<Number> LOCALITY_GRID_LIMIT_ZOOM_FUNCTION = ZoomFunction.fromMaxZoomThresholds(Map.of(
     6, 8,
-    7, 4
+    7, 6,
+    9, 4
   ), 0);
 
   /*
@@ -112,13 +113,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
         .setAttr("wikidata_id", sf.getString("wikidata"))
-        .setBufferPixels(64)
-        .setPointLabelGridPixelSize(7, 64) // 64 pixels is 1/4 the tile, so a 4x4 grid
-        .setPointLabelGridSizeAndLimit(7, 64, 4) // each cell in the 4x4 grid can have 4 items
         // Server sort features so client label collisions are pre-sorted
         // we also set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
         // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
+
+      // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+      // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
+      //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
+      feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
+        .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
+        .setBufferPixels(64);
 
       if (sf.hasTag("wikidata")) {
         feat.setAttr("wikidata", sf.getString("wikidata"));
