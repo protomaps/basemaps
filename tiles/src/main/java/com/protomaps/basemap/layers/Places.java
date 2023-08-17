@@ -14,6 +14,7 @@ import com.protomaps.basemap.feature.RegionInfos;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -270,7 +271,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
       //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
       feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
-          .getPointLabelGridLimitAtZoom(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
+          .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
           .setBufferPixels(64);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
