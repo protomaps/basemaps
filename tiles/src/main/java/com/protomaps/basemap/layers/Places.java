@@ -87,6 +87,13 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     } catch (GeometryException e) {
       e.log("Geometry exception in NE populated places setup");
     }
+
+    // (nvkelso 20230817) We could omit the rest of this function and rely solely on
+    //                    OSM for features (but using the NE attributes above.
+    //                    We don't do that because OSM has too many names which
+    //                    would bloat low zoom file size. Once OSM name localization
+    //                    is configurable the below logic should be removed.
+
     // Setup low zoom content
     var kind = "";
     var kindDetail = "";
@@ -136,7 +143,6 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("pmap:kind_detail", kindDetail)
         .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
-        .setAttr("wikidata_id", sf.getString("wikidata"))
         .setBufferPixels(64)
         .setPointLabelGridPixelSize(7, 64) // 64 pixels is 1/4 the tile, so a 4x4 grid
         .setPointLabelGridSizeAndLimit(7, 64, 4) // each cell in the 4x4 grid can have 4 items
@@ -145,8 +151,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
 
-      if (sf.hasTag("wikidata")) {
-        feat.setAttr("wikidata", sf.getString("wikidata"));
+      if (sf.hasTag("wikidataid")) {
+        feat.setAttr("wikidata", sf.getString("wikidataid"));
       }
 
       NeNames.setNeNames(feat, sf, 0);
@@ -271,6 +277,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
       // Join OSM locality with nearby NE localities based on Wikidata ID and
       // harvest the min_zoom to achieve consistent label collisions at zoom 7+
+      // By this zoom we get OSM points centered in feature better for area labels
+      // While NE earlier aspires to be more the downtown area
       //
       // First scope down the NE <> OSM data join (to speed up total build time)
       if( kind.equals("locality") ) {
@@ -307,7 +315,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should be a kind, or included in kind_detail
         .setAttr("place", sf.getString("place"))
-        .setZoomRange((int) minZoom, (int) maxZoom);
+        // Generally we use NE and low zooms, and OSM at high zooms
+        // With exceptions for country and region labels
+        .setZoomRange(Math.max( (int) minZoom, themeMinZoom), (int) maxZoom);
 
       // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
       if (sf.hasTag("wikidata")) {

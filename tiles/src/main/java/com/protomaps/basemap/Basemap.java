@@ -120,9 +120,11 @@ public class Basemap extends ForwardingProfile {
 
     var planetiler = Planetiler.create(args)
       .setProfile(new Basemap(earthWaterBounds))
-      .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
+      // (nvkelso 20230817) Order of operations matters here so all NE places can be added to RTree indexes
+      //                    before OSM uses them for data joins
       .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
         "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
+      .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
       .setOutput(Path.of(area + ".pmtiles"));
     planetiler.addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
       "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
