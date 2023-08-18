@@ -162,6 +162,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         .setZoomRange(
           sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
           themeMaxZoom)
+        // Don't filter our short line segments (affects zooms 4 and 5)
+        .setMinPixelSize(0)
         .setBufferPixels(8);
 
       // Core Tilezen schema properties
