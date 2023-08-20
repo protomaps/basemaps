@@ -14,6 +14,7 @@ import com.protomaps.basemap.feature.RegionInfos;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -42,6 +43,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
   }
+
+  private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION = ZoomFunction.fromMaxZoomThresholds(Map.of(
+    6, 32,
+    7, 64
+  ), 0);
+
+  private static final ZoomFunction<Number> LOCALITY_GRID_LIMIT_ZOOM_FUNCTION = ZoomFunction.fromMaxZoomThresholds(Map.of(
+    6, 8,
+    7, 6,
+    9, 4
+  ), 0);
 
   /*
   This generates zoom 0 to zoom 6.
@@ -101,13 +113,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
         .setAttr("wikidata_id", sf.getString("wikidata"))
-        .setBufferPixels(64)
-        .setPointLabelGridPixelSize(7, 64) // 64 pixels is 1/4 the tile, so a 4x4 grid
-        .setPointLabelGridSizeAndLimit(7, 64, 4) // each cell in the 4x4 grid can have 4 items
         // Server sort features so client label collisions are pre-sorted
         // we also set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
         // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
+
+      // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+      // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
+      //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
+      feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
+        .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
+        .setBufferPixels(64);
 
       if (sf.hasTag("wikidata")) {
         feat.setAttr("wikidata", sf.getString("wikidata"));
@@ -256,9 +272,12 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
       feat.setSortKey(getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name")));
 
-      // we set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
-      feat.setBufferPixels(64);
+      // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+      // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
+      //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
+      feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
+          .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
+          .setBufferPixels(64);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
       // label grid squares will be the consistent between adjacent tiles
