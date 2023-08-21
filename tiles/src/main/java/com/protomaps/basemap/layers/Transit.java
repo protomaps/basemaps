@@ -4,6 +4,7 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
@@ -80,7 +81,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
         // Used for client-side label collisions
         .setAttr("pmap:min_zoom", minZoom + 1)
         // Core OSM tags for different kinds of places
-        .setAttr("layer", sf.getString("layer"))
+        .setAttr("layer", Parse.parseIntOrNull(sf.getString("layer")))
         .setAttr("network", sf.getString("network"))
         .setAttr("ref", sf.getString("ref"))
         .setAttr("route", sf.getString("route"))
