@@ -1548,7 +1548,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       filter: ["all", ["in", "pmap:kind", "river", "stream"]],
       layout: {
         "symbol-placement": "line",
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 12,
         "text-letter-spacing": 0.3,
@@ -1567,7 +1567,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       minzoom: 15,
       filter: ["any", ["==", "pmap:kind", "peak"]],
       layout: {
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 11,
         "text-max-width": 9
@@ -1588,7 +1588,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "symbol-placement": "line",
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 12,
       },
@@ -1607,7 +1607,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       "filter": ["any", [">=", ["get", "pmap:min_zoom"], 13]],
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 11,
         "text-max-width": 9,
@@ -1622,22 +1622,13 @@ export function labels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "mask",
-      type: "fill",
-      source: source,
-      "source-layer": "mask",
-      paint: {
-        "fill-color": c.background,
-      },
-    },
-    {
       id: "physical_point_ocean",
       type: "symbol",
       source: source,
       "source-layer": "physical_point",
       filter: ["any", ["in", "pmap:kind", "sea", "ocean", "lake", "water", "bay", "strait", "fjord"]],
       layout: {
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 11,
         "text-letter-spacing": 0.1,
@@ -1659,7 +1650,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "symbol-placement": "line",
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 12,
       },
@@ -1678,7 +1669,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-max-width": 7,
         "text-padding": 4,
         "text-size": {
@@ -1704,7 +1695,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       "filter": ["any", ["<", ["get", "pmap:min_zoom"], 13]],
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 11,
         "text-max-width": 9,
@@ -1740,7 +1731,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       filter: ["==", "pmap:kind", "locality"],
       layout: {
         "text-field": "{name}",
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"],
           ["zoom"],
           4, ["case", ["<", ["get", "pmap:population_rank"], 10], 11,
@@ -1777,7 +1768,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
-        "text-font": ["NotoSans-Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-size": 12,
         "text-radial-offset": 0.2,
         "text-anchor": "center",
@@ -1798,7 +1789,7 @@ export function labels_layers(source: string, c: Theme): any[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
-        "text-font": ["NotoSans-Bold"],
+        "text-font": ["Noto Sans Bold"],
         "text-size": ["interpolate", ["linear"],
           ["zoom"],
           2, ["case", ["<", ["get", "pmap:population_rank"], 10], 11,
