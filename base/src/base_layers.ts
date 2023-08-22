@@ -1622,15 +1622,6 @@ export function labels_layers(source: string, c: Theme): any[] {
       },
     },
     {
-      id: "mask",
-      type: "fill",
-      source: source,
-      "source-layer": "mask",
-      paint: {
-        "fill-color": c.background,
-      },
-    },
-    {
       id: "physical_point_ocean",
       type: "symbol",
       source: source,
