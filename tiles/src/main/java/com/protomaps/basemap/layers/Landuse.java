@@ -13,8 +13,8 @@ import java.util.List;
 public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
   public static final String NAME = "landuse";
 
-  public static void processFeature(SourceFeature sf, FeatureCollector features, String layerName,
-    boolean ghostFeatures) {
+  @Override
+  public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("aeroway", "aerodrome", "runway") ||
       sf.hasTag("area:aeroway", "taxiway", "runway") ||
       sf.hasTag("amenity", "hospital", "school", "kindergarten", "university", "college") ||
@@ -147,7 +147,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         }
       }
 
-      var poly = features.polygon(layerName)
+      var poly = features.polygon(NAME)
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
@@ -179,11 +179,6 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
   @Override
   public String name() {
     return NAME;
-  }
-
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
-    processFeature(sf, features, NAME, false);
   }
 
   @Override
