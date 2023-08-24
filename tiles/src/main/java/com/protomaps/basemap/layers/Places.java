@@ -5,6 +5,9 @@ import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.geo.GeoUtils;
+import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.PointIndex;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
@@ -16,6 +19,7 @@ import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.locationtech.jts.geom.Point;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -25,6 +29,17 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
   }
 
   private final AtomicInteger placeNumber = new AtomicInteger(0);
+
+  // To have consistent min_zoom and other attr between Natural Earth (low zooms) and OpenStreetMap (high zooms)
+  // we need to store the NE places with a spatial indexes for later joins with OSM
+  private PointIndex<NaturalEarthPlace> ne_populated_places = PointIndex.create();
+
+  // Data structure for any Natural Earth place (eg for data joins between NE and OSM)
+  private record NaturalEarthPlace(String name, String wikidataId, float minZoom, int populationRank) {}
+
+  // Search window size for NE <> OSM data joins
+  private static final double LOCALITY_JOIN_DISTANCE = GeoUtils.metersToPixelAtEquator(0, 50_000) / 256d;
+
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
   static int getSortKey(float minZoom, int kindRank, int populationRank, long population, String name) {
@@ -42,6 +57,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       // Order ASCENDING (shorter strings are better than longer strings for map display and adds predictability)
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
+  }
+
+  @Override
+  public void release() {
+    ne_populated_places = null;
   }
 
   private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION =
@@ -66,6 +86,29 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     if (!sourceLayer.equals("ne_10m_populated_places")) {
       return;
     }
+
+    // Setup for high zoom content
+    // Collect Natural Earth populated places for use later in OSM data joins
+    try {
+      ne_populated_places.put(sf.worldGeometry(), new NaturalEarthPlace(
+        sf.getString("name"),
+        sf.getString("wikidataid"),
+        // Offset by 1 here because of 256 versus 512 pixel tile sizes
+        // and how the OSM processing assumes 512 tile size (while NE is 256)
+        (float) Double.parseDouble(sf.getString("min_zoom")) - 1,
+        (int) Double.parseDouble(sf.getString("rank_max"))
+      ));
+    } catch (GeometryException e) {
+      e.log("Geometry exception in NE populated places setup");
+    }
+
+    // (nvkelso 20230817) We could omit the rest of this function and rely solely on
+    //                    OSM for features (but using the NE attributes above.
+    //                    We don't do that because OSM has too many names which
+    //                    would bloat low zoom file size. Once OSM name localization
+    //                    is configurable the below logic should be removed.
+
+    // Setup low zoom content
     var kind = "";
     var kindDetail = "";
 
@@ -114,21 +157,18 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("pmap:kind_detail", kindDetail)
         .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
-        .setAttr("wikidata_id", sf.getString("wikidata"))
         // Server sort features so client label collisions are pre-sorted
         // we also set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
         // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
 
-      // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
       // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
-      //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
       feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
         .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
         .setBufferPixels(64);
 
-      if (sf.hasTag("wikidata")) {
-        feat.setAttr("wikidata", sf.getString("wikidata"));
+      if (sf.hasTag("wikidataid")) {
+        feat.setAttr("wikidata", sf.getString("wikidataid"));
       }
 
       NeNames.setNeNames(feat, sf, 0);
@@ -182,7 +222,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         case "city":
         case "town":
           kind = "locality";
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          // This minZoom can be changed to smaller value in the NE data join step below
           minZoom = 7.0f;
           maxZoom = 15.0f;
           kindRank = 2;
@@ -196,7 +236,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           break;
         case "village":
           kind = "locality";
-          // TODO: these should be from data join to Natural Earth, and if fail data join then default to 8
+          // This minZoom can be changed to smaller value in the NE data join step below
           minZoom = 10.0f;
           maxZoom = 15.0f;
           kindRank = 3;
@@ -251,6 +291,33 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         }
       }
 
+      // Join OSM locality with nearby NE localities based on Wikidata ID and
+      // harvest the min_zoom to achieve consistent label collisions at zoom 7+
+      // By this zoom we get OSM points centered in feature better for area labels
+      // While NE earlier aspires to be more the downtown area
+      //
+      // First scope down the NE <> OSM data join (to speed up total build time)
+      if (kind.equals("locality")) {
+        try {
+          Point point = sf.worldGeometry().getCentroid();
+          List<NaturalEarthPlace> neLocalities = ne_populated_places.getWithin(point, LOCALITY_JOIN_DISTANCE);
+          String wikidata = sf.getString("wikidata", "");
+          for (NaturalEarthPlace neLocality : neLocalities) {
+            // We could add more fallback equivelancy tests here, but 98% of NE places have a Wikidata ID
+            if (wikidata.equals(neLocality.wikidataId)) {
+              minZoom = neLocality.minZoom;
+              // (nvkelso 20230815) We could set the population value here, too
+              //                    But by the OSM zooms the value should be the incorporated value
+              //                    While symbology should be for the metro population value
+              populationRank = neLocality.populationRank;
+              break;
+            }
+          }
+        } catch (GeometryException e) {
+          e.log("Geometry exception in NE <> OSM data joins");
+        }
+      }
+
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
@@ -264,7 +331,9 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should be a kind, or included in kind_detail
         .setAttr("place", sf.getString("place"))
-        .setZoomRange((int) minZoom, (int) maxZoom);
+        // Generally we use NE and low zooms, and OSM at high zooms
+        // With exceptions for country and region labels
+        .setZoomRange(Math.max((int) minZoom, themeMinZoom), (int) maxZoom);
 
       // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
       if (sf.hasTag("wikidata")) {
