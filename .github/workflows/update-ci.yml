@@ -11,7 +11,7 @@ jobs:
   update-pr:
     name: 
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     timeout-minutes: 5
     steps:
       # report status back to pull request
