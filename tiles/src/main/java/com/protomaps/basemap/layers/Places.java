@@ -44,16 +44,18 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       .get();
   }
 
-  private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION = ZoomFunction.fromMaxZoomThresholds(Map.of(
-    6, 32,
-    7, 64
-  ), 0);
+  private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION =
+    ZoomFunction.fromMaxZoomThresholds(Map.of(
+      6, 32,
+      7, 64
+    ), 0);
 
-  private static final ZoomFunction<Number> LOCALITY_GRID_LIMIT_ZOOM_FUNCTION = ZoomFunction.fromMaxZoomThresholds(Map.of(
-    6, 8,
-    7, 6,
-    9, 4
-  ), 0);
+  private static final ZoomFunction<Number> LOCALITY_GRID_LIMIT_ZOOM_FUNCTION =
+    ZoomFunction.fromMaxZoomThresholds(Map.of(
+      6, 8,
+      7, 6,
+      9, 4
+    ), 0);
 
   /*
   This generates zoom 0 to zoom 6.
@@ -276,8 +278,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
       //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
       feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
-          .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
-          .setBufferPixels(64);
+        .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
+        .setBufferPixels(64);
 
       // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
       // label grid squares will be the consistent between adjacent tiles
