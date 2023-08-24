@@ -40,7 +40,7 @@ jobs:
           # Needed to get some information about the pull request, if any
           GITHUB_TOKEN: ${{ github.token }}
           # Read-only user, use this token to link SonarLint to SonarCloud as well
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: 612b3291bc37d4944cb3cd5296ad26d7cd8417a8
       - name: Wait for SonarCloud API to update...
         run: "sleep 10"
       - name: Upload annotations on PRs
