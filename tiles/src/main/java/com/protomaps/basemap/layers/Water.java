@@ -8,6 +8,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 import org.locationtech.jts.geom.Envelope;
@@ -75,7 +76,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       }
 
       if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
-        var feature = features.polygon(this.name())
+        features.polygon(this.name())
           // Core Tilezen schema properties
           .setAttr("pmap:kind", kind)
           // Preview v4 schema (disabled)
@@ -101,14 +102,14 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       var reservoir = false;
       var alkaline = false;
 
-      // coallese values across tags to single kind value
+      // coalesce values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
           kindDetail = sf.getString("water");
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
-          // But isn't present in Protomaps v2 so let's fix it preemtively
+          // But isn't present in Protomaps v2 so let's fix it preemptively
           if (kindDetail.equals("lake")) {
             kind = "lake";
           }
@@ -145,7 +146,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         // Add less common attributes only at higher zooms
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
-        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should bea kind, or included in kind_detail
         .setAttr("natural", sf.getString("natural"))

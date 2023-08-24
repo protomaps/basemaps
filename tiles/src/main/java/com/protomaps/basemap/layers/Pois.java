@@ -268,8 +268,21 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
           // Emphasize large international airports earlier
           // Because the area grading resets the earlier dispensation
-          if (kind.equals("aerodrome") && sf.hasTag("iata")) {
-            minZoom -= 2;
+          if (kind.equals("aerodrome")) {
+            if (sf.hasTag("iata")) {
+              // prioritize international airports over regional airports
+              minZoom -= 2;
+
+              // but don't show international airports tooooo early
+              if (minZoom < 10) {
+                minZoom = 10;
+              }
+            } else {
+              // and show other airports only once their polygon begins to be visible
+              if (minZoom < 12) {
+                minZoom = 12;
+              }
+            }
           }
         } else if (kind.equals("college") ||
           kind.equals("university")) {
@@ -412,7 +425,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("pmap:kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", (int) (minZoom + 1))
+          .setAttr("pmap:min_zoom", minZoom + 1)
           //
           // DEBUG
           //.setAttr("pmap:area_debug", wayArea)
@@ -470,7 +483,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("pmap:kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", (int) (minZoom + 1))
+          .setAttr("pmap:min_zoom", minZoom + 1)
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
@@ -504,7 +517,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         OsmNames.setOsmNames(pointFeature, sf, 0);
 
         // Some features should only be visible at very late zooms when they don't have a name
-        if (sf.hasTag("name") == false && (sf.hasTag("amenity", "atm", "bbq", "bench", "bicycle_parking",
+        if (!sf.hasTag("name") && (sf.hasTag("amenity", "atm", "bbq", "bench", "bicycle_parking",
           "bicycle_rental", "bicycle_repair_station", "boat_storage", "bureau_de_change", "car_rental", "car_sharing",
           "car_wash", "charging_station", "customs", "drinking_water", "fuel", "harbourmaster", "hunting_stand",
           "karaoke_box", "life_ring", "money_transfer", "motorcycle_parking", "parking", "picnic_table", "post_box",

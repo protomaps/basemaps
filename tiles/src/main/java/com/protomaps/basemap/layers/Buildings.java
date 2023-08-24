@@ -8,6 +8,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
@@ -57,7 +58,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
         // Core OSM tags for different kinds of places
-        .setAttrWithMinzoom("layer", sf.getString("layer"), 13)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 13)
         // NOTE: Height is quantized by zoom in a post-process step
         .setAttr("height", height)
         .setZoomRange(minZoom, 15);
@@ -112,6 +113,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
           }
         }
       } catch (Exception e) {
+
       }
 
       try {

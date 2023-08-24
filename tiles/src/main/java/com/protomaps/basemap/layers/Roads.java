@@ -23,7 +23,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
-      !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction"))) {
+      !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
       String kind = "other";
       String kindDetail = "";
       int minZoom = 15;
@@ -37,10 +37,10 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
       String networkVal = sf.getString("network");
       shieldText = (shieldText == null ? null : shieldText.split(";")[0]);
       if (shieldText != null) {
-        if (shieldText.contains("US ")) {
+        if (shieldText.startsWith("US ")) {
           shieldText = shieldText.replaceAll("US ", "");
           networkVal = "US:US";
-        } else if (shieldText.contains("I ")) {
+        } else if (shieldText.startsWith("I ")) {
           shieldText = shieldText.replaceAll("I ", "");
           networkVal = "US:I";
         } else {

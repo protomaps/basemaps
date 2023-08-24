@@ -4,6 +4,7 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
@@ -17,8 +18,8 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBeLine() && (sf.hasTag("waterway") ||
-      sf.hasTag("natural", "strait", "cliff")) && (!sf.hasTag("waterway", "riverbank", "reservoir"))) {
+    if (sf.canBeLine() && !sf.canBePolygon() && (sf.hasTag("waterway") ||
+      sf.hasTag("natural", "cliff")) && (!sf.hasTag("waterway", "riverbank", "reservoir"))) {
       int minZoom = 12;
       String kind = "other";
       if (sf.hasTag("waterway")) {
@@ -44,7 +45,7 @@ public class PhysicalLine implements ForwardingProfile.FeatureProcessor, Forward
         // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
         //.setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         //.setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
-        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setZoomRange(minZoom, 15);
 
       // Add less common core Tilezen attributes only at higher zooms (will continue to v4)

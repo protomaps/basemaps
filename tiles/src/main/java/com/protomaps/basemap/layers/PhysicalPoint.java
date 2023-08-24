@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
@@ -49,7 +50,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       var minZoom = sf.getLong("min_label");
 
       if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
-        var water_label_position = features.pointOnSurface(this.name())
+        var waterLabelPosition = features.pointOnSurface(this.name())
           .setAttr("pmap:kind", kind)
           .setAttr("pmap:min_zoom", minZoom + 1)
           .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
@@ -57,9 +58,9 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
           .setBufferPixels(128);
 
         // Server sort features so client label collisions are pre-sorted
-        water_label_position.setSortKey((int) minZoom);
+        waterLabelPosition.setSortKey((int) minZoom);
 
-        NeNames.setNeNames(water_label_position, sf, 0);
+        NeNames.setNeNames(waterLabelPosition, sf, 0);
       }
     }
   }
@@ -106,7 +107,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       sf.canBePolygon() &&
       (sf.hasTag("water") ||
         sf.hasTag("waterway") ||
-        // bay, straight, fjord are included here only (not in water layer) because
+        // bay, strait, fjord are included here only (not in water layer) because
         // OSM treats them as "overlay" label features over the normal water polys
         sf.hasTag("natural", "water", "bay", "strait", "fjord") ||
         sf.hasTag("landuse", "reservoir") ||
@@ -121,7 +122,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       try {
         wayArea = sf.area() / WORLD_AREA_FOR_70K_SQUARE_METERS;
       } catch (GeometryException e) {
-        System.out.println(e);
+        e.log("Exception in way area calculation");
       }
 
       // coallese values across tags to single kind value
@@ -201,7 +202,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
-        .setAttrWithMinzoom("layer", sf.getString("layer"), 12)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setZoomRange(nameMinZoom, 15)
         .setBufferPixels(128);
 

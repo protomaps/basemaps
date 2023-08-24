@@ -1,6 +1,6 @@
 package com.protomaps.basemap.layers;
 
-import static com.onthegomap.planetiler.TestUtils.newLineString;
+import static com.onthegomap.planetiler.TestUtils.*;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
@@ -8,17 +8,14 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-class RoadsTest extends LayerTest {
+class PhysicalPointTest extends LayerTest {
   @Test
   void simple() {
     assertFeatures(12,
-      List.of(Map.of("pmap:kind", "highway", "layer", 1, "pmap:kind_detail", "motorway")),
+      List.of(Map.of("pmap:kind", "ocean")),
       process(SimpleFeature.create(
-        newLineString(0, 0, 1, 1),
-        new HashMap<>(Map.of(
-          "layer", "1",
-          "highway", "motorway"
-        )),
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "ocean")),
         "osm",
         null,
         0
