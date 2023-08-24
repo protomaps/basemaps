@@ -567,7 +567,6 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
     // TODO: (nvkelso 20230623) Consider adding a "pmap:rank" here for POIs, like for Places
 
-    //items = Area.addAreaTag(items);
     return items;
   }
 }

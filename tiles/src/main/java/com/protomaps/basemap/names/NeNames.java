@@ -5,6 +5,9 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.Map;
 
 public class NeNames {
+
+  private NeNames() {}
+
   public static FeatureCollector.Feature setNeNames(FeatureCollector.Feature feature, SourceFeature sf,
     int minZoom) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {

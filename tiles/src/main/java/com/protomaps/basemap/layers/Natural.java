@@ -41,15 +41,11 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
         //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)
         .setMinPixelSize(2.0);
-
-      // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
-      //OsmNames.setOsmNames(feat, sf, 0);
     }
   }
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    //items = Area.addAreaTag(items);
     if (zoom == 15)
       return items;
 

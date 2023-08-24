@@ -11,7 +11,6 @@ import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
 public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
-  public static final String NAME = "landuse";
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
@@ -147,7 +146,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         }
       }
 
-      features.polygon(NAME)
+      features.polygon(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
@@ -178,12 +177,11 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
   @Override
   public String name() {
-    return NAME;
+    return "landuse";
   }
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    //items = Area.addAreaTag(items);
     if (zoom == 15)
       return items;
     int minArea = 400 / (4096 * 4096) * (256 * 256);

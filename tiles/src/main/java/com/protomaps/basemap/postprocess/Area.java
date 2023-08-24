@@ -35,12 +35,4 @@ public class Area {
 
     return result;
   }
-
-  public static List<VectorTile.Feature> addAreaTag(List<VectorTile.Feature> items) throws GeometryException {
-    for (var item : items) {
-      var area = item.geometry().decode().getEnvelopeInternal().getArea();
-      item.attrs().put("pmap:area", Math.round(area / (256 * 256) * (4096 * 4096)));
-    }
-    return items;
-  }
 }

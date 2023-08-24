@@ -125,14 +125,14 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         e.log("Exception in way area calculation");
       }
 
-      // coallese values across tags to single kind value
+      // coalesce values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
           kindDetail = sf.getString("water");
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
-          // But isn't present in Protomaps v2 so let's fix it preemtively
+          // But isn't present in Protomaps v2 so let's fix it preemptively
           if (kindDetail.equals("lake")) {
             kind = "lake";
           }
@@ -188,9 +188,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
         // predictable client-side label collisions
         // 512 px zooms versus 256 px logical zooms
         .setAttr("pmap:min_zoom", nameMinZoom + 1)
-        // DEBUG
-        //.setAttr("pmap:area", way_area)
-        //
+
         // Core OSM tags for different kinds of places
         // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
         //                      If an explicate value is needed it should bea kind, or included in kind_detail
@@ -229,9 +227,6 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) {
-    // DEBUG
-    //items = Area.addAreaTag(items);
-
     return items;
   }
 }
