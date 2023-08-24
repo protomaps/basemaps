@@ -4,10 +4,10 @@ import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
-import com.onthegomap.planetiler.geo.GeometryException;
-import com.onthegomap.planetiler.geo.GeoUtils;
-import com.onthegomap.planetiler.geo.PointIndex;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.geo.GeoUtils;
+import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.PointIndex;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
@@ -297,7 +297,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       // While NE earlier aspires to be more the downtown area
       //
       // First scope down the NE <> OSM data join (to speed up total build time)
-      if( kind.equals("locality") ) {
+      if (kind.equals("locality")) {
         try {
           Point point = sf.worldGeometry().getCentroid();
           List<NaturalEarthPlace> neLocalities = ne_populated_places.getWithin(point, LOCALITY_JOIN_DISTANCE);
@@ -333,7 +333,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setAttr("place", sf.getString("place"))
         // Generally we use NE and low zooms, and OSM at high zooms
         // With exceptions for country and region labels
-        .setZoomRange(Math.max( (int) minZoom, themeMinZoom), (int) maxZoom);
+        .setZoomRange(Math.max((int) minZoom, themeMinZoom), (int) maxZoom);
 
       // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
       if (sf.hasTag("wikidata")) {
