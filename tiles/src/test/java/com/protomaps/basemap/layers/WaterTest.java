@@ -12,10 +12,10 @@ class WaterTest extends LayerTest {
   @Test
   void simple() {
     assertFeatures(15,
-      List.of(Map.of("pmap:kind", "other")),
+      List.of(Map.of("pmap:kind", "swimming_pool")),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
-        new HashMap<>(Map.of("water", "reservoir")),
+        new HashMap<>(Map.of("leisure", "swimming_pool")),
         "osm",
         null,
         0

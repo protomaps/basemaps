@@ -102,14 +102,14 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       var reservoir = false;
       var alkaline = false;
 
-      // coallese values across tags to single kind value
+      // coalesce values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
           kindDetail = sf.getString("water");
 
           // This is a bug in Tilezen v1.9 that should be fixed in 2.0
-          // But isn't present in Protomaps v2 so let's fix it preemtively
+          // But isn't present in Protomaps v2 so let's fix it preemptively
           if (kindDetail.equals("lake")) {
             kind = "lake";
           }

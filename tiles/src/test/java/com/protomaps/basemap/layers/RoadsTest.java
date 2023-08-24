@@ -12,7 +12,7 @@ class RoadsTest extends LayerTest {
   @Test
   void simple() {
     assertFeatures(12,
-      List.of(Map.of("pmap:kind", "highway", "layer", 1)),
+      List.of(Map.of("pmap:kind", "highway", "layer", 1, "pmap:kind_detail", "motorway")),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
