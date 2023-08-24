@@ -76,7 +76,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
       }
 
       if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
-        var feature = features.polygon(this.name())
+        features.polygon(this.name())
           // Core Tilezen schema properties
           .setAttr("pmap:kind", kind)
           // Preview v4 schema (disabled)

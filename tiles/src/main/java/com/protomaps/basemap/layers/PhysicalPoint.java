@@ -50,7 +50,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       var minZoom = sf.getLong("min_label");
 
       if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
-        var water_label_position = features.pointOnSurface(this.name())
+        var waterLabelPosition = features.pointOnSurface(this.name())
           .setAttr("pmap:kind", kind)
           .setAttr("pmap:min_zoom", minZoom + 1)
           .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
@@ -58,9 +58,9 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
           .setBufferPixels(128);
 
         // Server sort features so client label collisions are pre-sorted
-        water_label_position.setSortKey((int) minZoom);
+        waterLabelPosition.setSortKey((int) minZoom);
 
-        NeNames.setNeNames(water_label_position, sf, 0);
+        NeNames.setNeNames(waterLabelPosition, sf, 0);
       }
     }
   }
@@ -122,7 +122,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
       try {
         wayArea = sf.area() / WORLD_AREA_FOR_70K_SQUARE_METERS;
       } catch (GeometryException e) {
-        System.out.println(e);
+        e.log("Exception in way area calculation");
       }
 
       // coallese values across tags to single kind value

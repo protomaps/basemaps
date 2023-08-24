@@ -147,7 +147,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         }
       }
 
-      var poly = features.polygon(NAME)
+      features.polygon(NAME)
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)

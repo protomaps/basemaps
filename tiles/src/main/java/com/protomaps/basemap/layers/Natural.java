@@ -28,7 +28,7 @@ public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = sf.getString("landuse");
       }
 
-      var feat = features.polygon(this.name())
+      features.polygon(this.name())
         //.setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
