@@ -31,16 +31,24 @@ jobs:
           java-version: 17
           distribution: 'temurin'
           cache: 'maven'
-      - run: npm install && npm run --silent generate-layers > light.json
+      - name: 'Store artifacts'
+        run: |
+          mkdir artifacts
+          echo "${{ github.event.pull_request.base.sha }}" > artifacts/base_sha
+          echo "${{ github.sha }}" > artifacts/branch_sha
+          echo "${{ github.event.number }}" > artifacts/pull_request_number
+      - run: npm install && npm run --silent generate-layers > ../artifacts/light.json
         working-directory: base
       - run: |
-          curl --fail -T base/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/light.json
-      - run : |
           mvn --batch-mode -no-transfer-progress -DskipTests package
         working-directory: tiles
       # the osm-earth-water-bounds should match the input .osm.pbf.
-      - run : |
+      - run: |
           java -Xms4g -Xmx4g -jar target/*-with-deps.jar --area=taiwan --force --download --keep-unzipped --bounds=-180,-85,180,85 --osm-earth-water-bounds=118.1036,20.72799,122.9312,26.60305
         working-directory: tiles
-      - run: |
-          curl --fail -H "Transfer-Encoding: chunked" -T tiles/taiwan.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.NAME }}/smalltestregion_vector.pmtiles
+      - run: mv tiles/taiwan.pmtiles artifacts/smalltestregion_vector.pmtiles
+      - name: 'Upload artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: ./artifacts
