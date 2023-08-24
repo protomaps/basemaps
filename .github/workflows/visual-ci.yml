@@ -37,7 +37,7 @@ jobs:
           echo "${{ github.event.pull_request.base.sha }}" > artifacts/base_sha
           echo "${{ github.sha }}" > artifacts/branch_sha
           echo "${{ github.event.number }}" > artifacts/pull_request_number
-      - run: npm install && npm run --silent generate-layers > artifacts/light.json
+      - run: npm install && npm run --silent generate-layers > ../artifacts/light.json
         working-directory: base
       - run: |
           mvn --batch-mode -no-transfer-progress -DskipTests package
