@@ -27,9 +27,9 @@ jobs:
       - run: echo "BRANCH_SHA=$(cat artifacts/branch_sha)" >> "$GITHUB_ENV"
       - run: echo "BASE_SHA=$(cat artifacts/base_sha)" >> "$GITHUB_ENV"
       - run: |
-          curl --fail -T artifacts/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.PULL_REQUEST_NUMBER || env.BRANCH_SHA }}/light.json
+          curl --fail -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T artifacts/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.PULL_REQUEST_NUMBER || env.BRANCH_SHA }}/light.json
       - run: |
-          curl --fail -H "Transfer-Encoding: chunked" -T artifacts/smalltestregion_vector.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.PULL_REQUEST_NUMBER || env.BRANCH_SHA }}/smalltestregion_vector.pmtiles
+          curl --fail -H "Transfer-Encoding: chunked" -H "Authorization: ${{ secrets.AUTHORIZATION }}" -T artifacts/smalltestregion_vector.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.PULL_REQUEST_NUMBER || env.BRANCH_SHA }}/smalltestregion_vector.pmtiles
       - uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event.workflow_run.event == 'pull_request' }}
         with:
