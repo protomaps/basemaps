@@ -7,6 +7,9 @@ import java.text.ParsePosition;
 import java.util.Map;
 
 public class OsmNames {
+
+  private OsmNames() {}
+
   public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
     int minZoom) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {

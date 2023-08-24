@@ -82,62 +82,52 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     }
     items = Area.filterArea(items, 0);
 
-    // DEBUG
-    //items = Area.addAreaTag(items);
-
     if (zoom >= 15)
       return items;
 
     // quantize height by zoom when less than max_zoom 15 to facilitate better feature merging
     for (var item : items) {
-      try {
-        if (item.attrs().containsKey("height")) {
-          var height = (double) item.attrs().get("height");
+      if (item.attrs().containsKey("height")) {
+        var height = (double) item.attrs().get("height");
 
-          // Protected against NULL values
-          if (height > 0) {
-            // at zoom <= 12 round height to nearest 20 meters
-            if (zoom <= 12) {
-              height = quantizeVal(height, 20);
-            } else
-            // at zoom 13 round height to nearest 10 meters
-            if (zoom == 13) {
-              height = quantizeVal(height, 10);
-            } else
-            // at zoom 14 round height to nearest 5 meters
-            if (zoom == 14) {
-              height = quantizeVal(height, 5);
-            }
-
-            item.attrs().put("height", height);
+        // Protected against NULL values
+        if (height > 0) {
+          // at zoom <= 12 round height to nearest 20 meters
+          if (zoom <= 12) {
+            height = quantizeVal(height, 20);
+          } else
+          // at zoom 13 round height to nearest 10 meters
+          if (zoom == 13) {
+            height = quantizeVal(height, 10);
+          } else
+          // at zoom 14 round height to nearest 5 meters
+          if (zoom == 14) {
+            height = quantizeVal(height, 5);
           }
-        }
-      } catch (Exception e) {
 
+          item.attrs().put("height", height);
+        }
       }
 
-      try {
-        if (item.attrs().containsKey("min_height")) {
-          var minHeight = (double) item.attrs().get("min_height");
+      if (item.attrs().containsKey("min_height")) {
+        var minHeight = (double) item.attrs().get("min_height");
 
-          // Protected against NULL values
-          if (minHeight > 0) {
-            if (zoom <= 12) {
-              minHeight = quantizeVal(minHeight, 20);
-            } else
-            // at zoom 13 round height to nearest 10 meters
-            if (zoom == 13) {
-              minHeight = quantizeVal(minHeight, 10);
-            } else
-            // at zoom 14 round height to nearest 5 meters
-            if (zoom == 14) {
-              minHeight = quantizeVal(minHeight, 5);
-            }
-
-            item.attrs().put("min_height", minHeight);
+        // Protected against NULL values
+        if (minHeight > 0) {
+          if (zoom <= 12) {
+            minHeight = quantizeVal(minHeight, 20);
+          } else
+          // at zoom 13 round height to nearest 10 meters
+          if (zoom == 13) {
+            minHeight = quantizeVal(minHeight, 10);
+          } else
+          // at zoom 14 round height to nearest 5 meters
+          if (zoom == 14) {
+            minHeight = quantizeVal(minHeight, 5);
           }
+
+          item.attrs().put("min_height", minHeight);
         }
-      } catch (Exception e) {
       }
     }
 

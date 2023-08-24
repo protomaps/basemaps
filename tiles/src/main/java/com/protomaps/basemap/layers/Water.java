@@ -179,8 +179,6 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    items = Area.addAreaTag(items);
-
     if (zoom == 15)
       return items;
 
