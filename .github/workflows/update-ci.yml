@@ -34,6 +34,6 @@ jobs:
         if: ${{ github.event.workflow_run.event == 'pull_request' }}
         with:
           recreate: true
-          number: ${{ github.event.number }}
+          number: ${{ env.PULL_REQUEST_NUMBER }}
           message: |
             Comparison: <https://protomaps.github.io/basemaps/ci/?left=${{ env.BASE_SHA }}&right=${{ env.PULL_REQUEST_NUMBER }}>

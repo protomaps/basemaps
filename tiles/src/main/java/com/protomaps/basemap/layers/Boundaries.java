@@ -145,7 +145,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
       }
     }
 
-    if (sf.canBeLine() && sf.hasTag("min_zoom") && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
+
+    if (sf.canBeLine() && sf.getString("min_zoom") != null && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
       var minZoom = Double.parseDouble(sf.getString("min_zoom")) - 1.0;
 
       var line = features.line(this.name())
@@ -162,7 +163,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
         .setZoomRange(
           sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
           themeMaxZoom)
-        // Don't filter our short line segments (affects zooms 4 and 5)
+        // Don't filter out short line segments (affects zooms 4 and 5)
         .setMinPixelSize(0)
         .setBufferPixels(8);
 
