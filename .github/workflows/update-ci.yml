@@ -23,11 +23,9 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           name: artifacts
           path: artifacts
-      - name: 'Get build info'
-        id: build_info
-        run: echo "PULL_REQUEST_NUMBER=$(cat artifacts/pull_request_number)" >> $PULL_REQUEST_NUMBER
-        run : echo "BRANCH_SHA=$(cat artifacts/branch_sha)" >> $BRANCH_SHA
-        run : echo "BASE_SHA=$(cat artifacts/base_sha)" >> $BASE_SHA
+      - run: echo "PULL_REQUEST_NUMBER=$(cat artifacts/pull_request_number)" >> $PULL_REQUEST_NUMBER
+      - run: echo "BRANCH_SHA=$(cat artifacts/branch_sha)" >> $BRANCH_SHA
+      - run: echo "BASE_SHA=$(cat artifacts/base_sha)" >> $BASE_SHA
       - run: |
           curl --fail -T artifacts/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.PULL_REQUEST_NUMBER || env.BRANCH_SHA }}/light.json
       - run: |
