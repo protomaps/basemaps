@@ -1,0 +1,41 @@
+name: Update Visual CI and PR
+on:
+  workflow_run:
+    workflows: [ "Visual CI" ]
+    types:
+      - completed
+
+# Runs with elevated permissions (workflow_run)
+
+jobs:
+  update-pr:
+    name: 
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 5
+    steps:
+      # report status back to pull request
+      - uses: haya14busa/action-workflow_run-status@v1
+      - name: 'Download branch artifacts'
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: artifacts
+          path: artifacts
+      - name: 'Get build info'
+        id: build_info
+        run: echo "PULL_REQUEST_NUMBER=$(cat artifacts/pull_request_number)" >> $PULL_REQUEST_NUMBER
+        run : echo "BRANCH_SHA=$(cat artifacts/branch_sha)" >> $BRANCH_SHA
+        run : echo "BASE_SHA=$(cat artifacts/base_sha)" >> $BASE_SHA
+      - run: |
+          curl --fail -T artifacts/light.json https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.PULL_REQUEST_NUMBER || env.BRANCH_SHA }}/light.json
+      - run: |
+          curl --fail -H "Transfer-Encoding: chunked" -T artifacts/smalltestregion_vector.pmtiles https://visual-ci-uploader.protomaps-dev.workers.dev/${{ env.PULL_REQUEST_NUMBER || env.BRANCH_SHA }}/smalltestregion_vector.pmtiles
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ github.event.workflow_run.event == 'pull_request' }}
+        with:
+          recreate: true
+          number: ${{ github.event.number }}
+          message: |
+            Comparison: <https://protomaps.github.io/basemaps/ci/?left=${{ env.BASE_SHA }}&right=${{ env.PULL_REQUEST_NUMBER }}>
