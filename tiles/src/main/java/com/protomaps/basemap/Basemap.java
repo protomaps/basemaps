@@ -3,6 +3,8 @@ package com.protomaps.basemap;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
+import com.onthegomap.planetiler.util.Downloader;
+import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.layers.Boundaries;
 import com.protomaps.basemap.layers.Buildings;
 import com.protomaps.basemap.layers.Earth;
@@ -116,20 +118,28 @@ public class Basemap extends ForwardingProfile {
     // and a complete high-zoom tileset without having to tile earth/water outside the bbox.
     Envelope earthWaterBounds = args.bounds("osm-earth-water-bounds", "spatial bbox of osm earth+water");
 
+    Path nePath = sourcesDir.resolve("natural_earth_vector.sqlite.zip");
+    String neUrl = "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip";
+
     String area = args.getString("area", "geofabrik area to download", "monaco");
 
     var planetiler = Planetiler.create(args)
-      .setProfile(new Basemap(earthWaterBounds))
       // (nvkelso 20230817) Order of operations matters here so all NE places can be added to RTree indexes
       //                    before OSM uses them for data joins
-      .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
-        "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip")
+      .addNaturalEarthSource("ne", nePath, neUrl)
       .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
-      .setOutput(Path.of(area + ".pmtiles"));
-    planetiler.addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
-      "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
+      .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
+        "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
       .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
-        "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .run();
+        "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip");
+
+    Downloader.create(planetiler.config(), planetiler.stats()).add("ne", neUrl, nePath).run();
+
+    var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
+    var naturalEarthDb = NaturalEarthDb.fromSqlite(nePath, tmpDir);
+    System.out.println(naturalEarthDb.getByWikidataId("Q60"));
+
+    planetiler.setProfile(new Basemap(earthWaterBounds)).setOutput(Path.of(area + ".pmtiles")).run();
+
   }
 }
