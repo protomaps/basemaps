@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.Envelope;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(Envelope earthWaterBounds) {
+  public Basemap(Envelope earthWaterBounds, NaturalEarthDb naturalEarth) {
 
     var admin = new Boundaries();
     registerHandler(admin);
@@ -137,9 +137,8 @@ public class Basemap extends ForwardingProfile {
 
     var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
     var naturalEarthDb = NaturalEarthDb.fromSqlite(nePath, tmpDir);
-    System.out.println(naturalEarthDb.getByWikidataId("Q60"));
+    System.out.println(naturalEarthDb.getPopulatedPlaceByWikidataId("Q60"));
 
-    planetiler.setProfile(new Basemap(earthWaterBounds)).setOutput(Path.of(area + ".pmtiles")).run();
-
+    planetiler.setProfile(new Basemap(earthWaterBounds, naturalEarthDb)).setOutput(Path.of(area + ".pmtiles")).run();
   }
 }

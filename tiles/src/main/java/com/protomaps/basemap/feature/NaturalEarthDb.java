@@ -30,20 +30,44 @@ public class NaturalEarthDb {
 
   private Map<String, NePopulatedPlace> placesByWikidataId;
 
-  public record NePopulatedPlace(String name, String wikidataId, String minZoom, String populationRank) {};
+  public record NeAdmin0Country(String name, String iso_a2, String wikidataId, double minLabel, double maxLabel) {};
+  public record NeAdmin1StateProvince(String name, String iso3166_2, String wikidataId, double minLabel,
+    double maxLabel) {};
+  public record NePopulatedPlace(String name, String wikidataId, double minZoom, int rankMax) {};
 
-  private NaturalEarthDb(List<NePopulatedPlace> places) {
-    this.placesByWikidataId = places.stream().filter(place -> place.wikidataId != null)
+  private NaturalEarthDb(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
+    List<NePopulatedPlace> populatedPlaces) {
+    this.placesByWikidataId = populatedPlaces.stream().filter(place -> place.wikidataId != null)
       .collect(Collectors.toMap(place -> place.wikidataId, place -> place, (s, a) -> s)); // TODO conflicts
   }
 
-  public NePopulatedPlace getByWikidataId(String wikidataId) {
+  public NePopulatedPlace getPopulatedPlaceByWikidataId(String wikidataId) {
     return this.placesByWikidataId.get(wikidataId);
+  }
+
+  public NeAdmin1StateProvince getAdmin1ByIsoCode(String isoCode) {
+    return null;
+  }
+
+  public NeAdmin1StateProvince getAdmin1byWikidataId(String wikidataId) {
+    return null;
+  }
+
+  public NeAdmin0Country getAdmin0ByIsoCode(String isoCode) {
+    return null;
+  }
+
+  public NeAdmin0Country getAdmin0ByWikidataId(String isoCode) {
+    return null;
   }
 
   public static NaturalEarthDb fromSqlite(Path path, Path unzippedDir) {
     boolean keepUnzipped = true;
-    List<NePopulatedPlace> results = new ArrayList<>();
+
+    List<NeAdmin0Country> countries = new ArrayList<>();
+    List<NeAdmin1StateProvince> statesProvinces = new ArrayList<>();
+    List<NePopulatedPlace> populatedPlaces = new ArrayList<>();
+
     try {
       Path extracted;
       String uri = "jdbc:sqlite:" + path.toAbsolutePath();
@@ -69,10 +93,31 @@ public class NaturalEarthDb {
 
         try (Statement statement = conn.createStatement()) {
           ResultSet rs =
-            statement.executeQuery("SELECT wikidataid, min_zoom, name, rank_max FROM ne_10m_populated_places;");
+            statement
+              .executeQuery("SELECT name, iso_a2, wikidataid, min_label, max_label FROM ne_10m_admin_0_countries;");
           while (rs.next()) {
-            results.add(new NePopulatedPlace(rs.getString("name"), rs.getString("wikidataid"), rs.getString("min_zoom"),
-              rs.getString("rank_max")));
+            countries.add(new NeAdmin0Country(rs.getString("name"), rs.getString("iso_a2"), rs.getString("wikidataid"),
+              rs.getDouble("min_label"), rs.getDouble("max_label")));
+          }
+        }
+
+        try (Statement statement = conn.createStatement()) {
+          ResultSet rs =
+            statement.executeQuery(
+              "SELECT name, iso_3166_2, wikidataid, min_label, max_label FROM ne_10m_admin_1_states_provinces;");
+          while (rs.next()) {
+            statesProvinces.add(new NeAdmin1StateProvince(rs.getString("name"), rs.getString("iso_3166_2"),
+              rs.getString("wikidataid"), rs.getDouble("min_label"),
+              rs.getDouble("max_label")));
+          }
+        }
+
+        try (Statement statement = conn.createStatement()) {
+          ResultSet rs =
+            statement.executeQuery("SELECT name, wikidataid, min_zoom, rank_max FROM ne_10m_populated_places;");
+          while (rs.next()) {
+            populatedPlaces.add(new NePopulatedPlace(rs.getString("name"), rs.getString("wikidataid"),
+              rs.getDouble("min_zoom"), rs.getInt("rank_max")));
           }
         }
 
@@ -81,10 +126,11 @@ public class NaturalEarthDb {
     } catch (IOException | SQLException e) {
       throw new IllegalArgumentException(e);
     }
-    return new NaturalEarthDb(results);
+    return new NaturalEarthDb(countries, statesProvinces, populatedPlaces);
   }
 
-  public static NaturalEarthDb fromList(List<NePopulatedPlace> places) {
-    return new NaturalEarthDb(places);
+  public static NaturalEarthDb fromList(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
+    List<NePopulatedPlace> populatedPlaces) {
+    return new NaturalEarthDb(countries, statesProvinces, populatedPlaces);
   }
 }

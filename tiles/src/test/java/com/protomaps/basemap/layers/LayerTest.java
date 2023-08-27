@@ -18,7 +18,7 @@ abstract class LayerTest {
   final PlanetilerConfig params = PlanetilerConfig.defaults();
   final Stats stats = Stats.inMemory();
   final FeatureCollector.Factory featureCollectorFactory = new FeatureCollector.Factory(params, stats);
-  final Basemap profile = new Basemap(null);
+  final Basemap profile = new Basemap(null, null);
 
   static void assertFeatures(int zoom, List<Map<String, Object>> expected, Iterable<FeatureCollector.Feature> actual) {
     var expectedList = expected.stream().toList();
