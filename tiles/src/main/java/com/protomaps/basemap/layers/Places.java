@@ -13,6 +13,7 @@ import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.CountryInfos;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.feature.RegionInfos;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
@@ -22,6 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.locationtech.jts.geom.Point;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+
+  private NaturalEarthDb naturalEarthDb;
+
+  public Places(NaturalEarthDb naturalEarthDb) {
+    this.naturalEarthDb = naturalEarthDb;
+  }
 
   @Override
   public String name() {
