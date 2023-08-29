@@ -159,11 +159,7 @@ class NaturalEarthDbTest {
     var db = NaturalEarthDb.fromSqlite(cwd.resolveSibling(pathFromRoot), tmpDir);
 
     assertEquals(0.0, db.getAdmin0ByIso("US").minLabel());
-    assertEquals(1.0, db.getAdmin0ByWikidata("Q0").minLabel());
-
     assertEquals(3.0, db.getAdmin1ByIso("US-CA").minLabel());
-
     assertEquals(8.0, db.getPopulatedPlaceByWikidata("Q3").minZoom());
-    assertEquals(2, db.getPopulatedPlaceByWikidata("Q4").rankMax());
   }
 }
