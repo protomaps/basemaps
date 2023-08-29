@@ -57,14 +57,17 @@ public class NaturalEarthDb {
 
   private NaturalEarthDb(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
     List<NePopulatedPlace> populatedPlaces) {
-    this.placesByWikidataId = populatedPlaces.stream().filter(p -> p.wikidataId != null)
-      .collect(Collectors.toMap(p -> p.wikidataId, p -> p, (p1, p2) -> p1)); // TODO conflicts
 
-    this.admin0sByIsoA2 = countries.stream().filter(c -> c.iso_a2 != null)
+    // resolve wikidata conflicts by choosing the larger rankMax
+    this.placesByWikidataId = populatedPlaces.stream().filter(p -> p.wikidataId != null)
+      .collect(Collectors.toMap(p -> p.wikidataId, p -> p, (p1, p2) -> p1.rankMax() > p2.rankMax() ? p1 : p2));
+
+    this.admin0sByIsoA2 = countries.stream().filter(c -> !c.iso_a2.equals("-99"))
       .collect(Collectors.toMap(c -> c.iso_a2, c -> c));
 
+    // resolve wikidata conflicts like Q27561 by choosing the smaller min_label
     this.admin0sByWikidata = countries.stream().filter(c -> c.wikidataId != null)
-      .collect(Collectors.toMap(c -> c.wikidataId, c -> c));
+      .collect(Collectors.toMap(c -> c.wikidataId, c -> c, (c1, c2) -> c1.minLabel() < c2.minLabel() ? c1 : c2));
 
     this.admin1sByIso31662 = statesProvinces.stream().collect(Collectors.toMap(s -> s.iso3166_2, s -> s));
 
@@ -72,7 +75,7 @@ public class NaturalEarthDb {
       .collect(Collectors.toMap(s -> s.wikidataId, s -> s));
   }
 
-  public NePopulatedPlace getPopulatedPlaceByWikidataId(String wikidataId) {
+  public NePopulatedPlace getPopulatedPlaceByWikidata(String wikidataId) {
     return this.placesByWikidataId.get(wikidataId);
   }
 
@@ -115,69 +118,63 @@ public class NaturalEarthDb {
   }
 
   public static NaturalEarthDb fromSqlite(Path path, Path unzippedDir) {
-    boolean keepUnzipped = true;
-
     List<NeAdmin0Country> countries = new ArrayList<>();
     List<NeAdmin1StateProvince> statesProvinces = new ArrayList<>();
     List<NePopulatedPlace> populatedPlaces = new ArrayList<>();
 
     try {
       Path extracted;
-      String uri = "jdbc:sqlite:" + path.toAbsolutePath();
-      if (FileUtils.hasExtension(path, "zip")) {
-        try (var zipFs = FileSystems.newFileSystem(path)) {
-          var zipEntry = FileUtils.walkFileSystem(zipFs)
-            .filter(Files::isRegularFile)
-            .filter(entry -> FileUtils.hasExtension(entry, "sqlite"))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("No .sqlite file found inside " + path));
-          extracted = unzippedDir.resolve(URLEncoder.encode(zipEntry.toString(), StandardCharsets.UTF_8));
-          FileUtils.createParentDirectories(extracted);
-          if (!keepUnzipped || FileUtils.isNewer(path, extracted)) {
-            LOGGER.info("unzipping {} to {}", path.toAbsolutePath(), extracted);
-            Files.copy(Files.newInputStream(zipEntry), extracted, StandardCopyOption.REPLACE_EXISTING);
-          }
-          if (!keepUnzipped) {
-            extracted.toFile().deleteOnExit();
-          }
+      String uri;
+      try (var zipFs = FileSystems.newFileSystem(path)) {
+        var zipEntry = FileUtils.walkFileSystem(zipFs)
+          .filter(Files::isRegularFile)
+          .filter(entry -> FileUtils.hasExtension(entry, "sqlite"))
+          .findFirst()
+          .orElseThrow(() -> new IllegalArgumentException("No .sqlite file found inside " + path));
+        extracted = unzippedDir.resolve(URLEncoder.encode(zipEntry.toString(), StandardCharsets.UTF_8));
+        FileUtils.createParentDirectories(extracted);
+        if (FileUtils.isNewer(path, extracted)) {
+          LOGGER.info("unzipping {} to {}", path.toAbsolutePath(), extracted);
+          Files.copy(Files.newInputStream(zipEntry), extracted, StandardCopyOption.REPLACE_EXISTING);
         }
-        uri = "jdbc:sqlite:" + extracted.toAbsolutePath();
-        var conn = DriverManager.getConnection(uri);
-
-        try (Statement statement = conn.createStatement()) {
-          ResultSet rs =
-            statement
-              .executeQuery(
-                "SELECT name, name_en, iso_a2, wikidataid, min_label, max_label FROM ne_10m_admin_0_countries;");
-          while (rs.next()) {
-            countries.add(new NeAdmin0Country(rs.getString("name"), rs.getString("name_en"), rs.getString("iso_a2"),
-              rs.getString("wikidataid"),
-              rs.getDouble("min_label"), rs.getDouble("max_label")));
-          }
-        }
-
-        try (Statement statement = conn.createStatement()) {
-          ResultSet rs =
-            statement.executeQuery(
-              "SELECT name, iso_3166_2, wikidataid, min_label, max_label FROM ne_10m_admin_1_states_provinces;");
-          while (rs.next()) {
-            statesProvinces.add(new NeAdmin1StateProvince(rs.getString("name"), rs.getString("iso_3166_2"),
-              rs.getString("wikidataid"), rs.getDouble("min_label"),
-              rs.getDouble("max_label")));
-          }
-        }
-
-        try (Statement statement = conn.createStatement()) {
-          ResultSet rs =
-            statement.executeQuery("SELECT name, wikidataid, min_zoom, rank_max FROM ne_10m_populated_places;");
-          while (rs.next()) {
-            populatedPlaces.add(new NePopulatedPlace(rs.getString("name"), rs.getString("wikidataid"),
-              rs.getDouble("min_zoom"), rs.getInt("rank_max")));
-          }
-        }
-
-        conn.close();
       }
+      uri = "jdbc:sqlite:" + extracted.toAbsolutePath();
+
+      var conn = DriverManager.getConnection(uri);
+
+      try (Statement statement = conn.createStatement()) {
+        ResultSet rs =
+          statement
+            .executeQuery(
+              "SELECT name, name_en, iso_a2, wikidataid, min_label, max_label FROM ne_10m_admin_0_countries_tlc;");
+        while (rs.next()) {
+          countries.add(new NeAdmin0Country(rs.getString("name"), rs.getString("name_en"), rs.getString("iso_a2"),
+            rs.getString("wikidataid"),
+            rs.getDouble("min_label"), rs.getDouble("max_label")));
+        }
+      }
+
+      try (Statement statement = conn.createStatement()) {
+        ResultSet rs =
+          statement.executeQuery(
+            "SELECT name, iso_3166_2, wikidataid, min_label, max_label FROM ne_10m_admin_1_states_provinces;");
+        while (rs.next()) {
+          statesProvinces.add(new NeAdmin1StateProvince(rs.getString("name"), rs.getString("iso_3166_2"),
+            rs.getString("wikidataid"), rs.getDouble("min_label"),
+            rs.getDouble("max_label")));
+        }
+      }
+
+      try (Statement statement = conn.createStatement()) {
+        ResultSet rs =
+          statement.executeQuery("SELECT name, wikidataid, min_zoom, rank_max FROM ne_10m_populated_places;");
+        while (rs.next()) {
+          populatedPlaces.add(new NePopulatedPlace(rs.getString("name"), rs.getString("wikidataid"),
+            rs.getDouble("min_zoom"), rs.getInt("rank_max")));
+        }
+      }
+
+      conn.close();
     } catch (IOException | SQLException e) {
       throw new IllegalArgumentException(e);
     }

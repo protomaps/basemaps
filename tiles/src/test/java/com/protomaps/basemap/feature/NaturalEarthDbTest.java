@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.reader.SimpleFeature;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class NaturalEarthDbTest {
   @Test
@@ -102,17 +104,17 @@ public class NaturalEarthDbTest {
   }
 
   @Test
-  void testSQLImportCountries() {
+  void testSQLImport(@TempDir Path tmpDir) {
+    Path cwd = Path.of("").toAbsolutePath();
+    Path pathFromRoot = Path.of("tiles", "src", "test", "resources", "ne_fixture.sqlite.zip");
+    var db = NaturalEarthDb.fromSqlite(cwd.resolveSibling(pathFromRoot), tmpDir);
 
-  }
+    assertEquals(0.0, db.getAdmin0ByIso("US").minLabel());
+    assertEquals(1.0, db.getAdmin0ByWikidata("Q0").minLabel());
 
-  @Test
-  void testSQLImportRegions() {
+    assertEquals(3.0, db.getAdmin1ByIso("US-CA").minLabel());
 
-  }
-
-  @Test
-  void testSQLImportPopulatedPlaces() {
-
+    assertEquals(8.0, db.getPopulatedPlaceByWikidata("Q3").minZoom());
+    assertEquals(2, db.getPopulatedPlaceByWikidata("Q4").rankMax());
   }
 }
