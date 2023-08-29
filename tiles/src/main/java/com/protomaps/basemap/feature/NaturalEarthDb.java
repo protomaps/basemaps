@@ -55,7 +55,7 @@ public class NaturalEarthDb {
     double maxLabel) {}
   public record NePopulatedPlace(String name, String wikidataId, double minZoom, int rankMax) {}
 
-  private NaturalEarthDb(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
+  public NaturalEarthDb(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
     List<NePopulatedPlace> populatedPlaces) {
     // resolve wikidata+iso conflicts like Q27561 by choosing the smaller min_label
     this.admin0sByIsoA2 = countries.stream().filter(c -> !c.iso_a2.equals("-99"))
@@ -64,7 +64,8 @@ public class NaturalEarthDb {
     this.admin0sByWikidataId = countries.stream().filter(c -> c.wikidataId != null)
       .collect(Collectors.toMap(c -> c.wikidataId, c -> c, (c1, c2) -> c1.minLabel() < c2.minLabel() ? c1 : c2));
 
-    this.admin1sByIso31662 = statesProvinces.stream().collect(Collectors.toMap(s -> s.iso3166_2, s -> s));
+    this.admin1sByIso31662 = statesProvinces.stream()
+      .collect(Collectors.toMap(s -> s.iso3166_2, s -> s, (s1, s2) -> s1.minLabel() < s2.minLabel() ? s1 : s2));
 
     this.admin1sByWikidataId = statesProvinces.stream().filter(s -> s.wikidataId != null)
       .collect(Collectors.toMap(s -> s.wikidataId, s -> s));
@@ -177,11 +178,6 @@ public class NaturalEarthDb {
     } catch (IOException | SQLException e) {
       throw new IllegalArgumentException(e);
     }
-    return new NaturalEarthDb(countries, statesProvinces, populatedPlaces);
-  }
-
-  public static NaturalEarthDb fromList(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
-    List<NePopulatedPlace> populatedPlaces) {
     return new NaturalEarthDb(countries, statesProvinces, populatedPlaces);
   }
 }

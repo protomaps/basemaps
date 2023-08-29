@@ -5,9 +5,6 @@ import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
-import com.onthegomap.planetiler.geo.GeoUtils;
-import com.onthegomap.planetiler.geo.GeometryException;
-import com.onthegomap.planetiler.geo.PointIndex;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
@@ -18,7 +15,6 @@ import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.locationtech.jts.geom.Point;
 
 public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -35,19 +31,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
   private final AtomicInteger placeNumber = new AtomicInteger(0);
 
-  // To have consistent min_zoom and other attr between Natural Earth (low zooms) and OpenStreetMap (high zooms)
-  // we need to store the NE places with a spatial indexes for later joins with OSM
-  private PointIndex<NaturalEarthPlace> ne_populated_places = PointIndex.create();
-
-  // Data structure for any Natural Earth place (eg for data joins between NE and OSM)
-  private record NaturalEarthPlace(String name, String wikidataId, float minZoom, int populationRank) {}
-
-  // Search window size for NE <> OSM data joins
-  private static final double LOCALITY_JOIN_DISTANCE = GeoUtils.metersToPixelAtEquator(0, 50_000) / 256d;
-
-
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
-  static int getSortKey(float minZoom, int kindRank, int populationRank, long population, String name) {
+  static int getSortKey(double minZoom, int kindRank, int populationRank, long population, String name) {
     return SortKey
       // (nvkelso 20230803) floats with significant single decimal precision
       //                    but results in "Too many possible values"
@@ -64,10 +49,10 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       .get();
   }
 
-  @Override
-  public void release() {
-    ne_populated_places = null;
-  }
+
+  // Offset by 1 here because of 256 versus 512 pixel tile sizes
+  // and how the OSM processing assumes 512 tile size (while NE is 256)
+  private static int NE_ZOOM_OFFSET = 1;
 
   private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION =
     ZoomFunction.fromMaxZoomThresholds(Map.of(
@@ -90,21 +75,6 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
     if (!sourceLayer.equals("ne_10m_populated_places")) {
       return;
-    }
-
-    // Setup for high zoom content
-    // Collect Natural Earth populated places for use later in OSM data joins
-    try {
-      ne_populated_places.put(sf.worldGeometry(), new NaturalEarthPlace(
-        sf.getString("name"),
-        sf.getString("wikidataid"),
-        // Offset by 1 here because of 256 versus 512 pixel tile sizes
-        // and how the OSM processing assumes 512 tile size (while NE is 256)
-        (float) Double.parseDouble(sf.getString("min_zoom")) - 1,
-        (int) Double.parseDouble(sf.getString("rank_max"))
-      ));
-    } catch (GeometryException e) {
-      e.log("Geometry exception in NE populated places setup");
     }
 
     // (nvkelso 20230817) We could omit the rest of this function and rely solely on
@@ -149,7 +119,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     }
 
     if (!kind.isEmpty()) {
-      float minZoom = sf.getString("min_zoom") == null ? 10.0f : (float) Double.parseDouble(sf.getString("min_zoom"));
+      double minZoom = sf.getString("min_zoom") == null ? 10.0f : Double.parseDouble(sf.getString("min_zoom"));
       int populationRank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
       int population = parseIntOrNull(sf.getString("pop_max"));
 
@@ -189,8 +159,8 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       int kindRank = 6;
 
       int themeMinZoom = 7;
-      float minZoom = 12.0f;
-      float maxZoom = 15.0f;
+      double minZoom = 12.0;
+      double maxZoom = 15.0;
       long population = 0;
       if (sf.hasTag("population")) {
         Integer parsed = parseIntOrNull(sf.getString("population"));
@@ -208,11 +178,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           //                    TODO: Really these should switch over to NE source
           themeMinZoom = 0;
           kind = "country";
-          //          var countryInfo = CountryInfos.getByWikidata(sf);
-          //          minZoom = (float) countryInfo.minZoom();
-          //          maxZoom = (float) countryInfo.maxZoom();
-          minZoom = (float) 5.0;
-          maxZoom = (float) 8.0;
+          minZoom = 5.0;
+          maxZoom = 8.0;
+          var neAdmin0 = naturalEarthDb.getAdmin0ByWikidata(sf.getString("wikidata"));
+          if (neAdmin0 != null) {
+            minZoom = neAdmin0.minLabel() - NE_ZOOM_OFFSET;
+            maxZoom = neAdmin0.maxLabel() - NE_ZOOM_OFFSET;
+          }
+
           kindRank = 0;
           break;
         case "state":
@@ -221,11 +194,13 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           //                    TODO: Really these should switch over to NE source
           themeMinZoom = 0;
           kind = "region";
-          //          var regionInfo = RegionInfos.getByWikidata(sf);
-          //          minZoom = (float) regionInfo.minZoom();
-          //          maxZoom = (float) regionInfo.maxZoom();
-          minZoom = (float) 8.0;
-          maxZoom = (float) 11.0;
+          minZoom = 8.0;
+          maxZoom = 11.0;
+          var neAdmin1 = naturalEarthDb.getAdmin1ByWikidata(sf.getString("wikidata"));
+          if (neAdmin1 != null) {
+            minZoom = neAdmin1.minLabel() - NE_ZOOM_OFFSET;
+            maxZoom = neAdmin1.maxLabel() - NE_ZOOM_OFFSET;
+          }
           kindRank = 1;
           break;
         case "city":
@@ -307,23 +282,14 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       //
       // First scope down the NE <> OSM data join (to speed up total build time)
       if (kind.equals("locality")) {
-        try {
-          Point point = sf.worldGeometry().getCentroid();
-          List<NaturalEarthPlace> neLocalities = ne_populated_places.getWithin(point, LOCALITY_JOIN_DISTANCE);
-          String wikidata = sf.getString("wikidata", "");
-          for (NaturalEarthPlace neLocality : neLocalities) {
-            // We could add more fallback equivelancy tests here, but 98% of NE places have a Wikidata ID
-            if (wikidata.equals(neLocality.wikidataId)) {
-              minZoom = neLocality.minZoom;
-              // (nvkelso 20230815) We could set the population value here, too
-              //                    But by the OSM zooms the value should be the incorporated value
-              //                    While symbology should be for the metro population value
-              populationRank = neLocality.populationRank;
-              break;
-            }
-          }
-        } catch (GeometryException e) {
-          e.log("Geometry exception in NE <> OSM data joins");
+        // We could add more fallback equivalency tests here, but 98% of NE places have a Wikidata ID
+        var nePopulatedPlace = naturalEarthDb.getPopulatedPlaceByWikidata(sf.getString("wikidata"));
+        if (nePopulatedPlace != null) {
+          minZoom = nePopulatedPlace.minZoom() - NE_ZOOM_OFFSET;
+          // (nvkelso 20230815) We could set the population value here, too
+          //                    But by the OSM zooms the value should be the incorporated value
+          //                    While symbology should be for the metro population value
+          populationRank = nePopulatedPlace.rankMax();
         }
       }
 

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.io.TempDir;
 class NaturalEarthDbTest {
   @Test
   void testLookupUSbyISO() {
-    var db = NaturalEarthDb.fromList(
+    var db = new NaturalEarthDb(
       List.of(new NaturalEarthDb.NeAdmin0Country("United States", "United States of America", "US", "Q30", 1.7, 5.7)),
       List.of(), List.of());
 
@@ -28,7 +28,7 @@ class NaturalEarthDbTest {
 
   @Test
   void testCountryIsoMissing() {
-    var db = NaturalEarthDb.fromList(
+    var db = new NaturalEarthDb(
       List.of(
         new NaturalEarthDb.NeAdmin0Country("Country1", "", "-99", "Q30", 1.7, 5.7)
       ),
@@ -39,7 +39,7 @@ class NaturalEarthDbTest {
 
   @Test
   void testCountryWikidataDuplicate() {
-    var db = NaturalEarthDb.fromList(
+    var db = new NaturalEarthDb(
       List.of(
         new NaturalEarthDb.NeAdmin0Country("Country1", "", "AB", "Q30", 1.7, 5.7),
         new NaturalEarthDb.NeAdmin0Country("Country1", "", "AC", "Q30", 2.7, 5.7)
@@ -52,7 +52,7 @@ class NaturalEarthDbTest {
 
   @Test
   void testCountryIsoDuplicate() {
-    var db = NaturalEarthDb.fromList(
+    var db = new NaturalEarthDb(
       List.of(
         new NaturalEarthDb.NeAdmin0Country("Country1", "", "AB", "Q30", 1.7, 5.7),
         new NaturalEarthDb.NeAdmin0Country("Country1", "", "AB", "Q31", 2.7, 5.7)
@@ -65,7 +65,7 @@ class NaturalEarthDbTest {
 
   @Test
   void testLookupUSbyWikidata() {
-    var db = NaturalEarthDb.fromList(
+    var db = new NaturalEarthDb(
       List.of(new NaturalEarthDb.NeAdmin0Country("United States", "United States of America", "US", "Q30", 1.7, 5.7)),
       List.of(), List.of());
 
@@ -79,7 +79,7 @@ class NaturalEarthDbTest {
 
   @Test
   void testLookupCountryByAlternateIso() {
-    var db = NaturalEarthDb.fromList(
+    var db = new NaturalEarthDb(
       List.of(new NaturalEarthDb.NeAdmin0Country("Mexico", "México", "MX", "Q96", 2.0, 6.7)),
       List.of(), List.of());
 
@@ -94,7 +94,7 @@ class NaturalEarthDbTest {
 
   @Test
   void testNotFoundCountryIso() {
-    var db = NaturalEarthDb.fromList(List.of(), List.of(), List.of());
+    var db = new NaturalEarthDb(List.of(), List.of(), List.of());
 
     var sf = SimpleFeature.create(GeoUtils.EMPTY_POINT,
       Map.of("country_code_iso3166_1", "XX", "ISO3166-1:alpha2", "XX", "name", "Null Island trap street"), "testsource",
@@ -106,7 +106,7 @@ class NaturalEarthDbTest {
 
   @Test
   void testLookupRegionIso() {
-    var db = NaturalEarthDb.fromList(List.of(), List.of(
+    var db = new NaturalEarthDb(List.of(), List.of(
       new NaturalEarthDb.NeAdmin1StateProvince("Yukon", "CA-YT", "Q2009", 3.5, 7.5)
     ), List.of());
 
@@ -116,8 +116,21 @@ class NaturalEarthDbTest {
   }
 
   @Test
+  void testRegionIsoDuplicate() {
+    var db = new NaturalEarthDb(List.of(),
+      List.of(
+        new NaturalEarthDb.NeAdmin1StateProvince("Yukon", "CA-YT", "Q2009", 4.5, 7.5),
+        new NaturalEarthDb.NeAdmin1StateProvince("Yukon", "CA-YT", "Q2010", 3.5, 7.5)
+      ),
+      List.of());
+
+    var result = db.getAdmin1ByIso("CA-YT");
+    assertEquals(3.5, result.minLabel());
+  }
+
+  @Test
   void testLookupRegionWikidata() {
-    var db = NaturalEarthDb.fromList(List.of(), List.of(
+    var db = new NaturalEarthDb(List.of(), List.of(
       new NaturalEarthDb.NeAdmin1StateProvince("Yukon", "CA-YT", "Q2009", 3.5, 7.5)
     ), List.of());
 
@@ -128,21 +141,21 @@ class NaturalEarthDbTest {
 
   @Test
   void testNotFoundRegionIso() {
-    var db = NaturalEarthDb.fromList(List.of(), List.of(), List.of());
+    var db = new NaturalEarthDb(List.of(), List.of(), List.of());
     var result = db.getAdmin1ByIso("CA-YT");
     assertNull(result);
   }
 
   @Test
   void testNotFoundRegionWikidata() {
-    var db = NaturalEarthDb.fromList(List.of(), List.of(), List.of());
+    var db = new NaturalEarthDb(List.of(), List.of(), List.of());
     var result = db.getAdmin1ByWikidata("Q2009");
     assertNull(result);
   }
 
   @Test
   void testPopulatedPlaceWikidataDuplicate() {
-    var db = NaturalEarthDb.fromList(List.of(), List.of(),
+    var db = new NaturalEarthDb(List.of(), List.of(),
       List.of(
         new NaturalEarthDb.NePopulatedPlace("Country1", "Q1", 1.0, 2),
         new NaturalEarthDb.NePopulatedPlace("Country1", "Q1", 1.0, 5)
