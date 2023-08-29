@@ -11,7 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class NaturalEarthDbTest {
+class NaturalEarthDbTest {
   @Test
   void testLookupUSbyISO() {
     var db = NaturalEarthDb.fromList(
@@ -24,6 +24,43 @@ public class NaturalEarthDbTest {
     var result = db.getAdmin0ByIso(sf);
     assertEquals(1.7, result.minLabel());
     assertEquals(5.7, result.maxLabel());
+  }
+
+  @Test
+  void testCountryIsoMissing() {
+    var db = NaturalEarthDb.fromList(
+      List.of(
+        new NaturalEarthDb.NeAdmin0Country("Country1", "", "-99", "Q30", 1.7, 5.7)
+      ),
+      List.of(), List.of());
+
+    assertNull(db.getAdmin0ByIso("-99"));
+  }
+
+  @Test
+  void testCountryWikidataDuplicate() {
+    var db = NaturalEarthDb.fromList(
+      List.of(
+        new NaturalEarthDb.NeAdmin0Country("Country1", "", "AB", "Q30", 1.7, 5.7),
+        new NaturalEarthDb.NeAdmin0Country("Country1", "", "AC", "Q30", 2.7, 5.7)
+      ),
+      List.of(), List.of());
+
+    var result = db.getAdmin0ByWikidata("Q30");
+    assertEquals(1.7, result.minLabel());
+  }
+
+  @Test
+  void testCountryIsoDuplicate() {
+    var db = NaturalEarthDb.fromList(
+      List.of(
+        new NaturalEarthDb.NeAdmin0Country("Country1", "", "AB", "Q30", 1.7, 5.7),
+        new NaturalEarthDb.NeAdmin0Country("Country1", "", "AB", "Q31", 2.7, 5.7)
+      ),
+      List.of(), List.of());
+
+    var result = db.getAdmin0ByIso("AB");
+    assertEquals(1.7, result.minLabel());
   }
 
   @Test
@@ -101,6 +138,18 @@ public class NaturalEarthDbTest {
     var db = NaturalEarthDb.fromList(List.of(), List.of(), List.of());
     var result = db.getAdmin1ByWikidata("Q2009");
     assertNull(result);
+  }
+
+  @Test
+  void testPopulatedPlaceWikidataDuplicate() {
+    var db = NaturalEarthDb.fromList(List.of(), List.of(),
+      List.of(
+        new NaturalEarthDb.NePopulatedPlace("Country1", "Q1", 1.0, 2),
+        new NaturalEarthDb.NePopulatedPlace("Country1", "Q1", 1.0, 5)
+      ));
+
+    var result = db.getPopulatedPlaceByWikidata("Q1");
+    assertEquals(5, result.rankMax());
   }
 
   @Test

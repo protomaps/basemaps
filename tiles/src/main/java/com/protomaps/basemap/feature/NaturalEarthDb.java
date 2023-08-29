@@ -45,9 +45,9 @@ public class NaturalEarthDb {
 
   private final Map<String, NePopulatedPlace> placesByWikidataId;
   private final Map<String, NeAdmin0Country> admin0sByIsoA2;
-  private final Map<String, NeAdmin0Country> admin0sByWikidata;
+  private final Map<String, NeAdmin0Country> admin0sByWikidataId;
   private final Map<String, NeAdmin1StateProvince> admin1sByIso31662;
-  private final Map<String, NeAdmin1StateProvince> admin1sByWikidata;
+  private final Map<String, NeAdmin1StateProvince> admin1sByWikidataId;
 
   public record NeAdmin0Country(String name, String name_en, String iso_a2, String wikidataId, double minLabel,
     double maxLabel) {}
@@ -57,22 +57,21 @@ public class NaturalEarthDb {
 
   private NaturalEarthDb(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
     List<NePopulatedPlace> populatedPlaces) {
-
-    // resolve wikidata conflicts by choosing the larger rankMax
-    this.placesByWikidataId = populatedPlaces.stream().filter(p -> p.wikidataId != null)
-      .collect(Collectors.toMap(p -> p.wikidataId, p -> p, (p1, p2) -> p1.rankMax() > p2.rankMax() ? p1 : p2));
-
+    // resolve wikidata+iso conflicts like Q27561 by choosing the smaller min_label
     this.admin0sByIsoA2 = countries.stream().filter(c -> !c.iso_a2.equals("-99"))
-      .collect(Collectors.toMap(c -> c.iso_a2, c -> c));
+      .collect(Collectors.toMap(c -> c.iso_a2, c -> c, (c1, c2) -> c1.minLabel() < c2.minLabel() ? c1 : c2));
 
-    // resolve wikidata conflicts like Q27561 by choosing the smaller min_label
-    this.admin0sByWikidata = countries.stream().filter(c -> c.wikidataId != null)
+    this.admin0sByWikidataId = countries.stream().filter(c -> c.wikidataId != null)
       .collect(Collectors.toMap(c -> c.wikidataId, c -> c, (c1, c2) -> c1.minLabel() < c2.minLabel() ? c1 : c2));
 
     this.admin1sByIso31662 = statesProvinces.stream().collect(Collectors.toMap(s -> s.iso3166_2, s -> s));
 
-    this.admin1sByWikidata = statesProvinces.stream().filter(s -> s.wikidataId != null)
+    this.admin1sByWikidataId = statesProvinces.stream().filter(s -> s.wikidataId != null)
       .collect(Collectors.toMap(s -> s.wikidataId, s -> s));
+
+    // resolve wikidata conflicts by choosing the larger rankMax
+    this.placesByWikidataId = populatedPlaces.stream().filter(p -> p.wikidataId != null)
+      .collect(Collectors.toMap(p -> p.wikidataId, p -> p, (p1, p2) -> p1.rankMax() > p2.rankMax() ? p1 : p2));
   }
 
   public NePopulatedPlace getPopulatedPlaceByWikidata(String wikidataId) {
@@ -84,7 +83,7 @@ public class NaturalEarthDb {
   }
 
   public NeAdmin1StateProvince getAdmin1ByWikidata(String wikidataId) {
-    return this.admin1sByWikidata.get(wikidataId);
+    return this.admin1sByWikidataId.get(wikidataId);
   }
 
   private static String coalesceTag(SourceFeature sf, String... tags) {
@@ -114,7 +113,7 @@ public class NaturalEarthDb {
 
   // 100% of country nodes have wikidata
   public NeAdmin0Country getAdmin0ByWikidata(String wikidataId) {
-    return this.admin0sByWikidata.get(wikidataId);
+    return this.admin0sByWikidataId.get(wikidataId);
   }
 
   public static NaturalEarthDb fromSqlite(Path path, Path unzippedDir) {

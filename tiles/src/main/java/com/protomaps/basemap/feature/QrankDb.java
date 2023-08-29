@@ -35,8 +35,6 @@ public final class QrankDb {
     GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(csvPath.toFile()));
     try (BufferedReader br = new BufferedReader(new InputStreamReader(gzip))) {
       String content;
-      long startTime = System.nanoTime();
-
       LongLongHashMap db = new LongLongHashMap();
       String header = br.readLine(); // header
       assert (header.equals("Entity,QRank"));
@@ -46,8 +44,6 @@ public final class QrankDb {
         long rank = Long.parseLong(split[1]);
         db.put(id, rank);
       }
-      long endTime = System.nanoTime();
-      long elapsedTimeMillis = (endTime - startTime) / 1_000_000;
       return new QrankDb(db);
     }
   }
