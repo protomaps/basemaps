@@ -33,22 +33,22 @@ public final class QrankDb {
 
   public static QrankDb fromCsv(Path csvPath) throws IOException {
     GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(csvPath.toFile()));
-    BufferedReader br = new BufferedReader(new InputStreamReader(gzip));
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(gzip))) {
+      String content;
+      long startTime = System.nanoTime();
 
-    String content;
-    long startTime = System.nanoTime();
-
-    LongLongHashMap db = new LongLongHashMap();
-    br.readLine(); // header
-    while ((content = br.readLine()) != null) {
-      var split = content.split(",");
-      long id = Long.parseLong(split[0].substring(1));
-      long rank = Long.parseLong(split[1]);
-      db.put(id, rank);
+      LongLongHashMap db = new LongLongHashMap();
+      String header = br.readLine(); // header
+      assert (header.equals("Entity,QRank"));
+      while ((content = br.readLine()) != null) {
+        var split = content.split(",");
+        long id = Long.parseLong(split[0].substring(1));
+        long rank = Long.parseLong(split[1]);
+        db.put(id, rank);
+      }
+      long endTime = System.nanoTime();
+      long elapsedTimeMillis = (endTime - startTime) / 1_000_000;
+      return new QrankDb(db);
     }
-    long endTime = System.nanoTime();
-    long elapsedTimeMillis = (endTime - startTime) / 1_000_000;
-    System.out.println(elapsedTimeMillis);
-    return new QrankDb(db);
   }
 }

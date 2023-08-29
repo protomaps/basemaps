@@ -46,14 +46,14 @@ public class NaturalEarthDb {
   private final Map<String, NePopulatedPlace> placesByWikidataId;
   private final Map<String, NeAdmin0Country> admin0sByIsoA2;
   private final Map<String, NeAdmin0Country> admin0sByWikidata;
-  private final Map<String, NeAdmin1StateProvince> admin1sByIso3166_2;
+  private final Map<String, NeAdmin1StateProvince> admin1sByIso31662;
   private final Map<String, NeAdmin1StateProvince> admin1sByWikidata;
 
   public record NeAdmin0Country(String name, String name_en, String iso_a2, String wikidataId, double minLabel,
-    double maxLabel) {};
+    double maxLabel) {}
   public record NeAdmin1StateProvince(String name, String iso3166_2, String wikidataId, double minLabel,
-    double maxLabel) {};
-  public record NePopulatedPlace(String name, String wikidataId, double minZoom, int rankMax) {};
+    double maxLabel) {}
+  public record NePopulatedPlace(String name, String wikidataId, double minZoom, int rankMax) {}
 
   private NaturalEarthDb(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
     List<NePopulatedPlace> populatedPlaces) {
@@ -66,7 +66,7 @@ public class NaturalEarthDb {
     this.admin0sByWikidata = countries.stream().filter(c -> c.wikidataId != null)
       .collect(Collectors.toMap(c -> c.wikidataId, c -> c));
 
-    this.admin1sByIso3166_2 = statesProvinces.stream().collect(Collectors.toMap(s -> s.iso3166_2, s -> s));
+    this.admin1sByIso31662 = statesProvinces.stream().collect(Collectors.toMap(s -> s.iso3166_2, s -> s));
 
     this.admin1sByWikidata = statesProvinces.stream().filter(s -> s.wikidataId != null)
       .collect(Collectors.toMap(s -> s.wikidataId, s -> s));
@@ -77,7 +77,7 @@ public class NaturalEarthDb {
   }
 
   public NeAdmin1StateProvince getAdmin1ByIso(String isoCode) {
-    return this.admin1sByIso3166_2.get(isoCode);
+    return this.admin1sByIso31662.get(isoCode);
   }
 
   public NeAdmin1StateProvince getAdmin1ByWikidata(String wikidataId) {
