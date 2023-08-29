@@ -4,10 +4,19 @@ import com.carrotsearch.hppc.LongLongHashMap;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
+import javax.annotation.concurrent.Immutable;
 
-public class QrankDb {
+/**
+ * An in-memory representation of the entire QRank database used for generalizing
+ * {@link com.protomaps.basemap.layers.Pois}.
+ * <p>
+ * Parses a copy of the gzipped QRank dataset into a long->long hash map that can be efficiently queried when processing
+ * POI features.
+ **/
+@Immutable
+public final class QrankDb {
 
-  private LongLongHashMap db;
+  private final LongLongHashMap db;
 
   public QrankDb(LongLongHashMap db) {
     this.db = db;
@@ -15,6 +24,11 @@ public class QrankDb {
 
   public long get(long wikidataId) {
     return this.db.get(wikidataId);
+  }
+
+  public long get(String wikidataId) {
+    long id = Long.parseLong(wikidataId.substring(1));
+    return this.get(id);
   }
 
   public static QrankDb fromCsv(Path csvPath) throws IOException {

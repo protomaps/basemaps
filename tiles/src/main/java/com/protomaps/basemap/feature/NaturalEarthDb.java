@@ -1,5 +1,6 @@
 package com.protomaps.basemap.feature;
 
+import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.FileUtils;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -16,6 +17,20 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * An in-memory representation of a subset of Natural Earth tables, used for generalizing OpenStreetMap data.
+ * <p>
+ * Themes: admin_0_countries, admin_1_states_provinces, populated_places at the 10m map scale. Queried via multiple
+ * convenience methods or matching to OpenStreetMap tags. * Query hardcoded information about countries. *
+ * <p>
+ * * Retrieve embedded hardcoded data about countries, addressable by names that should match OSM and NE. *
+ * </p>
+ * ** * Query hardcoded information about sub-national regions. *
+ * <p>
+ * * Embedded hand-curated data on sub-national regions of significant extents, to assist in labeling. Includes US
+ * states, * AU states and territories, CA provinces and territories, and other significant regions globally *
+ * </p>
+ */
 public class NaturalEarthDb {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NaturalEarthDb.class);
@@ -28,37 +43,75 @@ public class NaturalEarthDb {
     }
   }
 
-  private Map<String, NePopulatedPlace> placesByWikidataId;
+  private final Map<String, NePopulatedPlace> placesByWikidataId;
+  private final Map<String, NeAdmin0Country> admin0sByIsoA2;
+  private final Map<String, NeAdmin0Country> admin0sByWikidata;
+  private final Map<String, NeAdmin1StateProvince> admin1sByIso3166_2;
+  private final Map<String, NeAdmin1StateProvince> admin1sByWikidata;
 
-  public record NeAdmin0Country(String name, String iso_a2, String wikidataId, double minLabel, double maxLabel) {};
+  public record NeAdmin0Country(String name, String name_en, String iso_a2, String wikidataId, double minLabel,
+    double maxLabel) {};
   public record NeAdmin1StateProvince(String name, String iso3166_2, String wikidataId, double minLabel,
     double maxLabel) {};
   public record NePopulatedPlace(String name, String wikidataId, double minZoom, int rankMax) {};
 
   private NaturalEarthDb(List<NeAdmin0Country> countries, List<NeAdmin1StateProvince> statesProvinces,
     List<NePopulatedPlace> populatedPlaces) {
-    this.placesByWikidataId = populatedPlaces.stream().filter(place -> place.wikidataId != null)
-      .collect(Collectors.toMap(place -> place.wikidataId, place -> place, (s, a) -> s)); // TODO conflicts
+    this.placesByWikidataId = populatedPlaces.stream().filter(p -> p.wikidataId != null)
+      .collect(Collectors.toMap(p -> p.wikidataId, p -> p, (p1, p2) -> p1)); // TODO conflicts
+
+    this.admin0sByIsoA2 = countries.stream().filter(c -> c.iso_a2 != null)
+      .collect(Collectors.toMap(c -> c.iso_a2, c -> c));
+
+    this.admin0sByWikidata = countries.stream().filter(c -> c.wikidataId != null)
+      .collect(Collectors.toMap(c -> c.wikidataId, c -> c));
+
+    this.admin1sByIso3166_2 = statesProvinces.stream().collect(Collectors.toMap(s -> s.iso3166_2, s -> s));
+
+    this.admin1sByWikidata = statesProvinces.stream().filter(s -> s.wikidataId != null)
+      .collect(Collectors.toMap(s -> s.wikidataId, s -> s));
   }
 
   public NePopulatedPlace getPopulatedPlaceByWikidataId(String wikidataId) {
     return this.placesByWikidataId.get(wikidataId);
   }
 
-  public NeAdmin1StateProvince getAdmin1ByIsoCode(String isoCode) {
+  public NeAdmin1StateProvince getAdmin1ByIso(String isoCode) {
+    return this.admin1sByIso3166_2.get(isoCode);
+  }
+
+  public NeAdmin1StateProvince getAdmin1ByWikidata(String wikidataId) {
+    return this.admin1sByWikidata.get(wikidataId);
+  }
+
+  private static String coalesceTag(SourceFeature sf, String... tags) {
+    for (String tag : tags) {
+      String value = sf.getString(tag);
+      if (value != null)
+        return value;
+    }
     return null;
   }
 
-  public NeAdmin1StateProvince getAdmin1byWikidataId(String wikidataId) {
-    return null;
+  /*
+   * Convenience method for matching an OSM feature.
+   * <p>
+   * 51% of country nodes have country_code_iso3166_1_alpha_2
+   * 50% of country nodes have ISO3166-1:alpha2
+   * 28% of country nodes have ISO3166-1
+   */
+  public NeAdmin0Country getAdmin0ByIso(SourceFeature sf) {
+    String isoCode = NaturalEarthDb.coalesceTag(sf, "ISO3166-1:alpha2", "country_code_iso3166_1_alpha_2", "ISO3166-1");
+    return this.getAdmin0ByIso(isoCode);
   }
 
-  public NeAdmin0Country getAdmin0ByIsoCode(String isoCode) {
-    return null;
+  public NeAdmin0Country getAdmin0ByIso(String isoCode) {
+    return this.admin0sByIsoA2.get(isoCode);
   }
 
-  public NeAdmin0Country getAdmin0ByWikidataId(String isoCode) {
-    return null;
+  // 100% of country nodes have wikidata
+  public NeAdmin0Country getAdmin0ByWikidata(String wikidataId) {
+    return this.admin0sByWikidata.get(wikidataId);
   }
 
   public static NaturalEarthDb fromSqlite(Path path, Path unzippedDir) {
@@ -94,9 +147,11 @@ public class NaturalEarthDb {
         try (Statement statement = conn.createStatement()) {
           ResultSet rs =
             statement
-              .executeQuery("SELECT name, iso_a2, wikidataid, min_label, max_label FROM ne_10m_admin_0_countries;");
+              .executeQuery(
+                "SELECT name, name_en, iso_a2, wikidataid, min_label, max_label FROM ne_10m_admin_0_countries;");
           while (rs.next()) {
-            countries.add(new NeAdmin0Country(rs.getString("name"), rs.getString("iso_a2"), rs.getString("wikidataid"),
+            countries.add(new NeAdmin0Country(rs.getString("name"), rs.getString("name_en"), rs.getString("iso_a2"),
+              rs.getString("wikidataid"),
               rs.getDouble("min_label"), rs.getDouble("max_label")));
           }
         }

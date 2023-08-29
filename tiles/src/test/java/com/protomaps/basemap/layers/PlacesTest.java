@@ -21,4 +21,39 @@ class PlacesTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void testMinMaxLabelCountry() {
+
+  }
+
+  @Test
+  void testMinMaxLabelCountryNoMatch() {
+
+  }
+
+  @Test
+  void testMinMaxLabelRegion() {
+
+  }
+
+  @Test
+  void testMinMaxLabelRegionNoMatch() {
+
+  }
+
+  @Test
+  void testMinMaxLabelPopulatedPlace() {
+
+  }
+
+  @Test
+  void testMinMaxLabelPopulatedPlaceNoMatch() {
+
+  }
+
+  @Test
+  void testPopulatedPlaceSpatialJoin() {
+
+  }
 }

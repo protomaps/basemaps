@@ -19,7 +19,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
   private QrankDb qrankDb;
 
-  public Pois (QrankDb qrankDb) {
+  public Pois(QrankDb qrankDb) {
     this.qrankDb = qrankDb;
   }
 
@@ -60,12 +60,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
       String wikidata = sf.getString("wikidata");
       if (wikidata != null) {
-        try {
-          long wikidataId = Long.parseLong(wikidata.substring(1));
-          qrankDb.get(wikidataId);
-        } catch (NumberFormatException e) {
-          // do nothing
-        }
+        qrankDb.get(wikidata);
       }
 
       if (sf.hasTag("aeroway", "aerodrome")) {

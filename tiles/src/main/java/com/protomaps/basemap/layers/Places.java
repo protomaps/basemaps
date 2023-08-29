@@ -11,10 +11,8 @@ import com.onthegomap.planetiler.geo.PointIndex;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
-import com.protomaps.basemap.feature.CountryInfos;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.NaturalEarthDb;
-import com.protomaps.basemap.feature.RegionInfos;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
@@ -210,9 +208,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           //                    TODO: Really these should switch over to NE source
           themeMinZoom = 0;
           kind = "country";
-          var countryInfo = CountryInfos.getByWikidata(sf);
-          minZoom = (float) countryInfo.minZoom();
-          maxZoom = (float) countryInfo.maxZoom();
+          //          var countryInfo = CountryInfos.getByWikidata(sf);
+          //          minZoom = (float) countryInfo.minZoom();
+          //          maxZoom = (float) countryInfo.maxZoom();
+          minZoom = (float) 5.0;
+          maxZoom = (float) 8.0;
           kindRank = 0;
           break;
         case "state":
@@ -221,9 +221,11 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
           //                    TODO: Really these should switch over to NE source
           themeMinZoom = 0;
           kind = "region";
-          var regionInfo = RegionInfos.getByWikidata(sf);
-          minZoom = (float) regionInfo.minZoom();
-          maxZoom = (float) regionInfo.maxZoom();
+          //          var regionInfo = RegionInfos.getByWikidata(sf);
+          //          minZoom = (float) regionInfo.minZoom();
+          //          maxZoom = (float) regionInfo.maxZoom();
+          minZoom = (float) 8.0;
+          maxZoom = (float) 11.0;
           kindRank = 1;
           break;
         case "city":
