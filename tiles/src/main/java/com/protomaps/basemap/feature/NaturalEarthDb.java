@@ -20,16 +20,8 @@ import org.slf4j.LoggerFactory;
 /**
  * An in-memory representation of a subset of Natural Earth tables, used for generalizing OpenStreetMap data.
  * <p>
- * Themes: admin_0_countries, admin_1_states_provinces, populated_places at the 10m map scale. Queried via multiple
- * convenience methods or matching to OpenStreetMap tags. * Query hardcoded information about countries. *
- * <p>
- * * Retrieve embedded hardcoded data about countries, addressable by names that should match OSM and NE. *
- * </p>
- * ** * Query hardcoded information about sub-national regions. *
- * <p>
- * * Embedded hand-curated data on sub-national regions of significant extents, to assist in labeling. Includes US
- * states, * AU states and territories, CA provinces and territories, and other significant regions globally *
- * </p>
+ * Themes: admin_0_countries, admin_1_states_provinces, populated_places at the 10m map scale. Queried via ISO codes,
+ * Wikidata IDs, or matching to OpenStreetMap tags.
  */
 public class NaturalEarthDb {
 
