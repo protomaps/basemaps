@@ -180,7 +180,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBeLine() && sf.hasTag("admin_level")) {
+    if (sf.canBeLine()) {
       // Beware coastlines and coastal waters (eg with admin borders in large estuaries)
       // like mouth of Columbia River between Oregon and Washington in USA
       if (sf.hasTag("natural", "coastline") || sf.hasTag("maritime", "yes")) {
