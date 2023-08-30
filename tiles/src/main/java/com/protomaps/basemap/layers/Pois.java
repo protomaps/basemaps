@@ -10,11 +10,18 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+
+  private QrankDb qrankDb;
+
+  public Pois(QrankDb qrankDb) {
+    this.qrankDb = qrankDb;
+  }
 
   @Override
   public String name() {
@@ -50,6 +57,11 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       String kind = "other";
       String kindDetail = "";
       Integer minZoom = 15;
+
+      String wikidata = sf.getString("wikidata");
+      if (wikidata != null) {
+        qrankDb.get(wikidata);
+      }
 
       if (sf.hasTag("aeroway", "aerodrome")) {
         kind = sf.getString("aeroway");
