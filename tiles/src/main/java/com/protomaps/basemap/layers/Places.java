@@ -52,7 +52,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
 
   // Offset by 1 here because of 256 versus 512 pixel tile sizes
   // and how the OSM processing assumes 512 tile size (while NE is 256)
-  private static int NE_ZOOM_OFFSET = 1;
+  private static final int NE_ZOOM_OFFSET = 1;
 
   private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION =
     ZoomFunction.fromMaxZoomThresholds(Map.of(

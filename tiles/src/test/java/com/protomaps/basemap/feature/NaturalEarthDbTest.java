@@ -139,6 +139,21 @@ class NaturalEarthDbTest {
     assertEquals(7.5, result.maxLabel());
   }
 
+
+  @Test
+  void testRegionWikidataDuplicate() {
+    var db = new NaturalEarthDb(List.of(),
+      List.of(
+        new NaturalEarthDb.NeAdmin1StateProvince("Rujienas", "LV-084", "Q108037", 9.0, 11.0),
+        new NaturalEarthDb.NeAdmin1StateProvince("Mazsalacas", "LV-060", "Q108037", 10.0, 11.0)
+      ),
+      List.of());
+
+    var result = db.getAdmin1ByWikidata("Q108037");
+    assertEquals(9.0, result.minLabel());
+  }
+
+
   @Test
   void testNotFoundRegionIso() {
     var db = new NaturalEarthDb(List.of(), List.of(), List.of());

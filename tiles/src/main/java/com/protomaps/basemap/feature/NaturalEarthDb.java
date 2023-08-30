@@ -68,7 +68,7 @@ public class NaturalEarthDb {
       .collect(Collectors.toMap(s -> s.iso3166_2, s -> s, (s1, s2) -> s1.minLabel() < s2.minLabel() ? s1 : s2));
 
     this.admin1sByWikidataId = statesProvinces.stream().filter(s -> s.wikidataId != null)
-      .collect(Collectors.toMap(s -> s.wikidataId, s -> s));
+      .collect(Collectors.toMap(s -> s.wikidataId, s -> s, (s1, s2) -> s1.minLabel() < s2.minLabel() ? s1 : s2));
 
     // resolve wikidata conflicts by choosing the larger rankMax
     this.placesByWikidataId = populatedPlaces.stream().filter(p -> p.wikidataId != null)
