@@ -25,7 +25,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   // Hardcoded to US for now
   private CartographicLocale locale = new US();
 
-  public record Shield(String text, String network) {};
+  public record Shield(String text, String network) {}
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {

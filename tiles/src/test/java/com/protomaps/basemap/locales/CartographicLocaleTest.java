@@ -8,39 +8,26 @@ import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-public class CartographicLocaleTest {
+class CartographicLocaleTest {
 
   CartographicLocale locale = new CartographicLocale();
 
-  @Test
-  void shield() {
+  @ParameterizedTest
+  @CsvSource({
+    "A,A,other",
+    "B;A,B,other",
+    "A \t;,A,other"
+  })
+  void shieldUs(String refTag, String expectedRef, String expectedNetwork) {
     var feature = SimpleFeature.create(
       newLineString(0, 0, 1, 1),
-      new HashMap<>(Map.of("ref", "A")));
+      new HashMap<>(Map.of("ref", refTag)));
     var shield = locale.getShield(feature);
-    assertEquals("A", shield.text());
-    assertEquals("other", shield.network());
-  }
-
-  @Test
-  void shieldMultipleRefs() {
-    var feature = SimpleFeature.create(
-      newLineString(0, 0, 1, 1),
-      new HashMap<>(Map.of("ref", "A;B")));
-    var shield = locale.getShield(feature);
-    assertEquals("A", shield.text());
-    assertEquals("other", shield.network());
-  }
-
-  @Test
-  void shieldWhitespace() {
-    var feature = SimpleFeature.create(
-      newLineString(0, 0, 1, 1),
-      new HashMap<>(Map.of("ref", "A \t")));
-    var shield = locale.getShield(feature);
-    assertEquals("A", shield.text());
-    assertEquals("other", shield.network());
+    assertEquals(expectedRef, shield.text());
+    assertEquals(expectedNetwork, shield.network());
   }
 
   @Test

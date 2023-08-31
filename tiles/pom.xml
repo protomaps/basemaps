@@ -10,7 +10,7 @@
     <maven.compiler.source>16</maven.compiler.source>
     <maven.compiler.target>16</maven.compiler.target>
     <planetiler.version>0.6-SNAPSHOT</planetiler.version>
-    <junit.version>5.9.2</junit.version>
+    <junit.version>5.10.0</junit.version>
     <mainClass>com.protomaps.basemap.Basemap</mainClass>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>protomaps</sonar.organization>
@@ -69,6 +69,13 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>

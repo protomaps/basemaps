@@ -19,10 +19,10 @@ public class US extends CartographicLocale {
       String firstRef = ref.split(";")[0];
       String shieldText = firstRef;
       if (firstRef.startsWith("US ")) {
-        shieldText = firstRef.replaceAll("US ", "");
+        shieldText = firstRef.replace("US ", "");
         network = "US:US";
       } else if (firstRef.startsWith("I ")) {
-        shieldText = firstRef.replaceAll("I ", "");
+        shieldText = firstRef.replace("I ", "");
         network = "US:US_I";
       }
       return new Roads.Shield(strip(shieldText), network);
