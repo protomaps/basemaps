@@ -32,7 +32,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
     if (sourceLayer.equals("ne_50m_admin_0_boundary_lines_land") ||
       sourceLayer.equals("ne_50m_admin_0_boundary_lines_disputed_areas") ||
-      sourceLayer.equals("ne_50m_admin_0_boundary_lines_maritime_indicator_chn") ||
       sourceLayer.equals("ne_50m_admin_1_states_provinces_lines")) {
       themeMinZoom = 1;
       themeMaxZoom = 3;
@@ -40,7 +39,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
     } else if (sourceLayer.equals("ne_10m_admin_0_boundary_lines_land") ||
       sourceLayer.equals("ne_10m_admin_0_boundary_lines_map_units") ||
       sourceLayer.equals("ne_10m_admin_0_boundary_lines_disputed_areas") ||
-      sourceLayer.equals("ne_10m_admin_0_boundary_lines_maritime_indicator_chn") ||
       sourceLayer.equals("ne_10m_admin_1_states_provinces_lines")) {
       themeMinZoom = 4;
       themeMaxZoom = 5;
