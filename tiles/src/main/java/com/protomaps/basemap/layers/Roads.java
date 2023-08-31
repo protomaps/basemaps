@@ -10,6 +10,8 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.locales.CartographicLocale;
+import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
@@ -19,6 +21,11 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
   public String name() {
     return "roads";
   }
+
+  // Hardcoded to US for now
+  private CartographicLocale locale = new US();
+
+  public record Shield(String text, String network) {};
 
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
@@ -33,23 +40,9 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
       String highway = sf.getString("highway");
       String service = "";
-      String shieldText = sf.getString("ref");
-      String networkVal = sf.getString("network");
-      shieldText = (shieldText == null ? null : shieldText.split(";")[0]);
-      if (shieldText != null) {
-        if (shieldText.startsWith("US ")) {
-          shieldText = shieldText.replaceAll("US ", "");
-          networkVal = "US:US";
-        } else if (shieldText.startsWith("I ")) {
-          shieldText = shieldText.replaceAll("I ", "");
-          networkVal = "US:I";
-        } else {
-          // This should be replaced by walking the way's relations (which reliably set network)
-          networkVal = "other";
-        }
-      }
-      shieldText = (shieldText == null ? null : shieldText.replaceAll("\\s", ""));
-      Integer shieldTextLength = (shieldText == null ? null : shieldText.length());
+
+      Shield shield = locale.getShield(sf);
+      Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
 
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         // TODO: (nvkelso 20230622) Use Natural Earth for low zoom roads at zoom 5 and earlier
@@ -146,9 +139,9 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setAttr("pmap:kind", kind)
         // To power better client label collisions
         .setAttr("pmap:min_zoom", minZoom + 1)
-        .setAttrWithMinzoom("ref", shieldText, minZoomShieldText)
+        .setAttrWithMinzoom("ref", shield.text(), minZoomShieldText)
         .setAttrWithMinzoom("shield_text_length", shieldTextLength, minZoomShieldText)
-        .setAttrWithMinzoom("network", networkVal, minZoomShieldText)
+        .setAttrWithMinzoom("network", shield.network(), minZoomShieldText)
         // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
