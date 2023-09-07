@@ -26,4 +26,13 @@ class QrankDbTest {
     assertEquals(1234, db.get("Q1"));
     assertEquals(0, db.get("Q2"));
   }
+
+  @Test
+  void testLookupMultiple() {
+    var hashMap = new LongLongHashMap();
+    hashMap.put(1, 1234);
+    var db = new QrankDb(hashMap);
+    assertEquals(1234, db.get("Q1;Q2"));
+    assertEquals(0, db.get("abcdef"));
+  }
 }

@@ -26,9 +26,16 @@ public final class QrankDb {
     return this.db.get(wikidataId);
   }
 
-  public long get(String wikidataId) {
-    long id = Long.parseLong(wikidataId.substring(1));
-    return this.get(id);
+  public long get(String osmValue) {
+    try {
+      if (osmValue.contains(";")) {
+        osmValue = osmValue.split(";")[0];
+      }
+      long id = Long.parseLong(osmValue.substring(1));
+      return this.get(id);
+    } catch (NumberFormatException e) {
+      return 0;
+    }
   }
 
   public static QrankDb fromCsv(Path csvPath) throws IOException {
