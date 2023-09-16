@@ -28,3 +28,4 @@ jobs:
     - name: Ensure code formatted with mvn spotless:apply
       working-directory: tiles
       run: mvn spotless:check
+    - run: python .github/check_examples.py
