@@ -9,10 +9,10 @@ import VectorTile from "ol/layer/VectorTile";
 
 // @ts-ignore
 import { PMTilesVectorSource } from "ol-pmtiles";
-import { useGeographic } from 'ol/proj';
-import { stylefunction } from 'ol-mapbox-style';
+import { useGeographic } from "ol/proj";
+import { stylefunction } from "ol-mapbox-style";
 
-function getMapLibreStyle(tiles: string, theme: string):any {
+function getMapLibreStyle(tiles: string, theme: string): any {
   return {
     version: 8 as any,
     glyphs: "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
@@ -20,26 +20,37 @@ function getMapLibreStyle(tiles: string, theme: string):any {
       protomaps: {
         type: "vector",
         url: tiles,
-        attribution:
-          '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
       },
     },
-    layers: layers("protomaps", theme)
-  } 
+    layers: layers("protomaps", theme),
+  };
 }
 
-function StyleJsonPane(props: {theme: string}) {
+function StyleJsonPane(props: { theme: string }) {
+  // TODO: wrong structure for OpenLayers
+  const stringified = JSON.stringify(
+    getMapLibreStyle("https://example.com/tiles.json", props.theme),
+    null,
+    4,
+  );
 
-  // TODO: not working for OpenLayers
-  const stringified = JSON.stringify(getMapLibreStyle("https://example.com/tiles.json", props.theme),null,4);
-
-  return <div className="stylePane">
-    { stringified }
-  </div>
+  return (
+    <div>
+      <button
+        onClick={() => {
+          navigator.clipboard.writeText(stringified);
+        }}
+      >
+        Copy to clipboard
+      </button>
+      <pre className="stylePane">{stringified}</pre>
+    </div>
+  );
 }
 
 function MapLibreView(props: { tiles: string; theme: string }) {
-  let mapRef = useRef<maplibregl.Map>()
+  let mapRef = useRef<maplibregl.Map>();
 
   useEffect(() => {
     if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
@@ -56,7 +67,7 @@ function MapLibreView(props: { tiles: string; theme: string }) {
     const map = new maplibregl.Map({
       hash: true,
       container: "map",
-      style: getMapLibreStyle(props.tiles, props.theme)
+      style: getMapLibreStyle(props.tiles, props.theme),
     });
 
     map.on("mousedown", function (e) {
@@ -65,7 +76,7 @@ function MapLibreView(props: { tiles: string; theme: string }) {
       });
     });
 
-    mapRef.current = map
+    mapRef.current = map;
 
     return () => {
       maplibregl.removeProtocol("pmtiles");
@@ -75,17 +86,17 @@ function MapLibreView(props: { tiles: string; theme: string }) {
 
   useEffect(() => {
     if (mapRef.current) {
-      mapRef.current.setStyle(getMapLibreStyle(props.tiles, props.theme))
+      // TODO: this transition should be smooth; might have to do with TileJSON
+      mapRef.current.setStyle(getMapLibreStyle(props.tiles, props.theme));
     }
-  },[props.theme])
+  }, [props.theme]);
 
   return <div id="map"></div>;
 }
 
 // TODO: does not sync map hash state
-function OpenLayersView(props: {tiles: string, theme: string}) {
-  console.log(props)
-
+function OpenLayersView(props: { tiles: string; theme: string }) {
+  console.log(props);
 
   useEffect(() => {
     useGeographic();
@@ -94,28 +105,32 @@ function OpenLayersView(props: {tiles: string, theme: string}) {
       declutter: true,
       source: new PMTilesVectorSource({
         url: "https://r2-public.protomaps.com/protomaps-sample-datasets/protomaps-basemap-opensource-20230408.pmtiles",
-        attributions: ["© OpenStreetMap"]
-      }), 
-      style: null
+        attributions: ["© OpenStreetMap"],
+      }),
+      style: null,
     });
 
-    stylefunction(layer, {
-      version: "8",
-      layers:layers("protomaps",props.theme),
-      sources: {protomaps: {type: "vector"}}
-    }, 'protomaps');
+    stylefunction(
+      layer,
+      {
+        version: "8",
+        layers: layers("protomaps", props.theme),
+        sources: { protomaps: { type: "vector" } },
+      },
+      "protomaps",
+    );
 
     new Map({
       target: "map",
       layers: [layer],
       view: new View({
-        center: [0,0],
+        center: [0, 0],
         zoom: 0,
       }),
     });
-  }, []) 
+  }, []);
 
-  return <div id="map"></div>
+  return <div id="map"></div>;
 }
 
 export default function MapView() {
@@ -124,36 +139,42 @@ export default function MapView() {
 
   const params = new URLSearchParams(location.search);
   const [theme, setTheme] = useState<string>(params.get("theme") || "light");
-  const [tiles, setTiles] = useState<string>(params.get("tiles") || DEFAULT_TILES);
-  const [renderer, setRenderer] = useState<string>(params.get("renderer") || "maplibregl");
+  const [tiles, _] = useState<string>(params.get("tiles") || DEFAULT_TILES);
+  const [renderer, setRenderer] = useState<string>(
+    params.get("renderer") || "maplibregl",
+  );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
 
-  console.log(setTiles);
+  // console.log(setTiles);
   // TODO: dynamic import of https://unpkg.com/protomaps-themes-base@1.3.1/dist/index.js etc
   // TODO: language tag selector
 
   return (
     <div className="map-container">
       <nav>
-        <select onChange={e => setTheme(e.target.value)} value={theme}>
+        <select onChange={(e) => setTheme(e.target.value)} value={theme}>
           <option value="light">base light</option>
           <option value="dark">base dark</option>
           <option value="white">data light</option>
           <option value="grayscale">data grayscale</option>
           <option value="black">data dark</option>
+          <option value="contrast">contrast</option>
         </select>
-        <select onChange={e => setRenderer(e.target.value)} value={renderer}>
+        <select onChange={(e) => setRenderer(e.target.value)} value={renderer}>
           <option value="maplibregl">maplibregl</option>
           <option value="openlayers">openlayers</option>
         </select>
-        <button onClick={() => setShowStyleJson(!showStyleJson)}>get style JSON</button>
+        <button onClick={() => setShowStyleJson(!showStyleJson)}>
+          get style JSON
+        </button>
       </nav>
       <div className="split">
-        { renderer == "maplibregl" ? 
-          <MapLibreView tiles={tiles} theme={theme}/> : 
-          <OpenLayersView tiles={tiles} theme={theme}/>
-        }
-        { showStyleJson && <StyleJsonPane theme={theme}/> }
+        {renderer == "maplibregl" ? (
+          <MapLibreView tiles={tiles} theme={theme} />
+        ) : (
+          <OpenLayersView tiles={tiles} theme={theme} />
+        )}
+        {showStyleJson && <StyleJsonPane theme={theme} />}
       </div>
     </div>
   );
