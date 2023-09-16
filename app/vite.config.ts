@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
+        mapview: resolve(__dirname, 'index.html'),
         builds: resolve(__dirname, 'builds/index.html'),
         visualtests: resolve(__dirname, 'visualtests/index.html')
       },
