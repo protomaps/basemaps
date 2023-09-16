@@ -50,7 +50,7 @@ function StyleJsonPane(props: { theme: string }) {
 }
 
 function MapLibreView(props: { tiles: string; theme: string }) {
-  let mapRef = useRef<maplibregl.Map>();
+  const mapRef = useRef<maplibregl.Map>();
 
   useEffect(() => {
     if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
@@ -61,7 +61,7 @@ function MapLibreView(props: { tiles: string; theme: string }) {
       );
     }
 
-    let protocol = new pmtiles.Protocol();
+    const protocol = new pmtiles.Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
     const map = new maplibregl.Map({
@@ -134,7 +134,7 @@ function OpenLayersView(props: { tiles: string; theme: string }) {
 }
 
 export default function MapView() {
-  let DEFAULT_TILES =
+  const DEFAULT_TILES =
     "pmtiles://https://r2-public.protomaps.com/protomaps-sample-datasets/protomaps-basemap-opensource-20230408.pmtiles";
 
   const params = new URLSearchParams(location.search);
