@@ -1,10 +1,8 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import VisualTestsComponent from './VisualTestsComponent.tsx'
 import './index.css'
 
+// we turn off strict mode because this page only loads once.
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <VisualTestsComponent/>
-  </React.StrictMode>,
+  <VisualTestsComponent/>
 )
