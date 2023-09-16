@@ -3,8 +3,16 @@ import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
 import * as pmtiles from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "ol/ol.css";
+import { Map, View } from "ol";
+import VectorTile from "ol/layer/VectorTile";
 
-function getStyle(tiles: string, theme: string):any {
+// @ts-ignore
+import { PMTilesVectorSource } from "ol-pmtiles";
+import { useGeographic } from 'ol/proj';
+import { stylefunction } from 'ol-mapbox-style';
+
+function getMapLibreStyle(tiles: string, theme: string):any {
   return {
     version: 8 as any,
     glyphs: "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
@@ -20,8 +28,10 @@ function getStyle(tiles: string, theme: string):any {
   } 
 }
 
-function StyleJsonModal(props: {theme: string}) {
-  const stringified = JSON.stringify(getStyle("https://example.com/tiles.json", props.theme),null,4);
+function StyleJsonPane(props: {theme: string}) {
+
+  // TODO: not working for OpenLayers
+  const stringified = JSON.stringify(getMapLibreStyle("https://example.com/tiles.json", props.theme),null,4);
 
   return <div className="stylePane">
     { stringified }
@@ -46,7 +56,7 @@ function MapLibreView(props: { tiles: string; theme: string }) {
     const map = new maplibregl.Map({
       hash: true,
       container: "map",
-      style: getStyle(props.tiles, props.theme)
+      style: getMapLibreStyle(props.tiles, props.theme)
     });
 
     map.on("mousedown", function (e) {
@@ -65,15 +75,48 @@ function MapLibreView(props: { tiles: string; theme: string }) {
 
   useEffect(() => {
     if (mapRef.current) {
-      mapRef.current.setStyle(getStyle(props.tiles, props.theme))
+      mapRef.current.setStyle(getMapLibreStyle(props.tiles, props.theme))
     }
   },[props.theme])
 
   return <div id="map"></div>;
 }
 
-// TODO: openlayers view
-// function OpenLayersView() {}
+// TODO: does not sync map hash state
+function OpenLayersView(props: {tiles: string, theme: string}) {
+  console.log(props)
+
+
+  useEffect(() => {
+    useGeographic();
+
+    const layer = new VectorTile({
+      declutter: true,
+      source: new PMTilesVectorSource({
+        url: "https://r2-public.protomaps.com/protomaps-sample-datasets/protomaps-basemap-opensource-20230408.pmtiles",
+        attributions: ["© OpenStreetMap"]
+      }), 
+      style: null
+    });
+
+    stylefunction(layer, {
+      version: "8",
+      layers:layers("protomaps",props.theme),
+      sources: {protomaps: {type: "vector"}}
+    }, 'protomaps');
+
+    new Map({
+      target: "map",
+      layers: [layer],
+      view: new View({
+        center: [0,0],
+        zoom: 0,
+      }),
+    });
+  }, []) 
+
+  return <div id="map"></div>
+}
 
 export default function MapView() {
   let DEFAULT_TILES =
@@ -82,6 +125,7 @@ export default function MapView() {
   const params = new URLSearchParams(location.search);
   const [theme, setTheme] = useState<string>(params.get("theme") || "light");
   const [tiles, setTiles] = useState<string>(params.get("tiles") || DEFAULT_TILES);
+  const [renderer, setRenderer] = useState<string>(params.get("renderer") || "maplibregl");
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
 
   console.log(setTiles);
@@ -98,11 +142,18 @@ export default function MapView() {
           <option value="grayscale">data grayscale</option>
           <option value="black">data dark</option>
         </select>
+        <select onChange={e => setRenderer(e.target.value)} value={renderer}>
+          <option value="maplibregl">maplibregl</option>
+          <option value="openlayers">openlayers</option>
+        </select>
         <button onClick={() => setShowStyleJson(!showStyleJson)}>get style JSON</button>
       </nav>
       <div className="split">
-        <MapLibreView tiles={tiles} theme={theme} />
-        { showStyleJson && <StyleJsonModal theme={theme}/> }
+        { renderer == "maplibregl" ? 
+          <MapLibreView tiles={tiles} theme={theme}/> : 
+          <OpenLayersView tiles={tiles} theme={theme}/>
+        }
+        { showStyleJson && <StyleJsonPane theme={theme}/> }
       </div>
     </div>
   );
