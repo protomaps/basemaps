@@ -133,7 +133,7 @@ function OpenLayersView(props: { tiles: string; theme: string }) {
   return <div id="map"></div>;
 }
 
-export default function MapView() {
+export default function MapViewComponent() {
   const DEFAULT_TILES =
     "pmtiles://https://r2-public.protomaps.com/protomaps-sample-datasets/protomaps-basemap-opensource-20230408.pmtiles";
 

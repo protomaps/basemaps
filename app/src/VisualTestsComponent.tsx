@@ -1,3 +1,3 @@
-export default function VisualTests() {
-  return <div/>
+export default function VisualTestsComponent() {
+  return <div>visualtests</div>
 }
