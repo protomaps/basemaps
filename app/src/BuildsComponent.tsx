@@ -1,10 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import VisualTests from './VisualTestsComponent.tsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <VisualTests/>
+    <span>builds</span>
   </React.StrictMode>,
 )
