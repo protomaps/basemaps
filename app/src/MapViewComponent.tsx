@@ -70,6 +70,17 @@ function MapLibreView(props: { tiles: string; theme: string }) {
       style: getMapLibreStyle(props.tiles, props.theme),
     });
 
+    map.addControl(new maplibregl.NavigationControl());
+    map.addControl(new maplibregl.ScaleControl());
+    map.addControl(
+      new maplibregl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+      }),
+    );
+
     map.on("mousedown", function (e) {
       map.queryRenderedFeatures(e.point).map((feat) => {
         console.log(feat);
