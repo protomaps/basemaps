@@ -71,7 +71,7 @@ function MapLibreView(props: { tiles: string; theme: string }) {
     });
 
     map.addControl(new maplibregl.NavigationControl());
-    map.addControl(new maplibregl.ScaleControl());
+    map.addControl(new maplibregl.ScaleControl({}));
     map.addControl(
       new maplibregl.GeolocateControl({
         positionOptions: {
