@@ -1,25 +1,5 @@
 # Basemaps Visual Test Suite
 
-## Artifacts
-
-Recent git commits on `main` and pull requests each have a set of artifacts.
-
-The test suite depends on the existence of a public HTTP endpoint with these paths:
-
-* `ci-storage.protomaps.com/smalltestregion.osm.pbf`
-* `ci-storage.protomaps.com/artifacts/ARTIFACT_SHA/smalltestregion_vector.pmtiles`
-* `ci-storage.protomaps.com/artifacts/ARTIFACT_SHA/light.json`
-
-`smalltestregion_vector.pmtiles` is the java tiler output at SHA run on `smalltestregion.osm.pbf`.
-
-```sh
-./osmx extract planet.osmx smalltestregion.osm.pbf --region smalltestregion.geojson
-```
-
-`light.json` is the generated `layers` of the GL JSON (not the full style).
-
-*Later we will add more than just light.json*
-
 ## Test Examples
 
 The file `examples.json` is a JSON array of named examples. Each example consists of:
@@ -31,8 +11,6 @@ The file `examples.json` is a JSON array of named examples. Each example consist
 * an array of string `tags` that group examples e.g. `buildings`, `national-parks`
 
 ## Test Runner
-
-`index.html` is the single-file test runner, there is no build step. It takes query parameters:
 
 Required query parameters:
 

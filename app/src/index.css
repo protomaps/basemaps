@@ -40,3 +40,20 @@ body {
   height: 100%;
   overflow-y: scroll;
 }
+
+.visual-tests {
+  margin-left: auto;
+  margin-right:auto;
+  width: 1512px;
+  margin-top:100px; 
+  color: white;
+}
+
+.visual-tests .map, .visual-tests canvas, .visual-tests img {
+  width: 500px;
+  height: 500px;
+}
+
+.visual-tests span {
+  margin-right: 0.5rem;
+}

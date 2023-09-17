@@ -167,6 +167,7 @@ export default function MapViewComponent() {
         <button onClick={() => setShowStyleJson(!showStyleJson)}>
           get style JSON
         </button>
+        <a href="/visualtests/">visual tests</a>
       </nav>
       <div className="split">
         {renderer == "maplibregl" ? (
