@@ -12,7 +12,7 @@
     "build-cjs": "esbuild src/index.ts --outfile=dist/index.cjs --target=es6 --bundle --format=cjs",
     "build-tsc": "tsc --declaration --emitDeclarationOnly --outdir dist",
     "build": "npm run build-iife && npm run build-esm && npm run build-cjs && npm run build-tsc",
-    "generate-layers": "node -r esbuild-runner/register generate-layers.ts",
+    "generate-layers": "node -r esbuild-runner/register src/generate_layers.ts",
     "tsc": "tsc --noEmit --watch"
   },
   "repository": {
