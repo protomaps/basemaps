@@ -495,7 +495,7 @@ export const GRAYSCALE: Theme = {
     debug: "red",
 };
 
-export default {
+const themes: Record<string, Theme> = {
     contrast: CONTRAST,
     light: LIGHT,
     dark: DARK,
@@ -503,3 +503,5 @@ export default {
     black: BLACK,
     grayscale: GRAYSCALE,
 };
+
+export default themes;

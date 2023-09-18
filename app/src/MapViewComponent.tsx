@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
+import { StyleSpecification } from "maplibre-gl";
 import * as pmtiles from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "ol/ol.css";
@@ -12,7 +13,7 @@ import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
 import { stylefunction } from "ol-mapbox-style";
 
-function getMaplibreStyle(theme: string, tiles?: string): any {
+function getMaplibreStyle(theme: string, tiles?: string):StyleSpecification {
   if (tiles && tiles.endsWith(".pmtiles")) {
     tiles = "pmtiles://" + tiles;
   }
@@ -33,7 +34,7 @@ function getMaplibreStyle(theme: string, tiles?: string): any {
         attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
       },
     },
-    layers: layers("protomaps", theme),
+    layers: layers("protomaps", theme)
   };
 }
 

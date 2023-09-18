@@ -1,6 +1,7 @@
-import { Theme } from "./colors";
+import { Theme } from "./themes";
+import { LayerSpecification } from '@maplibre/maplibre-gl-style-spec';
 
-export function nolabels_layers(source: string, c: Theme): any[] {
+export function nolabels_layers(source: string, c: Theme): LayerSpecification[] {
   const casingVisibility = c.hasCasings ? "visible" : "none";
   return [
     {
