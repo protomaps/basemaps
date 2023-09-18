@@ -187,7 +187,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "transit",
-      min_zoom: 13,
+      minzoom: 13,
       filter: [
         "any",
         ["in", "pmap:kind_detail", "taxiway"],
@@ -212,7 +212,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      min_zoom: 14,
+      minzoom: 14,
       filter: [
         "any",
         ["in", "pmap:kind_detail", "runway", "taxiway"],
@@ -601,7 +601,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "physical_line",
-      min_zoom: 14,
+      minzoom: 14,
       filter: ["all", ["in", "pmap:kind", "stream"]],
       paint: {
         "line-color": c.water,
@@ -613,7 +613,7 @@ export function nolabels_layers(source: string, c: Theme): any[] {
       type: "line",
       source: source,
       "source-layer": "physical_line",
-      min_zoom: 9,
+      minzoom: 9,
       filter: ["all", ["in", "pmap:kind", "river"]],
       paint: {
         "line-color": c.water,
