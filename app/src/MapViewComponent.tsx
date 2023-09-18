@@ -150,7 +150,13 @@ export default function MapViewComponent() {
 
   const params = new URLSearchParams(location.search);
   const [theme, setTheme] = useState<string>(params.get("theme") || "light");
-  const [tiles, _] = useState<string>(params.get("tiles") || DEFAULT_TILES);
+
+  let tilesParam = params.get('tiles');
+  if (tilesParam && tilesParam.endsWith(".pmtiles")) {
+    tilesParam = "pmtiles://" + tilesParam;
+  }
+
+  const [tiles, _] = useState<string>(tilesParam || DEFAULT_TILES);
   const [renderer, setRenderer] = useState<string>(
     params.get("renderer") || "maplibregl",
   );
@@ -178,7 +184,7 @@ export default function MapViewComponent() {
         <button onClick={() => setShowStyleJson(!showStyleJson)}>
           get style JSON
         </button>
-        <a href="/visualtests/">visual tests</a>
+        <a href="visualtests/">visual tests</a>
       </nav>
       <div className="split">
         {renderer == "maplibregl" ? (
