@@ -4,7 +4,7 @@ import maplibregl from "maplibre-gl";
 import * as pmtiles from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "ol/ol.css";
-import { Map, View } from "ol";
+import { Map as OpenLayersMap, View } from "ol";
 import VectorTile from "ol/layer/VectorTile";
 
 // @ts-ignore
@@ -12,7 +12,17 @@ import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
 import { stylefunction } from "ol-mapbox-style";
 
-function getMapLibreStyle(tiles: string, theme: string): any {
+function getMaplibreStyle(theme: string, tiles?: string): any {
+  if (tiles && tiles.endsWith(".pmtiles")) {
+    tiles = "pmtiles://" + tiles;
+  }
+  if (!tiles) {
+    return {
+      version: 8 as any,
+      sources: {},
+      layers: [],
+    };
+  }
   return {
     version: 8 as any,
     glyphs: "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
@@ -30,7 +40,7 @@ function getMapLibreStyle(tiles: string, theme: string): any {
 function StyleJsonPane(props: { theme: string }) {
   // TODO: wrong structure for OpenLayers
   const stringified = JSON.stringify(
-    getMapLibreStyle("https://example.com/tiles.json", props.theme),
+    getMaplibreStyle(props.theme, "https://example.com/tiles.json"),
     null,
     4,
   );
@@ -49,7 +59,7 @@ function StyleJsonPane(props: { theme: string }) {
   );
 }
 
-function MapLibreView(props: { tiles: string; theme: string }) {
+function MapLibreView(props: { theme: string; tiles?: string }) {
   const mapRef = useRef<maplibregl.Map>();
 
   useEffect(() => {
@@ -67,7 +77,7 @@ function MapLibreView(props: { tiles: string; theme: string }) {
     const map = new maplibregl.Map({
       hash: true,
       container: "map",
-      style: getMapLibreStyle(props.tiles, props.theme),
+      style: getMaplibreStyle(props.theme, props.tiles),
     });
 
     map.addControl(new maplibregl.NavigationControl());
@@ -97,18 +107,15 @@ function MapLibreView(props: { tiles: string; theme: string }) {
 
   useEffect(() => {
     if (mapRef.current) {
-      // TODO: this transition should be smooth; might have to do with TileJSON
-      mapRef.current.setStyle(getMapLibreStyle(props.tiles, props.theme));
+      mapRef.current.setStyle(getMaplibreStyle(props.theme, props.tiles));
     }
-  }, [props.theme]);
+  }, [props.tiles, props.theme]);
 
   return <div id="map"></div>;
 }
 
 // TODO: does not sync map hash state
-function OpenLayersView(props: { tiles: string; theme: string }) {
-  console.log(props);
-
+function OpenLayersView(props: { theme: string; tiles?: string }) {
   useEffect(() => {
     useGeographic();
 
@@ -131,7 +138,7 @@ function OpenLayersView(props: { tiles: string; theme: string }) {
       "protomaps",
     );
 
-    new Map({
+    new OpenLayersMap({
       target: "map",
       layers: [layer],
       view: new View({
@@ -144,31 +151,40 @@ function OpenLayersView(props: { tiles: string; theme: string }) {
   return <div id="map"></div>;
 }
 
+// if no tiles are passed, loads the latest daily build.
 export default function MapViewComponent() {
-  const DEFAULT_TILES =
-    "pmtiles://https://r2-public.protomaps.com/protomaps-sample-datasets/protomaps-basemap-opensource-20230408.pmtiles";
-
   const params = new URLSearchParams(location.search);
   const [theme, setTheme] = useState<string>(params.get("theme") || "light");
 
-  let tilesParam = params.get('tiles');
-  if (tilesParam && tilesParam.endsWith(".pmtiles")) {
-    tilesParam = "pmtiles://" + tilesParam;
-  }
+  let tilesParam = params.get("tiles") || undefined;
 
-  const [tiles, _] = useState<string>(tilesParam || DEFAULT_TILES);
+  const [tiles, setTiles] = useState<string | undefined>(tilesParam);
   const [renderer, setRenderer] = useState<string>(
     params.get("renderer") || "maplibregl",
   );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
 
-  // console.log(setTiles);
-  // TODO: dynamic import of https://unpkg.com/protomaps-themes-base@1.3.1/dist/index.js etc
+  // TODO: dynamic import of https://unpkg.com/protomaps-themes-base@1.3.1/dist/light.json etc
   // TODO: language tag selector
+
+  useEffect(() => {
+    if (!tiles) {
+      console.log("fetching");
+      fetch("https://build-metadata.protomaps.dev/builds.json")
+        .then((r) => {
+          return r.json();
+        })
+        .then((j) => {
+          setTiles("https://build.protomaps.com/" + j[j.length - 1].key);
+        });
+    }
+  }, [tiles]);
 
   return (
     <div className="map-container">
       <nav>
+        <input defaultValue={tiles} style={{ width: "50%" }} />
+        <button>load</button>
         <select onChange={(e) => setTheme(e.target.value)} value={theme}>
           <option value="light">base light</option>
           <option value="dark">base dark</option>
@@ -184,7 +200,7 @@ export default function MapViewComponent() {
         <button onClick={() => setShowStyleJson(!showStyleJson)}>
           get style JSON
         </button>
-        <a href="visualtests/">visual tests</a>
+        <a href="/visualtests/">visual tests</a>
       </nav>
       <div className="split">
         {renderer == "maplibregl" ? (
