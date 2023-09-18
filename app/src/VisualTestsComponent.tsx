@@ -140,6 +140,7 @@ const linkTo = (props: { name?: string; tag?: string }) => {
   return "/visualtests/?" + q.toString();
 };
 
+// TODO: this only compares tilesets, make it compare styles
 function ExampleComponent(props: { result: ExampleResult }) {
   const leftRef = useRef<HTMLImageElement | null>(null);
   const rightRef = useRef<HTMLImageElement | null>(null);
