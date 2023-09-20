@@ -29,6 +29,6 @@ jobs:
       working-directory: tiles
       run: mvn spotless:check
     - name: Check styles
-      run: npm install && npm tsc && npm test
+      run: npm install && npx tsc --noEmit && npm test
       working-directory: styles
     - run: python .github/check_examples.py
