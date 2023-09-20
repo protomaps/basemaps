@@ -20,9 +20,9 @@ jobs:
           node-version: 18.x
       - run: echo "VITE_GIT_SHA=$(git rev-parse --short HEAD)" >> app/.env
       - name: Check styles
-        run: npm install && npx tsc
+        run: npm install && npx tsc --noEmit
         working-directory: styles
-      - run: npm install && npx tsc && npx vite build
+      - run: npm install && npx tsc --noEmit && npx vite build
         working-directory: app
       - uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
