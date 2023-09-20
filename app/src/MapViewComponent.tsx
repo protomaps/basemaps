@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
 import { StyleSpecification } from "maplibre-gl";
@@ -13,7 +13,10 @@ import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
 import { stylefunction } from "ol-mapbox-style";
 
-function getMaplibreStyle(theme: string, tiles?: string):StyleSpecification {
+// maplibre GL JS has a bug related to style diffing.
+let cachebuster = 0;
+
+function getMaplibreStyle(theme: string, tiles?: string): StyleSpecification {
   if (tiles && tiles.endsWith(".pmtiles")) {
     tiles = "pmtiles://" + tiles;
   }
@@ -34,7 +37,15 @@ function getMaplibreStyle(theme: string, tiles?: string):StyleSpecification {
         attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
       },
     },
-    layers: layers("protomaps", theme)
+    layers: [
+      ...layers("protomaps", theme),
+      {
+        type: "fill",
+        source: "protomaps",
+        "source-layer": "nonexistent",
+        id: `${cachebuster++}`,
+      },
+    ],
   };
 }
 
@@ -170,7 +181,6 @@ export default function MapViewComponent() {
 
   useEffect(() => {
     if (!tiles) {
-      console.log("fetching");
       fetch("https://build-metadata.protomaps.dev/builds.json")
         .then((r) => {
           return r.json();
@@ -181,18 +191,24 @@ export default function MapViewComponent() {
     }
   }, [tiles]);
 
+  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+    const c = event.charCode;
+    if (c >= 49 && c <= 53) {
+      setTheme(["light", "dark", "white", "grayscale", "black"][c - 49]);
+    }
+  };
+
   return (
     <div className="map-container">
       <nav>
         <input defaultValue={tiles} style={{ width: "50%" }} />
         <button>load</button>
         <select onChange={(e) => setTheme(e.target.value)} value={theme}>
-          <option value="light">base light</option>
-          <option value="dark">base dark</option>
+          <option value="light">light</option>
+          <option value="dark">dark</option>
           <option value="white">data light</option>
           <option value="grayscale">data grayscale</option>
           <option value="black">data dark</option>
-          <option value="contrast">contrast</option>
         </select>
         <select onChange={(e) => setRenderer(e.target.value)} value={renderer}>
           <option value="maplibregl">maplibregl</option>
@@ -203,7 +219,7 @@ export default function MapViewComponent() {
         </button>
         <a href="/visualtests/">visual tests</a>
       </nav>
-      <div className="split">
+      <div className="split" onKeyPress={handleKeyPress}>
         {renderer == "maplibregl" ? (
           <MapLibreView tiles={tiles} theme={theme} />
         ) : (
