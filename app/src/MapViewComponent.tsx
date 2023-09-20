@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
 import { StyleSpecification } from "maplibre-gl";
@@ -191,7 +191,7 @@ export default function MapViewComponent() {
     }
   }, [tiles]);
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
     const c = event.charCode;
     if (c >= 49 && c <= 53) {
       setTheme(["light", "dark", "white", "grayscale", "black"][c - 49]);
