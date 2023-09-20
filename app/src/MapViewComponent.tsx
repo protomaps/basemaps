@@ -13,6 +13,8 @@ import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
 import { stylefunction } from "ol-mapbox-style";
 
+const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
+
 // maplibre GL JS has a bug related to style diffing.
 let cachebuster = 0;
 
@@ -217,7 +219,8 @@ export default function MapViewComponent() {
         <button onClick={() => setShowStyleJson(!showStyleJson)}>
           get style JSON
         </button>
-        <a href="/visualtests/">visual tests</a>
+        <a href="/visualtests/">visual tests</a>|
+        <a target="_blank" href="https://github.com/protomaps/basemaps">{GIT_SHA}</a>
       </nav>
       <div className="split" onKeyPress={handleKeyPress}>
         {renderer == "maplibregl" ? (

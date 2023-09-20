@@ -28,4 +28,8 @@ jobs:
     - name: Ensure code formatted with mvn spotless:apply
       working-directory: tiles
       run: mvn spotless:check
+    - name: Check styles
+      run: npm install && npm test
+      working-directory: styles
+    - run: npm install && npx tsc && npx vite build
     - run: python .github/check_examples.py
