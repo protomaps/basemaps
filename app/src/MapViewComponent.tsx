@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, KeyboardEvent } from "react";
+import { useEffect, useState, useRef, KeyboardEvent, useCallback } from "react";
 import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
 import { StyleSpecification } from "maplibre-gl";
@@ -7,45 +7,62 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "ol/ol.css";
 import { Map as OpenLayersMap, View } from "ol";
 import VectorTile from "ol/layer/VectorTile";
+import { useDropzone } from "react-dropzone";
 
-import { LayerSpecification } from '@maplibre/maplibre-gl-style-spec';
+import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 // @ts-ignore
 import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
 import { stylefunction } from "ol-mapbox-style";
 
+import { PMTiles, FileAPISource, Protocol } from "pmtiles";
+
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
 // maplibre GL JS has a bug related to style diffing.
 let cachebuster = 0;
 
-function getMaplibreStyle(theme: string, tiles?: string, npmLayers?: LayerSpecification[]): StyleSpecification {
+function getMaplibreStyle(
+  theme: string,
+  tiles?: string,
+  npmLayers?: LayerSpecification[],
+  droppedArchive?: PMTiles,
+): StyleSpecification {
   if (tiles && tiles.endsWith(".pmtiles")) {
     tiles = "pmtiles://" + tiles;
   }
   const style = {
     version: 8 as any,
     sources: {},
-    layers: []
+    layers: [],
   } as StyleSpecification;
   if (!tiles) return style;
-  style.glyphs = "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf";
-  style.sources = {
-    protomaps: {
-      type: "vector",
-      url: tiles,
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-    },
-  };
   style.layers = [
     {
       type: "fill",
       source: "protomaps",
       "source-layer": "nonexistent",
       id: `${cachebuster++}`,
-    }
+    },
   ];
+  style.glyphs = "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf";
+  const source = {
+    protomaps: {
+      type: "vector",
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+    },
+  } as any;
+
+  if (droppedArchive) {
+    source.protomaps.tiles = [
+      "pmtiles://" + droppedArchive.source.getKey() + "/{z}/{x}/{y}",
+    ];
+  } else {
+    source.protomaps.url = tiles;
+  }
+
+  style.sources = source;
 
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
@@ -78,8 +95,14 @@ function StyleJsonPane(props: { theme: string }) {
   );
 }
 
-function MapLibreView(props: { theme: string; tiles?: string, npmLayers: LayerSpecification[] }) {
+function MapLibreView(props: {
+  theme: string;
+  tiles?: string;
+  npmLayers: LayerSpecification[];
+  droppedArchive?: PMTiles;
+}) {
   const mapRef = useRef<maplibregl.Map>();
+  const protocolRef = useRef<Protocol>();
 
   useEffect(() => {
     if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
@@ -91,6 +114,7 @@ function MapLibreView(props: { theme: string; tiles?: string, npmLayers: LayerSp
     }
 
     const protocol = new pmtiles.Protocol();
+    protocolRef.current = protocol;
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
     const map = new maplibregl.Map({
@@ -119,16 +143,43 @@ function MapLibreView(props: { theme: string; tiles?: string, npmLayers: LayerSp
     mapRef.current = map;
 
     return () => {
+      protocolRef.current = undefined;
       maplibregl.removeProtocol("pmtiles");
       map.remove();
     };
   }, []);
 
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.setStyle(getMaplibreStyle(props.theme, props.tiles, props.npmLayers));
+    if (protocolRef.current) {
+      const archive = props.droppedArchive;
+      if (archive) {
+        protocolRef.current.add(archive);
+        (async () => {
+          const header = await archive.getHeader();
+          mapRef.current!.fitBounds(
+            [
+              [header.minLon, header.minLat],
+              [header.maxLon, header.maxLat],
+            ],
+            { animate: false },
+          );
+        })();
+      }
     }
-  }, [props.tiles, props.theme, props.npmLayers]);
+  }, [props.droppedArchive]);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.setStyle(
+        getMaplibreStyle(
+          props.theme,
+          props.tiles,
+          props.npmLayers,
+          props.droppedArchive,
+        ),
+      );
+    }
+  }, [props.tiles, props.theme, props.npmLayers, props.droppedArchive]);
 
   return <div id="map"></div>;
 }
@@ -186,6 +237,13 @@ export default function MapViewComponent() {
     useState<string>("");
   const [knownNpmVersions, setKnownNpmVersions] = useState<string[]>([]);
   const [npmLayers, setNpmLayers] = useState<LayerSpecification[]>([]);
+  const [droppedArchive, setDroppedArchive] = useState<PMTiles>();
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setDroppedArchive(new PMTiles(new FileAPISource(acceptedFiles[0])));
+  }, []);
+
+  const { getRootProps, isDragActive } = useDropzone({ onDrop });
 
   // TODO: language tag selector
 
@@ -213,7 +271,12 @@ export default function MapViewComponent() {
       headers: { Accept: "application/vnd.npm.install-v1+json" },
     });
     let j = await resp.json();
-    setKnownNpmVersions(Object.keys(j.versions).sort().filter(v => +v.split('.')[0] >= 2).reverse());
+    setKnownNpmVersions(
+      Object.keys(j.versions)
+        .sort()
+        .filter((v) => +v.split(".")[0] >= 2)
+        .reverse(),
+    );
   };
 
   useEffect(() => {
@@ -221,11 +284,15 @@ export default function MapViewComponent() {
       if (publishedStyleVersion == "") {
         setNpmLayers([]);
       } else {
-        fetch(`https://unpkg.com/protomaps-themes-base@${publishedStyleVersion}/dist/layers/${theme}.json`).then(resp => {
-          return resp.json();
-        }).then(j => {
-          setNpmLayers(j);
-        })
+        fetch(
+          `https://unpkg.com/protomaps-themes-base@${publishedStyleVersion}/dist/layers/${theme}.json`,
+        )
+          .then((resp) => {
+            return resp.json();
+          })
+          .then((j) => {
+            setNpmLayers(j);
+          });
       }
     })();
   }, [publishedStyleVersion, theme]);
@@ -271,11 +338,21 @@ export default function MapViewComponent() {
           {GIT_SHA}
         </a>
       </nav>
-      <div className="split" onKeyPress={handleKeyPress}>
+      <div className="split" onKeyPress={handleKeyPress} {...getRootProps()}>
+        {isDragActive && (
+          <div className="dropzone">
+            <div>Drag basemap .pmtiles to display...</div>
+          </div>
+        )}
         {renderer == "maplibregl" ? (
-          <MapLibreView tiles={tiles} theme={theme} npmLayers={npmLayers}/>
+          <MapLibreView
+            tiles={tiles}
+            theme={theme}
+            npmLayers={npmLayers}
+            droppedArchive={droppedArchive}
+          />
         ) : (
-          <OpenLayersView tiles={tiles} theme={theme} />
+          <OpenLayersView tiles={tiles} theme={theme} /> // TODO: we need to refactor ol-pmtiles to take PMTiles as argument
         )}
         {showStyleJson && <StyleJsonPane theme={theme} />}
       </div>
