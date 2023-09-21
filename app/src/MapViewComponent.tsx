@@ -8,6 +8,8 @@ import "ol/ol.css";
 import { Map as OpenLayersMap, View } from "ol";
 import VectorTile from "ol/layer/VectorTile";
 
+import { LayerSpecification } from '@maplibre/maplibre-gl-style-spec';
+
 // @ts-ignore
 import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
@@ -18,37 +20,40 @@ const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 // maplibre GL JS has a bug related to style diffing.
 let cachebuster = 0;
 
-function getMaplibreStyle(theme: string, tiles?: string): StyleSpecification {
+function getMaplibreStyle(theme: string, tiles?: string, npmLayers?: LayerSpecification[]): StyleSpecification {
   if (tiles && tiles.endsWith(".pmtiles")) {
     tiles = "pmtiles://" + tiles;
   }
-  if (!tiles) {
-    return {
-      version: 8 as any,
-      sources: {},
-      layers: [],
-    };
-  }
-  return {
+  const style = {
     version: 8 as any,
-    glyphs: "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
-    sources: {
-      protomaps: {
-        type: "vector",
-        url: tiles,
-        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-      },
+    sources: {},
+    layers: []
+  } as StyleSpecification;
+  if (!tiles) return style;
+  style.glyphs = "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf";
+  style.sources = {
+    protomaps: {
+      type: "vector",
+      url: tiles,
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
     },
-    layers: [
-      ...layers("protomaps", theme),
-      {
-        type: "fill",
-        source: "protomaps",
-        "source-layer": "nonexistent",
-        id: `${cachebuster++}`,
-      },
-    ],
   };
+  style.layers = [
+    {
+      type: "fill",
+      source: "protomaps",
+      "source-layer": "nonexistent",
+      id: `${cachebuster++}`,
+    }
+  ];
+
+  if (npmLayers && npmLayers.length > 0) {
+    style.layers = style.layers.concat(npmLayers);
+  } else {
+    style.layers = style.layers.concat(layers("protomaps", theme));
+  }
+
+  return style;
 }
 
 function StyleJsonPane(props: { theme: string }) {
@@ -73,7 +78,7 @@ function StyleJsonPane(props: { theme: string }) {
   );
 }
 
-function MapLibreView(props: { theme: string; tiles?: string }) {
+function MapLibreView(props: { theme: string; tiles?: string, npmLayers: LayerSpecification[] }) {
   const mapRef = useRef<maplibregl.Map>();
 
   useEffect(() => {
@@ -91,7 +96,7 @@ function MapLibreView(props: { theme: string; tiles?: string }) {
     const map = new maplibregl.Map({
       hash: true,
       container: "map",
-      style: getMaplibreStyle(props.theme, props.tiles),
+      style: getMaplibreStyle(props.theme, props.tiles, props.npmLayers),
     });
 
     map.addControl(new maplibregl.NavigationControl());
@@ -121,9 +126,9 @@ function MapLibreView(props: { theme: string; tiles?: string }) {
 
   useEffect(() => {
     if (mapRef.current) {
-      mapRef.current.setStyle(getMaplibreStyle(props.theme, props.tiles));
+      mapRef.current.setStyle(getMaplibreStyle(props.theme, props.tiles, props.npmLayers));
     }
-  }, [props.tiles, props.theme]);
+  }, [props.tiles, props.theme, props.npmLayers]);
 
   return <div id="map"></div>;
 }
@@ -177,8 +182,11 @@ export default function MapViewComponent() {
     params.get("renderer") || "maplibregl",
   );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
+  const [publishedStyleVersion, setPublishedStyleVersion] =
+    useState<string>("");
+  const [knownNpmVersions, setKnownNpmVersions] = useState<string[]>([]);
+  const [npmLayers, setNpmLayers] = useState<LayerSpecification[]>([]);
 
-  // TODO: dynamic import of https://unpkg.com/protomaps-themes-base@1.3.1/dist/light.json etc
   // TODO: language tag selector
 
   useEffect(() => {
@@ -200,6 +208,28 @@ export default function MapViewComponent() {
     }
   };
 
+  const loadVersionsFromNpm = async () => {
+    let resp = await fetch("https://registry.npmjs.org/protomaps-themes-base", {
+      headers: { Accept: "application/vnd.npm.install-v1+json" },
+    });
+    let j = await resp.json();
+    setKnownNpmVersions(Object.keys(j.versions).sort().filter(v => +v.split('.')[0] >= 2).reverse());
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (publishedStyleVersion == "") {
+        setNpmLayers([]);
+      } else {
+        fetch(`https://unpkg.com/protomaps-themes-base@${publishedStyleVersion}/dist/layers/${theme}.json`).then(resp => {
+          return resp.json();
+        }).then(j => {
+          setNpmLayers(j);
+        })
+      }
+    })();
+  }, [publishedStyleVersion, theme]);
+
   return (
     <div className="map-container">
       <nav>
@@ -208,23 +238,42 @@ export default function MapViewComponent() {
         <select onChange={(e) => setTheme(e.target.value)} value={theme}>
           <option value="light">light</option>
           <option value="dark">dark</option>
-          <option value="white">data light</option>
-          <option value="grayscale">data grayscale</option>
-          <option value="black">data dark</option>
+          <option value="white">data viz (white)</option>
+          <option value="grayscale">data viz (grayscale)</option>
+          <option value="black">data viz (black)</option>
         </select>
         <select onChange={(e) => setRenderer(e.target.value)} value={renderer}>
           <option value="maplibregl">maplibregl</option>
           <option value="openlayers">openlayers</option>
         </select>
+        {knownNpmVersions.length == 0 ? (
+          <button onClick={loadVersionsFromNpm}>npm version...</button>
+        ) : (
+          <select
+            onChange={(e) => setPublishedStyleVersion(e.target.value)}
+            value={publishedStyleVersion}
+          >
+            <option key="" value="">
+              main
+            </option>
+            {knownNpmVersions.map((v: string) => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </select>
+        )}
         <button onClick={() => setShowStyleJson(!showStyleJson)}>
           get style JSON
         </button>
         <a href="/visualtests/">visual tests</a>|
-        <a target="_blank" href="https://github.com/protomaps/basemaps">{GIT_SHA}</a>
+        <a target="_blank" href="https://github.com/protomaps/basemaps">
+          {GIT_SHA}
+        </a>
       </nav>
       <div className="split" onKeyPress={handleKeyPress}>
         {renderer == "maplibregl" ? (
-          <MapLibreView tiles={tiles} theme={theme} />
+          <MapLibreView tiles={tiles} theme={theme} npmLayers={npmLayers}/>
         ) : (
           <OpenLayersView tiles={tiles} theme={theme} />
         )}
