@@ -23,11 +23,16 @@ const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 // maplibre GL JS has a bug related to style diffing.
 let cachebuster = 0;
 
+const ATTRIBUTION =
+  '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
+
 function getMaplibreStyle(
   theme: string,
   tiles?: string,
   npmLayers?: LayerSpecification[],
   droppedArchive?: PMTiles,
+  minZoom?: number,
+  maxZoom?: number,
 ): StyleSpecification {
   if (tiles && tiles.endsWith(".pmtiles")) {
     tiles = "pmtiles://" + tiles;
@@ -47,22 +52,26 @@ function getMaplibreStyle(
     },
   ];
   style.glyphs = "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf";
-  const source = {
-    protomaps: {
-      type: "vector",
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-    },
-  } as any;
 
   if (droppedArchive) {
-    source.protomaps.tiles = [
-      "pmtiles://" + droppedArchive.source.getKey() + "/{z}/{x}/{y}",
-    ];
+    style.sources = {
+      protomaps: {
+        type: "vector",
+        attribution: ATTRIBUTION,
+        tiles: ["pmtiles://" + droppedArchive.source.getKey() + "/{z}/{x}/{y}"],
+        minzoom: minZoom,
+        maxzoom: maxZoom,
+      },
+    };
   } else {
-    source.protomaps.url = tiles;
+    style.sources = {
+      protomaps: {
+        type: "vector",
+        attribution: ATTRIBUTION,
+        url: tiles,
+      },
+    };
   }
-
-  style.sources = source;
 
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
@@ -169,16 +178,26 @@ function MapLibreView(props: {
   }, [props.droppedArchive]);
 
   useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.setStyle(
-        getMaplibreStyle(
-          props.theme,
-          props.tiles,
-          props.npmLayers,
-          props.droppedArchive,
-        ),
-      );
-    }
+    (async () => {
+      if (mapRef.current) {
+        let minZoom, maxZoom;
+        if (props.droppedArchive) {
+          const header = await props.droppedArchive.getHeader();
+          minZoom = header.minZoom;
+          maxZoom = header.maxZoom;
+        }
+        mapRef.current.setStyle(
+          getMaplibreStyle(
+            props.theme,
+            props.tiles,
+            props.npmLayers,
+            props.droppedArchive,
+            minZoom,
+            maxZoom,
+          ),
+        );
+      }
+    })();
   }, [props.tiles, props.theme, props.npmLayers, props.droppedArchive]);
 
   return <div id="map"></div>;
@@ -226,7 +245,7 @@ export default function MapViewComponent() {
   const params = new URLSearchParams(location.search);
   const [theme, setTheme] = useState<string>(params.get("theme") || "light");
 
-  let tilesParam = params.get("tiles") || undefined;
+  const tilesParam = params.get("tiles") || undefined;
 
   const [tiles, setTiles] = useState<string | undefined>(tilesParam);
   const [renderer, setRenderer] = useState<string>(
@@ -267,10 +286,13 @@ export default function MapViewComponent() {
   };
 
   const loadVersionsFromNpm = async () => {
-    let resp = await fetch("https://registry.npmjs.org/protomaps-themes-base", {
-      headers: { Accept: "application/vnd.npm.install-v1+json" },
-    });
-    let j = await resp.json();
+    const resp = await fetch(
+      "https://registry.npmjs.org/protomaps-themes-base",
+      {
+        headers: { Accept: "application/vnd.npm.install-v1+json" },
+      },
+    );
+    const j = await resp.json();
     setKnownNpmVersions(
       Object.keys(j.versions)
         .sort()
