@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, searchForWorkspaceRoot } from "vite";
 import sirv from "sirv";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
@@ -28,6 +28,11 @@ export default defineConfig({
         builds: resolve(__dirname, "builds/index.html"),
         visualtests: resolve(__dirname, "visualtests/index.html"),
       },
+    },
+  },
+  server: {
+    fs: {
+      allow: [searchForWorkspaceRoot(process.cwd()), '../styles/src']
     },
   },
 });
