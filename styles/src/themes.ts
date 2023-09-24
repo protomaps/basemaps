@@ -575,7 +575,7 @@ export const BLACK: Theme = {
     tunnel_highway: "#292929",
 
     transit_pier: "#0a0a0a",
-    buildings: "#0A0A0A",
+    buildings: "#0a0a0a",
 
     minor_service_casing: "#141414",
     minor_casing: "#141414",
