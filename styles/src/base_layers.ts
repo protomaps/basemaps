@@ -658,17 +658,16 @@ export function nolabels_layers(source: string, t: Theme): LayerSpecification[] 
         ],
       },
     },
-    // {
-    //   id: "buildings",
-    //   type: "fill-extrusion",
-    //   source: source,
-    //   "source-layer": "buildings",
-    //   paint: {
-    //     "fill-extrusion-color": t.buildings,
-    //     "fill-extrusion-height": ["to-number", ["get", "height"]],
-    //     "fill-extrusion-opacity": 0.5,
-    //   },
-    // },
+    {
+      id: "buildings",
+      type: "fill",
+      source: source,
+      "source-layer": "buildings",
+      paint: {
+        "fill-color": t.buildings,
+        "fill-opacity": 0.5,
+      },
+    },
     {
       id: "transit_pier",
       type: "line",

@@ -215,7 +215,7 @@ export const LIGHT: Theme = {
     tunnel_highway: "#d5d5d5",
 
     transit_pier: "#e0e0e0",
-    buildings: "#cbcece",
+    buildings: "#cccccc",
 
     minor_service_casing: "#e0e0e0",
     minor_casing: "#e0e0e0",
@@ -305,7 +305,7 @@ export const DARK: Theme = {
     tunnel_highway: "#292929",
 
     transit_pier: "#333333",
-    buildings: "#393f43",
+    buildings: "#111111",
 
     minor_service_casing: "#1f1f1f",
     minor_casing: "#1f1f1f",
@@ -395,7 +395,7 @@ export const WHITE: Theme = {
     tunnel_highway: "#d6d6d6",
 
     transit_pier: "#efefef",
-    buildings: "#ffffff",
+    buildings: "#efefef",
 
     minor_service_casing: "#ffffff",
     minor_casing: "#ffffff",
@@ -485,7 +485,7 @@ export const GRAYSCALE: Theme = {
     tunnel_highway: "#d6d6d6",
 
     transit_pier: "#b8b8b8",
-    buildings: "#ffffff",
+    buildings: "#e0e0e0",
 
     minor_service_casing: "#cccccc",
     minor_casing: "#cccccc",
@@ -575,7 +575,7 @@ export const BLACK: Theme = {
     tunnel_highway: "#292929",
 
     transit_pier: "#0a0a0a",
-    buildings: "#101010",
+    buildings: "#0a0a0a",
 
     minor_service_casing: "#141414",
     minor_casing: "#141414",
@@ -618,7 +618,7 @@ export const BLACK: Theme = {
     ocean_label: "#707070",
     peak_label: "#707070",
     subplace_label: "#5c5c5c",
-    subplace_label_halo: "#5c5c5c",
+    subplace_label_halo: "#141414",
     city_circle: "#000000",
     city_circle_stroke: "#666666",
     city_label: "#999999",
