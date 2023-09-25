@@ -245,7 +245,6 @@ function OpenLayersView(props: { theme: string; tiles?: string }) {
 export default function MapViewComponent() {
 
   const hash = parseHash(location.hash)
-  console.log(hash);
   const [theme, setTheme] = useState<string>(hash["theme"] || "light");
   const [tiles, setTiles] = useState<string | undefined>(hash["tiles"]);
   const [renderer, setRenderer] = useState<string>(
@@ -253,7 +252,7 @@ export default function MapViewComponent() {
   );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
   const [publishedStyleVersion, setPublishedStyleVersion] =
-    useState<string>(hash["npm_version"]);
+    useState<string | undefined>(hash["npm_version"]);
   const [knownNpmVersions, setKnownNpmVersions] = useState<string[]>([]);
   const [npmLayers, setNpmLayers] = useState<LayerSpecification[]>([]);
   const [droppedArchive, setDroppedArchive] = useState<PMTiles>();
@@ -313,7 +312,7 @@ export default function MapViewComponent() {
 
   useEffect(() => {
     (async () => {
-      if (publishedStyleVersion == "") {
+      if (publishedStyleVersion === undefined) {
         setNpmLayers([]);
       } else {
         fetch(
