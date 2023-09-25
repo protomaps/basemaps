@@ -2,7 +2,7 @@
 
 # The BSD 3-Clause License (BSD-3-Clause)
 
-Copyright 2019-2023 Protomaps
+Copyright 2019-2023 Protomaps LLC, Kelso Cartography
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,10 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 # Visual Design
 
-The visual design of the Protomaps styles was created by Geraldine Sarmiento for Protomaps LLC and released under a Creative Commons 0 (CC0) license.
+The visual design of the Protomaps basemap styles was created by Geraldine Sarmiento for Protomaps LLC and released under a Creative Commons 0 (CC0) license.
 
-
-
+https://creativecommons.org/publicdomain/zero/1.0/
 
 # Tile Schema
 
