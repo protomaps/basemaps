@@ -17,6 +17,7 @@ import { useGeographic } from "ol/proj";
 import { stylefunction } from "ol-mapbox-style";
 
 import { PMTiles, FileAPISource, Protocol } from "pmtiles";
+import { parseHash, createHash } from "./hash"
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
@@ -127,7 +128,7 @@ function MapLibreView(props: {
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
     const map = new maplibregl.Map({
-      hash: true,
+      hash: "map",
       container: "map",
       style: getMaplibreStyle(props.theme, props.tiles, props.npmLayers),
     });
@@ -242,21 +243,30 @@ function OpenLayersView(props: { theme: string; tiles?: string }) {
 
 // if no tiles are passed, loads the latest daily build.
 export default function MapViewComponent() {
-  const params = new URLSearchParams(location.search);
-  const [theme, setTheme] = useState<string>(params.get("theme") || "light");
 
-  const tilesParam = params.get("tiles") || undefined;
-
-  const [tiles, setTiles] = useState<string | undefined>(tilesParam);
+  const hash = parseHash(location.hash)
+  console.log(hash);
+  const [theme, setTheme] = useState<string>(hash["theme"] || "light");
+  const [tiles, setTiles] = useState<string | undefined>(hash["tiles"]);
   const [renderer, setRenderer] = useState<string>(
-    params.get("renderer") || "maplibregl",
+    hash["renderer"] || "maplibregl",
   );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
   const [publishedStyleVersion, setPublishedStyleVersion] =
-    useState<string>("");
+    useState<string>(hash["npm_version"]);
   const [knownNpmVersions, setKnownNpmVersions] = useState<string[]>([]);
   const [npmLayers, setNpmLayers] = useState<LayerSpecification[]>([]);
   const [droppedArchive, setDroppedArchive] = useState<PMTiles>();
+
+  useEffect(() => {
+    const record = {
+      theme: theme,
+      tiles: tiles,
+      renderer: renderer,
+      npm_version: publishedStyleVersion,
+    };
+    location.hash = createHash(location.hash, record);
+  })
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setDroppedArchive(new PMTiles(new FileAPISource(acceptedFiles[0])));

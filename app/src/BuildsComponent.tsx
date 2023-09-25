@@ -70,7 +70,7 @@ function BuildComponent(props: {
       <td>{formatBytes(build.size)}</td>
       <td>{build.uploaded}</td>
       <td>
-        <a href={"/?url=" + link}>map</a>
+        <a href={"/#tiles=" + link}>map</a>
       </td>
       <td>
         <a href={link}>download</a>
