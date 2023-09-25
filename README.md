@@ -43,4 +43,30 @@ mvn spotless:apply
 
 ## License
 
-[BSD 3-clause](/LICENSE.md). The organization of layers and features used by these map styles, as well as the "look and feel" of the resulting maps, are licensed [CC0](https://creativecommons.org/publicdomain/zero/1.0/). However, maps using the [Protomaps web map service](https://protomaps.com) or another OpenStreetMap-based service will be subject to the terms of the [Open Database License](https://www.openstreetmap.org/copyright).
+# Licensing and Attribution Guidelines
+
+Summary:
+
+* All code is BSD-3
+* Map design is CC0
+* Tilesets are ODbL, attribute OSM
+* We like shoutouts!
+* Name your fork, commercial product or service something different
+
+We kindly request that you attribute the Protomaps project if you use the basemap styles unmodified or with additions, but you are not required to do so. The visual design copyright of the maps is released under a [Creative Commons Zero (CC0) license](https://creativecommons.org/publicdomain/zero/1.0/) to eliminate ambiguity around derivative or combined works of map styling code, and to publish software, such as NPM packages, under the standard BSD-3 license.
+
+The tilesets that power the Protomaps basemap are [Produced Works of the OpenStreetMap dataset](https://osmfoundation.org/wiki/Licence/Community_Guidelines/Produced_Work_-_Guideline) under the [Open Database License](https://www.openstreetmap.org/copyright). Web maps and native apps that use this Produced Work must visibly attribute © OpenStreetMap - for example, in the corner of the map display. If your map only uses the Map Styles with non-OpenStreetMap tilesets, this attribution is not required.
+
+Example web map corner attribution:
+
+```html
+<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>
+```
+
+Tilesets also include data from [Natural Earth](https://www.naturalearthdata.com), which does not require corner attribution. Other data sources your map uses may require additional attribution.
+
+The software in this repository is made available under a [BSD 3-Clause License](/LICENSE.md), and includes license notices related to Protomaps LLC, Mapzen, and the Linux Foundation. You must retain these license notices in software source code derived from this repository.
+
+If you distribute a modified “fork” of these basemap styles or tilesets, or provide a tiles API based on them, you must name your product or service something different from Protomaps. Free and unmodified redistributions of tiles and styles are permitted to use the name. No restrictions apply to the underlying technology `.pmtiles` which is an open specification in the public domain.
+
+These guidelines are subject to change with the addition of other open datasets. Any questions can be addressed to [support@protomaps.com](mailto:support@protomaps.com).
