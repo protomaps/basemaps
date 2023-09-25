@@ -5,7 +5,7 @@ This repository has two core parts:
 * `tiles/`: A [Planetiler](https://github.com/onthegomap/planetiler) build profile that generates `planet.pmtiles` from OpenStreetMap and Natural Earth in 2-3 hours on a modest computer.
 * `styles/`: A TypeScript package that generates [MapLibre GL](http://github.com/maplibre) styles, in multiple color themes, that can be used via `npm` or exported as JSON.
 
-# Usage
+## Development
 
 You will need [Java 17+](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md) and [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers. 
 
@@ -41,9 +41,7 @@ npm run dev
 mvn spotless:apply
 ```
 
-## License
-
-# Licensing and Attribution Guidelines
+## Licensing and Attribution Guidelines
 
 Summary:
 
@@ -67,6 +65,6 @@ Tilesets also include data from [Natural Earth](https://www.naturalearthdata.com
 
 The software in this repository is made available under a [BSD 3-Clause License](/LICENSE.md), and includes license notices related to Protomaps LLC, Mapzen, and the Linux Foundation. You must retain these license notices in software source code derived from this repository.
 
-If you distribute a modified “fork” of these basemap styles or tilesets, or provide a tiles API based on them, you must name your product or service something different from Protomaps. Free and unmodified redistributions of tiles and styles are permitted to use the name. No restrictions apply to the underlying technology `.pmtiles` which is an open specification in the public domain.
+If you distribute a modified “fork” of these basemap styles or tilesets, or provide a tiles API based on them, you must name your product or service something different from Protomaps. Free and unmodified redistributions of tiles and styles are permitted to use the name. No restrictions apply to the underlying technology `.pmtiles` which is an [open specification in the public domain.](https://github.com/protomaps/PMTiles#license)
 
 These guidelines are subject to change with the addition of other open datasets. Any questions can be addressed to [support@protomaps.com](mailto:support@protomaps.com).
