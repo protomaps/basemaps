@@ -1871,7 +1871,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       "filter": ["any", ["<", ["get", "pmap:min_zoom"], 13]],
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
-        "text-font": ["Noto Sans Regular"],
+        "text-font": ["Roboto Regular"],
         "text-field": ["get", "name"],
         "text-size": 11,
         "text-max-width": 9,
