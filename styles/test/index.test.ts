@@ -4,6 +4,7 @@ import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
 import themes from "../src/themes";
 import layers from "../src/index";
 
+import "./base_layers.test";
 import "./themes.test";
 
 let STUB = {
