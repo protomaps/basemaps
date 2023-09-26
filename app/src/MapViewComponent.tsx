@@ -141,6 +141,9 @@ function MapLibreView(props: {
           enableHighAccuracy: true,
         },
         trackUserLocation: true,
+        fitBoundsOptions: {
+          animate: false
+        }
       }),
     );
 
