@@ -48,23 +48,24 @@ function BuildComponent(props: {
   return (
     <tr>
       <td>
-        <span style={{display: "inline-block", width:"20px"}}>
-          { idx > props.cmpB &&
-          <input
-            type="radio"
-            onChange={onChangeA}
-            checked={idx === props.cmpA}
-          /> }
+        <span style={{ display: "inline-block", width: "20px" }}>
+          {idx > props.cmpB && (
+            <input
+              type="radio"
+              onChange={onChangeA}
+              checked={idx === props.cmpA}
+            />
+          )}
         </span>
-        <span style={{display: "inline-block", width:"20px"}}>
-          { idx < props.cmpA &&
-          <input
-            type="radio"
-            onChange={onChangeB}
-            checked={idx === props.cmpB}
-          /> }
+        <span style={{ display: "inline-block", width: "20px" }}>
+          {idx < props.cmpA && (
+            <input
+              type="radio"
+              onChange={onChangeB}
+              checked={idx === props.cmpB}
+            />
+          )}
         </span>
-
       </td>
       <td>{build.key}</td>
       <td>{formatBytes(build.size)}</td>
@@ -108,27 +109,28 @@ export default function BuildsComponent() {
   const style = "2.0.0-alpha.0";
   const theme = "light";
 
-
   const openMaperture = () => {
-    const leftKey = builds[cmpA].key.replace(".pmtiles","");
-    const rightKey = builds[cmpB].key.replace(".pmtiles","");
-    const left:MaperturePayload = {
+    const leftKey = builds[cmpA].key.replace(".pmtiles", "");
+    const rightKey = builds[cmpB].key.replace(".pmtiles", "");
+    const left: MaperturePayload = {
       name: `${leftKey} ${style} ${theme}`,
-      type: 'maplibre-gl',
-      renderer: 'maplibre-gl',
+      type: "maplibre-gl",
+      renderer: "maplibre-gl",
       index: 0,
-      url: `https://build-metadata.protomaps.dev/style@${style}+theme@${theme}+tiles@${leftKey}.json`
+      url: `https://build-metadata.protomaps.dev/style@${style}+theme@${theme}+tiles@${leftKey}.json`,
     };
-    const right:MaperturePayload = {
+    const right: MaperturePayload = {
       name: `${rightKey} ${style} ${theme}`,
-      type: 'maplibre-gl',
-      renderer: 'maplibre-gl',
+      type: "maplibre-gl",
+      renderer: "maplibre-gl",
       index: 0,
-      url: `https://build-metadata.protomaps.dev/style@${style}+theme@${theme}+tiles@${rightKey}.json`
+      url: `https://build-metadata.protomaps.dev/style@${style}+theme@${theme}+tiles@${rightKey}.json`,
     };
-    const payload = JSON.stringify([left,right]);
-    open("https://stamen.github.io/maperture/#maps=" + encodeURIComponent(payload));
-  }
+    const payload = JSON.stringify([left, right]);
+    open(
+      "https://stamen.github.io/maperture/#maps=" + encodeURIComponent(payload),
+    );
+  };
 
   useEffect(() => {
     fetch("https://build-metadata.protomaps.dev/builds.json")
@@ -136,7 +138,11 @@ export default function BuildsComponent() {
         return r.json();
       })
       .then((j) => {
-        setBuilds(j.sort((a:Build,b:Build) => { return a.key < b.key }));
+        setBuilds(
+          j.sort((a: Build, b: Build) => {
+            return a.key < b.key;
+          }),
+        );
       });
   }, []);
 
