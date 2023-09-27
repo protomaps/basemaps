@@ -18,7 +18,7 @@ test("lower case hex color codes like fresco", () => {
   for (var i in themes) {
     for (var j in themes[i]) {
       const color = themes[i][j];
-      assert(hexPattern.test(color),color);
+      assert(hexPattern.test(color), color);
     }
   }
 });

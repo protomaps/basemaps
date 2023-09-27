@@ -17,7 +17,7 @@ import { useGeographic } from "ol/proj";
 import { stylefunction } from "ol-mapbox-style";
 
 import { PMTiles, FileAPISource, Protocol } from "pmtiles";
-import { parseHash, createHash } from "./hash"
+import { parseHash, createHash } from "./hash";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
@@ -142,8 +142,8 @@ function MapLibreView(props: {
         },
         trackUserLocation: true,
         fitBoundsOptions: {
-          animate: false
-        }
+          animate: false,
+        },
       }),
     );
 
@@ -246,16 +246,16 @@ function OpenLayersView(props: { theme: string; tiles?: string }) {
 
 // if no tiles are passed, loads the latest daily build.
 export default function MapViewComponent() {
-
-  const hash = parseHash(location.hash)
+  const hash = parseHash(location.hash);
   const [theme, setTheme] = useState<string>(hash["theme"] || "light");
   const [tiles, setTiles] = useState<string | undefined>(hash["tiles"]);
   const [renderer, setRenderer] = useState<string>(
     hash["renderer"] || "maplibregl",
   );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
-  const [publishedStyleVersion, setPublishedStyleVersion] =
-    useState<string | undefined>(hash["npm_version"]);
+  const [publishedStyleVersion, setPublishedStyleVersion] = useState<
+    string | undefined
+  >(hash["npm_version"]);
   const [knownNpmVersions, setKnownNpmVersions] = useState<string[]>([]);
   const [npmLayers, setNpmLayers] = useState<LayerSpecification[]>([]);
   const [droppedArchive, setDroppedArchive] = useState<PMTiles>();
@@ -268,7 +268,7 @@ export default function MapViewComponent() {
       npm_version: publishedStyleVersion,
     };
     location.hash = createHash(location.hash, record);
-  })
+  });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setDroppedArchive(new PMTiles(new FileAPISource(acceptedFiles[0])));
