@@ -29,6 +29,6 @@ jobs:
       working-directory: tiles
       run: mvn spotless:check
     - name: Check styles
-      run: npm install && npx tsc --noEmit && npm test
+      run: npm install && npx tsc --noEmit && npm test && npm run prettier-check
       working-directory: styles
     - run: python .github/check_examples.py

@@ -22,7 +22,7 @@ jobs:
       - name: Check styles
         run: npm install && npx tsc --noEmit
         working-directory: styles
-      - run: npm install && npx tsc --noEmit && npx vite build
+      - run: npm install && npx tsc --noEmit && npm run prettier-check && npx vite build
         working-directory: app
       - uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}

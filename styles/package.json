@@ -17,10 +17,12 @@
     "dist-white": "mkdir -p dist/layers && npm run --silent generate-layers protomaps white > dist/layers/white.json",
     "dist-grayscale": "mkdir -p dist/layers && npm run --silent generate-layers protomaps grayscale > dist/layers/grayscale.json",
     "dist-black": "mkdir -p dist/layers && npm run --silent generate-layers protomaps black > dist/layers/black.json",
-    "dist-all":"npm run dist-light && npm run dist-dark && npm run dist-white && npm run dist-grayscale && npm run dist-black",
+    "dist-all": "npm run dist-light && npm run dist-dark && npm run dist-white && npm run dist-grayscale && npm run dist-black",
     "build": "npm run build-iife && npm run build-esm && npm run build-cjs && npm run build-tsc && npm run dist-all",
     "test": "node -r esbuild-runner/register test/index.test.ts",
-    "tsc": "tsc --noEmit --watch"
+    "tsc": "tsc --noEmit --watch",
+    "prettier": "prettier --write src test",
+    "prettier-check": "prettier --check src test"
   },
   "repository": {
     "type": "git",
@@ -33,6 +35,7 @@
     "@maplibre/maplibre-gl-style-spec": "^19.3.1",
     "esbuild": "^0.15.11",
     "esbuild-runner": "^2.2.2",
+    "prettier": "^3.0.3",
     "typescript": "^4.5.5"
   }
 }
