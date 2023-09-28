@@ -274,7 +274,7 @@ export default function MapViewComponent() {
     setDroppedArchive(new PMTiles(new FileAPISource(acceptedFiles[0])));
   }, []);
 
-  const { getRootProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps } = useDropzone({ onDrop });
 
   // TODO: language tag selector
 
@@ -336,6 +336,7 @@ export default function MapViewComponent() {
       <nav>
         <input defaultValue={tiles} style={{ width: "50%" }} />
         <button>load</button>
+        <span {...getRootProps()}>Drop Zone</span>
         <select onChange={(e) => setTheme(e.target.value)} value={theme}>
           <option value="light">light</option>
           <option value="dark">dark</option>
@@ -372,12 +373,7 @@ export default function MapViewComponent() {
           {GIT_SHA}
         </a>
       </nav>
-      <div className="split" onKeyPress={handleKeyPress} {...getRootProps()}>
-        {isDragActive && (
-          <div className="dropzone">
-            <div>Drag basemap .pmtiles to display...</div>
-          </div>
-        )}
+      <div className="split" onKeyPress={handleKeyPress}>
         {renderer == "maplibregl" ? (
           <MapLibreView
             tiles={tiles}
