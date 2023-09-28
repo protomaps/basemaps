@@ -259,7 +259,6 @@ export default function MapViewComponent() {
   const [knownNpmVersions, setKnownNpmVersions] = useState<string[]>([]);
   const [npmLayers, setNpmLayers] = useState<LayerSpecification[]>([]);
   const [droppedArchive, setDroppedArchive] = useState<PMTiles>();
-  const [isFocused, setIsFocused] = useState<bool>(true);
 
   useEffect(() => {
     const record = {
@@ -275,7 +274,7 @@ export default function MapViewComponent() {
     setDroppedArchive(new PMTiles(new FileAPISource(acceptedFiles[0])));
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  const { getRootProps } = useDropzone({ onDrop });
 
   // TODO: language tag selector
 
