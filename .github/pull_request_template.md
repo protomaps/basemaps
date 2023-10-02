@@ -1,0 +1,1 @@
+ - [ ] If this is a feature, addition or style change, please **open an issue describing your proposal before opening a pull request.**
