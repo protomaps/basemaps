@@ -1,20 +1,13 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
+name: Feature request, modification or addition
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Description**
+Explain if the change you want is in the JSON style or tileset.
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Location**
+For map changes, include a link to a public URL with coordinates in the hash and zoom level.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Screenshots**
+If applicable, add screenshots of the map to explain what you want changed.
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
