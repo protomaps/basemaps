@@ -1,5 +1,6 @@
 ---
 name: Feature request, modification or addition
+about: Discuss an enhancement to the project
 ---
 
 **Description**
