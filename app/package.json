@@ -13,7 +13,7 @@
     "prettier-check": "prettier --check src test"
   },
   "dependencies": {
-    "maplibre-gl": "^3.3.1",
+    "maplibre-gl": "^3.4.1",
     "ol": "^8.1.0",
     "ol-mapbox-style": "^12.0.0",
     "ol-pmtiles": "^0.2.0",

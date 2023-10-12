@@ -21,9 +21,6 @@ import { parseHash, createHash } from "./hash";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
-// maplibre GL JS has a bug related to style diffing.
-let cachebuster = 0;
-
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
 
@@ -44,14 +41,7 @@ function getMaplibreStyle(
     layers: [],
   } as StyleSpecification;
   if (!tiles) return style;
-  style.layers = [
-    {
-      type: "fill",
-      source: "protomaps",
-      "source-layer": "nonexistent",
-      id: `${cachebuster++}`,
-    },
-  ];
+  style.layers = [];
   style.glyphs = "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf";
 
   if (droppedArchive) {
