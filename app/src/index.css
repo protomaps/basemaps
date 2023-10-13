@@ -19,6 +19,10 @@ body {
   color: white;
 }
 
+a {
+  color: white;
+}
+
 .map-container {
   display: flex;
   flex-direction: column;
@@ -59,4 +63,17 @@ body {
 
 .visual-tests span {
   margin-right: 0.5rem;
+}
+
+.builds {
+  font-family: monospace;
+  padding: 3rem;
+}
+
+.builds td {
+  padding: 10px;
+}
+
+.builds a {
+  color: white;
 }
