@@ -88,17 +88,6 @@ interface MaperturePayload {
   index: number;
 }
 
-// [
-//   {
-//     "name":"20230101",
-//     "type":"maplibre-gl",
-//     "renderer":"maplibre-gl",
-//     "url":"https://build-metadata.protomaps.dev/style@2.0.0-alpha.0+theme@dark+tiles@20230920.json",
-//     "index":0
-//   },
-//   {"id":"outdoors-v11","name":"Mapbox Outdoors","type":"mapbox-gl","url":"mapbox://styles/mapbox/outdoors-v11","index":1,"renderer":"mapbox-gl"}
-// ]
-
 export default function BuildsComponent() {
   const [builds, setBuilds] = useState<Build[]>([]);
 
@@ -147,7 +136,7 @@ export default function BuildsComponent() {
   }, []);
 
   return (
-    <div>
+    <div className="builds">
       <h1>Builds</h1>
       {/*<button>Compare Examples</button>*/}
       <button onClick={openMaperture}>Compare in Maperture</button>
