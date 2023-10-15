@@ -1,4 +1,11 @@
-import { useEffect, useState, useRef, KeyboardEvent, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  KeyboardEvent,
+  FormEvent,
+  useCallback,
+} from "react";
 import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
 import { StyleSpecification } from "maplibre-gl";
@@ -287,6 +294,15 @@ export default function MapViewComponent() {
     }
   };
 
+  const loadTiles = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
+    const tilesValue = formData.get("tiles");
+    if (typeof tilesValue === 'string') {
+      setTiles(tilesValue);
+    }
+  };
+
   const loadVersionsFromNpm = async () => {
     const resp = await fetch(
       "https://registry.npmjs.org/protomaps-themes-base",
@@ -324,8 +340,15 @@ export default function MapViewComponent() {
   return (
     <div className="map-container">
       <nav>
-        <input defaultValue={tiles} style={{ width: "50%" }} />
-        <button>load</button>
+        <form onSubmit={loadTiles}>
+          <input
+            type="text"
+            name="tiles"
+            defaultValue={tiles}
+            style={{ width: "50%" }}
+          />
+          <button type="submit">load</button>
+        </form>
         <span {...getRootProps()}>Drop Zone</span>
         <select onChange={(e) => setTheme(e.target.value)} value={theme}>
           <option value="light">light</option>
