@@ -298,7 +298,7 @@ export default function MapViewComponent() {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const tilesValue = formData.get("tiles");
-    if (typeof tilesValue === 'string') {
+    if (typeof tilesValue === "string") {
       setTiles(tilesValue);
     }
   };
