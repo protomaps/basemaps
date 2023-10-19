@@ -78,6 +78,7 @@ a {
   color: white;
 }
 
-.maplibregl-popup, .maplibregl-popup-close-button {
+.maplibregl-popup,
+.maplibregl-popup-close-button {
   color: black;
 }
