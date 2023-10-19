@@ -74,6 +74,9 @@ function BuildComponent(props: {
         <a href={"/#tiles=" + link}>map</a>
       </td>
       <td>
+        <a href={"https://protomaps.github.io/PMTiles/?url=" + link}>xray</a>
+      </td>
+      <td>
         <a href={link}>download</a>
       </td>
     </tr>
