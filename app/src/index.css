@@ -77,3 +77,8 @@ a {
 .builds a {
   color: white;
 }
+
+.maplibregl-popup,
+.maplibregl-popup-close-button {
+  color: black;
+}

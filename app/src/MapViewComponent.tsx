@@ -6,9 +6,10 @@ import {
   FormEvent,
   useCallback,
 } from "react";
+import { renderToString } from "react-dom/server";
 import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
-import { StyleSpecification } from "maplibre-gl";
+import { StyleSpecification, MapGeoJSONFeature } from "maplibre-gl";
 import * as pmtiles from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "ol/ol.css";
@@ -30,6 +31,33 @@ const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
+
+const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
+  return (
+    <div>
+      {props.features.map((f, i) => (
+        <div key={i}>
+          <span>
+            <strong>{(f.layer as any)["source-layer"]}</strong>
+            <span> ({f.geometry.type})</span>
+          </span>
+          <table>
+            <tr key={0}>
+              <td>id</td>
+              <td>{f.id}</td>
+            </tr>
+            {Object.entries(f.properties).map(([key, value], i) => (
+              <tr key={i + 1}>
+                <td>{key}</td>
+                <td>{value}</td>
+              </tr>
+            ))}
+          </table>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 function getMaplibreStyle(
   theme: string,
@@ -144,10 +172,24 @@ function MapLibreView(props: {
       }),
     );
 
+    const popup = new maplibregl.Popup({
+      closeButton: true,
+      closeOnClick: false,
+      maxWidth: "none",
+    });
+
     map.on("mousedown", function (e) {
-      map.queryRenderedFeatures(e.point).map((feat) => {
-        console.log(feat);
-      });
+      const features = map.queryRenderedFeatures(e.point);
+      if (features.length) {
+        let content = renderToString(
+          <FeaturesProperties features={features} />,
+        );
+        popup.setHTML(content);
+        popup.setLngLat(e.lngLat);
+        popup.addTo(map);
+      } else {
+        popup.remove();
+      }
     });
 
     mapRef.current = map;
