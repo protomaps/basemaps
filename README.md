@@ -7,7 +7,7 @@ This repository has two core parts:
 
 ## Development
 
-You will need [Java 17+](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md) and [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers. 
+You will need [Java 21+](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md) and [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers. 
 
 Generate and inspect a basemap PMTiles of any named area:
 
