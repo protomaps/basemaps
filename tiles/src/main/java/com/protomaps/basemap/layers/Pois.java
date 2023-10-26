@@ -51,6 +51,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("leisure") ||
       sf.hasTag("natural", "beach") ||
       sf.hasTag("railway", "station") ||
+      sf.hasTag("highway", "bus_stop") ||
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
@@ -134,6 +135,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("natural");
         } else if (sf.hasTag("railway")) {
           kind = sf.getString("railway");
+        } else if (sf.hasTag("highway")) {
+          kind = sf.getString("highway");
         } else if (sf.hasTag("shop")) {
           kind = sf.getString("shop");
         } else if (sf.hasTag("tourism")) {
