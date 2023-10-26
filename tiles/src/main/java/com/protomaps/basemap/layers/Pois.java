@@ -204,6 +204,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         kindDetail = sf.getString("religion");
       } else if (sf.hasTag("sport")) {
         kindDetail = sf.getString("sport");
+      } else if (sf.hasTag("station")) {
+        kindDetail = sf.getString("station");
       }
 
       // try first for polygon -> point representations
