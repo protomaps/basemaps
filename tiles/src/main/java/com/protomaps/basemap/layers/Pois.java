@@ -51,6 +51,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("leisure") ||
       sf.hasTag("natural", "beach") ||
       sf.hasTag("railway", "station") ||
+      sf.hasTag("railway", "tram_stop") ||
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
