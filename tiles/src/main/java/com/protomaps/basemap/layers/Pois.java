@@ -52,6 +52,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("natural", "beach") ||
       sf.hasTag("railway", "station") ||
       sf.hasTag("railway", "tram_stop") ||
+      sf.hasTag("railway", "halt") ||
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
@@ -211,7 +212,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       
       if (sf.hasTag("railway", "station") && (!sf.hasTag("station") || sf.hasTag("station", "train"))) {
         minZoom = 13;
-      if (sf.hasTag("station", "subway", "light_rail")) {
+      } else if (sf.hasTag("station", "subway", "light_rail") || sf.hasTag("railway", "halt")) {
         minZoom = 14;
       } else if (sf.hasTag("railway", "tram_stop")) {
         minZoom = 16;
