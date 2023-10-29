@@ -208,6 +208,14 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("station")) {
         kindDetail = sf.getString("station");
       }
+      
+      if (sf.hasTag("railway", "station") && (!sf.hasTag("station") || sf.hasTag("station", "train"))) {
+        minZoom = 13;
+      if (sf.hasTag("station", "subway", "light_rail")) {
+        minZoom = 14;
+      } else if (sf.hasTag("railway", "tram_stop")) {
+        minZoom = 16;
+      }
 
       // try first for polygon -> point representations
       if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
