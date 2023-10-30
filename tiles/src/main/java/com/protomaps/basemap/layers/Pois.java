@@ -114,6 +114,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
         kind = sf.getString("tourism");
         minZoom = 15;
+      } else if (sf.hasTag("highway", "bus_stop")) {
+        minZoom = 18;
       } else {
         // Avoid problem of too many "other" kinds
         // All these will default to min_zoom of 15
@@ -207,10 +209,6 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         kindDetail = sf.getString("religion");
       } else if (sf.hasTag("sport")) {
         kindDetail = sf.getString("sport");
-      }
-
-      if (sf.hasTag("highway", "bus_stop")) {
-        minZoom = 16;
       }
 
       // try first for polygon -> point representations
