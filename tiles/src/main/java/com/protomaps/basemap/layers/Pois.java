@@ -51,6 +51,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("leisure") ||
       sf.hasTag("natural", "beach") ||
       sf.hasTag("railway", "station") ||
+      sf.hasTag("highway", "bus_stop") ||
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
@@ -113,6 +114,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
         kind = sf.getString("tourism");
         minZoom = 15;
+      } else if (sf.hasTag("highway", "bus_stop")) {
+        minZoom = 18;
       } else {
         // Avoid problem of too many "other" kinds
         // All these will default to min_zoom of 15
@@ -134,6 +137,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("natural");
         } else if (sf.hasTag("railway")) {
           kind = sf.getString("railway");
+        } else if (sf.hasTag("highway")) {
+          kind = sf.getString("highway");
         } else if (sf.hasTag("shop")) {
           kind = sf.getString("shop");
         } else if (sf.hasTag("tourism")) {
