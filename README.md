@@ -7,7 +7,7 @@ This repository has two core parts:
 
 ## Development
 
-You will need [Java 21+](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md) and [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers. 
+You will need [Java 21+](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md) and [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers.
 
 Generate and inspect a basemap PMTiles of any named area:
 
@@ -32,8 +32,11 @@ java -jar target/*-with-deps.jar --download --force --area=monaco
 
 ```shell
 cd app
+npm install
 npm run dev
 ```
+
+The locally generated pmtiles can be fetched from http://localhost:5173/monaco.pmtiles
 
 5. Linting to apply code formatting
 
