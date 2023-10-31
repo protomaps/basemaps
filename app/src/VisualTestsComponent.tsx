@@ -50,7 +50,7 @@ const createMap = (
       version: 8,
       center: center,
       zoom: zoom,
-      glyphs: "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf",
+      glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
       sources: {
         protomaps: {
           type: "vector",

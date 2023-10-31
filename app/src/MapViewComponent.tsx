@@ -77,7 +77,7 @@ function getMaplibreStyle(
   } as StyleSpecification;
   if (!tiles) return style;
   style.layers = [];
-  style.glyphs = "https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf";
+  style.glyphs = "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
 
   if (droppedArchive) {
     style.sources = {
