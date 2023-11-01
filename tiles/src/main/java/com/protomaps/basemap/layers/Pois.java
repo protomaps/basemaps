@@ -51,8 +51,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("leisure") ||
       sf.hasTag("natural", "beach") ||
       sf.hasTag("railway", "station") ||
-      sf.hasTag("railway", "tram_stop") ||
       sf.hasTag("railway", "halt") ||
+      sf.hasTag("railway", "tram_stop") ||
+      sf.hasTag("highway", "bus_stop") ||
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
@@ -115,6 +116,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
         kind = sf.getString("tourism");
         minZoom = 15;
+      } else if (sf.hasTag("highway", "bus_stop")) {
+        minZoom = 18;
       } else {
         // Avoid problem of too many "other" kinds
         // All these will default to min_zoom of 15
@@ -136,6 +139,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           kind = sf.getString("natural");
         } else if (sf.hasTag("railway")) {
           kind = sf.getString("railway");
+        } else if (sf.hasTag("highway")) {
+          kind = sf.getString("highway");
         } else if (sf.hasTag("shop")) {
           kind = sf.getString("shop");
         } else if (sf.hasTag("tourism")) {
@@ -210,11 +215,9 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         kindDetail = sf.getString("station");
       }
       
-      if (sf.hasTag("railway", "station") && (!sf.hasTag("station") || sf.hasTag("station", "train"))) {
-        minZoom = 13;
-      } else if (sf.hasTag("station", "subway", "light_rail") || sf.hasTag("railway", "halt")) {
-        minZoom = 14;
-      } else if (sf.hasTag("railway", "tram_stop")) {
+      if (sf.hasTag("railway", "station") && (!sf.hasTag("station") || sf.hasTag("station", "train", "light_rail", "subway"))) {
+        minZoom = 10;
+      } else if (sf.hasTag("railway", "halt", "tram_stop")) {
         minZoom = 16;
       }
 
