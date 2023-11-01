@@ -5,6 +5,8 @@ This repository has two core parts:
 * `tiles/`: A [Planetiler](https://github.com/onthegomap/planetiler) build profile that generates `planet.pmtiles` from OpenStreetMap and Natural Earth in 2-3 hours on a modest computer.
 * `styles/`: A TypeScript package that generates [MapLibre GL](http://github.com/maplibre) styles, in multiple color themes, that can be used via `npm` or exported as JSON.
 
+Assets such as fonts and sprites are hosted and downloadable at the [basemaps-assets](https://github.com/protomaps/basemaps-assets) repository.
+
 ## Development
 
 You will need [Java 21+](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md) and [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers.
