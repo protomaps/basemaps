@@ -1631,7 +1631,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       filter: ["all", ["in", "pmap:kind", "river", "stream"]],
       layout: {
         "symbol-placement": "line",
-        "text-font": ["Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 12,
         "text-letter-spacing": 0.3,
@@ -1647,7 +1647,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       "source-layer": "physical_point",
       filter: ["any", ["==", "pmap:kind", "peak"]],
       layout: {
-        "text-font": ["Sans Italic"],
+        "text-font": ["Noto Sans Italic"],
         "text-field": ["get", "name"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 10, 8, 16, 12],
         "text-letter-spacing": 0.1,
@@ -1668,7 +1668,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "symbol-placement": "line",
-        "text-font": ["Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 12,
       },
@@ -1721,7 +1721,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
         ],
       ],
       layout: {
-        "text-font": ["Sans Medium"],
+        "text-font": ["Noto Sans Medium"],
         "text-field": ["get", "name"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 10, 10, 12],
         "text-letter-spacing": 0.1,
@@ -1739,7 +1739,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       "source-layer": "physical_point",
       filter: ["any", ["in", "pmap:kind", "lake", "water"]],
       layout: {
-        "text-font": ["Sans Medium"],
+        "text-font": ["Noto Sans Medium"],
         "text-field": ["get", "name"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 0, 6, 12, 10, 12],
         "text-letter-spacing": 0.1,
@@ -1762,7 +1762,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "symbol-placement": "line",
-        "text-font": ["Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 12,
       },
@@ -1781,7 +1781,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
-        "text-font": ["Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-max-width": 7,
         "text-letter-spacing": 0.1,
         "text-padding": [
@@ -1824,7 +1824,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       filter: ["any", ["<", ["get", "pmap:min_zoom"], 13]],
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
-        "text-font": ["Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-field": ["get", "name"],
         "text-size": 11,
         "text-max-width": 9,
@@ -1876,8 +1876,8 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
         "text-font": [
           "case",
           ["<=", ["get", "pmap:min_zoom"], 5],
-          ["literal", ["Sans Medium"]],
-          ["literal", ["Sans Regular"]],
+          ["literal", ["Noto Sans Medium"]],
+          ["literal", ["Noto Sans Regular"]],
         ],
         "text-padding": [
           "interpolate",
@@ -1988,7 +1988,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
           5,
           ["get", "name"],
         ],
-        "text-font": ["Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 7, 24],
         "text-radial-offset": 0.2,
         "text-anchor": "center",
@@ -2009,7 +2009,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "text-field": "{name}",
-        "text-font": ["Sans Medium"],
+        "text-font": ["Noto Sans Medium"],
         "text-size": [
           "interpolate",
           ["linear"],
