@@ -34,7 +34,7 @@ const ATTRIBUTION =
 
 const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   return (
-    <div>
+    <div className="features-properties">
       {props.features.map((f, i) => (
         <div key={i}>
           <span>

@@ -82,3 +82,8 @@ a {
 .maplibregl-popup-close-button {
   color: black;
 }
+
+.features-properties {
+  max-height: 45vh;
+  overflow-y: scroll;
+}

@@ -134,7 +134,7 @@ public class Basemap extends ForwardingProfile {
       .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip");
 
-    Downloader.create(planetiler.config(), planetiler.stats()).add("ne", neUrl, nePath)
+    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
       .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
     var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
