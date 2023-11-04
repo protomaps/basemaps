@@ -214,7 +214,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       } else if (sf.hasTag("station")) {
         kindDetail = sf.getString("station");
       }
-      
+
       if (sf.hasTag("railway", "station") &&
         (!sf.hasTag("station") || sf.hasTag("station", "train", "light_rail", "subway"))) {
         minZoom = 10;
