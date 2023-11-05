@@ -523,7 +523,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("cuisine", sf.getString("cuisine"))
           .setAttr("religion", sf.getString("religion"))
           .setAttr("sport", sf.getString("sport"))
-          .setZoomRange(minZoom, 15)
+          .setZoomRange(Math.min(minZoom,15), 15)
           .setBufferPixels(128);
 
         // Core Tilezen schema properties
