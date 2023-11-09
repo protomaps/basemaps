@@ -115,7 +115,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         kind = sf.getString("tourism");
         minZoom = 15;
       } else if (sf.hasTag("highway", "bus_stop")) {
-        minZoom = 18;
+        minZoom = 17;
       } else {
         // Avoid problem of too many "other" kinds
         // All these will default to min_zoom of 15
@@ -523,7 +523,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
           .setAttr("cuisine", sf.getString("cuisine"))
           .setAttr("religion", sf.getString("religion"))
           .setAttr("sport", sf.getString("sport"))
-          .setZoomRange(minZoom, 15)
+          .setZoomRange(Math.min(minZoom, 15), 15)
           .setBufferPixels(128);
 
         // Core Tilezen schema properties
