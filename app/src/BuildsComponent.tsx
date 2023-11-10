@@ -4,6 +4,7 @@ interface Build {
   uploaded: string;
   key: string;
   size: number;
+  version: string;
 }
 
 function formatBytes(bytes: number, decimals = 2) {
