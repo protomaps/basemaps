@@ -12,14 +12,12 @@ import java.util.List;
 
 public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
-  public Water() {}
-
   @Override
   public String name() {
     return "water";
   }
 
-  public void processPreparedOsm(SourceFeature sf, FeatureCollector features) {
+  public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
     features.polygon(this.name())
       .setAttr("pmap:kind", "water")
       .setZoomRange(6, 15).setBufferPixels(8);

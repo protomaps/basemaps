@@ -9,15 +9,12 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.List;
 
 public class Earth implements ForwardingProfile.FeaturePostProcessor {
-
-  public Earth() {}
-
   @Override
   public String name() {
     return "earth";
   }
 
-  public void processPreparedOsm(SourceFeature sf, FeatureCollector features) {
+  public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
     features.polygon(this.name())
       .setAttr("pmap:kind", "earth")
       .setZoomRange(6, 15).setBufferPixels(8);
