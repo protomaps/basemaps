@@ -68,6 +68,7 @@ function BuildComponent(props: {
         </span>
       </td>
       <td>{build.key}</td>
+      <td>{build.version}</td>
       <td>{formatBytes(build.size)}</td>
       <td>{build.uploaded}</td>
       <td>
