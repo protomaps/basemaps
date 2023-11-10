@@ -21,4 +21,17 @@ class PoisTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void busStop() {
+    assertFeatures(15,
+      List.of(Map.of("pmap:kind", "bus_stop","pmap:min_zoom",18)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("highway", "bus_stop")),
+        "osm",
+        null,
+        0
+      )));
+  }
 }
