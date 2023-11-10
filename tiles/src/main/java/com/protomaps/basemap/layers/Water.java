@@ -1,7 +1,5 @@
 package com.protomaps.basemap.layers;
 
-import static com.protomaps.basemap.feature.SpatialFilter.withinBounds;
-
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
@@ -11,27 +9,18 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
-import org.locationtech.jts.geom.Envelope;
 
 public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
-
-  private final Envelope bounds;
-
-  public Water(Envelope bounds) {
-    this.bounds = bounds;
-  }
 
   @Override
   public String name() {
     return "water";
   }
 
-  public void processPreparedOsm(SourceFeature sf, FeatureCollector features) {
-    if (withinBounds(this.bounds, sf)) {
-      features.polygon(this.name())
-        .setAttr("pmap:kind", "water")
-        .setZoomRange(6, 15).setBufferPixels(8);
-    }
+  public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
+    features.polygon(this.name())
+      .setAttr("pmap:kind", "water")
+      .setZoomRange(6, 15).setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
