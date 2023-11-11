@@ -1,9 +1,18 @@
+Styles v2.0.0-alpha.4
+------
+- Fix ordering issues related to pedestrian bridges.
+
+Tiles v3.0.0-pre4
+------
+- Fix appearance of NE boundaries at low zooms.
+- Add `pmap:kind`=`bus_stop` to POIs. via [@eikes](https://github.com/eikes)
+
 v3.0.0-pre1
 ------
 - **Release date:** 2023-07-10.
 - **Credits:** [@nvkelso](https://github.com/nvkelso), [@bdon](https://github.com/bdon), [@jamesscottbrown](https://github.com/jamesscottbrown), [@tyrauber](https://github.com/tyrauber), [@HeikoGr](https://github.com/HeikoGr), and [@Edefritz](https://github.com/Edefritz)
 
-#### BREAKING CHANZGES
+#### BREAKING CHANGES
 
 - **landuse** layer: Move `national_park`, `protected_area`, and `nature_reserve` to landuse layer from natural layer as they are not natural but cultural.  [#47](https://github.com/protomaps/basemaps/pull/47)
 - **landuse** layer: OSM features with `leisure` tag are now mapped to individual kind values instead of all erroneously to `park`. [#47](https://github.com/protomaps/basemaps/pull/47)
