@@ -21,14 +21,14 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("landuse", "recreation_ground", "industrial", "brownfield", "railway", "cemetery", "commercial",
         "grass", "orchard", "farmland", "farmyard", "residential", "military") ||
       sf.hasTag("leisure", "park", "garden", "golf_course", "dog_park", "playground", "pitch", "nature_reserve") ||
-      sf.hasTag("man_made", "pier") ||
+      sf.hasTag("man_made", "pier") || sf.hasTag("man_made", "bridge") ||
       sf.hasTag("natural", "beach") ||
       // TODO: (nvkelso 20230622) This use of the place tag here is dubious, though paired with "residential"
       sf.hasTag("place", "neighbourhood") ||
       sf.hasTag("railway", "platform") ||
       sf.hasTag("tourism", "zoo") ||
       (sf.hasTag("area", "yes") &&
-        (sf.hasTag("highway", "pedestrian", "footway") || sf.hasTag("man_made", "bridge"))))) {
+        (sf.hasTag("highway", "pedestrian", "footway"))))) {
       String kind = "other";
       if (sf.hasTag("aeroway", "aerodrome")) {
         kind = sf.getString("aeroway");
