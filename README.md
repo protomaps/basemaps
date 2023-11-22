@@ -7,6 +7,7 @@ This repository has two core parts:
 
 Assets such as fonts and sprites are hosted and downloadable at the [basemaps-assets](https://github.com/protomaps/basemaps-assets) repository.
 
+
 ## Development
 
 You will need [Java 21+](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md) and [Maven](https://maven.apache.org/install.html) installed, which is available in most package managers.
@@ -45,6 +46,40 @@ The locally generated pmtiles can be fetched from http://localhost:5173/monaco.p
 ```shell
 mvn spotless:apply
 ```
+
+## Build tiles with Docker
+
+After cloning this repo, navigate to the `./basemaps` directory (the repo's root) and run the following command to build the container
+
+```shell
+docker build -t basemaps .
+```
+
+After the container has been built succesfully, run the following commands to create the tiles. Replace "monaco" with the [named area](https://download.geofabrik.de/) you like.
+> The .pmtiles archive is by default built inside the `/basemaps/tiles` folder. It is then copied to a temporary `output` folder which is mounted onto the host filesystem. Then, in the host, the file is moved back at `/basemaps/tiles`, and the `output` directory is removed.
+
+MacOS/Linux
+```bash
+AREA_NAME="monaco"
+docker run -v ${pwd}/output:/basemaps/output -it basemaps bash -c "\
+  java -jar /basemaps/tiles/target/*-with-deps.jar --download --force --area=$AREA_NAME && \
+  mv /basemaps/tiles/$AREA_NAME.pmtiles /basemaps/output/$AREA_NAME.pmtiles "
+
+mv "./output/$AREA_NAME.pmtiles" "./tiles/$AREA_NAME.pmtiles"
+rm -rf ./output
+```
+
+Windows
+```shell
+$AREA_NAME="monaco"
+docker run -v ${pwd}/output:/basemaps/output -it basemaps bash -c "\
+  java -jar /basemaps/tiles/target/*-with-deps.jar --download --force --area=$AREA_NAME && \
+  mv /basemaps/tiles/$AREA_NAME.pmtiles /basemaps/output/$AREA_NAME.pmtiles "
+
+mv "./output/$AREA_NAME.pmtiles" "./tiles/$AREA_NAME.pmtiles"
+rm ./output
+```
+
 
 ## Licensing and Attribution Guidelines
 
