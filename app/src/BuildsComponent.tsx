@@ -7,6 +7,14 @@ interface Build {
   version: string;
 }
 
+function isMonday(dateStr: string): boolean {
+  const year = parseInt(dateStr.substring(0, 4), 10);
+  const month = parseInt(dateStr.substring(4, 6), 10) - 1; // Subtract 1 because months are 0-indexed in JavaScript dates
+  const day = parseInt(dateStr.substring(6, 8), 10);
+  const date = new Date(year, month, day);
+  return date.getDay() === 1;
+}
+
 function formatBytes(bytes: number, decimals = 2) {
   if (!+bytes) return "0 Bytes";
   const k = 1024;
@@ -36,6 +44,8 @@ function BuildComponent(props: {
 }) {
   const build = props.build;
   const link = `https://build.protomaps.com/${build.key}`;
+  const date = build.key.substr(0, 8);
+  const statsLink = `https://build.protomaps.com/${date}.layerstats.parquet`;
   const idx = props.idx;
 
   const onChangeA = () => {
@@ -47,7 +57,7 @@ function BuildComponent(props: {
   };
 
   return (
-    <tr>
+    <tr style={{ color: isMonday(date) ? "white" : "#aaa" }}>
       <td>
         <span style={{ display: "inline-block", width: "20px" }}>
           {idx > props.cmpB && (
@@ -81,6 +91,7 @@ function BuildComponent(props: {
       <td>
         <a href={link}>download</a>
       </td>
+      <td>{date >= "20231228" ? <a href={statsLink}>stats</a> : null}</td>
     </tr>
   );
 }
@@ -143,6 +154,7 @@ export default function BuildsComponent() {
   return (
     <div className="builds">
       <h1>Builds</h1>
+      <p>only Monday builds (white) are kept indefinitely.</p>
       {/*<button>Compare Examples</button>*/}
       <button onClick={openMaperture}>Compare in Maperture</button>
       <table>
