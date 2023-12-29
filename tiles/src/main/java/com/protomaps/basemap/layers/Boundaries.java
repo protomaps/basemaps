@@ -239,7 +239,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
 
           // Core Tilezen schema properties
           if (disputed.getAsInt() == 1) {
-            line.setAttr("disputed", 1);
+            line.setAttr("disputed", true);
           }
         }
       }
