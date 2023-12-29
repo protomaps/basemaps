@@ -91,7 +91,7 @@ function BuildComponent(props: {
       <td>
         <a href={link}>download</a>
       </td>
-      <td>{date > "20231228" ? <a href={statsLink}>stats</a> : null}</td>
+      <td>{date >= "20231228" ? <a href={statsLink}>stats</a> : null}</td>
     </tr>
   );
 }
