@@ -67,7 +67,7 @@ function getMaplibreStyle(
   minZoom?: number,
   maxZoom?: number,
 ): StyleSpecification {
-  if (tiles && tiles.endsWith(".pmtiles")) {
+  if (tiles && new URL(tiles).pathname.endsWith(".pmtiles")) {
     tiles = "pmtiles://" + tiles;
   }
   const style = {
