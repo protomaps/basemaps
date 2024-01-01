@@ -190,6 +190,8 @@ function ExampleComponent(props: { result: ExampleResult }) {
 export default function VisualTestsComponent() {
   const mapLeftContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRightContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapLeftRef = useRef<maplibregl.Map | null>(null);
+  const mapRightRef = useRef<maplibregl.Map | null>(null);
   const canvasLeftRef = useRef<HTMLCanvasElement | null>(null);
   const canvasRightRef = useRef<HTMLCanvasElement | null>(null);
   const canvasDiffRef = useRef<HTMLCanvasElement | null>(null);
@@ -244,7 +246,7 @@ export default function VisualTestsComponent() {
 
       // create two map instances:
       // one for each version, so we don't have to re-initialize the map on changing view.
-      const leftMap = createMap(
+      mapLeftRef.current = createMap(
         mapLeftContainerRef.current!,
         leftTiles,
         example.center,
@@ -252,7 +254,7 @@ export default function VisualTestsComponent() {
         leftLayers,
       );
 
-      const rightMap = createMap(
+      mapRightRef.current = createMap(
         mapRightContainerRef.current!,
         rightTiles,
         example.center,
@@ -271,8 +273,8 @@ export default function VisualTestsComponent() {
       diffCanvas.height = DIM;
 
       const renderState: RenderState = {
-        leftMap: leftMap,
-        rightMap: rightMap,
+        leftMap: mapLeftRef.current,
+        rightMap: mapRightRef.current,
         leftCtx: leftCanvas.getContext("2d", { willReadFrequently: true })!,
         rightCtx: rightCanvas.getContext("2d", { willReadFrequently: true })!,
         diffCtx: diffCanvas.getContext("2d", { willReadFrequently: true })!,
@@ -298,8 +300,12 @@ export default function VisualTestsComponent() {
 
     return () => {
       maplibregl.removeProtocol("pmtiles");
-      leftMap.remove();
-      rightMap.remove();
+      if (mapLeftRef.current) {
+        mapLeftRef.current.remove();
+      }
+      if (mapRightRef.current) {
+        mapRightRef.current.remove();
+      }
     };
   }, []);
 
