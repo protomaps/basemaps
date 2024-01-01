@@ -42,6 +42,7 @@ const createMap = (
   url: string,
   center: [number, number],
   zoom: number,
+  layers: any,
 ) => {
   return new maplibregl.Map({
     container: container,
@@ -59,7 +60,7 @@ const createMap = (
           attribution: "",
         },
       },
-      layers: layers("protomaps", "light"),
+      layers: layers,
     },
   });
 };
@@ -141,7 +142,20 @@ const linkTo = (props: { name?: string; tag?: string }) => {
   return "/visualtests/?" + q.toString();
 };
 
-// TODO: this only compares tilesets, make it compare styles
+const layersForVersion = async (version: string) => {
+  const resp = await fetch(
+    `https://unpkg.com/protomaps-themes-base@${version}/dist/layers/light.json`,
+  );
+  return await resp.json();
+};
+
+const layersForLatestVersion = async () => {
+  const resp = await fetch("https://registry.npmjs.org/protomaps-themes-base", {
+    headers: { Accept: "application/vnd.npm.install-v1+json" },
+  });
+  return await layersForVersion((await resp.json())["dist-tags"].latest);
+};
+
 function ExampleComponent(props: { result: ExampleResult }) {
   const leftRef = useRef<HTMLImageElement | null>(null);
   const rightRef = useRef<HTMLImageElement | null>(null);
@@ -181,84 +195,106 @@ export default function VisualTestsComponent() {
   const canvasDiffRef = useRef<HTMLCanvasElement | null>(null);
   const [results, setResults] = useState<ExampleResult[]>([]);
 
-  const runExamples = async (renderState: RenderState, examples: Example[]) => {
-    for (const example of examples) {
-      const rendered = await runExample(renderState, example);
-
-      setResults((currentResults: ExampleResult[]) => {
-        return [
-          ...currentResults,
-          {
-            example: example,
-            rendered: rendered,
-          },
-        ];
-      });
-    }
-  };
-
   useEffect(() => {
-    if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
-      maplibregl.setRTLTextPlugin(
-        "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
-        () => {},
-        false, // we need to pre-load this, otherwise diffs will be flaky
+    const runExamples = async () => {
+      if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
+        maplibregl.setRTLTextPlugin(
+          "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
+          () => {},
+          false, // we need to pre-load this, otherwise diffs will be flaky
+        );
+      }
+
+      const protocol = new pmtiles.Protocol();
+      maplibregl.addProtocol("pmtiles", protocol.tile);
+
+      // the tileset defaults to the latest daily build
+      const builds = await (
+        await fetch("https://build-metadata.protomaps.dev/builds.json")
+      ).json();
+      const last_build =
+        "https://build.protomaps.com/" + builds[builds.length - 1].key;
+      const leftTiles = QUERY_PARAMS.get("leftTiles") || last_build;
+      const rightTiles = QUERY_PARAMS.get("rightTiles") || last_build;
+
+      // the left style defaults to the latest published NPM version
+      // the right style is the main branch (GitHub Pages) or local development
+      const leftLayersStr = QUERY_PARAMS.get("leftStyle");
+      const rightLayersStr = QUERY_PARAMS.get("rightStyle");
+
+      const leftLayers = leftLayersStr
+        ? await layersForVersion(leftLayersStr)
+        : await layersForLatestVersion();
+      const rightLayers = rightLayersStr
+        ? await layersForVersion(rightLayersStr)
+        : layers("protomaps", "light");
+
+      // filter the visual tests
+      const name = QUERY_PARAMS.get("name");
+      const tag = QUERY_PARAMS.get("tag");
+
+      // get all JSONs first - we don't want to initialize the map without a starting position
+      let examples: Example[] = rawExamples as any;
+      if (name !== null) {
+        examples = examples.filter((e) => e.name === name);
+      } else if (tag !== null) {
+        examples = examples.filter((e) => e.tags.indexOf(tag) >= 0);
+      }
+      const example = examples[0];
+
+      // create two map instances:
+      // one for each version, so we don't have to re-initialize the map on changing view.
+      const leftMap = createMap(
+        mapLeftContainerRef.current!,
+        leftTiles,
+        example.center,
+        example.zoom,
+        leftLayers,
       );
-    }
 
-    const protocol = new pmtiles.Protocol();
-    maplibregl.addProtocol("pmtiles", protocol.tile);
+      const rightMap = createMap(
+        mapRightContainerRef.current!,
+        rightTiles,
+        example.center,
+        example.zoom,
+        rightLayers,
+      );
 
-    // const left = queryParams.get("left");
-    // const right = queryParams.get("right");
-    const name = QUERY_PARAMS.get("name");
-    const tag = QUERY_PARAMS.get("tag");
+      const leftCanvas = canvasLeftRef.current!;
+      leftCanvas.width = DIM;
+      leftCanvas.height = DIM;
+      const rightCanvas = canvasRightRef.current!;
+      rightCanvas.width = DIM;
+      rightCanvas.height = DIM;
+      const diffCanvas = canvasDiffRef.current!;
+      diffCanvas.width = DIM;
+      diffCanvas.height = DIM;
 
-    // get all JSONs first - we don't want to initialize the map without a starting position
-    let examples: Example[] = rawExamples as any;
-    if (name !== null) {
-      examples = examples.filter((e) => e.name === name);
-    } else if (tag !== null) {
-      examples = examples.filter((e) => e.tags.indexOf(tag) >= 0);
-    }
-    const example = examples[0];
+      const renderState: RenderState = {
+        leftMap: leftMap,
+        rightMap: rightMap,
+        leftCtx: leftCanvas.getContext("2d", { willReadFrequently: true })!,
+        rightCtx: rightCanvas.getContext("2d", { willReadFrequently: true })!,
+        diffCtx: diffCanvas.getContext("2d", { willReadFrequently: true })!,
+        diffCanvas: diffCanvas,
+      };
 
-    // create two map instances:
-    // one for each version, so we don't have to re-initialize the map on changing view.
-    const leftMap = createMap(
-      mapLeftContainerRef.current!,
-      "https://build.protomaps.com/20230915.pmtiles",
-      example.center,
-      example.zoom,
-    );
+      for (const example of examples) {
+        const rendered = await runExample(renderState, example);
 
-    const rightMap = createMap(
-      mapRightContainerRef.current!,
-      "https://build.protomaps.com/20230915.pmtiles",
-      example.center,
-      example.zoom,
-    );
-
-    const leftCanvas = canvasLeftRef.current!;
-    leftCanvas.width = DIM;
-    leftCanvas.height = DIM;
-    const rightCanvas = canvasRightRef.current!;
-    rightCanvas.width = DIM;
-    rightCanvas.height = DIM;
-    const diffCanvas = canvasDiffRef.current!;
-    diffCanvas.width = DIM;
-    diffCanvas.height = DIM;
-
-    const renderState: RenderState = {
-      leftMap: leftMap,
-      rightMap: rightMap,
-      leftCtx: leftCanvas.getContext("2d", { willReadFrequently: true })!,
-      rightCtx: rightCanvas.getContext("2d", { willReadFrequently: true })!,
-      diffCtx: diffCanvas.getContext("2d", { willReadFrequently: true })!,
-      diffCanvas: diffCanvas,
+        setResults((currentResults: ExampleResult[]) => {
+          return [
+            ...currentResults,
+            {
+              example: example,
+              rendered: rendered,
+            },
+          ];
+        });
+      }
     };
 
-    runExamples(renderState, examples);
+    runExamples();
 
     return () => {
       maplibregl.removeProtocol("pmtiles");
