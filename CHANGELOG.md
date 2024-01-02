@@ -1,3 +1,7 @@
+Tiles v3.0.1
+------
+- Fix pedestrian bridge areas
+
 Styles v2.0.0-alpha.4
 ------
 - Fix ordering issues related to pedestrian bridges.
@@ -6,6 +10,10 @@ Tiles v3.0.0-pre4
 ------
 - Fix appearance of NE boundaries at low zooms.
 - Add `pmap:kind`=`bus_stop` to POIs. via [@eikes](https://github.com/eikes)
+
+Tiles v3.0.0-pre3
+------
+- Make `disputed` tag on boundaries consistent [#190]
 
 v3.0.0-pre1
 ------

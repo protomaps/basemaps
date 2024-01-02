@@ -2,14 +2,14 @@
   {
     "name": "taiwan-z8",
     "description": "Compare the appearance of highways",
-    "tags": ["highway", "cjk"],
+    "tags": ["highway", "cjk", "tw"],
     "center": [121.333, 24.32],
     "zoom": 8
   },
   {
     "name": "taiwan-z16-buildings",
     "description": "Compare the appearance of buildings",
-    "tags": ["buildings", "cjk"],
+    "tags": ["building", "cjk", "tw"],
     "center": [121.4818, 25.0271],
     "zoom": 16
   },
@@ -26,5 +26,12 @@
     "tags": [],
     "center": [0, 0],
     "zoom": 2
+  },
+  {
+    "name": "zurich-bridges",
+    "description": "Pedestrian bridge tagged as area",
+    "tags": ["bridge", "ch"],
+    "center": [8.54252, 47.376925],
+    "zoom": 17
   }
 ]
