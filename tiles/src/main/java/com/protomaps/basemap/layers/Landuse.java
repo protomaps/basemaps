@@ -26,7 +26,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       .of(Stream.of(values).reduce(Stream::concat).orElseGet(Stream::empty).toList()).index();
   }
 
-  public static final String LANDUSE = "landuse";
+  public static final String LANDUSE_KEY = "landuse";
   public static final String PEDESTRIAN = "pedestrian";
   // TODO craft and historic
   private static final MultiExpression.Index<String> LANDUSE_KIND = compose(
@@ -37,11 +37,11 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       matchAny("area", "yes"),
       matchAny("highway", PEDESTRIAN, "footway")
     ))),
-    valueEntries(LANDUSE, "cemetery"),
-    Stream.of(entry("farmland", matchAny(LANDUSE, "orchard", "farmland", "farmyard"))),
-    valueEntries(LANDUSE, "residential"),
-    Stream.of(entry("industrial", matchAny(LANDUSE, "industrial", "brownfield"))),
-    valueEntries(LANDUSE, "military"),
+    valueEntries(LANDUSE_KEY, "cemetery"),
+    Stream.of(entry("farmland", matchAny(LANDUSE_KEY, "orchard", "farmland", "farmyard"))),
+    valueEntries(LANDUSE_KEY, "residential"),
+    Stream.of(entry("industrial", matchAny(LANDUSE_KEY, "industrial", "brownfield"))),
+    valueEntries(LANDUSE_KEY, "military"),
     valueEntries("military", "naval_base", "airfield"),
     valueEntries("leisure", "golf_course", "park", "stadium", "garden", "dog_park", "playground", "pitch",
       "nature_reserve"),
@@ -54,7 +54,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
     // Boundary is most generic, so place last else we loose out
     // on nature_reserve detail versus all the protected_area
     valueEntries("boundary", "national_park", "protected_area"),
-    valueEntries(LANDUSE, "recreation_ground", "railway", "commercial", "grass")
+    valueEntries(LANDUSE_KEY, "recreation_ground", "railway", "commercial", "grass")
   );
 
   static final MatchAny US_OPERATOR =
@@ -89,7 +89,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
   @Override
   public String name() {
-    return LANDUSE;
+    return "landuse";
   }
 
   @Override
