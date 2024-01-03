@@ -30,8 +30,29 @@
   {
     "name": "zurich-bridges",
     "description": "Pedestrian bridge tagged as area",
-    "tags": ["bridge", "ch"],
+    "tags": ["landuse", "bridge", "ch"],
     "center": [8.54252, 47.376925],
     "zoom": 17
+  },
+  {
+    "name": "sfo-tarmac",
+    "description": "San Francisco International Airpot tarmac tagged with only routable aeroway=",
+    "tags": ["landuse", "airport", "aeroway"],
+    "center": [-122.37868, 37.61983],
+    "zoom": 15
+  },
+  {
+    "name": "ams-tarmac",
+    "description": "Amsterdam Schiphol airport tagged with area:aeroway= in addition to aeroway=",
+    "tags": ["landuse", "airport", "area:aeroway"],
+    "center": [4.73503, 52.31107],
+    "zoom": 14
+  },
+  {
+    "name": "us-national-parks",
+    "description": "landuse featueres for US national parks distinguished by operator tags",
+    "tags": ["us","landuse"],
+    "center": [-119.256, 37.579],
+    "zoom": 8
   }
 ]
