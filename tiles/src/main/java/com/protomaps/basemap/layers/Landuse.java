@@ -13,7 +13,6 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
@@ -24,11 +23,11 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
   public static MultiExpression.Index<String> compose(Stream<MultiExpression.Entry<String>>... values) {
     return MultiExpression
-      .of(Stream.of(values).reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toList())).index();
+      .of(Stream.of(values).reduce(Stream::concat).orElseGet(Stream::empty).toList()).index();
   }
 
   // TODO craft and historic
-  public static MultiExpression.Index<String> LANDUSE_KIND = compose(
+  private static final MultiExpression.Index<String> LANDUSE_KIND = compose(
     valueEntries("aeroway", "aerodrome", "runway"),
     valueEntries("area:aeroway", "taxiway", "runway"),
     valueEntries("amenity", "university", "college", "hospital", "library", "school"), // townhall? post_office?
@@ -56,12 +55,12 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
     valueEntries("landuse", "recreation_ground", "railway", "commercial", "grass")
   );
 
-  static MatchAny US_OPERATOR =
+  static final MatchAny US_OPERATOR =
     matchAny("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
       "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
       "United State Forest Service", "U.S. National Forest Service");
 
-  static MatchAny PROTECTION_TITLE =
+  static final MatchAny PROTECTION_TITLE =
     matchAny("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
       "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
       "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
@@ -73,7 +72,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
     if (!sf.canBePolygon())
       return;
     List<String> matches = LANDUSE_KIND.getMatches(sf);
-    if (matches.size() == 0)
+    if (matches.isEmpty())
       return;
     String kind = matches.get(0);
 
