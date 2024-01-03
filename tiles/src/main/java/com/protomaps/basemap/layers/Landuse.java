@@ -26,24 +26,26 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       .of(Stream.of(values).reduce(Stream::concat).orElseGet(Stream::empty).toList()).index();
   }
 
+  public static final String LANDUSE = "landuse";
+  public static final String PEDESTRIAN = "pedestrian";
   // TODO craft and historic
   private static final MultiExpression.Index<String> LANDUSE_KIND = compose(
     valueEntries("aeroway", "aerodrome", "runway"),
     valueEntries("area:aeroway", "taxiway", "runway"),
     valueEntries("amenity", "university", "college", "hospital", "library", "school"), // townhall? post_office?
-    Stream.of(entry("pedestrian", and(
+    Stream.of(entry(PEDESTRIAN, and(
       matchAny("area", "yes"),
-      matchAny("highway", "pedestrian", "footway")
+      matchAny("highway", PEDESTRIAN, "footway")
     ))),
-    valueEntries("landuse", "cemetery"),
-    Stream.of(entry("farmland", matchAny("landuse", "orchard", "farmland", "farmyard"))),
-    valueEntries("landuse", "residential"),
-    Stream.of(entry("industrial", matchAny("landuse", "industrial", "brownfield"))),
-    valueEntries("landuse", "military"),
+    valueEntries(LANDUSE, "cemetery"),
+    Stream.of(entry("farmland", matchAny(LANDUSE, "orchard", "farmland", "farmyard"))),
+    valueEntries(LANDUSE, "residential"),
+    Stream.of(entry("industrial", matchAny(LANDUSE, "industrial", "brownfield"))),
+    valueEntries(LANDUSE, "military"),
     valueEntries("military", "naval_base", "airfield"),
     valueEntries("leisure", "golf_course", "park", "stadium", "garden", "dog_park", "playground", "pitch",
       "nature_reserve"),
-    Stream.of(entry("pedestrian", matchAny("man_made", "bridge"))),
+    Stream.of(entry(PEDESTRIAN, matchAny("man_made", "bridge"))),
     valueEntries("man_made", "pier", "bridge"),
     valueEntries("natural", "beach"),
     valueEntries("shop", "grocery", "supermarket"), // not in tilezen?
@@ -52,7 +54,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
     // Boundary is most generic, so place last else we loose out
     // on nature_reserve detail versus all the protected_area
     valueEntries("boundary", "national_park", "protected_area"),
-    valueEntries("landuse", "recreation_ground", "railway", "commercial", "grass")
+    valueEntries(LANDUSE, "recreation_ground", "railway", "commercial", "grass")
   );
 
   static final MatchAny US_OPERATOR =
@@ -87,7 +89,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
 
   @Override
   public String name() {
-    return "landuse";
+    return LANDUSE;
   }
 
   @Override
