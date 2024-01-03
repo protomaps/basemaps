@@ -51,7 +51,7 @@
   {
     "name": "us-national-parks",
     "description": "landuse featueres for US national parks distinguished by operator tags",
-    "tags": ["us","landuse"],
+    "tags": ["us", "landuse"],
     "center": [-119.256, 37.579],
     "zoom": 8
   }
