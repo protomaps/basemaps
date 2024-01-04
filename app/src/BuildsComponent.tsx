@@ -114,6 +114,14 @@ export default function BuildsComponent() {
   const style = "2.0.0-alpha.0";
   const theme = "light";
 
+  const openVisualTests = () => {
+    const left = "https://build.protomaps.com/" + builds[cmpA].key;
+    const right = "https://build.protomaps.com/" + builds[cmpB].key;
+    open(
+      `/visualtests/?leftTiles=${left}&rightTiles=${right}`
+    );
+  }
+
   const openMaperture = () => {
     const leftKey = builds[cmpA].key.replace(".pmtiles", "");
     const rightKey = builds[cmpB].key.replace(".pmtiles", "");
@@ -155,7 +163,7 @@ export default function BuildsComponent() {
     <div className="builds">
       <h1>Builds</h1>
       <p>only Monday builds (white) are kept indefinitely.</p>
-      {/*<button>Compare Examples</button>*/}
+      <button onClick={openVisualTests}>Compare visual tests</button>
       <button onClick={openMaperture}>Compare in Maperture</button>
       <table>
         <tbody>

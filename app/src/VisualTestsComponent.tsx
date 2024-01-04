@@ -149,11 +149,11 @@ const layersForVersion = async (version: string) => {
   return await resp.json();
 };
 
-const layersForLatestVersion = async () => {
+const latestVersion = async () => {
   const resp = await fetch("https://registry.npmjs.org/protomaps-themes-base", {
     headers: { Accept: "application/vnd.npm.install-v1+json" },
   });
-  return await layersForVersion((await resp.json())["dist-tags"].latest);
+  return (await resp.json())["dist-tags"].latest;
 };
 
 function ExampleComponent(props: { result: ExampleResult }) {
@@ -170,7 +170,7 @@ function ExampleComponent(props: { result: ExampleResult }) {
   const example = props.result.example;
 
   return (
-    <div>
+    <div className="example">
       <div>
         <img ref={leftRef} />
         <img ref={rightRef} />
@@ -196,6 +196,12 @@ export default function VisualTestsComponent() {
   const canvasRightRef = useRef<HTMLCanvasElement | null>(null);
   const canvasDiffRef = useRef<HTMLCanvasElement | null>(null);
   const [results, setResults] = useState<ExampleResult[]>([]);
+  const [displayInfo, setDisplayInfo] = useState<string[]>([
+    "-",
+    "-",
+    "-",
+    "-",
+  ]);
 
   useEffect(() => {
     const runExamples = async () => {
@@ -221,15 +227,21 @@ export default function VisualTestsComponent() {
 
       // the left style defaults to the latest published NPM version
       // the right style is the main branch (GitHub Pages) or local development
-      const leftLayersStr = QUERY_PARAMS.get("leftStyle");
+      let leftLayersStr =
+        QUERY_PARAMS.get("leftStyle") || (await latestVersion());
       const rightLayersStr = QUERY_PARAMS.get("rightStyle");
 
-      const leftLayers = leftLayersStr
-        ? await layersForVersion(leftLayersStr)
-        : await layersForLatestVersion();
+      const leftLayers = await layersForVersion(leftLayersStr);
       const rightLayers = rightLayersStr
         ? await layersForVersion(rightLayersStr)
         : layers("protomaps", "light");
+
+      setDisplayInfo([
+        leftTiles,
+        rightTiles,
+        leftLayersStr || "npm@latest",
+        rightLayersStr || "local/main",
+      ]);
 
       // filter the visual tests
       const name = QUERY_PARAMS.get("name");
@@ -317,6 +329,16 @@ export default function VisualTestsComponent() {
         <canvas ref={canvasLeftRef}></canvas>
         <canvas ref={canvasRightRef}></canvas>
         <canvas ref={canvasDiffRef}></canvas>
+      </div>
+      <div style={{ width: "500px", display: "inline-block" }}>
+        {displayInfo[0]}
+        <br />
+        {displayInfo[2]}
+      </div>
+      <div style={{ width: "500px", display: "inline-block" }}>
+        {displayInfo[1]}
+        <br />
+        {displayInfo[3]}
       </div>
       {results.map((result: ExampleResult) => (
         <ExampleComponent key={result.example.name} result={result} />
