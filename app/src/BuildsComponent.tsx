@@ -117,10 +117,8 @@ export default function BuildsComponent() {
   const openVisualTests = () => {
     const left = "https://build.protomaps.com/" + builds[cmpA].key;
     const right = "https://build.protomaps.com/" + builds[cmpB].key;
-    open(
-      `/visualtests/?leftTiles=${left}&rightTiles=${right}`
-    );
-  }
+    open(`/visualtests/?leftTiles=${left}&rightTiles=${right}`);
+  };
 
   const openMaperture = () => {
     const leftKey = builds[cmpA].key.replace(".pmtiles", "");
