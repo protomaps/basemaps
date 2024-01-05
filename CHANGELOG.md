@@ -1,3 +1,7 @@
+Tiles v3.1.0
+------
+- Boundaries admin_level 3 and 5 are included along with 4 and 6, respectively [#189]
+
 Tiles v3.0.1
 ------
 - Fix pedestrian bridge areas
