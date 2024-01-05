@@ -37,15 +37,15 @@
   {
     "name": "brazil-boundaries",
     "description": "admin boundaries other than Brasilia should be visible at zoom 6",
-    "tags":["boundaries"],
-    "center": [-49.092,-15.092],
-    "zoom":6
+    "tags": ["boundaries"],
+    "center": [-49.092, -15.092],
+    "zoom": 6
   },
   {
     "name": "kenya-boundaries",
     "description": "admin boundaries level 5 around Nairobi should not appear broken",
-    "tags":["boundaries"],
-    "center": [37.382,-1.592],
-    "zoom":7
+    "tags": ["boundaries"],
+    "center": [37.382, -1.592],
+    "zoom": 7
   }
 ]
