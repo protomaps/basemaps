@@ -199,6 +199,13 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
             // Natural Earth is used for low zooms (for compilation and tile size reasons)
             themeMinZoom = 6;
           }
+          // used in Colombia, Brazil, Kenya (historical)
+          case 3 -> {
+            kind = "region";
+            kindDetail = "3";
+            minZoom = 6;
+            themeMinZoom = 6;
+          }
           case 4 -> {
             kind = "region";
             kindDetail = "4";
@@ -206,6 +213,13 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
             minZoom = 6;
             // Natural Earth is used for low zooms (for compilation and tile size reasons)
             themeMinZoom = 6;
+          }
+          // used in Colombia, Brazil
+          case 5 -> {
+            kind = "county";
+            kindDetail = "5";
+            minZoom = 8;
+            themeMinZoom = 8;
           }
           case 6 -> {
             kind = "county";
