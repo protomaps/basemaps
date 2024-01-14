@@ -19,7 +19,7 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("amenity", "hospital", "school", "kindergarten", "university", "college") ||
       sf.hasTag("boundary", "national_park", "protected_area") ||
       sf.hasTag("landuse", "recreation_ground", "industrial", "brownfield", "railway", "cemetery", "commercial",
-        "grass", "orchard", "farmland", "farmyard", "residential", "military") ||
+        "grass", "orchard", "farmland", "farmyard", "residential", "military", "village_green", "allotments") ||
       sf.hasTag("leisure", "park", "garden", "golf_course", "dog_park", "playground", "pitch", "nature_reserve") ||
       sf.hasTag("man_made", "pier", "bridge") ||
       sf.hasTag("natural", "beach") ||
@@ -45,6 +45,10 @@ public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingPr
         kind = "farmland";
       } else if (sf.hasTag("landuse", "residential")) {
         kind = "residential";
+      } else if (sf.hasTag("landuse", "village_green")) {
+        kind = "village_green";
+      } else if (sf.hasTag("landuse", "allotments")) {
+        kind = "allotments";
       } else if (sf.hasTag("landuse", "industrial", "brownfield")) {
         kind = "industrial";
       } else if (sf.hasTag("landuse", "military")) {
