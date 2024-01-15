@@ -20,6 +20,20 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     return "buildings";
   }
 
+  public record Height(Double height, Double min_height) {}
+
+  static Height parseHeight(String osmHeight, String osmLevels, String osmMinHeight) {
+    var height = parseDoubleOrNull(osmHeight);
+    if (height == null) {
+      Double levels = parseDoubleOrNull(osmLevels);
+      if (levels != null) {
+        height = Math.max(levels, 1) * 3 + 2;
+      }
+    }
+
+    return new Height(height, parseDoubleOrNull(osmMinHeight));
+  }
+
   static int quantizeVal(double val, int step) {
     // special case: if val is very small, we don't want it rounding to zero, so
     // round the smallest values up to the first step.
@@ -34,8 +48,8 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && ((sf.hasTag("building") && !sf.hasTag("building", "no")) ||
       (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {
-      Double height = parseDoubleOrNull(sf.getString("height"));
-      Double minHeight = parseDoubleOrNull(sf.getString("min_height"));
+
+      var height = parseHeight(sf.getString("height"), sf.getString("building:levels"), sf.getString("min_height"));
       Integer minZoom = 11;
       String kind = "building";
 
@@ -46,13 +60,6 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
         minZoom = 14;
       }
 
-      if (height == null) {
-        Double levels = parseDoubleOrNull(sf.getString("building:levels"));
-        if (levels != null) {
-          height = Math.max(levels, 1) * 3 + 2;
-        }
-      }
-
       var feature = features.polygon(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
@@ -60,13 +67,13 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
         // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 13)
         // NOTE: Height is quantized by zoom in a post-process step
-        .setAttr("height", height)
+        .setAttr("height", height.height())
         .setZoomRange(minZoom, 15);
 
       if (kind.equals("building_part")) {
         // We don't need to set WithMinzoom because that's implicate with the ZoomRange
         feature.setAttr("pmap:kind_detail", sf.getString("building:part"));
-        feature.setAttr("min_height", minHeight);
+        feature.setAttr("min_height", height.min_height());
       }
 
       // Names should mostly just be for POIs
