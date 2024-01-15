@@ -15,6 +15,9 @@ import java.util.List;
 
 public class Buildings implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
+  static final String HEIGHT_KEY = "height";
+  static final String MIN_HEIGHT_KEY = "height";
+
   @Override
   public String name() {
     return "buildings";
@@ -49,7 +52,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     if (sf.canBePolygon() && ((sf.hasTag("building") && !sf.hasTag("building", "no")) ||
       (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {
 
-      var height = parseHeight(sf.getString("height"), sf.getString("building:levels"), sf.getString("min_height"));
+      var height = parseHeight(sf.getString(HEIGHT_KEY), sf.getString("building:levels"), sf.getString(MIN_HEIGHT_KEY));
       Integer minZoom = 11;
       String kind = "building";
 
@@ -67,13 +70,13 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
         // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 13)
         // NOTE: Height is quantized by zoom in a post-process step
-        .setAttr("height", height.height())
+        .setAttr(HEIGHT_KEY, height.height())
         .setZoomRange(minZoom, 15);
 
       if (kind.equals("building_part")) {
         // We don't need to set WithMinzoom because that's implicate with the ZoomRange
         feature.setAttr("pmap:kind_detail", sf.getString("building:part"));
-        feature.setAttr("min_height", height.min_height());
+        feature.setAttr(MIN_HEIGHT_KEY, height.min_height());
       }
 
       // Names should mostly just be for POIs
@@ -94,8 +97,8 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
     // quantize height by zoom when less than max_zoom 15 to facilitate better feature merging
     for (var item : items) {
-      if (item.attrs().containsKey("height")) {
-        var height = (double) item.attrs().get("height");
+      if (item.attrs().containsKey(HEIGHT_KEY)) {
+        var height = (double) item.attrs().get(HEIGHT_KEY);
 
         // Protected against NULL values
         if (height > 0) {
@@ -112,12 +115,12 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
             height = quantizeVal(height, 5);
           }
 
-          item.attrs().put("height", height);
+          item.attrs().put(HEIGHT_KEY, height);
         }
       }
 
-      if (item.attrs().containsKey("min_height")) {
-        var minHeight = (double) item.attrs().get("min_height");
+      if (item.attrs().containsKey(MIN_HEIGHT_KEY)) {
+        var minHeight = (double) item.attrs().get(MIN_HEIGHT_KEY);
 
         // Protected against NULL values
         if (minHeight > 0) {
@@ -133,7 +136,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
             minHeight = quantizeVal(minHeight, 5);
           }
 
-          item.attrs().put("min_height", minHeight);
+          item.attrs().put(MIN_HEIGHT_KEY, minHeight);
         }
       }
     }
