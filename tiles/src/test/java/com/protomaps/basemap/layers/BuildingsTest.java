@@ -2,6 +2,7 @@ package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.newPolygon;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
@@ -24,6 +25,18 @@ class BuildingsTest extends LayerTest {
         null,
         0
       )));
+  }
+
+  @Test
+  void parseWellFormedDouble() {
+    var result = Buildings.parseWellFormedDouble("10.5");
+    assertEquals(10.5, result);
+    result = Buildings.parseWellFormedDouble("10");
+    assertEquals(10, result);
+    result = Buildings.parseWellFormedDouble("0");
+    assertEquals(0, result);
+    result = Buildings.parseWellFormedDouble("9,10,11,12");
+    assertNull(result);
   }
 
   @Test

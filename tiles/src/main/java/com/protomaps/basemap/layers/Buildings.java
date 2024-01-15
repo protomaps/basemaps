@@ -12,6 +12,7 @@ import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Buildings implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -24,6 +25,16 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
   }
 
   public record Height(Double height, Double min_height) {}
+
+
+  static final Pattern pattern = Pattern.compile("^\\d+(\\.\\d)?$");
+
+  static Double parseWellFormedDouble(String s) {
+    if (pattern.matcher(s).matches()) {
+      return parseDoubleOrNull(s);
+    }
+    return null;
+  }
 
   static Height parseHeight(String osmHeight, String osmLevels, String osmMinHeight) {
     var height = parseDoubleOrNull(osmHeight);
