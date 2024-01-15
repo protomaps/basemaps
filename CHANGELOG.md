@@ -1,3 +1,9 @@
+Tiles v3.2.0
+------
+- Add `village_green` and `allotments` to landuse layer via @lenalebt [#206]
+- Remove non-deterministic ordering ID from POIs
+- stricter parsing of building height values [#205]
+
 Tiles v3.1.0
 ------
 - Boundaries admin_level 3 and 5 are included along with 4 and 6, respectively [#189]
