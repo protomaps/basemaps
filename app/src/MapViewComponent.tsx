@@ -38,7 +38,7 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
       {props.features.map((f, i) => (
         <div key={i}>
           <span>
-            <strong>{(f.layer as any)["source-layer"]}</strong>
+            <strong>{(f.layer as unknown)["source-layer"]}</strong>
             <span> ({f.geometry.type})</span>
           </span>
           <table>
@@ -71,7 +71,7 @@ function getMaplibreStyle(
     tiles = `pmtiles://${tiles}`;
   }
   const style = {
-    version: 8 as any,
+    version: 8 as unknown,
     sources: {},
     layers: [],
   } as StyleSpecification;
@@ -210,7 +210,7 @@ function MapLibreView(props: {
         protocolRef.current.add(archive);
         (async () => {
           const header = await archive.getHeader();
-          mapRef.current!.fitBounds(
+          mapRef.current?.fitBounds(
             [
               [header.minLon, header.minLat],
               [header.maxLon, header.maxLat],
@@ -225,7 +225,8 @@ function MapLibreView(props: {
   useEffect(() => {
     (async () => {
       if (mapRef.current) {
-        let minZoom, maxZoom;
+        let minZoom: number;
+        let maxZoom: number;
         if (props.droppedArchive) {
           const header = await props.droppedArchive.getHeader();
           minZoom = header.minZoom;

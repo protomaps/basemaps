@@ -42,7 +42,7 @@ const createMap = (
   url: string,
   center: [number, number],
   zoom: number,
-  layers: any,
+  layers: unknown,
 ) => {
   return new maplibregl.Map({
     container: container,
@@ -162,10 +162,15 @@ function ExampleComponent(props: { result: ExampleResult }) {
   const diffRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    leftRef.current!.src = props.result.rendered.leftData;
-    rightRef.current!.src = props.result.rendered.rightData;
-    diffRef.current!.src = props.result.rendered.diffData;
-  }, []);
+    if (!leftRef.current || !rightRef.current || !diffRef.current) {
+      console.error("DOM element not initialized");
+      return;
+    }
+
+    leftRef.current.src = props.result.rendered.leftData;
+    rightRef.current.src = props.result.rendered.rightData;
+    diffRef.current.src = props.result.rendered.diffData;
+  }, [props.result]);
 
   const example = props.result.example;
 
@@ -249,7 +254,7 @@ export default function VisualTestsComponent() {
       const tag = QUERY_PARAMS.get("tag");
 
       // get all JSONs first - we don't want to initialize the map without a starting position
-      let examples: Example[] = rawExamples as any;
+      let examples: Example[] = rawExamples as unknown;
       if (name !== null) {
         examples = examples.filter((e) => e.name === name);
       } else if (tag !== null) {
@@ -296,12 +301,23 @@ export default function VisualTestsComponent() {
       diffCanvas.width = DIM;
       diffCanvas.height = DIM;
 
+      const leftCtx = leftCanvas.getContext("2d", { willReadFrequently: true });
+      const rightCtx = rightCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
+      const diffCtx = diffCanvas.getContext("2d", { willReadFrequently: true });
+
+      if (!leftCtx || !rightCtx || !diffCtx) {
+        console.error("Canvas failed to initialize");
+        return;
+      }
+
       const renderState: RenderState = {
         leftMap: mapLeftRef.current,
         rightMap: mapRightRef.current,
-        leftCtx: leftCanvas.getContext("2d", { willReadFrequently: true })!,
-        rightCtx: rightCanvas.getContext("2d", { willReadFrequently: true })!,
-        diffCtx: diffCanvas.getContext("2d", { willReadFrequently: true })!,
+        leftCtx: leftCtx,
+        rightCtx: rightCtx,
+        diffCtx: diffCtx,
         diffCanvas: diffCanvas,
       };
 
