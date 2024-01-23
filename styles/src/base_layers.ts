@@ -1,5 +1,5 @@
-import { Theme } from "./themes";
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
+import { Theme } from "./themes";
 
 export function nolabels_layers(
   source: string,
