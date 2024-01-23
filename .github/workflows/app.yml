@@ -20,10 +20,11 @@ jobs:
           node-version: 18.x
       - run: echo "VITE_GIT_SHA=$(git rev-parse --short HEAD)" >> app/.env
       - name: Check styles
-        run: npm install && npx tsc --noEmit
+        run: npm install && npx tsc --noEmit && npx biome ci
         working-directory: styles
-      - run: npm install && npx tsc --noEmit && npm run prettier-check && npx vite build
+      - run: npm install && npx tsc --noEmit && npx biome ci && npx vite build
         working-directory: app
+      - run: python .github/check_examples.py
       - uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
