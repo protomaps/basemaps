@@ -31,7 +31,7 @@ function formatBytes(bytes: number, decimals = 2) {
     "YiB",
   ];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`;
 }
 
 function BuildComponent(props: {
@@ -83,10 +83,10 @@ function BuildComponent(props: {
       <td>{formatBytes(build.size)}</td>
       <td>{build.uploaded}</td>
       <td>
-        <a href={"/#tiles=" + link}>map</a>
+        <a href={`/#tiles=${link}`}>map</a>
       </td>
       <td>
-        <a href={"https://protomaps.github.io/PMTiles/?url=" + link}>xray</a>
+        <a href={`https://protomaps.github.io/PMTiles/?url=${link}`}>xray</a>
       </td>
       <td>
         <a href={link}>download</a>
@@ -115,8 +115,8 @@ export default function BuildsComponent() {
   const theme = "light";
 
   const openVisualTests = () => {
-    const left = "https://build.protomaps.com/" + builds[cmpA].key;
-    const right = "https://build.protomaps.com/" + builds[cmpB].key;
+    const left = `https://build.protomaps.com/${builds[cmpA].key}`;
+    const right = `https://build.protomaps.com/${builds[cmpB].key}`;
     open(`/visualtests/?leftTiles=${left}&rightTiles=${right}`);
   };
 
@@ -139,7 +139,7 @@ export default function BuildsComponent() {
     };
     const payload = JSON.stringify([left, right]);
     open(
-      "https://stamen.github.io/maperture/#maps=" + encodeURIComponent(payload),
+      `https://stamen.github.io/maperture/#maps=${encodeURIComponent(payload)}`,
     );
   };
 
@@ -161,8 +161,8 @@ export default function BuildsComponent() {
     <div className="builds">
       <h1>Builds</h1>
       <p>only Monday builds (white) are kept indefinitely.</p>
-      <button onClick={openVisualTests}>Compare visual tests</button>
-      <button onClick={openMaperture}>Compare in Maperture</button>
+      <button type="button" onClick={openVisualTests}>Compare visual tests</button>
+      <button type="button" onClick={openMaperture}>Compare in Maperture</button>
       <table>
         <tbody>
           {builds.map((build: Build, idx: number) => (
