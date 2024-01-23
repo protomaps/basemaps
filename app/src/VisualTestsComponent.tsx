@@ -255,7 +255,7 @@ export default function VisualTestsComponent() {
       const tag = QUERY_PARAMS.get("tag");
 
       // get all JSONs first - we don't want to initialize the map without a starting position
-      let examples: Example[] = rawExamples as unknown;
+      let examples: Example[] = rawExamples as Example[];
       if (name !== null) {
         examples = examples.filter((e) => e.name === name);
       } else if (tag !== null) {

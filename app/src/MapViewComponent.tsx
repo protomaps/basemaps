@@ -32,13 +32,20 @@ const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
 
+function getSourceLayer(l: LayerSpecification): string {
+  if ("source-layer" in l && l["source-layer"]) {
+    return l["source-layer"];
+  }
+  return "";
+}
+
 const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   return (
     <div className="features-properties">
       {props.features.map((f) => (
         <div key={f.id}>
           <span>
-            <strong>{(f.layer as unknown)["source-layer"]}</strong>
+            <strong>{getSourceLayer(f.layer)}</strong>
             <span> ({f.geometry.type})</span>
           </span>
           <table>
@@ -68,7 +75,10 @@ function getMaplibreStyle(
   maxZoom?: number,
 ): StyleSpecification {
   let tilesWithProtocol = tiles;
-  if (tilesWithProtocol && new URL(tiles).pathname.endsWith(".pmtiles")) {
+  if (
+    tilesWithProtocol &&
+    new URL(tilesWithProtocol).pathname.endsWith(".pmtiles")
+  ) {
     tilesWithProtocol = `pmtiles://${tiles}`;
   }
   const style = {
