@@ -3,6 +3,7 @@ import rawExamples from "./examples.json";
 import maplibregl from "maplibre-gl";
 import * as pmtiles from "pmtiles";
 import layers from "../../styles/src/index.ts";
+import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 // @ts-ignore
 import pixelmatch from "pixelmatch";
@@ -42,7 +43,7 @@ const createMap = (
   url: string,
   center: [number, number],
   zoom: number,
-  layers: unknown,
+  layers: LayerSpecification[],
 ) => {
   return new maplibregl.Map({
     container: container,

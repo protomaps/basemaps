@@ -225,8 +225,8 @@ function MapLibreView(props: {
   useEffect(() => {
     (async () => {
       if (mapRef.current) {
-        let minZoom: number;
-        let maxZoom: number;
+        let minZoom: number | undefined;
+        let maxZoom: number | undefined;
         if (props.droppedArchive) {
           const header = await props.droppedArchive.getHeader();
           minZoom = header.minZoom;
