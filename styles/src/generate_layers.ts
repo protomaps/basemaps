@@ -1,4 +1,5 @@
-declare var process: any;
+// @ts-nocheck
+declare const process: unknown;
 
 import i from "./index";
 

@@ -18,7 +18,7 @@ const STUB = {
 };
 
 test("validate all final themes", () => {
-  for (var i in themes) {
+  for (const i in themes) {
     STUB.layers = layers("sourcename", i);
     const errors = validateStyleMin(STUB);
     assert.deepStrictEqual([], errors);
