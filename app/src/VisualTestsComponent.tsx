@@ -1,13 +1,13 @@
-import { useRef, useEffect, useState } from "react";
-import rawExamples from "./examples.json";
+import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import maplibregl from "maplibre-gl";
 import * as pmtiles from "pmtiles";
+import { useEffect, useRef, useState } from "react";
 import layers from "../../styles/src/index.ts";
-import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
+import rawExamples from "./examples.json";
 
+import "maplibre-gl/dist/maplibre-gl.css";
 // @ts-ignore
 import pixelmatch from "pixelmatch";
-import "maplibre-gl/dist/maplibre-gl.css";
 
 const drawToCanvas = (ctx: CanvasRenderingContext2D, data: string) => {
   const img = new Image();

@@ -1,31 +1,31 @@
-import {
-  useEffect,
-  useState,
-  useRef,
-  KeyboardEvent,
-  FormEvent,
-  useCallback,
-} from "react";
-import { renderToString } from "react-dom/server";
-import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
-import { StyleSpecification, MapGeoJSONFeature } from "maplibre-gl";
-import * as pmtiles from "pmtiles";
+import { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import "ol/ol.css";
 import { Map as OpenLayersMap, View } from "ol";
 import VectorTile from "ol/layer/VectorTile";
+import "ol/ol.css";
+import * as pmtiles from "pmtiles";
+import {
+  FormEvent,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { renderToString } from "react-dom/server";
 import { useDropzone } from "react-dropzone";
+import layers from "../../styles/src/index.ts";
 
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
+import { stylefunction } from "ol-mapbox-style";
 // @ts-ignore
 import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
-import { stylefunction } from "ol-mapbox-style";
 
-import { PMTiles, FileAPISource, Protocol } from "pmtiles";
-import { parseHash, createHash } from "./hash";
+import { FileAPISource, PMTiles, Protocol } from "pmtiles";
+import { createHash, parseHash } from "./hash";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
