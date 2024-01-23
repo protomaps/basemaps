@@ -257,10 +257,21 @@ export default function VisualTestsComponent() {
       }
       const example = examples[0];
 
+      if (
+        !mapLeftContainerRef.current ||
+        !mapRightContainerRef.current ||
+        !canvasLeftRef.current ||
+        !canvasRightRef.current ||
+        !canvasDiffRef.current
+      ) {
+        console.error("Page failed to initialize");
+        return;
+      }
+
       // create two map instances:
       // one for each version, so we don't have to re-initialize the map on changing view.
       mapLeftRef.current = createMap(
-        mapLeftContainerRef.current!,
+        mapLeftContainerRef.current,
         leftTiles,
         example.center,
         example.zoom,
@@ -268,20 +279,20 @@ export default function VisualTestsComponent() {
       );
 
       mapRightRef.current = createMap(
-        mapRightContainerRef.current!,
+        mapRightContainerRef.current,
         rightTiles,
         example.center,
         example.zoom,
         rightLayers,
       );
 
-      const leftCanvas = canvasLeftRef.current!;
+      const leftCanvas = canvasLeftRef.current;
       leftCanvas.width = DIM;
       leftCanvas.height = DIM;
-      const rightCanvas = canvasRightRef.current!;
+      const rightCanvas = canvasRightRef.current;
       rightCanvas.width = DIM;
       rightCanvas.height = DIM;
-      const diffCanvas = canvasDiffRef.current!;
+      const diffCanvas = canvasDiffRef.current;
       diffCanvas.width = DIM;
       diffCanvas.height = DIM;
 
