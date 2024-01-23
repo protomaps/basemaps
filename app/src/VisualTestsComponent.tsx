@@ -220,8 +220,9 @@ export default function VisualTestsComponent() {
       const builds = await (
         await fetch("https://build-metadata.protomaps.dev/builds.json")
       ).json();
-      const last_build =
-        `https://build.protomaps.com/${builds[builds.length - 1].key}`;
+      const last_build = `https://build.protomaps.com/${
+        builds[builds.length - 1].key
+      }`;
       const leftTiles = QUERY_PARAMS.get("leftTiles") || last_build;
       const rightTiles = QUERY_PARAMS.get("rightTiles") || last_build;
 
@@ -324,11 +325,11 @@ export default function VisualTestsComponent() {
   return (
     <div className="visual-tests">
       <div style={{ position: "absolute", opacity: 0.0, zIndex: -1 }}>
-        <div ref={mapLeftContainerRef} className="map"/>
-        <div ref={mapRightContainerRef} className="map"/>
-        <canvas ref={canvasLeftRef}/>
-        <canvas ref={canvasRightRef}/>
-        <canvas ref={canvasDiffRef}/>
+        <div ref={mapLeftContainerRef} className="map" />
+        <div ref={mapRightContainerRef} className="map" />
+        <canvas ref={canvasLeftRef} />
+        <canvas ref={canvasRightRef} />
+        <canvas ref={canvasDiffRef} />
       </div>
       <div style={{ width: "500px", display: "inline-block" }}>
         {displayInfo[0]}

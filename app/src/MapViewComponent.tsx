@@ -245,7 +245,7 @@ function MapLibreView(props: {
     })();
   }, [props.tiles, props.theme, props.npmLayers, props.droppedArchive]);
 
-  return <div id="map"/>;
+  return <div id="map" />;
 }
 
 // TODO: does not sync map hash state
@@ -282,7 +282,7 @@ function OpenLayersView(props: { theme: string; tiles?: string }) {
     });
   }, []);
 
-  return <div id="map"/>;
+  return <div id="map" />;
 }
 
 // if no tiles are passed, loads the latest daily build.
@@ -406,7 +406,9 @@ export default function MapViewComponent() {
           <option value="openlayers">openlayers</option>
         </select>
         {knownNpmVersions.length === 0 ? (
-          <button type="button" onClick={loadVersionsFromNpm}>npm version...</button>
+          <button type="button" onClick={loadVersionsFromNpm}>
+            npm version...
+          </button>
         ) : (
           <select
             onChange={(e) => setPublishedStyleVersion(e.target.value)}
@@ -426,7 +428,11 @@ export default function MapViewComponent() {
           get style JSON
         </button>
         <a href="/visualtests/">visual tests</a>|
-        <a target="_blank" rel="noreferrer" href="https://github.com/protomaps/basemaps">
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://github.com/protomaps/basemaps"
+        >
           {GIT_SHA}
         </a>
       </nav>

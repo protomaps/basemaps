@@ -31,7 +31,7 @@ function formatBytes(bytes: number, decimals = 2) {
     "YiB",
   ];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 }
 
 function BuildComponent(props: {
@@ -161,8 +161,12 @@ export default function BuildsComponent() {
     <div className="builds">
       <h1>Builds</h1>
       <p>only Monday builds (white) are kept indefinitely.</p>
-      <button type="button" onClick={openVisualTests}>Compare visual tests</button>
-      <button type="button" onClick={openMaperture}>Compare in Maperture</button>
+      <button type="button" onClick={openVisualTests}>
+        Compare visual tests
+      </button>
+      <button type="button" onClick={openMaperture}>
+        Compare in Maperture
+      </button>
       <table>
         <tbody>
           {builds.map((build: Build, idx: number) => (
