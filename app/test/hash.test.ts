@@ -1,5 +1,5 @@
+import { createHash, parseHash } from "src/hash";
 import { expect, test } from "vitest";
-import { parseHash, createHash } from "src/hash";
 
 test("parses hash", () => {
   const result = parseHash("#map=0/0/0&theme=dark");

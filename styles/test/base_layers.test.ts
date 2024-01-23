@@ -1,6 +1,6 @@
-import { test } from "node:test";
 import assert from "node:assert";
-import { nolabels_layers, labels_layers } from "../src/base_layers";
+import { test } from "node:test";
+import { labels_layers, nolabels_layers } from "../src/base_layers";
 
 test("the labels layer only has labels", () => {
   for (const layer of labels_layers("dummy", "light")) {

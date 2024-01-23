@@ -1,17 +1,18 @@
-import { useRef, useEffect, useState } from "react";
-import rawExamples from "./examples.json";
+import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import maplibregl from "maplibre-gl";
 import * as pmtiles from "pmtiles";
+import { useEffect, useRef, useState } from "react";
 import layers from "../../styles/src/index.ts";
+import rawExamples from "./examples.json";
 
+import "maplibre-gl/dist/maplibre-gl.css";
 // @ts-ignore
 import pixelmatch from "pixelmatch";
-import "maplibre-gl/dist/maplibre-gl.css";
 
 const drawToCanvas = (ctx: CanvasRenderingContext2D, data: string) => {
   const img = new Image();
   const promise = new Promise<void>((resolve) => {
-    img.onload = function () {
+    img.onload = () => {
       ctx.drawImage(img, 0, 0);
       resolve();
     };
@@ -42,7 +43,7 @@ const createMap = (
   url: string,
   center: [number, number],
   zoom: number,
-  layers: any,
+  layers: LayerSpecification[],
 ) => {
   return new maplibregl.Map({
     container: container,
@@ -56,7 +57,7 @@ const createMap = (
       sources: {
         protomaps: {
           type: "vector",
-          url: "pmtiles://" + url,
+          url: `pmtiles://${url}`,
           attribution: "",
         },
       },
@@ -139,7 +140,7 @@ const linkTo = (props: { name?: string; tag?: string }) => {
   if (props.tag) {
     q.set("tag", props.tag);
   }
-  return "/visualtests/?" + q.toString();
+  return `/visualtests/?${q.toString()}`;
 };
 
 const layersForVersion = async (version: string) => {
@@ -162,19 +163,24 @@ function ExampleComponent(props: { result: ExampleResult }) {
   const diffRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    leftRef.current!.src = props.result.rendered.leftData;
-    rightRef.current!.src = props.result.rendered.rightData;
-    diffRef.current!.src = props.result.rendered.diffData;
-  }, []);
+    if (!leftRef.current || !rightRef.current || !diffRef.current) {
+      console.error("DOM element not initialized");
+      return;
+    }
+
+    leftRef.current.src = props.result.rendered.leftData;
+    rightRef.current.src = props.result.rendered.rightData;
+    diffRef.current.src = props.result.rendered.diffData;
+  }, [props.result]);
 
   const example = props.result.example;
 
   return (
     <div className="example">
       <div>
-        <img ref={leftRef} />
-        <img ref={rightRef} />
-        <img ref={diffRef} />
+        <img alt="left" ref={leftRef} />
+        <img alt="right" ref={rightRef} />
+        <img alt="diff" ref={diffRef} />
       </div>
       <a href={linkTo({ name: example.name })}>{example.name}</a>
       <span>{example.description}</span>
@@ -220,14 +226,15 @@ export default function VisualTestsComponent() {
       const builds = await (
         await fetch("https://build-metadata.protomaps.dev/builds.json")
       ).json();
-      const last_build =
-        "https://build.protomaps.com/" + builds[builds.length - 1].key;
+      const last_build = `https://build.protomaps.com/${
+        builds[builds.length - 1].key
+      }`;
       const leftTiles = QUERY_PARAMS.get("leftTiles") || last_build;
       const rightTiles = QUERY_PARAMS.get("rightTiles") || last_build;
 
       // the left style defaults to the latest published NPM version
       // the right style is the main branch (GitHub Pages) or local development
-      let leftLayersStr =
+      const leftLayersStr =
         QUERY_PARAMS.get("leftStyle") || (await latestVersion());
       const rightLayersStr = QUERY_PARAMS.get("rightStyle");
 
@@ -248,7 +255,7 @@ export default function VisualTestsComponent() {
       const tag = QUERY_PARAMS.get("tag");
 
       // get all JSONs first - we don't want to initialize the map without a starting position
-      let examples: Example[] = rawExamples as any;
+      let examples: Example[] = rawExamples as Example[];
       if (name !== null) {
         examples = examples.filter((e) => e.name === name);
       } else if (tag !== null) {
@@ -256,10 +263,21 @@ export default function VisualTestsComponent() {
       }
       const example = examples[0];
 
+      if (
+        !mapLeftContainerRef.current ||
+        !mapRightContainerRef.current ||
+        !canvasLeftRef.current ||
+        !canvasRightRef.current ||
+        !canvasDiffRef.current
+      ) {
+        console.error("Page failed to initialize");
+        return;
+      }
+
       // create two map instances:
       // one for each version, so we don't have to re-initialize the map on changing view.
       mapLeftRef.current = createMap(
-        mapLeftContainerRef.current!,
+        mapLeftContainerRef.current,
         leftTiles,
         example.center,
         example.zoom,
@@ -267,29 +285,40 @@ export default function VisualTestsComponent() {
       );
 
       mapRightRef.current = createMap(
-        mapRightContainerRef.current!,
+        mapRightContainerRef.current,
         rightTiles,
         example.center,
         example.zoom,
         rightLayers,
       );
 
-      const leftCanvas = canvasLeftRef.current!;
+      const leftCanvas = canvasLeftRef.current;
       leftCanvas.width = DIM;
       leftCanvas.height = DIM;
-      const rightCanvas = canvasRightRef.current!;
+      const rightCanvas = canvasRightRef.current;
       rightCanvas.width = DIM;
       rightCanvas.height = DIM;
-      const diffCanvas = canvasDiffRef.current!;
+      const diffCanvas = canvasDiffRef.current;
       diffCanvas.width = DIM;
       diffCanvas.height = DIM;
+
+      const leftCtx = leftCanvas.getContext("2d", { willReadFrequently: true });
+      const rightCtx = rightCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
+      const diffCtx = diffCanvas.getContext("2d", { willReadFrequently: true });
+
+      if (!leftCtx || !rightCtx || !diffCtx) {
+        console.error("Canvas failed to initialize");
+        return;
+      }
 
       const renderState: RenderState = {
         leftMap: mapLeftRef.current,
         rightMap: mapRightRef.current,
-        leftCtx: leftCanvas.getContext("2d", { willReadFrequently: true })!,
-        rightCtx: rightCanvas.getContext("2d", { willReadFrequently: true })!,
-        diffCtx: diffCanvas.getContext("2d", { willReadFrequently: true })!,
+        leftCtx: leftCtx,
+        rightCtx: rightCtx,
+        diffCtx: diffCtx,
         diffCanvas: diffCanvas,
       };
 
@@ -324,11 +353,11 @@ export default function VisualTestsComponent() {
   return (
     <div className="visual-tests">
       <div style={{ position: "absolute", opacity: 0.0, zIndex: -1 }}>
-        <div ref={mapLeftContainerRef} className="map"></div>
-        <div ref={mapRightContainerRef} className="map"></div>
-        <canvas ref={canvasLeftRef}></canvas>
-        <canvas ref={canvasRightRef}></canvas>
-        <canvas ref={canvasDiffRef}></canvas>
+        <div ref={mapLeftContainerRef} className="map" />
+        <div ref={mapRightContainerRef} className="map" />
+        <canvas ref={canvasLeftRef} />
+        <canvas ref={canvasRightRef} />
+        <canvas ref={canvasDiffRef} />
       </div>
       <div style={{ width: "500px", display: "inline-block" }}>
         {displayInfo[0]}
