@@ -35,8 +35,8 @@ const ATTRIBUTION =
 const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   return (
     <div className="features-properties">
-      {props.features.map((f, i) => (
-        <div key={i}>
+      {props.features.map((f) => (
+        <div key={f.id}>
           <span>
             <strong>{(f.layer as unknown)["source-layer"]}</strong>
             <span> ({f.geometry.type})</span>
@@ -46,8 +46,8 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
               <td>id</td>
               <td>{f.id}</td>
             </tr>
-            {Object.entries(f.properties).map(([key, value], i) => (
-              <tr key={i + 1}>
+            {Object.entries(f.properties).map(([key, value]) => (
+              <tr key={key}>
                 <td>{key}</td>
                 <td>{value}</td>
               </tr>
@@ -67,15 +67,16 @@ function getMaplibreStyle(
   minZoom?: number,
   maxZoom?: number,
 ): StyleSpecification {
-  if (tiles && new URL(tiles).pathname.endsWith(".pmtiles")) {
-    tiles = `pmtiles://${tiles}`;
+  let tilesWithProtocol = tiles;
+  if (tilesWithProtocol && new URL(tiles).pathname.endsWith(".pmtiles")) {
+    tilesWithProtocol = `pmtiles://${tiles}`;
   }
   const style = {
     version: 8 as unknown,
     sources: {},
     layers: [],
   } as StyleSpecification;
-  if (!tiles) return style;
+  if (!tilesWithProtocol) return style;
   style.layers = [];
   style.glyphs =
     "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
@@ -95,7 +96,7 @@ function getMaplibreStyle(
       protomaps: {
         type: "vector",
         attribution: ATTRIBUTION,
-        url: tiles,
+        url: tilesWithProtocol,
       },
     };
   }
@@ -201,7 +202,7 @@ function MapLibreView(props: {
       maplibregl.removeProtocol("pmtiles");
       map.remove();
     };
-  }, []);
+  }, [props.npmLayers, props.theme, props.tiles]);
 
   useEffect(() => {
     if (protocolRef.current) {
@@ -281,7 +282,7 @@ function OpenLayersView(props: { theme: string; tiles?: string }) {
         zoom: 0,
       }),
     });
-  }, []);
+  }, [props.theme]);
 
   return <div id="map" />;
 }
