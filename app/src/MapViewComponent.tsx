@@ -66,6 +66,14 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   );
 };
 
+export const isValidTiles = (tiles?: string): boolean => {
+  if (!tiles) return false;
+  if (!tiles.startsWith("http") && tiles.endsWith(".pmtiles")) return true;
+  if (tiles.startsWith("http") && new URL(tiles).pathname.endsWith(".pmtiles"))
+    return true;
+  return false;
+};
+
 function getMaplibreStyle(
   theme: string,
   tiles?: string,
@@ -75,10 +83,7 @@ function getMaplibreStyle(
   maxZoom?: number,
 ): StyleSpecification {
   let tilesWithProtocol = tiles;
-  if (
-    tilesWithProtocol &&
-    new URL(tilesWithProtocol).pathname.endsWith(".pmtiles")
-  ) {
+  if (isValidTiles(tiles)) {
     tilesWithProtocol = `pmtiles://${tiles}`;
   }
   const style = {
