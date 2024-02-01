@@ -144,7 +144,7 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
         .setAttr("water", sf.getString("water"))
         .setAttr("waterway", sf.getString("waterway"))
         .setZoomRange(6, 15)
-        .setMinPixelSize(3.0)
+        .setMinPixelSize(1.0)
         .setBufferPixels(8);
 
       // Core Tilezen schema properties
@@ -168,16 +168,6 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    if (zoom == 15)
-      return items;
-
-    int minArea = 400 / (4096 * 4096) * (256 * 256);
-    if (zoom == 6)
-      minArea = 600 / (4096 * 4096) * (256 * 256);
-    else if (zoom <= 5)
-      minArea = 800 / (4096 * 4096) * (256 * 256);
-    items = Area.filterArea(items, minArea);
-
     return FeatureMerge.mergeOverlappingPolygons(items, 1);
   }
 }
