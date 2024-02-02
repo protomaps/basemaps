@@ -47,5 +47,19 @@
     "tags": ["boundaries"],
     "center": [37.382, -1.592],
     "zoom": 7
+  },
+  {
+    "name": "colombia-rivers",
+    "description": "water features west of Bogota should not be broken",
+    "tags": ["water"],
+    "center": [-74.422,4.62],
+    "zoom": 7.8
+  },
+  {
+    "name": "river-thames",
+    "description": "River Thames should not have pieces missing",
+    "tags": ["water"],
+    "center": [-0.3,51.4],
+    "zoom": 8.9
   }
 ]
