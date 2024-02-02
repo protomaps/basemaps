@@ -54,6 +54,26 @@ export function nolabels_layers(
       },
     },
     {
+      id: "landuse_urban_green",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: [
+        "any",
+        [
+          "in",
+          "pmap:kind",
+          "allotments",
+          "village_green",
+          "playground"
+        ],
+      ],
+      paint: {
+        "fill-color": t.park_b,
+        "fill-opacity": 0.7
+      },
+    },
+    {
       id: "landuse_hospital",
       type: "fill",
       source: source,
