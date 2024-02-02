@@ -1,3 +1,7 @@
+Tiles v3.3.0
+------
+- Improve water generalization detail by doing area filtering post-merge [#198]
+
 Tiles v3.2.0
 ------
 - Add `village_green` and `allotments` to landuse layer via @lenalebt [#206]
