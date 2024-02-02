@@ -60,17 +60,11 @@ export function nolabels_layers(
       "source-layer": "landuse",
       filter: [
         "any",
-        [
-          "in",
-          "pmap:kind",
-          "allotments",
-          "village_green",
-          "playground"
-        ],
+        ["in", "pmap:kind", "allotments", "village_green", "playground"],
       ],
       paint: {
         "fill-color": t.park_b,
-        "fill-opacity": 0.7
+        "fill-opacity": 0.7,
       },
     },
     {
