@@ -1,3 +1,8 @@
+Tiles v3.4.0, Styles v2.0.0-alpha.5
+------
+- Add `village_green`, `landuse`, `allotments` to POI layer via @lenalebt [#204]
+- Add to styles via `landuse_urban_green` layer
+
 Tiles v3.3.0
 ------
 - Improve water generalization detail by doing area filtering post-merge [#198]
