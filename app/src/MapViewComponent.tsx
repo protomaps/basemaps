@@ -66,7 +66,7 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   );
 };
 
-export const isValidTiles = (tiles?: string): boolean => {
+export const isValidPMTiles = (tiles?: string): boolean => {
   if (!tiles) return false;
   if (!tiles.startsWith("http") && tiles.endsWith(".pmtiles")) return true;
   if (tiles.startsWith("http") && new URL(tiles).pathname.endsWith(".pmtiles"))
@@ -82,16 +82,18 @@ function getMaplibreStyle(
   minZoom?: number,
   maxZoom?: number,
 ): StyleSpecification {
-  let tilesWithProtocol = tiles;
-  if (isValidTiles(tiles)) {
-    tilesWithProtocol = `pmtiles://${tiles}`;
-  }
   const style = {
     version: 8 as unknown,
     sources: {},
     layers: [],
   } as StyleSpecification;
-  if (!tilesWithProtocol) return style;
+  if (!tiles) return style;
+  let tilesWithProtocol: string;
+  if (isValidPMTiles(tiles)) {
+    tilesWithProtocol = `pmtiles://${tiles}`;
+  } else {
+    tilesWithProtocol = tiles;
+  }
   style.layers = [];
   style.glyphs =
     "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
