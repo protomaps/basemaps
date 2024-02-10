@@ -47,7 +47,7 @@ The locally generated pmtiles can be fetched from http://localhost:5173/monaco.p
 mvn spotless:apply
 ```
 
-## Build tiles with Docker
+## Build tiles with Docker 🐋
 
 After cloning this repo, navigate to the `./basemaps` directory (the repo's root) and run the following command to build the container
 
