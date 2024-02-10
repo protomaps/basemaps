@@ -1,5 +1,5 @@
 # Set the name of the area
-$AREA_NAME="my_beloved_home_country"
+AREA_NAME="my_beloved_home_country"
 
 # Run a Docker container and mount the output directory,
 # then download the source data and build the planetiler profile.
