@@ -2,14 +2,14 @@
   {
     "name": "taiwan-z8",
     "description": "Compare the appearance of highways",
-    "tags": ["highway", "cjk"],
+    "tags": ["highway", "cjk", "tw"],
     "center": [121.333, 24.32],
     "zoom": 8
   },
   {
     "name": "taiwan-z16-buildings",
     "description": "Compare the appearance of buildings",
-    "tags": ["buildings", "cjk"],
+    "tags": ["building", "cjk", "tw"],
     "center": [121.4818, 25.0271],
     "zoom": 16
   },
@@ -26,5 +26,47 @@
     "tags": [],
     "center": [0, 0],
     "zoom": 2
+  },
+  {
+    "name": "zurich-bridges",
+    "description": "Pedestrian bridge tagged as area",
+    "tags": ["bridge", "ch"],
+    "center": [8.54252, 47.376925],
+    "zoom": 17
+  },
+  {
+    "name": "brazil-boundaries",
+    "description": "admin boundaries other than Brasilia should be visible at zoom 6",
+    "tags": ["boundaries"],
+    "center": [-49.092, -15.092],
+    "zoom": 6
+  },
+  {
+    "name": "kenya-boundaries",
+    "description": "admin boundaries level 5 around Nairobi should not appear broken",
+    "tags": ["boundaries"],
+    "center": [37.382, -1.592],
+    "zoom": 7
+  },
+  {
+    "name": "colombia-rivers",
+    "description": "water features west of Bogota should not be broken",
+    "tags": ["water"],
+    "center": [-74.422, 4.62],
+    "zoom": 7.8
+  },
+  {
+    "name": "river-thames",
+    "description": "River Thames should not have pieces missing",
+    "tags": ["water"],
+    "center": [-0.3, 51.4],
+    "zoom": 8.9
+  },
+  {
+    "name": "landuse-urban-green",
+    "description": "show village_green, allotments, playgrounds",
+    "center": [7.3217, 51.50406],
+    "tags": [],
+    "zoom": 15
   }
 ]

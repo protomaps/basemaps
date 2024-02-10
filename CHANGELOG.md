@@ -1,3 +1,26 @@
+Tiles v3.4.0, Styles v2.0.0-alpha.5
+------
+- Add `village_green`, `landuse`, `allotments` to POI layer via @lenalebt [#204]
+- Add to styles via `landuse_urban_green` layer
+
+Tiles v3.3.0
+------
+- Improve water generalization detail by doing area filtering post-merge [#198]
+
+Tiles v3.2.0
+------
+- Add `village_green` and `allotments` to landuse layer via @lenalebt [#206]
+- Remove non-deterministic ordering ID from POIs
+- stricter parsing of building height values [#205]
+
+Tiles v3.1.0
+------
+- Boundaries admin_level 3 and 5 are included along with 4 and 6, respectively [#189]
+
+Tiles v3.0.1
+------
+- Fix pedestrian bridge areas
+
 Styles v2.0.0-alpha.4
 ------
 - Fix ordering issues related to pedestrian bridges.
@@ -6,6 +29,10 @@ Tiles v3.0.0-pre4
 ------
 - Fix appearance of NE boundaries at low zooms.
 - Add `pmap:kind`=`bus_stop` to POIs. via [@eikes](https://github.com/eikes)
+
+Tiles v3.0.0-pre3
+------
+- Make `disputed` tag on boundaries consistent [#190]
 
 v3.0.0-pre1
 ------

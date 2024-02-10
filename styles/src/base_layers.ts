@@ -1,5 +1,5 @@
-import { Theme } from "./themes";
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
+import { Theme } from "./themes";
 
 export function nolabels_layers(
   source: string,
@@ -51,6 +51,20 @@ export function nolabels_layers(
           12,
           t.park_b,
         ],
+      },
+    },
+    {
+      id: "landuse_urban_green",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: [
+        "any",
+        ["in", "pmap:kind", "allotments", "village_green", "playground"],
+      ],
+      paint: {
+        "fill-color": t.park_b,
+        "fill-opacity": 0.7,
       },
     },
     {
@@ -1985,11 +1999,11 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
           "step",
           ["zoom"],
           ["get", "name:short"],
-          5,
+          6,
           ["get", "name"],
         ],
         "text-font": ["Noto Sans Regular"],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 7, 24],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 7, 16],
         "text-radial-offset": 0.2,
         "text-anchor": "center",
         "text-transform": "uppercase",

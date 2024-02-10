@@ -1,10 +1,18 @@
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface Build {
   uploaded: string;
   key: string;
   size: number;
   version: string;
+}
+
+function isMonday(dateStr: string): boolean {
+  const year = parseInt(dateStr.substring(0, 4), 10);
+  const month = parseInt(dateStr.substring(4, 6), 10) - 1; // Subtract 1 because months are 0-indexed in JavaScript dates
+  const day = parseInt(dateStr.substring(6, 8), 10);
+  const date = new Date(year, month, day);
+  return date.getDay() === 1;
 }
 
 function formatBytes(bytes: number, decimals = 2) {
@@ -23,7 +31,7 @@ function formatBytes(bytes: number, decimals = 2) {
     "YiB",
   ];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 }
 
 function BuildComponent(props: {
@@ -36,6 +44,8 @@ function BuildComponent(props: {
 }) {
   const build = props.build;
   const link = `https://build.protomaps.com/${build.key}`;
+  const date = build.key.substr(0, 8);
+  const statsLink = `https://build.protomaps.com/${date}.layerstats.parquet`;
   const idx = props.idx;
 
   const onChangeA = () => {
@@ -47,7 +57,7 @@ function BuildComponent(props: {
   };
 
   return (
-    <tr>
+    <tr style={{ color: isMonday(date) ? "white" : "#aaa" }}>
       <td>
         <span style={{ display: "inline-block", width: "20px" }}>
           {idx > props.cmpB && (
@@ -73,14 +83,15 @@ function BuildComponent(props: {
       <td>{formatBytes(build.size)}</td>
       <td>{build.uploaded}</td>
       <td>
-        <a href={"/#tiles=" + link}>map</a>
+        <a href={`/#tiles=${link}`}>map</a>
       </td>
       <td>
-        <a href={"https://protomaps.github.io/PMTiles/?url=" + link}>xray</a>
+        <a href={`https://protomaps.github.io/PMTiles/?url=${link}`}>xray</a>
       </td>
       <td>
         <a href={link}>download</a>
       </td>
+      <td>{date >= "20231228" ? <a href={statsLink}>stats</a> : null}</td>
     </tr>
   );
 }
@@ -103,6 +114,12 @@ export default function BuildsComponent() {
   const style = "2.0.0-alpha.0";
   const theme = "light";
 
+  const openVisualTests = () => {
+    const left = `https://build.protomaps.com/${builds[cmpA].key}`;
+    const right = `https://build.protomaps.com/${builds[cmpB].key}`;
+    open(`/visualtests/?leftTiles=${left}&rightTiles=${right}`);
+  };
+
   const openMaperture = () => {
     const leftKey = builds[cmpA].key.replace(".pmtiles", "");
     const rightKey = builds[cmpB].key.replace(".pmtiles", "");
@@ -122,7 +139,7 @@ export default function BuildsComponent() {
     };
     const payload = JSON.stringify([left, right]);
     open(
-      "https://stamen.github.io/maperture/#maps=" + encodeURIComponent(payload),
+      `https://stamen.github.io/maperture/#maps=${encodeURIComponent(payload)}`,
     );
   };
 
@@ -143,8 +160,13 @@ export default function BuildsComponent() {
   return (
     <div className="builds">
       <h1>Builds</h1>
-      {/*<button>Compare Examples</button>*/}
-      <button onClick={openMaperture}>Compare in Maperture</button>
+      <p>only Monday builds (white) are kept indefinitely.</p>
+      <button type="button" onClick={openVisualTests}>
+        Compare visual tests
+      </button>
+      <button type="button" onClick={openMaperture}>
+        Compare in Maperture
+      </button>
       <table>
         <tbody>
           {builds.map((build: Build, idx: number) => (

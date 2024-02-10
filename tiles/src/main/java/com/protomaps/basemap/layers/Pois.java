@@ -13,7 +13,6 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
 
@@ -32,13 +31,6 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
   private static final double LOG2 = Math.log(2);
 
-  /*
-   * Assign every toilet a monotonically increasing ID so that we can limit output at low zoom levels to only the
-   * highest ID toilet nodes. Be sure to use thread-safe data structures any time a profile holds state since multiple
-   * threads invoke processFeature concurrently.
-   */
-  private final AtomicInteger poiNumber = new AtomicInteger(0);
-
   @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
@@ -47,7 +39,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
       sf.hasTag("boundary", "national_park", "protected_area") ||
       sf.hasTag("craft") ||
       sf.hasTag("historic") ||
-      sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military") ||
+      sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
+        "village_green", "allotments") ||
       sf.hasTag("leisure") ||
       sf.hasTag("natural", "beach") ||
       sf.hasTag("railway", "station") ||
@@ -331,7 +324,8 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
         } else if (kind.equals("forest") ||
           kind.equals("park") ||
           kind.equals("protected_area") ||
-          kind.equals("nature_reserve")) {
+          kind.equals("nature_reserve") ||
+          kind.equals("village_green")) {
           if (wayArea > 10000) {
             minZoom = 7;
           } else if (wayArea > 4000) {
@@ -376,6 +370,14 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
             minZoom = 16;
           }
           // Typically for "building" derived label placements for shops and other businesses
+        } else if (kind.equals("allotments")) {
+          if (wayArea > 0.01) {
+            minZoom = 15;
+          } else {
+            minZoom = 16;
+          }
+        } else if (kind.equals("playground")) {
+          minZoom = 17;
         } else {
           if (wayArea > 10) {
             minZoom = 11;
@@ -482,7 +484,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
         // Server sort features so client label collisions are pre-sorted
         // NOTE: (nvkelso 20230627) This could also include other params like the name
-        polyLabelPosition.setSortKey(minZoom * 1000 + poiNumber.incrementAndGet());
+        polyLabelPosition.setSortKey(minZoom * 1000);
 
         // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
         // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
@@ -567,7 +569,7 @@ public class Pois implements ForwardingProfile.FeatureProcessor, ForwardingProfi
 
         // Server sort features so client label collisions are pre-sorted
         // NOTE: (nvkelso 20230627) This could also include other params like the name
-        pointFeature.setSortKey(minZoom * 1000 + poiNumber.incrementAndGet());
+        pointFeature.setSortKey(minZoom * 1000);
 
         // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
         // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15

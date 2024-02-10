@@ -1,44 +1,51 @@
-import {
-  useEffect,
-  useState,
-  useRef,
-  KeyboardEvent,
-  FormEvent,
-  useCallback,
-} from "react";
-import { renderToString } from "react-dom/server";
-import layers from "../../styles/src/index.ts";
 import maplibregl from "maplibre-gl";
-import { StyleSpecification, MapGeoJSONFeature } from "maplibre-gl";
-import * as pmtiles from "pmtiles";
+import { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import "ol/ol.css";
 import { Map as OpenLayersMap, View } from "ol";
 import VectorTile from "ol/layer/VectorTile";
+import "ol/ol.css";
+import * as pmtiles from "pmtiles";
+import {
+  FormEvent,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { renderToString } from "react-dom/server";
 import { useDropzone } from "react-dropzone";
+import layers from "../../styles/src/index.ts";
 
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
+import { stylefunction } from "ol-mapbox-style";
 // @ts-ignore
 import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
-import { stylefunction } from "ol-mapbox-style";
 
-import { PMTiles, FileAPISource, Protocol } from "pmtiles";
-import { parseHash, createHash } from "./hash";
+import { FileAPISource, PMTiles, Protocol } from "pmtiles";
+import { createHash, parseHash } from "./hash";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
 
+function getSourceLayer(l: LayerSpecification): string {
+  if ("source-layer" in l && l["source-layer"]) {
+    return l["source-layer"];
+  }
+  return "";
+}
+
 const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   return (
     <div className="features-properties">
-      {props.features.map((f, i) => (
-        <div key={i}>
+      {props.features.map((f) => (
+        <div key={f.id}>
           <span>
-            <strong>{(f.layer as any)["source-layer"]}</strong>
+            <strong>{getSourceLayer(f.layer)}</strong>
             <span> ({f.geometry.type})</span>
           </span>
           <table>
@@ -46,8 +53,8 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
               <td>id</td>
               <td>{f.id}</td>
             </tr>
-            {Object.entries(f.properties).map(([key, value], i) => (
-              <tr key={i + 1}>
+            {Object.entries(f.properties).map(([key, value]) => (
+              <tr key={key}>
                 <td>{key}</td>
                 <td>{value}</td>
               </tr>
@@ -59,6 +66,14 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   );
 };
 
+export const isValidPMTiles = (tiles?: string): boolean => {
+  if (!tiles) return false;
+  if (!tiles.startsWith("http") && tiles.endsWith(".pmtiles")) return true;
+  if (tiles.startsWith("http") && new URL(tiles).pathname.endsWith(".pmtiles"))
+    return true;
+  return false;
+};
+
 function getMaplibreStyle(
   theme: string,
   tiles?: string,
@@ -67,15 +82,18 @@ function getMaplibreStyle(
   minZoom?: number,
   maxZoom?: number,
 ): StyleSpecification {
-  if (tiles && tiles.endsWith(".pmtiles")) {
-    tiles = "pmtiles://" + tiles;
-  }
   const style = {
-    version: 8 as any,
+    version: 8 as unknown,
     sources: {},
     layers: [],
   } as StyleSpecification;
   if (!tiles) return style;
+  let tilesWithProtocol: string;
+  if (isValidPMTiles(tiles)) {
+    tilesWithProtocol = `pmtiles://${tiles}`;
+  } else {
+    tilesWithProtocol = tiles;
+  }
   style.layers = [];
   style.glyphs =
     "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
@@ -85,7 +103,7 @@ function getMaplibreStyle(
       protomaps: {
         type: "vector",
         attribution: ATTRIBUTION,
-        tiles: ["pmtiles://" + droppedArchive.source.getKey() + "/{z}/{x}/{y}"],
+        tiles: [`pmtiles://${droppedArchive.source.getKey()}/{z}/{x}/{y}`],
         minzoom: minZoom,
         maxzoom: maxZoom,
       },
@@ -95,7 +113,7 @@ function getMaplibreStyle(
       protomaps: {
         type: "vector",
         attribution: ATTRIBUTION,
-        url: tiles,
+        url: tilesWithProtocol,
       },
     };
   }
@@ -120,6 +138,7 @@ function StyleJsonPane(props: { theme: string }) {
   return (
     <div>
       <button
+        type="button"
         onClick={() => {
           navigator.clipboard.writeText(stringified);
         }}
@@ -179,10 +198,10 @@ function MapLibreView(props: {
       maxWidth: "none",
     });
 
-    map.on("mousedown", function (e) {
+    map.on("mousedown", (e) => {
       const features = map.queryRenderedFeatures(e.point);
       if (features.length) {
-        let content = renderToString(
+        const content = renderToString(
           <FeaturesProperties features={features} />,
         );
         popup.setHTML(content);
@@ -200,7 +219,7 @@ function MapLibreView(props: {
       maplibregl.removeProtocol("pmtiles");
       map.remove();
     };
-  }, []);
+  }, [props.npmLayers, props.theme, props.tiles]);
 
   useEffect(() => {
     if (protocolRef.current) {
@@ -209,7 +228,7 @@ function MapLibreView(props: {
         protocolRef.current.add(archive);
         (async () => {
           const header = await archive.getHeader();
-          mapRef.current!.fitBounds(
+          mapRef.current?.fitBounds(
             [
               [header.minLon, header.minLat],
               [header.maxLon, header.maxLat],
@@ -224,7 +243,8 @@ function MapLibreView(props: {
   useEffect(() => {
     (async () => {
       if (mapRef.current) {
-        let minZoom, maxZoom;
+        let minZoom: number | undefined;
+        let maxZoom: number | undefined;
         if (props.droppedArchive) {
           const header = await props.droppedArchive.getHeader();
           minZoom = header.minZoom;
@@ -244,7 +264,7 @@ function MapLibreView(props: {
     })();
   }, [props.tiles, props.theme, props.npmLayers, props.droppedArchive]);
 
-  return <div id="map"></div>;
+  return <div id="map" />;
 }
 
 // TODO: does not sync map hash state
@@ -279,23 +299,23 @@ function OpenLayersView(props: { theme: string; tiles?: string }) {
         zoom: 0,
       }),
     });
-  }, []);
+  }, [props.theme]);
 
-  return <div id="map"></div>;
+  return <div id="map" />;
 }
 
 // if no tiles are passed, loads the latest daily build.
 export default function MapViewComponent() {
   const hash = parseHash(location.hash);
-  const [theme, setTheme] = useState<string>(hash["theme"] || "light");
-  const [tiles, setTiles] = useState<string | undefined>(hash["tiles"]);
+  const [theme, setTheme] = useState<string>(hash.theme || "light");
+  const [tiles, setTiles] = useState<string | undefined>(hash.tiles);
   const [renderer, setRenderer] = useState<string>(
-    hash["renderer"] || "maplibregl",
+    hash.renderer || "maplibregl",
   );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
   const [publishedStyleVersion, setPublishedStyleVersion] = useState<
     string | undefined
-  >(hash["npm_version"]);
+  >(hash.npm_version);
   const [knownNpmVersions, setKnownNpmVersions] = useState<string[]>([]);
   const [npmLayers, setNpmLayers] = useState<LayerSpecification[]>([]);
   const [droppedArchive, setDroppedArchive] = useState<PMTiles>();
@@ -325,7 +345,7 @@ export default function MapViewComponent() {
           return r.json();
         })
         .then((j) => {
-          setTiles("https://build.protomaps.com/" + j[j.length - 1].key);
+          setTiles(`https://build.protomaps.com/${j[j.length - 1].key}`);
         });
     }
   }, [tiles]);
@@ -404,8 +424,10 @@ export default function MapViewComponent() {
           <option value="maplibregl">maplibregl</option>
           <option value="openlayers">openlayers</option>
         </select>
-        {knownNpmVersions.length == 0 ? (
-          <button onClick={loadVersionsFromNpm}>npm version...</button>
+        {knownNpmVersions.length === 0 ? (
+          <button type="button" onClick={loadVersionsFromNpm}>
+            npm version...
+          </button>
         ) : (
           <select
             onChange={(e) => setPublishedStyleVersion(e.target.value)}
@@ -421,16 +443,20 @@ export default function MapViewComponent() {
             ))}
           </select>
         )}
-        <button onClick={() => setShowStyleJson(!showStyleJson)}>
+        <button type="button" onClick={() => setShowStyleJson(!showStyleJson)}>
           get style JSON
         </button>
         <a href="/visualtests/">visual tests</a>|
-        <a target="_blank" href="https://github.com/protomaps/basemaps">
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://github.com/protomaps/basemaps"
+        >
           {GIT_SHA}
         </a>
       </nav>
       <div className="split" onKeyPress={handleKeyPress}>
-        {renderer == "maplibregl" ? (
+        {renderer === "maplibregl" ? (
           <MapLibreView
             tiles={tiles}
             theme={theme}

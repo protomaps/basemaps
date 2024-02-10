@@ -3,7 +3,7 @@ import sirv from "sirv";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 
-const serve = sirv("../tiles");
+const serve = sirv("../tiles", { dev: true });
 
 const servePmtilesInTilesDir = () => ({
   name: "serve-pmtiles-in-tiles-dir",
@@ -32,7 +32,7 @@ export default defineConfig({
   },
   server: {
     fs: {
-      allow: [searchForWorkspaceRoot(process.cwd()), '../styles/src']
+      allow: [searchForWorkspaceRoot(process.cwd()), "../styles/src"],
     },
   },
 });

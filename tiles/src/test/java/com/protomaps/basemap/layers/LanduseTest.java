@@ -21,4 +21,30 @@ class LanduseTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void landuseVillageGreen() {
+    assertFeatures(15,
+      List.of(Map.of("pmap:kind", "village_green")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("landuse", "village_green")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void landuseAllotments() {
+    assertFeatures(15,
+      List.of(Map.of("pmap:kind", "allotments")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("landuse", "allotments")),
+        "osm",
+        null,
+        0
+      )));
+  }
 }

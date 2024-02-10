@@ -52,6 +52,7 @@ a {
   width: 1512px;
   margin-top: 100px;
   color: white;
+  font-family: monospace;
 }
 
 .visual-tests .map,
@@ -61,7 +62,12 @@ a {
   height: 500px;
 }
 
-.visual-tests span {
+.visual-tests .example {
+  margin-top: 2rem;
+}
+
+.visual-tests span,
+.visual-tests a {
   margin-right: 0.5rem;
 }
 
