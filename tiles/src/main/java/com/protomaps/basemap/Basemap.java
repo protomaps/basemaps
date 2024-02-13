@@ -130,12 +130,13 @@ public class Basemap extends ForwardingProfile {
       .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip");
 
-    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
-      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
+//    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
+//      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
     var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
     var naturalEarthDb = NaturalEarthDb.fromSqlite(nePath, tmpDir);
-    var qrankDb = QrankDb.fromCsv(sourcesDir.resolve("qrank.csv.gz"));
+//    var qrankDb = QrankDb.fromCsv(sourcesDir.resolve("qrank.csv.gz"));
+    var qrankDb = QrankDb.empty();
 
     planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb)).setOutput(Path.of(area + ".pmtiles"))
       .run();
