@@ -38,6 +38,11 @@ public final class QrankDb {
     }
   }
 
+  public static QrankDb empty() {
+    LongLongHashMap db = new LongLongHashMap();
+    return new QrankDb(db);
+  }
+
   public static QrankDb fromCsv(Path csvPath) throws IOException {
     GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(csvPath.toFile()));
     try (BufferedReader br = new BufferedReader(new InputStreamReader(gzip))) {
