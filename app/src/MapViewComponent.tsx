@@ -24,7 +24,7 @@ import { stylefunction } from "ol-mapbox-style";
 import { PMTilesVectorSource } from "ol-pmtiles";
 import { useGeographic } from "ol/proj";
 
-import { FileAPISource, PMTiles, Protocol } from "pmtiles";
+import { FileSource, PMTiles, Protocol } from "pmtiles";
 import { createHash, parseHash } from "./hash";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
@@ -331,7 +331,7 @@ export default function MapViewComponent() {
   });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setDroppedArchive(new PMTiles(new FileAPISource(acceptedFiles[0])));
+    setDroppedArchive(new PMTiles(new FileSource(acceptedFiles[0])));
   }, []);
 
   const { getRootProps } = useDropzone({ onDrop });
