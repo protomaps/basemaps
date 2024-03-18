@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,10 +123,14 @@ public class NaturalEarthDb {
           .findFirst()
           .orElseThrow(() -> new IllegalArgumentException("No .sqlite file found inside " + path));
         extracted = unzippedDir.resolve(URLEncoder.encode(zipEntry.toString(), StandardCharsets.UTF_8));
+        if (!extracted.startsWith(unzippedDir)) {
+          throw new IllegalArgumentException(
+            "Zip file tried to extract child outside of folder: " + zipEntry.getFileName());
+        }
         FileUtils.createParentDirectories(extracted);
         if (FileUtils.isNewer(path, extracted)) {
           LOGGER.info("unzipping {} to {}", path.toAbsolutePath(), extracted);
-          Files.copy(Files.newInputStream(zipEntry), extracted, StandardCopyOption.REPLACE_EXISTING);
+          FileUtils.safeCopy(Files.newInputStream(zipEntry), extracted);
         }
       }
       uri = "jdbc:sqlite:" + extracted.toAbsolutePath();
