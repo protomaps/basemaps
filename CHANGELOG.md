@@ -1,3 +1,7 @@
+Tiles v3.4.1
+------
+- Improve boundaries generalization [#200]
+
 Tiles v3.4.0, Styles v2.0.0-alpha.5
 ------
 - Add `village_green`, `landuse`, `allotments` to POI layer via @lenalebt [#204]
