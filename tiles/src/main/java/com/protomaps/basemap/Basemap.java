@@ -8,8 +8,8 @@ import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.layers.Boundaries;
 import com.protomaps.basemap.layers.Buildings;
 import com.protomaps.basemap.layers.Earth;
-import com.protomaps.basemap.layers.Landuse;
 import com.protomaps.basemap.layers.Landcover;
+import com.protomaps.basemap.layers.Landuse;
 import com.protomaps.basemap.layers.Natural;
 import com.protomaps.basemap.layers.PhysicalLine;
 import com.protomaps.basemap.layers.PhysicalPoint;
@@ -133,7 +133,8 @@ public class Basemap extends ForwardingProfile {
         "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
       .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"), "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
+      .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
+        "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
     //    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
     //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
