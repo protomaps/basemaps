@@ -30,6 +30,8 @@ public class Landcover implements ForwardingProfile.FeaturePostProcessor {
         break;
       case "shrub":
         kind = "scrub";
+      default:
+        break;
     }
 
     features.polygon(this.name())

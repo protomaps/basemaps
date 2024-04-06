@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class LandcoverTest extends LayerTest {
+class LandcoverTest extends LayerTest {
 
   @ParameterizedTest
   @CsvSource(value = {
