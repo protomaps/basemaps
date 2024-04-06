@@ -1,3 +1,7 @@
+Tiles v3.5.1
+------
+- Order landcover by kind consistently [#154]
+
 Tiles v3.5.0
 ------
 - Add Daylight Landcover from zooms 0-7. [#154]
