@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Landcover implements ForwardingProfile.FeaturePostProcessor {
 
-  final static Map<String, String> kindMapping = Map.of("urban", "urban_area", "crop", "farmland", "grass", "grassland",
+  static final Map<String, String> kindMapping = Map.of("urban", "urban_area", "crop", "farmland", "grass", "grassland",
     "trees", "forest", "snow", "glacier", "shrub", "scrub", "barren", "barren");
 
   public void processLandcover(SourceFeature sf, FeatureCollector features) {
