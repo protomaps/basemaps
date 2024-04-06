@@ -24,7 +24,6 @@ public class Landcover implements ForwardingProfile.FeaturePostProcessor {
       kind = "glacier";
     if (kind.equals("shrub"))
       kind = "scrub";
-    // barren is passed through
 
     features.polygon(this.name())
       .setId(FeatureId.create(sf))
