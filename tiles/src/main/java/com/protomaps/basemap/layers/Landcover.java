@@ -12,18 +12,25 @@ public class Landcover implements ForwardingProfile.FeaturePostProcessor {
 
   public void processLandcover(SourceFeature sf, FeatureCollector features) {
     String kind = sf.getString("class");
-    if (kind.equals("urban"))
-      kind = "urban_area";
-    if (kind.equals("crop"))
-      kind = "farmland";
-    if (kind.equals("grass"))
-      kind = "grassland";
-    if (kind.equals("trees"))
-      kind = "forest";
-    if (kind.equals("snow"))
-      kind = "glacier";
-    if (kind.equals("shrub"))
-      kind = "scrub";
+    switch (kind) {
+      case "urban":
+        kind = "urban_area";
+        break;
+      case "crop":
+        kind = "farmland";
+        break;
+      case "grass":
+        kind = "grassland";
+        break;
+      case "trees":
+        kind = "forest";
+        break;
+      case "snow":
+        kind = "glacier";
+        break;
+      case "shrub":
+        kind = "scrub";
+    }
 
     features.polygon(this.name())
       .setId(FeatureId.create(sf))
