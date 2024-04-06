@@ -30,6 +30,7 @@ public class Landcover implements ForwardingProfile.FeaturePostProcessor {
         break;
       case "shrub":
         kind = "scrub";
+        break;
       default:
         break;
     }
