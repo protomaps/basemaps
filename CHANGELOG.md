@@ -1,3 +1,7 @@
+Tiles v3.5.0
+------
+- Add Daylight Landcover from zooms 0-7. [#154]
+
 Tiles v3.4.1
 ------
 - Improve boundaries generalization [#200]
