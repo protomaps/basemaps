@@ -7,33 +7,15 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
+import java.util.Map;
 
 public class Landcover implements ForwardingProfile.FeaturePostProcessor {
 
+  final static Map<String, String> kindMapping = Map.of("urban", "urban_area", "crop", "farmland", "grass", "grassland",
+    "trees", "forest", "snow", "glacier", "shrub", "scrub", "barren", "barren");
+
   public void processLandcover(SourceFeature sf, FeatureCollector features) {
-    String kind = sf.getString("class");
-    switch (kind) {
-      case "urban":
-        kind = "urban_area";
-        break;
-      case "crop":
-        kind = "farmland";
-        break;
-      case "grass":
-        kind = "grassland";
-        break;
-      case "trees":
-        kind = "forest";
-        break;
-      case "snow":
-        kind = "glacier";
-        break;
-      case "shrub":
-        kind = "scrub";
-        break;
-      default:
-        break;
-    }
+    String kind = kindMapping.getOrDefault(sf.getString("class"), "unknown");
 
     features.polygon(this.name())
       .setId(FeatureId.create(sf))
