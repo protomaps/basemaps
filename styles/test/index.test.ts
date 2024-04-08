@@ -6,6 +6,7 @@ import themes from "../src/themes";
 
 import "./base_layers.test";
 import "./themes.test";
+import "./custom_themes.test"
 
 const STUB = {
   version: 8,
