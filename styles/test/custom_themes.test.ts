@@ -18,7 +18,7 @@ const STUB = {
 };
 
 test("validate custom themes", () => {
-  const customTheme = themes["dark"];
+  const customTheme = themes.dark;
   STUB.layers = labelsWithCustomTheme("sourcename", customTheme);
   const errors = validateStyleMin(STUB);
   assert.deepStrictEqual([], errors);
@@ -30,12 +30,11 @@ test("validate layers with partial custom theme overrides", () => {
   STUB.layers = layersWithPartialCustomTheme(
     "sourcename",
     "dark",
-    partialTheme
+    partialTheme,
   );
   const errors = validateStyleMin(STUB);
   assert.deepStrictEqual([], errors);
-  assert.deepStrictEqual(
-    STUB.layers.find((l) => l.id == "background")["paint"],
-    { "background-color": customBackgroundColor }
-  );
+  assert.deepStrictEqual(STUB.layers.find((l) => l.id === "background").paint, {
+    "background-color": customBackgroundColor,
+  });
 });
