@@ -3,6 +3,7 @@ package com.protomaps.basemap;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
+import com.onthegomap.planetiler.util.Downloader;
 import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.layers.Boundaries;
@@ -136,7 +137,7 @@ public class Basemap extends ForwardingProfile {
       .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
         "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
-    //    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
+    Downloader.create(planetiler.config()).add("ne", neUrl, nePath).run();
     //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
     var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
