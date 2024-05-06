@@ -11,7 +11,7 @@
     "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
   },
   "dependencies": {
-    "maplibre-gl": "^3.4.1",
+    "maplibre-gl": "^4.1.3",
     "ol": "^8.1.0",
     "ol-mapbox-style": "^12.0.0",
     "ol-pmtiles": "^0.2.0",
