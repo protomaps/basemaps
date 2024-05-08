@@ -1,0 +1,11 @@
+{
+  "themes": {
+    "base":["#000000","#ffffff"]
+  },
+  "icons": {
+    "townspot-s-rev":"base",
+    "townspot-m-rev":"base",
+    "townspot-l-rev":"base",
+    "townspot-xl-rev":"base"
+  }
+}
