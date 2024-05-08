@@ -1,9 +1,6 @@
 import maplibregl from "maplibre-gl";
 import { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Map as OpenLayersMap, View } from "ol";
-import VectorTile from "ol/layer/VectorTile";
-import "ol/ol.css";
 import * as pmtiles from "pmtiles";
 import {
   FormEvent,
@@ -18,11 +15,6 @@ import { useDropzone } from "react-dropzone";
 import layers from "../../styles/src/index.ts";
 
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
-
-import { stylefunction } from "ol-mapbox-style";
-// @ts-ignore
-import { PMTilesVectorSource } from "ol-pmtiles";
-import { useGeographic } from "ol/proj";
 
 import { FileSource, PMTiles, Protocol } from "pmtiles";
 import { createHash, parseHash } from "./hash";
@@ -76,6 +68,7 @@ export const isValidPMTiles = (tiles?: string): boolean => {
 
 function getMaplibreStyle(
   theme: string,
+  localSprites: boolean,
   tiles?: string,
   npmLayers?: LayerSpecification[],
   droppedArchive?: PMTiles,
@@ -95,6 +88,13 @@ function getMaplibreStyle(
     tilesWithProtocol = tiles;
   }
   style.layers = [];
+
+  if (localSprites) {
+    // style.sprite = `${location.protocol}//${location.host}/${theme}`;
+  } else {
+    // style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v3/${theme}`;
+  }
+
   style.glyphs =
     "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
 
@@ -128,9 +128,8 @@ function getMaplibreStyle(
 }
 
 function StyleJsonPane(props: { theme: string }) {
-  // TODO: wrong structure for OpenLayers
   const stringified = JSON.stringify(
-    getMaplibreStyle(props.theme, "https://example.com/tiles.json"),
+    getMaplibreStyle(props.theme, false, "https://example.com/tiles.json"),
     null,
     4,
   );
@@ -152,6 +151,7 @@ function StyleJsonPane(props: { theme: string }) {
 
 function MapLibreView(props: {
   theme: string;
+  localSprites: boolean;
   tiles?: string;
   npmLayers: LayerSpecification[];
   droppedArchive?: PMTiles;
@@ -174,7 +174,12 @@ function MapLibreView(props: {
     const map = new maplibregl.Map({
       hash: "map",
       container: "map",
-      style: getMaplibreStyle(props.theme, props.tiles, props.npmLayers),
+      style: getMaplibreStyle(
+        props.theme,
+        props.localSprites,
+        props.tiles,
+        props.npmLayers,
+      ),
     });
 
     map.addControl(new maplibregl.NavigationControl());
@@ -218,7 +223,7 @@ function MapLibreView(props: {
       maplibregl.removeProtocol("pmtiles");
       map.remove();
     };
-  }, [props.npmLayers, props.theme, props.tiles]);
+  }, [props.npmLayers, props.theme, props.tiles, props.localSprites]);
 
   useEffect(() => {
     if (protocolRef.current) {
@@ -252,6 +257,7 @@ function MapLibreView(props: {
         mapRef.current.setStyle(
           getMaplibreStyle(
             props.theme,
+            props.localSprites,
             props.tiles,
             props.npmLayers,
             props.droppedArchive,
@@ -261,44 +267,13 @@ function MapLibreView(props: {
         );
       }
     })();
-  }, [props.tiles, props.theme, props.npmLayers, props.droppedArchive]);
-
-  return <div id="map" />;
-}
-
-// TODO: does not sync map hash state
-function OpenLayersView(props: { theme: string; tiles?: string }) {
-  useEffect(() => {
-    useGeographic();
-
-    const layer = new VectorTile({
-      declutter: true,
-      source: new PMTilesVectorSource({
-        url: "https://r2-public.protomaps.com/protomaps-sample-datasets/protomaps-basemap-opensource-20230408.pmtiles",
-        attributions: ["© OpenStreetMap"],
-      }),
-      style: null,
-    });
-
-    stylefunction(
-      layer,
-      {
-        version: "8",
-        layers: layers("protomaps", props.theme),
-        sources: { protomaps: { type: "vector" } },
-      },
-      "protomaps",
-    );
-
-    new OpenLayersMap({
-      target: "map",
-      layers: [layer],
-      view: new View({
-        center: [0, 0],
-        zoom: 0,
-      }),
-    });
-  }, [props.theme]);
+  }, [
+    props.tiles,
+    props.theme,
+    props.localSprites,
+    props.npmLayers,
+    props.droppedArchive,
+  ]);
 
   return <div id="map" />;
 }
@@ -308,8 +283,8 @@ export default function MapViewComponent() {
   const hash = parseHash(location.hash);
   const [theme, setTheme] = useState<string>(hash.theme || "light");
   const [tiles, setTiles] = useState<string | undefined>(hash.tiles);
-  const [renderer, setRenderer] = useState<string>(
-    hash.renderer || "maplibregl",
+  const [localSprites, setLocalSprites] = useState<boolean>(
+    hash.local_sprites === "true",
   );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
   const [publishedStyleVersion, setPublishedStyleVersion] = useState<
@@ -323,7 +298,7 @@ export default function MapViewComponent() {
     const record = {
       theme: theme,
       tiles: tiles,
-      renderer: renderer,
+      local_sprites: localSprites ? "true" : undefined,
       npm_version: publishedStyleVersion,
     };
     location.hash = createHash(location.hash, record);
@@ -419,10 +394,13 @@ export default function MapViewComponent() {
           <option value="grayscale">data viz (grayscale)</option>
           <option value="black">data viz (black)</option>
         </select>
-        <select onChange={(e) => setRenderer(e.target.value)} value={renderer}>
-          <option value="maplibregl">maplibregl</option>
-          <option value="openlayers">openlayers</option>
-        </select>
+        <input
+          id="localSprites"
+          type="checkbox"
+          checked={localSprites}
+          onClick={(e) => setLocalSprites(e.currentTarget.checked)}
+        />
+        <label htmlFor="localSprites">local sprites</label>
         {knownNpmVersions.length === 0 ? (
           <button type="button" onClick={loadVersionsFromNpm}>
             npm version...
@@ -455,16 +433,13 @@ export default function MapViewComponent() {
         </a>
       </nav>
       <div className="split" onKeyPress={handleKeyPress}>
-        {renderer === "maplibregl" ? (
-          <MapLibreView
-            tiles={tiles}
-            theme={theme}
-            npmLayers={npmLayers}
-            droppedArchive={droppedArchive}
-          />
-        ) : (
-          <OpenLayersView tiles={tiles} theme={theme} /> // TODO: we need to refactor ol-pmtiles to take PMTiles as argument
-        )}
+        <MapLibreView
+          tiles={tiles}
+          localSprites={localSprites}
+          theme={theme}
+          npmLayers={npmLayers}
+          droppedArchive={droppedArchive}
+        />
         {showStyleJson && <StyleJsonPane theme={theme} />}
       </div>
     </div>

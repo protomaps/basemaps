@@ -3,14 +3,29 @@ import sirv from "sirv";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 
-const serve = sirv("../tiles", { dev: true });
+const serveTiles = sirv("../tiles", { dev: true });
 
 const servePmtilesInTilesDir = () => ({
   name: "serve-pmtiles-in-tiles-dir",
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
       if (req.url.split("?")[0].endsWith(".pmtiles")) {
-        return serve(req, res);
+        return serveTiles(req, res);
+      } else {
+        next();
+      }
+    });
+  },
+});
+
+const serveSprites = sirv("../sprites/dist", { dev: true });
+
+const serveSpritesInSpritesDir = () => ({
+  name: "serve-sprites-in-sprites-dir",
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (req.url.endsWith(".png") || req.url.endsWith(".json")) {
+        return serveSprites(req, res);
       } else {
         next();
       }
@@ -20,7 +35,7 @@ const servePmtilesInTilesDir = () => ({
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), servePmtilesInTilesDir()],
+  plugins: [react(), servePmtilesInTilesDir(), serveSpritesInSpritesDir()],
   build: {
     rollupOptions: {
       input: {
