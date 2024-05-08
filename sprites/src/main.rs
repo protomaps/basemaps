@@ -306,44 +306,46 @@ fn main() {
     let mut svg_datas = Vec::new();
     extract_groups_from_svg(&args.input, &shader, &mut svg_datas);
 
-    let options = Options::default();
-    let sprites = svg_datas
-        .par_iter()
-        .map(|p| {
-            let svg = spreet::resvg::usvg::Tree::from_data(&p.1, &options).unwrap();
-            (
-                p.0.clone(),
-                sprite::generate_pixmap_from_svg(&svg, 2).unwrap(),
-            )
-        })
-        .collect::<BTreeMap<String, Pixmap>>();
+    for ratio in [1,2] {
+        let options = Options::default();
+        let sprites = svg_datas
+            .par_iter()
+            .map(|p| {
+                let svg = spreet::resvg::usvg::Tree::from_data(&p.1, &options).unwrap();
+                (
+                    p.0.clone(),
+                    sprite::generate_pixmap_from_svg(&svg, ratio).unwrap(),
+                )
+            })
+            .collect::<BTreeMap<String, Pixmap>>();
 
-    if sprites.is_empty() {
-        eprintln!("Error: no valid SVGs found in {:?}", &args.input);
-        std::process::exit(exitcode::NOINPUT);
+        if sprites.is_empty() {
+            eprintln!("Error: no valid SVGs found in {:?}", &args.input);
+            std::process::exit(exitcode::NOINPUT);
+        }
+
+        let mut spritesheet_builder = sprite::Spritesheet::build();
+        spritesheet_builder.sprites(sprites).pixel_ratio(ratio);
+        spritesheet_builder.make_unique();
+
+        // Generate sprite sheet
+        let Some(spritesheet) = spritesheet_builder.generate() else {
+            eprintln!("Error: could not pack the sprites within an area fifty times their size.");
+            std::process::exit(exitcode::DATAERR);
+        };
+
+        // Save the bitmapped spritesheet to a local PNG.
+        let file_prefix = format!("{}{}", &args.output, if ratio == 2 { "@2x" } else { "" });
+        let spritesheet_path = format!("{file_prefix}.png");
+        if let Err(e) = spritesheet.save_spritesheet(&spritesheet_path) {
+            eprintln!("Error: could not save spritesheet to {spritesheet_path} ({e})");
+            std::process::exit(exitcode::IOERR);
+        };
+
+        // Save the index file to a local JSON file with the same name as the spritesheet.
+        if let Err(e) = spritesheet.save_index(&file_prefix, true) {
+            eprintln!("Error: could not save sprite index to {file_prefix} ({e})");
+            std::process::exit(exitcode::IOERR);
+        };
     }
-
-    let mut spritesheet_builder = sprite::Spritesheet::build();
-    spritesheet_builder.sprites(sprites).pixel_ratio(2);
-    spritesheet_builder.make_unique();
-
-    // Generate sprite sheet
-    let Some(spritesheet) = spritesheet_builder.generate() else {
-        eprintln!("Error: could not pack the sprites within an area fifty times their size.");
-        std::process::exit(exitcode::DATAERR);
-    };
-
-    // Save the bitmapped spritesheet to a local PNG.
-    let file_prefix = format!("{}@2x", &args.output);
-    let spritesheet_path = format!("{file_prefix}.png");
-    if let Err(e) = spritesheet.save_spritesheet(&spritesheet_path) {
-        eprintln!("Error: could not save spritesheet to {spritesheet_path} ({e})");
-        std::process::exit(exitcode::IOERR);
-    };
-
-    // Save the index file to a local JSON file with the same name as the spritesheet.
-    if let Err(e) = spritesheet.save_index(&file_prefix, true) {
-        eprintln!("Error: could not save sprite index to {file_prefix} ({e})");
-        std::process::exit(exitcode::IOERR);
-    };
 }
