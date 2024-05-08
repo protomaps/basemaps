@@ -123,7 +123,6 @@ function getMaplibreStyle(
   } else {
     style.layers = style.layers.concat(layers("protomaps", theme));
   }
-
   return style;
 }
 
@@ -174,12 +173,7 @@ function MapLibreView(props: {
     const map = new maplibregl.Map({
       hash: "map",
       container: "map",
-      style: getMaplibreStyle(
-        props.theme,
-        props.localSprites,
-        props.tiles,
-        props.npmLayers,
-      ),
+      style: getMaplibreStyle("", false),
     });
 
     map.addControl(new maplibregl.NavigationControl());
@@ -223,7 +217,7 @@ function MapLibreView(props: {
       maplibregl.removeProtocol("pmtiles");
       map.remove();
     };
-  }, [props.npmLayers, props.theme, props.tiles, props.localSprites]);
+  }, []);
 
   useEffect(() => {
     if (protocolRef.current) {
