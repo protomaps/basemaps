@@ -1,0 +1,8 @@
+{
+  "themes": {
+    "base":["#888888","#ffffff"]
+  },
+  "icons": {
+    "townspot":"base"
+  }
+}
