@@ -398,7 +398,7 @@ export default function MapViewComponent() {
           id="localSprites"
           type="checkbox"
           checked={localSprites}
-          onClick={(e) => setLocalSprites(e.currentTarget.checked)}
+          onChange={(e) => setLocalSprites(e.currentTarget.checked)}
         />
         <label htmlFor="localSprites">local sprites</label>
         {knownNpmVersions.length === 0 ? (
