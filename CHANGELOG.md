@@ -1,3 +1,14 @@
+Styles v3.0.0
+------
+- introduce dependency on a spritesheet:
+		- example for `light` theme https://protomaps.github.io/basemaps-assets/sprites/v3/light`
+- Change townspots from separate symbol layer to sprite layer
+- Style deployments need to depend on the spritesheet assets in addition to fonts.
+
+Styles v2.0.0
+------
+- Standardize JS package.json on ES6 modules
+
 Tiles v3.5.1
 ------
 - Order landcover by kind consistently [#154]

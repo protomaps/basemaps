@@ -90,9 +90,9 @@ function getMaplibreStyle(
   style.layers = [];
 
   if (localSprites) {
-    // style.sprite = `${location.protocol}//${location.host}/${theme}`;
+    style.sprite = `${location.protocol}//${location.host}/${theme}`;
   } else {
-    // style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v3/${theme}`;
+    style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v3/${theme}`;
   }
 
   style.glyphs =
