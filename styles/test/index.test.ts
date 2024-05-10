@@ -5,6 +5,7 @@ import layers from "../src/index";
 import themes from "../src/themes";
 
 import "./base_layers.test";
+import "./custom_themes.test";
 import "./themes.test";
 
 const STUB = {
