@@ -1,3 +1,14 @@
+Styles v3.0.0
+------
+- introduce dependency on a spritesheet:
+		- example for `light` theme https://protomaps.github.io/basemaps-assets/sprites/v3/light`
+		- Style deployments need to depend on the spritesheet assets in addition to fonts.
+- Migrate town labels to single "symbol" style layer to specify linked "icon" and "text", using the new spritesheet to source the icon's image. This resolves a bug where townspot icons in the old places_locality_circle "circle" style layer were often orphaned (still displayed) even if the related text in the places_locality "symbol" style layer couldn't be placed. The circle style layer has been removed and consolidated into the symbol style layer.
+
+Styles v2.0.0
+------
+- Standardize JS package.json on ES6 modules
+
 Tiles v3.5.1
 ------
 - Order landcover by kind consistently [#154]

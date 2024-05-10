@@ -79,8 +79,6 @@ export interface Theme {
   peak_label: string;
   subplace_label: string;
   subplace_label_halo: string;
-  city_circle: string;
-  city_circle_stroke: string;
   city_label: string;
   city_label_halo: string;
   state_label: string;
@@ -169,8 +167,6 @@ export const CONTRAST: Theme = {
   peak_label: "#61bb5b",
   subplace_label: "#757d91",
   subplace_label_halo: "#ffffff",
-  city_circle: "#666666",
-  city_circle_stroke: "#ffffff",
   city_label: "#3c3c3c",
   city_label_halo: "#ffffff",
   state_label: "#777777",
@@ -259,8 +255,6 @@ export const LIGHT: Theme = {
   peak_label: "#7e9aa0",
   subplace_label: "#8f8f8f",
   subplace_label_halo: "#e0e0e0",
-  city_circle: "#ffffff",
-  city_circle_stroke: "#a3a3a3",
   city_label: "#5c5c5c",
   city_label_halo: "#e0e0e0",
   state_label: "#b3b3b3",
@@ -349,8 +343,6 @@ export const DARK: Theme = {
   peak_label: "#898080",
   subplace_label: "#525252",
   subplace_label_halo: "#1f1f1f",
-  city_circle: "#000000",
-  city_circle_stroke: "#7a7a7a",
   city_label: "#7a7a7a",
   city_label_halo: "#212121",
   state_label: "#3d3d3d",
@@ -439,8 +431,6 @@ export const WHITE: Theme = {
   peak_label: "#adadad",
   subplace_label: "#8f8f8f",
   subplace_label_halo: "#ffffff",
-  city_circle: "#ffffff",
-  city_circle_stroke: "#adadad",
   city_label: "#5c5c5c",
   city_label_halo: "#ffffff",
   state_label: "#b3b3b3",
@@ -529,8 +519,6 @@ export const GRAYSCALE: Theme = {
   peak_label: "#5c5c5c",
   subplace_label: "#7a7a7a",
   subplace_label_halo: "#cccccc",
-  city_circle: "#c2c2c2",
-  city_circle_stroke: "#7a7a7a",
   city_label: "#474747",
   city_label_halo: "#cccccc",
   state_label: "#999999",
@@ -619,8 +607,6 @@ export const BLACK: Theme = {
   peak_label: "#707070",
   subplace_label: "#5c5c5c",
   subplace_label_halo: "#141414",
-  city_circle: "#000000",
-  city_circle_stroke: "#666666",
   city_label: "#999999",
   city_label_halo: "#141414",
   state_label: "#3d3d3d",
