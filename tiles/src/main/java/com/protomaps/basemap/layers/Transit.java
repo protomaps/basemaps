@@ -24,6 +24,7 @@ public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingPr
       sf.hasTag("man_made", "pier") ||
       sf.hasTag("route", "ferry") ||
       sf.hasTag("aeroway", "runway", "taxiway")) &&
+      (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) &&
       (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
 
       int minZoom = 11;
