@@ -1,3 +1,7 @@
+Tiles v3.5.2
+------
+- Exclude buildings from `transit` layer. via @pietervdvn [#249]
+
 Styles v3.0.0
 ------
 - introduce dependency on a spritesheet:
