@@ -4,6 +4,8 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.Map;
 
+import com.protomaps.basemap.names.Script;
+
 public class NeNames {
 
   private NeNames() {}
@@ -14,6 +16,11 @@ public class NeNames {
       var key = tag.getKey();
       if (key.equals("name")) {
         feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
+
+        var script = Script.getScript(sf.getTag(key).toString());
+        if (!script.equals("LATIN") && !script.equals("GENERIC")) {
+          feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+        }
       } else if (key.startsWith("name_")) {
         feature.setAttrWithMinzoom(key.replace("_", ":"), sf.getTag(key), minZoom);
       }

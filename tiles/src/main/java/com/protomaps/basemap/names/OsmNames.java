@@ -6,6 +6,8 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Map;
 
+import com.protomaps.basemap.names.Script;
+
 public class OsmNames {
 
   private OsmNames() {}
@@ -17,6 +19,13 @@ public class OsmNames {
       // Full names of places (default and translations)
       if (key.equals("name") || key.startsWith("name:")) {
         feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
+      }
+
+      if (key.equals("name")) {
+        var script = Script.getScript(sf.getTag(key).toString());
+        if (!script.equals("LATIN") && !script.equals("GENERIC")) {
+          feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+        }
       }
     }
     return feature;
