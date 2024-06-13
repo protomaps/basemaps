@@ -13,7 +13,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 import java.util.OptionalInt;
 
-public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, ForwardingProfile.FeatureProcessor,
+public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
   ForwardingProfile.FeaturePostProcessor {
 
   @Override
@@ -170,7 +170,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor, Fo
     }
   }
 
-  @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine()) {
       // Beware coastlines and coastal waters (eg with admin borders in large estuaries)

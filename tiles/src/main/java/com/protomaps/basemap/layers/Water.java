@@ -9,7 +9,7 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import java.util.List;
 
-public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Water implements ForwardingProfile.FeaturePostProcessor {
 
   @Override
   public String name() {
@@ -78,7 +78,6 @@ public class Water implements ForwardingProfile.FeatureProcessor, ForwardingProf
     }
   }
 
-  @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("water") ||
       sf.hasTag("waterway") ||

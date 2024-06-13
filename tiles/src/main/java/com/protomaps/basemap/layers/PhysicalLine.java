@@ -9,14 +9,13 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class PhysicalLine implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class PhysicalLine implements ForwardingProfile.FeaturePostProcessor {
 
   @Override
   public String name() {
     return "physical_line";
   }
 
-  @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && !sf.canBePolygon() && (sf.hasTag("waterway") ||
       sf.hasTag("natural", "cliff")) && (!sf.hasTag("waterway", "riverbank", "reservoir"))) {

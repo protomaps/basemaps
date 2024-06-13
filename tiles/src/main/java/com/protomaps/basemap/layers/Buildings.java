@@ -14,7 +14,7 @@ import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Buildings implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Buildings implements ForwardingProfile.FeaturePostProcessor {
 
   static final String HEIGHT_KEY = "height";
   static final String MIN_HEIGHT_KEY = "height";
@@ -58,7 +58,6 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     return (int) Math.round(val / step) * step;
   }
 
-  @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && ((sf.hasTag("building") && !sf.hasTag("building", "no")) ||
       (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {

@@ -28,16 +28,16 @@ public class Basemap extends ForwardingProfile {
 
     var admin = new Boundaries();
     registerHandler(admin);
-    registerSourceHandler("osm", admin);
+    registerSourceHandler("osm", admin::processFeature);
     registerSourceHandler("ne", admin::processNe);
 
     var buildings = new Buildings();
     registerHandler(buildings);
-    registerSourceHandler("osm", buildings);
+    registerSourceHandler("osm", buildings::processFeature);
 
     var landuse = new Landuse();
     registerHandler(landuse);
-    registerSourceHandler("osm", landuse);
+    registerSourceHandler("osm", landuse::processFeature);
 
     var landcover = new Landcover();
     registerHandler(landcover);
@@ -45,37 +45,37 @@ public class Basemap extends ForwardingProfile {
 
     var natural = new Natural();
     registerHandler(natural);
-    registerSourceHandler("osm", natural);
+    registerSourceHandler("osm", natural::processFeature);
 
     var physicalLine = new PhysicalLine();
     registerHandler(physicalLine);
-    registerSourceHandler("osm", physicalLine);
+    registerSourceHandler("osm", physicalLine::processFeature);
 
     var physicalPoint = new PhysicalPoint();
     registerHandler(physicalPoint);
-    registerSourceHandler("osm", physicalPoint);
+    registerSourceHandler("osm", physicalPoint::processFeature);
     registerSourceHandler("ne", physicalPoint::processNe);
 
     var place = new Places(naturalEarthDb);
     registerHandler(place);
-    registerSourceHandler("osm", place);
+    registerSourceHandler("osm", place::processFeature);
     registerSourceHandler("ne", place::processNe);
 
     var poi = new Pois(qrankDb);
     registerHandler(poi);
-    registerSourceHandler("osm", poi);
+    registerSourceHandler("osm", poi::processFeature);
 
     var roads = new Roads();
     registerHandler(roads);
-    registerSourceHandler("osm", roads);
+    registerSourceHandler("osm", roads::processFeature);
 
     var transit = new Transit();
     registerHandler(transit);
-    registerSourceHandler("osm", transit);
+    registerSourceHandler("osm", transit::processFeature);
 
     var water = new Water();
     registerHandler(water);
-    registerSourceHandler("osm", water);
+    registerSourceHandler("osm", water::processFeature);
     registerSourceHandler("osm_water", water::processPreparedOsm);
     registerSourceHandler("ne", water::processNe);
 

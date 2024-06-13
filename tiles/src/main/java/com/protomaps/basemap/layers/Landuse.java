@@ -10,9 +10,8 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
-public class Landuse implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Landuse implements ForwardingProfile.FeaturePostProcessor {
 
-  @Override
   public void processFeature(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("aeroway", "aerodrome", "runway") ||
       sf.hasTag("area:aeroway", "taxiway", "runway") ||
