@@ -9,15 +9,14 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class Transit implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Transit implements ForwardingProfile.FeaturePostProcessor {
 
   @Override
   public String name() {
     return "transit";
   }
 
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     // todo: exclude railway stations, levels
     if (sf.canBeLine() && (sf.hasTag("railway") ||
       sf.hasTag("aerialway", "cable_car") ||

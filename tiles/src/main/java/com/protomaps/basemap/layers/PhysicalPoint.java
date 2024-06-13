@@ -12,7 +12,7 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {
 
   @Override
   public String name() {
@@ -65,8 +65,7 @@ public class PhysicalPoint implements ForwardingProfile.FeatureProcessor, Forwar
     }
   }
 
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && (sf.hasTag("place", "sea", "ocean") || sf.hasTag("natural", "peak"))) {
 
       // TODO: rank based on ele

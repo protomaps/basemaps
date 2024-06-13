@@ -14,7 +14,7 @@ import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Buildings implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Buildings implements ForwardingProfile.FeaturePostProcessor {
 
   static final String HEIGHT_KEY = "height";
   static final String MIN_HEIGHT_KEY = "height";
@@ -58,8 +58,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
     return (int) Math.round(val / step) * step;
   }
 
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && ((sf.hasTag("building") && !sf.hasTag("building", "no")) ||
       (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {
 
@@ -108,8 +107,8 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
 
     // quantize height by zoom when less than max_zoom 15 to facilitate better feature merging
     for (var item : items) {
-      if (item.attrs().containsKey(HEIGHT_KEY)) {
-        var height = (double) item.attrs().get(HEIGHT_KEY);
+      if (item.tags().containsKey(HEIGHT_KEY)) {
+        var height = (double) item.tags().get(HEIGHT_KEY);
 
         // Protected against NULL values
         if (height > 0) {
@@ -126,12 +125,12 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
             height = quantizeVal(height, 5);
           }
 
-          item.attrs().put(HEIGHT_KEY, height);
+          item.tags().put(HEIGHT_KEY, height);
         }
       }
 
-      if (item.attrs().containsKey(MIN_HEIGHT_KEY)) {
-        var minHeight = (double) item.attrs().get(MIN_HEIGHT_KEY);
+      if (item.tags().containsKey(MIN_HEIGHT_KEY)) {
+        var minHeight = (double) item.tags().get(MIN_HEIGHT_KEY);
 
         // Protected against NULL values
         if (minHeight > 0) {
@@ -147,7 +146,7 @@ public class Buildings implements ForwardingProfile.FeatureProcessor, Forwarding
             minHeight = quantizeVal(minHeight, 5);
           }
 
-          item.attrs().put(MIN_HEIGHT_KEY, minHeight);
+          item.tags().put(MIN_HEIGHT_KEY, minHeight);
         }
       }
     }

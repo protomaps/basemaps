@@ -9,15 +9,14 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
-public class Natural implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Natural implements ForwardingProfile.FeaturePostProcessor {
 
   @Override
   public String name() {
     return "natural";
   }
 
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() &&
       (sf.hasTag("natural", "wood", "glacier", "grass", "scrub", "sand", "wetland", "bare_rock") ||
         sf.hasTag("landuse", "forest", "meadow", "grass"))) {

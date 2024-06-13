@@ -15,7 +15,7 @@ import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
-public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Roads implements ForwardingProfile.FeaturePostProcessor {
 
   @Override
   public String name() {
@@ -27,8 +27,7 @@ public class Roads implements ForwardingProfile.FeatureProcessor, ForwardingProf
 
   public record Shield(String text, String network) {}
 
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
       !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
       String kind = "other";

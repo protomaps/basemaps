@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Places implements ForwardingProfile.FeatureProcessor, ForwardingProfile.FeaturePostProcessor {
+public class Places implements ForwardingProfile.FeaturePostProcessor {
 
   private NaturalEarthDb naturalEarthDb;
 
@@ -150,8 +150,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
     }
   }
 
-  @Override
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && sf.hasTag("name") &&
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
