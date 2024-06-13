@@ -16,7 +16,7 @@ public class Transit implements ForwardingProfile.FeaturePostProcessor {
     return "transit";
   }
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     // todo: exclude railway stations, levels
     if (sf.canBeLine() && (sf.hasTag("railway") ||
       sf.hasTag("aerialway", "cable_car") ||

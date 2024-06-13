@@ -170,7 +170,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
     }
   }
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine()) {
       // Beware coastlines and coastal waters (eg with admin borders in large estuaries)
       // like mouth of Columbia River between Oregon and Washington in USA

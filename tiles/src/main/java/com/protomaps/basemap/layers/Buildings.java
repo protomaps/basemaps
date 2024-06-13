@@ -58,7 +58,7 @@ public class Buildings implements ForwardingProfile.FeaturePostProcessor {
     return (int) Math.round(val / step) * step;
   }
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && ((sf.hasTag("building") && !sf.hasTag("building", "no")) ||
       (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {
 

@@ -65,7 +65,7 @@ public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {
     }
   }
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && (sf.hasTag("place", "sea", "ocean") || sf.hasTag("natural", "peak"))) {
 
       // TODO: rank based on ele

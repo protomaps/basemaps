@@ -150,7 +150,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
     }
   }
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && sf.hasTag("name") &&
       (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {

@@ -31,7 +31,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
   private static final double LOG2 = Math.log(2);
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
       sf.hasTag("amenity") ||
       sf.hasTag("attraction") ||

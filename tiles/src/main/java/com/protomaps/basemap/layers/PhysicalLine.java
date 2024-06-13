@@ -16,7 +16,7 @@ public class PhysicalLine implements ForwardingProfile.FeaturePostProcessor {
     return "physical_line";
   }
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && !sf.canBePolygon() && (sf.hasTag("waterway") ||
       sf.hasTag("natural", "cliff")) && (!sf.hasTag("waterway", "riverbank", "reservoir"))) {
       int minZoom = 12;

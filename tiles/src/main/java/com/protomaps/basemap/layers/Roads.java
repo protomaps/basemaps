@@ -27,7 +27,7 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
 
   public record Shield(String text, String network) {}
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
       !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
       String kind = "other";

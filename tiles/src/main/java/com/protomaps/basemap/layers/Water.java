@@ -78,7 +78,7 @@ public class Water implements ForwardingProfile.FeaturePostProcessor {
     }
   }
 
-  public void processFeature(SourceFeature sf, FeatureCollector features) {
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("water") ||
       sf.hasTag("waterway") ||
       sf.hasTag("natural", "water") ||
