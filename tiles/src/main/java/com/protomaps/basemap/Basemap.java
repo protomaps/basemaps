@@ -28,13 +28,16 @@ public class Basemap extends ForwardingProfile {
 
     var admin = new Boundaries();
     registerHandler(admin);
+    registerSourceHandler("osm", admin);
     registerSourceHandler("ne", admin::processNe);
 
     var buildings = new Buildings();
     registerHandler(buildings);
+    registerSourceHandler("osm", buildings);
 
     var landuse = new Landuse();
     registerHandler(landuse);
+    registerSourceHandler("osm", landuse);
 
     var landcover = new Landcover();
     registerHandler(landcover);
@@ -42,29 +45,37 @@ public class Basemap extends ForwardingProfile {
 
     var natural = new Natural();
     registerHandler(natural);
+    registerSourceHandler("osm", natural);
 
     var physicalLine = new PhysicalLine();
     registerHandler(physicalLine);
+    registerSourceHandler("osm", physicalLine);
 
     var physicalPoint = new PhysicalPoint();
     registerHandler(physicalPoint);
+    registerSourceHandler("osm", physicalPoint);
     registerSourceHandler("ne", physicalPoint::processNe);
 
     var place = new Places(naturalEarthDb);
     registerHandler(place);
+    registerSourceHandler("osm", place);
     registerSourceHandler("ne", place::processNe);
 
     var poi = new Pois(qrankDb);
     registerHandler(poi);
+    registerSourceHandler("osm", poi);
 
     var roads = new Roads();
     registerHandler(roads);
+    registerSourceHandler("osm", roads);
 
     var transit = new Transit();
     registerHandler(transit);
+    registerSourceHandler("osm", transit);
 
     var water = new Water();
     registerHandler(water);
+    registerSourceHandler("osm", water);
     registerSourceHandler("osm_water", water::processPreparedOsm);
     registerSourceHandler("ne", water::processNe);
 
