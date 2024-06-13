@@ -107,8 +107,8 @@ public class Buildings implements ForwardingProfile.FeaturePostProcessor {
 
     // quantize height by zoom when less than max_zoom 15 to facilitate better feature merging
     for (var item : items) {
-      if (item.attrs().containsKey(HEIGHT_KEY)) {
-        var height = (double) item.attrs().get(HEIGHT_KEY);
+      if (item.tags().containsKey(HEIGHT_KEY)) {
+        var height = (double) item.tags().get(HEIGHT_KEY);
 
         // Protected against NULL values
         if (height > 0) {
@@ -125,12 +125,12 @@ public class Buildings implements ForwardingProfile.FeaturePostProcessor {
             height = quantizeVal(height, 5);
           }
 
-          item.attrs().put(HEIGHT_KEY, height);
+          item.tags().put(HEIGHT_KEY, height);
         }
       }
 
-      if (item.attrs().containsKey(MIN_HEIGHT_KEY)) {
-        var minHeight = (double) item.attrs().get(MIN_HEIGHT_KEY);
+      if (item.tags().containsKey(MIN_HEIGHT_KEY)) {
+        var minHeight = (double) item.tags().get(MIN_HEIGHT_KEY);
 
         // Protected against NULL values
         if (minHeight > 0) {
@@ -146,7 +146,7 @@ public class Buildings implements ForwardingProfile.FeaturePostProcessor {
             minHeight = quantizeVal(minHeight, 5);
           }
 
-          item.attrs().put(MIN_HEIGHT_KEY, minHeight);
+          item.tags().put(MIN_HEIGHT_KEY, minHeight);
         }
       }
     }

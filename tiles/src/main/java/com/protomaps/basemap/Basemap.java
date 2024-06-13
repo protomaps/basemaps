@@ -112,11 +112,11 @@ public class Basemap extends ForwardingProfile {
       """.trim();
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     run(Arguments.fromArgsOrConfigFile(args));
   }
 
-  static void run(Arguments args) throws Exception {
+  static void run(Arguments args) {
     args = args.orElse(Arguments.of("maxzoom", 15));
 
     Path dataDir = Path.of("data");
