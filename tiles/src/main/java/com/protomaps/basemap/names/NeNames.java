@@ -4,8 +4,6 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.Map;
 
-import com.protomaps.basemap.names.Script;
-
 public class NeNames {
 
   private NeNames() {}

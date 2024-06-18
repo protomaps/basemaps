@@ -24,12 +24,10 @@ public class Script {
       }
       if (overallScript.equals("")) {
         overallScript = script;
-      }
-      else {
+      } else {
         if (script.equals(overallScript)) {
           continue;
-        }
-        else {
+        } else {
           return "MIXED";
         }
       }

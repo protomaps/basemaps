@@ -142,7 +142,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
       if (!script.equals("LATIN") && !script.equals("GENERIC")) {
         feat.setAttr("pmap:script", script);
       }
-      
+
       // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
       feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
         .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)

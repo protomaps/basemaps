@@ -6,8 +6,6 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Map;
 
-import com.protomaps.basemap.names.Script;
-
 public class OsmNames {
 
   private OsmNames() {}
