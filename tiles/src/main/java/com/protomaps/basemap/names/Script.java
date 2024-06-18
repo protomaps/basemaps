@@ -5,8 +5,8 @@ public class Script {
   private Script() {}
 
   public static String getScript(String text) {
-    if (text.length() == 0) {
-      return "";
+    if (text == null || text.length() == 0) {
+      return "GENERIC";
     }
 
     String overallScript = "";
