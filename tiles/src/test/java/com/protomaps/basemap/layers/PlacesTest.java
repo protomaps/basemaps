@@ -90,10 +90,100 @@ class PlacesTest extends LayerTest {
   @Test
   void testMinMaxLabelPopulatedPlaceNoMatch() {
     assertFeatures(12,
-      List.of(Map.of("_minzoom", 7, "pmap:kind", "locality")),
+      List.of(Map.of("_minzoom", 8, "pmap:kind", "locality")),
       process(SimpleFeature.create(
         newPoint(1, 1),
         new HashMap<>(Map.of("place", "city", "wikidata", "Q999", "name", "XX")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testLocalityPopulationOsm() {
+    assertFeatures(13,
+      List.of(Map.of("pmap:kind", "locality",
+        "pmap:kind_detail", "locality",
+        "population", 1111)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "locality", "name", "Localityville", "population", "1111")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testLocalityNoPopulationOsm() {
+    assertFeatures(14,
+      List.of(Map.of("pmap:kind", "locality",
+        "pmap:kind_detail", "locality",
+        "population", 1000)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "locality", "name", "Localityville")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testHamletOsm() {
+    assertFeatures(14,
+      List.of(Map.of("pmap:kind", "locality",
+        "pmap:kind_detail", "hamlet",
+        "population", 200)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "hamlet", "name", "Hamletville")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testIsolatedDwellingOsm() {
+    assertFeatures(14,
+      List.of(Map.of("pmap:kind", "locality",
+        "pmap:kind_detail", "isolated_dwelling",
+        "population", 100)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "isolated_dwelling", "name", "Isolatedville")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testFarmOsm() {
+    assertFeatures(14,
+      List.of(Map.of("pmap:kind", "locality",
+        "pmap:kind_detail", "farm",
+        "population", 50)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "farm", "name", "Farmville")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testAllotmentsOsm() {
+    assertFeatures(14,
+      List.of(Map.of("pmap:kind", "locality",
+        "pmap:kind_detail", "allotments",
+        "population", 1000)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "allotments", "name", "Allotmentville")),
         "osm",
         null,
         0

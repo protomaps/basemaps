@@ -152,7 +152,8 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && sf.hasTag("name") &&
-      (sf.hasTag("place", "suburb", "town", "village", "neighbourhood", "quarter", "city", "country", "state",
+      (sf.hasTag("place", "suburb", "town", "village", "locality", "hamlet",
+        "isolated_dwelling", "farm", "allotments", "neighbourhood", "quarter", "city", "country", "state",
         "province"))) {
       String kind = "other";
       int kindRank = 6;
@@ -184,7 +185,6 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
             minZoom = neAdmin0.minLabel() - NE_ZOOM_OFFSET;
             maxZoom = neAdmin0.maxLabel() - NE_ZOOM_OFFSET;
           }
-
           kindRank = 0;
           break;
         case "state":
@@ -210,7 +210,9 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
           maxZoom = 15.0f;
           kindRank = 2;
           if (population == 0) {
+            minZoom = 8.0f;
             if (place.equals("town")) {
+              minZoom = 9.0f;
               population = 10000;
             } else {
               population = 5000;
@@ -224,9 +226,67 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
           maxZoom = 15.0f;
           kindRank = 3;
           if (population == 0) {
+            minZoom = 11.0f;
             population = 2000;
           }
           break;
+        case "locality":
+          kind = "locality";
+          // This minZoom can be changed to smaller value in the NE data join step below
+          minZoom = 12.0f;
+          maxZoom = 15.0f;
+          kindRank = 3;
+          if (population == 0) {
+            minZoom = 13.0f;
+            population = 1000;
+          }
+          break;
+        case "hamlet":
+          kind = "locality";
+          // This minZoom can be changed to smaller value in the NE data join step below
+          minZoom = 12.0f;
+          maxZoom = 15.0f;
+          kindRank = 3;
+          if (population == 0) {
+            minZoom = 13.0f;
+            population = 200;
+          }
+          break;
+        case "isolated_dwelling":
+          kind = "locality";
+          // This minZoom can be changed to smaller value in the NE data join step below
+          minZoom = 13.0f;
+          maxZoom = 15.0f;
+          kindRank = 3;
+          if (population == 0) {
+            minZoom = 14.0f;
+            population = 100;
+          }
+          break;
+        case "farm":
+          kind = "locality";
+          // This minZoom can be changed to smaller value in the NE data join step below
+          minZoom = 13.0f;
+          maxZoom = 15.0f;
+          kindRank = 3;
+          if (population == 0) {
+            minZoom = 14.0f;
+            population = 50;
+          }
+          break;
+        // NOTE (nvkelso 20240617): areas outside of main population center with different postal city in Eastern Europe
+        case "allotments":
+          kind = "locality";
+          // This minZoom can be changed to smaller value in the NE data join step below
+          minZoom = 13.0f;
+          maxZoom = 15.0f;
+          kindRank = 3;
+          if (population == 0) {
+            minZoom = 14.0f;
+            population = 1000;
+          }
+          break;
+        // NOTE (nvkelso 20240617): suburb can mean locality in some countries and should be localized
         case "suburb":
           kind = "neighbourhood";
           minZoom = 11.0f;
