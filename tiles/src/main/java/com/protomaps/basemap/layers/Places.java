@@ -233,22 +233,22 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         case "locality":
           kind = "locality";
           // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 12.0f;
+          minZoom = 11.0f;
           maxZoom = 15.0f;
           kindRank = 3;
           if (population == 0) {
-            minZoom = 13.0f;
+            minZoom = 12.0f;
             population = 1000;
           }
           break;
         case "hamlet":
           kind = "locality";
           // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 12.0f;
+          minZoom = 11.0f;
           maxZoom = 15.0f;
           kindRank = 3;
           if (population == 0) {
-            minZoom = 13.0f;
+            minZoom = 12.0f;
             population = 200;
           }
           break;
