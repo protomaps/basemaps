@@ -161,7 +161,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       int themeMinZoom = 7;
       double minZoom = 12.0;
       double maxZoom = 15.0;
-      long population = 0;
+      int population = 0;
       if (sf.hasTag("population")) {
         Integer parsed = parseIntOrNull(sf.getString("population"));
         if (parsed != null) {
