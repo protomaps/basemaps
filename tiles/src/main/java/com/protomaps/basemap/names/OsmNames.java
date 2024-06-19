@@ -21,7 +21,7 @@ public class OsmNames {
 
       if (key.equals("name")) {
         var script = Script.getScript(sf.getTag(key).toString());
-        if (!script.equals("LATIN") && !script.equals("GENERIC")) {
+        if (!script.equals("Latin") && !script.equals("Generic")) {
           feature.setAttrWithMinzoom("pmap:script", script, minZoom);
         }
       }

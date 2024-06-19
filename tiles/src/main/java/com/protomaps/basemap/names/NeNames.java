@@ -16,7 +16,7 @@ public class NeNames {
         feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
 
         var script = Script.getScript(sf.getTag(key).toString());
-        if (!script.equals("LATIN") && !script.equals("GENERIC")) {
+        if (!script.equals("Latin") && !script.equals("Generic")) {
           feature.setAttrWithMinzoom("pmap:script", script, minZoom);
         }
       } else if (key.startsWith("name_")) {
