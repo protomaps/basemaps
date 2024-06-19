@@ -8,78 +8,78 @@ class ScriptTest {
 
   @Test
   void singleScript() {
-    assertEquals("LATIN", Script.getScript("Berlin"));
-    assertEquals("ARABIC", Script.getScript("دبي"));
-    assertEquals("CYRILLIC", Script.getScript("Скопје"));
-    assertEquals("HAN", Script.getScript("北京"));
-    assertEquals("ETHIOPIC", Script.getScript("አዲስ አበባ"));
-    assertEquals("ARMENIAN", Script.getScript("Երևան"));
-    assertEquals("HANGUL", Script.getScript("서울"));
-    assertEquals("GEORGIAN", Script.getScript("თბილისი"));
-    assertEquals("GREEK", Script.getScript("Αθήνα"));
-    assertEquals("MONGOLIAN", Script.getScript("ᠤᠯᠠᠭᠠᠨᠪᠠᠭᠠᠲᠤᠷ"));
-    assertEquals("DEVANAGARI", Script.getScript("काठमाडौँ"));
-    assertEquals("HEBREW", Script.getScript("תל אביב"));
-    assertEquals("KANNADA", Script.getScript("ಬೆಂಗಳೂರು"));
-    assertEquals("BENGALI", Script.getScript("ঢাকা"));
-    assertEquals("MYANMAR", Script.getScript("ရန်ကုန်"));
-    assertEquals("KHMER", Script.getScript("ភ្នំពេញ"));
-    assertEquals("LAO", Script.getScript("ປາກເຊ"));
-    assertEquals("MALAYALAM", Script.getScript("കൊല്ലം"));
-    assertEquals("GURMUKHI", Script.getScript("ਜਲੰਧਰ"));
-    assertEquals("SINHALA", Script.getScript("කොළඹ"));
-    assertEquals("TAMIL", Script.getScript("கொழும்பு"));
-    assertEquals("TELUGU", Script.getScript("హైదరాబాద్"));
-    assertEquals("THAI", Script.getScript("กรุงเทพมหานคร"));
+    assertEquals("Latin", Script.getScript("Berlin"));
+    assertEquals("Arabic", Script.getScript("دبي"));
+    assertEquals("Cyrillic", Script.getScript("Скопје"));
+    assertEquals("Han", Script.getScript("北京"));
+    assertEquals("Ethiopic", Script.getScript("አዲስ አበባ"));
+    assertEquals("Armenian", Script.getScript("Երևան"));
+    assertEquals("Hangul", Script.getScript("서울"));
+    assertEquals("Georgian", Script.getScript("თბილისი"));
+    assertEquals("Greek", Script.getScript("Αθήνα"));
+    assertEquals("Mongolian", Script.getScript("ᠤᠯᠠᠭᠠᠨᠪᠠᠭᠠᠲᠤᠷ"));
+    assertEquals("Devanagari", Script.getScript("काठमाडौँ"));
+    assertEquals("Hebrew", Script.getScript("תל אביב"));
+    assertEquals("Kannada", Script.getScript("ಬೆಂಗಳೂರು"));
+    assertEquals("Bengali", Script.getScript("ঢাকা"));
+    assertEquals("Myanmar", Script.getScript("ရန်ကုန်"));
+    assertEquals("Khmer", Script.getScript("ភ្នំពេញ"));
+    assertEquals("Lao", Script.getScript("ປາກເຊ"));
+    assertEquals("Malayalam", Script.getScript("കൊല്ലം"));
+    assertEquals("Gurmukhi", Script.getScript("ਜਲੰਧਰ"));
+    assertEquals("Sinhala", Script.getScript("කොළඹ"));
+    assertEquals("Tamil", Script.getScript("கொழும்பு"));
+    assertEquals("Telugu", Script.getScript("హైదరాబాద్"));
+    assertEquals("Thai", Script.getScript("กรุงเทพมหานคร"));
   }
 
   @Test
   void nullInput() {
-    assertEquals("GENERIC", Script.getScript(null));
+    assertEquals("Generic", Script.getScript(null));
   }
 
   @Test
   void emptyString() {
-    assertEquals("GENERIC", Script.getScript(""));
+    assertEquals("Generic", Script.getScript(""));
   }
 
   @Test
   void whitespace() {
-    assertEquals("GENERIC", Script.getScript(" "));
+    assertEquals("Generic", Script.getScript(" "));
   }
 
   @Test
   void numbers() {
-    assertEquals("GENERIC", Script.getScript("123"));
+    assertEquals("Generic", Script.getScript("123"));
   }
 
   @Test
   void punctuation() {
-    assertEquals("GENERIC", Script.getScript("!?-.,"));
+    assertEquals("Generic", Script.getScript("!?-.,"));
   }
 
   @Test
   void greekNumber() {
-    assertEquals("GREEK", Script.getScript("Αθήνα 123"));
+    assertEquals("Greek", Script.getScript("Αθήνα 123"));
   }
 
   @Test
   void latinPunctuation() {
-    assertEquals("LATIN", Script.getScript("Berlin!"));
+    assertEquals("Latin", Script.getScript("Berlin!"));
   }
 
   @Test
   void nonAsciiLatin() {
-    assertEquals("LATIN", Script.getScript("Zürich"));
+    assertEquals("Latin", Script.getScript("Zürich"));
   }
 
   @Test
   void latinGreek() {
-    assertEquals("MIXED", Script.getScript("Berlin Αθήνα"));
+    assertEquals("Mixed", Script.getScript("Berlin Αθήνα"));
   }
 
   @Test
   void devanagariTamil() {
-    assertEquals("MIXED", Script.getScript("काठमाडौँ கொழும்பு"));
+    assertEquals("Mixed", Script.getScript("काठमाडौँ கொழும்பு"));
   }
 }

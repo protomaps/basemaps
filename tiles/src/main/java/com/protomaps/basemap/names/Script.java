@@ -6,7 +6,7 @@ public class Script {
 
   public static String getScript(String text) {
     if (text == null || text.length() == 0) {
-      return "GENERIC";
+      return "Generic";
     }
 
     String overallScript = "";
@@ -28,16 +28,18 @@ public class Script {
         if (script.equals(overallScript)) {
           continue;
         } else {
-          return "MIXED";
+          return "Mixed";
         }
       }
     }
 
     if (overallScript.equals("")) {
       // all characters are in COMMON or UNKNOWN or INHERITED
-      return "GENERIC";
+      return "Generic";
     }
 
-    return overallScript;
+    String firstLetterCapitalized = overallScript.substring(0, 1).toUpperCase() + overallScript.substring(1).toLowerCase();
+
+    return firstLetterCapitalized;
   }
 }
