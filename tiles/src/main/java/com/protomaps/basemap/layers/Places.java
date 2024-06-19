@@ -139,7 +139,7 @@ public class Places implements ForwardingProfile.FeatureProcessor, ForwardingPro
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
 
       var script = Script.getScript(sf.getTag("name").toString());
-      if (!script.equals("LATIN") && !script.equals("GENERIC")) {
+      if (!script.equals("Latin") && !script.equals("Generic")) {
         feat.setAttr("pmap:script", script);
       }
 
