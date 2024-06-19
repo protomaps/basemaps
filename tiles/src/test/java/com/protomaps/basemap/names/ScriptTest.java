@@ -10,10 +10,16 @@ class ScriptTest {
   void singleScript() {
     assertEquals("Latin", Script.getScript("Berlin"));
     assertEquals("Arabic", Script.getScript("دبي"));
+    // Languages using the Cyrillic script include:
+    // BELARUSIAN, BULGARIAN, KAZAKH, KYRGYZ, MACEDONIAN, RUSSIAN,
+    // SERBIAN, UKRAINIAN
     assertEquals("Cyrillic", Script.getScript("Скопје"));
+    // Unicode does not differentiate between Han used to write simplified
+    // Chinese, traditional Chinese, Japanese, etc. See Han Unification.
     assertEquals("Han", Script.getScript("北京"));
     assertEquals("Ethiopic", Script.getScript("አዲስ አበባ"));
     assertEquals("Armenian", Script.getScript("Երևան"));
+    // Hangul is the Korean alphabet
     assertEquals("Hangul", Script.getScript("서울"));
     assertEquals("Georgian", Script.getScript("თბილისი"));
     assertEquals("Greek", Script.getScript("Αθήνα"));
@@ -31,6 +37,10 @@ class ScriptTest {
     assertEquals("Tamil", Script.getScript("கொழும்பு"));
     assertEquals("Telugu", Script.getScript("హైదరాబాద్"));
     assertEquals("Thai", Script.getScript("กรุงเทพมหานคร"));
+    // Katakana is used in Japanese
+    assertEquals("Katakana", Script.getScript("パリス"));
+    // Hiragana is used in Japanese
+    assertEquals("Hiragana", Script.getScript("さいたま"));
   }
 
   @Test
@@ -61,6 +71,11 @@ class ScriptTest {
   @Test
   void greekNumber() {
     assertEquals("Greek", Script.getScript("Αθήνα 123"));
+  }
+
+  @Test
+  void hanNumber() {
+    assertEquals("Han", Script.getScript("台北101"));
   }
 
   @Test
