@@ -9,19 +9,25 @@ import "./custom_themes.test";
 import "./themes.test";
 
 const STUB = {
-  version: 8,
-  glyphs: "https://example.com/{fontstack}/{range}.pbf",
-  sources: {
-    sourcename: {
-      type: "vector",
-    },
-  },
+	version: 8,
+	glyphs: "https://example.com/{fontstack}/{range}.pbf",
+	sources: {
+		sourcename: {
+			type: "vector",
+		},
+	},
 };
 
-test("validate all final themes", () => {
-  for (const i in themes) {
-    STUB.layers = layers("sourcename", i);
-    const errors = validateStyleMin(STUB);
-    assert.deepStrictEqual([], errors);
-  }
+test("validate all final themes", async () => {
+	for (const i in themes) {
+		STUB.layers = await layers("sourcename", i);
+		const errors = validateStyleMin(STUB);
+		assert.deepStrictEqual([], errors);
+	}
+});
+
+test("validate custom theme", async () => {
+	STUB.layers = await layers("sourcename", "./test/protomapsStyles.ts");
+	const errors = validateStyleMin(STUB);
+	assert.deepStrictEqual([], errors);
 });

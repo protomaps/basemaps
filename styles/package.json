@@ -1,47 +1,49 @@
 {
-  "name": "protomaps-themes-base",
-  "version": "3.0.1",
-  "description": "Protomaps basemap themes for MapLibre GL JS",
-  "type": "module",
-  "exports": {
-    "require":"./dist/index.cjs",
-    "default":"./dist/index.js"
-  },
-  "types": "dist/index.d.ts",
-  "source": "src/index.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "scripts": {
-    "build-iife": "esbuild src/index.ts --outfile=dist/protomaps-themes-base.js --target=es6 --global-name=protomaps_themes_base --bundle --format=iife",
-    "build-esm": "esbuild src/index.ts --outfile=dist/index.js --target=es6 --bundle --format=esm",
-    "build-cjs": "esbuild src/index.ts --outfile=dist/index.cjs --target=es6 --bundle --format=cjs",
-    "build-tsc": "tsc --declaration --emitDeclarationOnly --outdir dist",
-    "generate-layers": "tsx src/generate_layers.ts",
-    "dist-light": "mkdir -p dist/layers && npm run --silent generate-layers protomaps light > dist/layers/light.json",
-    "dist-dark": "mkdir -p dist/layers && npm run --silent generate-layers protomaps dark > dist/layers/dark.json",
-    "dist-white": "mkdir -p dist/layers && npm run --silent generate-layers protomaps white > dist/layers/white.json",
-    "dist-grayscale": "mkdir -p dist/layers && npm run --silent generate-layers protomaps grayscale > dist/layers/grayscale.json",
-    "dist-black": "mkdir -p dist/layers && npm run --silent generate-layers protomaps black > dist/layers/black.json",
-    "dist-all": "npm run dist-light && npm run dist-dark && npm run dist-white && npm run dist-grayscale && npm run dist-black",
-    "build": "npm run build-iife && npm run build-esm && npm run build-cjs && npm run build-tsc && npm run dist-all",
-    "test": "tsx test/index.test.ts",
-    "tsc": "tsc --noEmit --watch",
-    "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/protomaps/basemaps.git"
-  },
-  "author": "The Protomaps Authors",
-  "license": "BSD-3-Clause",
-  "homepage": "https://github.com/protomaps/basemaps",
-  "devDependencies": {
-    "@biomejs/biome": "^1.5.3",
-    "@maplibre/maplibre-gl-style-spec": "^19.3.1",
-    "esbuild": "^0.15.11",
-    "tsx": "^4.7.2",
-    "typescript": "^4.5.5"
-  }
+	"name": "protomaps-themes-base",
+	"version": "3.0.1",
+	"description": "Protomaps basemap themes for MapLibre GL JS",
+	"type": "module",
+	"exports": {
+		"require": "./dist/index.cjs",
+		"default": "./dist/index.js"
+	},
+	"types": "dist/index.d.ts",
+	"source": "src/index.ts",
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build-iife": "esbuild src/index.ts --outfile=dist/protomaps-themes-base.js --platform=node --target=es6 --global-name=protomaps_themes_base --bundle --format=iife",
+		"build-esm": "esbuild src/index.ts --outfile=dist/index.js --platform=node --target=es6 --bundle --format=esm",
+		"build-cjs": "esbuild src/index.ts --outfile=dist/index.cjs --platform=node --target=es6 --bundle --format=cjs",
+		"build-tsc": "tsc --declaration --emitDeclarationOnly --outdir dist",
+		"generate-layers": "tsx src/generate_layers.ts",
+		"dist-light": "mkdir -p dist/layers && npm run --silent generate-layers protomaps light > dist/layers/light.json",
+		"dist-dark": "mkdir -p dist/layers && npm run --silent generate-layers protomaps dark > dist/layers/dark.json",
+		"dist-white": "mkdir -p dist/layers && npm run --silent generate-layers protomaps white > dist/layers/white.json",
+		"dist-grayscale": "mkdir -p dist/layers && npm run --silent generate-layers protomaps grayscale > dist/layers/grayscale.json",
+		"dist-black": "mkdir -p dist/layers && npm run --silent generate-layers protomaps black > dist/layers/black.json",
+		"dist-all": "npm run dist-light && npm run dist-dark && npm run dist-white && npm run dist-grayscale && npm run dist-black",
+		"build": "npm run build-iife && npm run build-esm && npm run build-cjs && npm run build-tsc && npm run dist-all",
+		"test": "tsx test/index.test.ts",
+		"tsc": "tsc --noEmit --watch",
+		"check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/protomaps/basemaps.git"
+	},
+	"author": "The Protomaps Authors",
+	"license": "BSD-3-Clause",
+	"homepage": "https://github.com/protomaps/basemaps",
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"@maplibre/maplibre-gl-style-spec": "^19.3.1",
+		"@types/node": "^20.14.6",
+		"esbuild": "^0.15.11",
+		"jiti": "^1.21.6",
+		"tsx": "^4.7.2",
+		"typescript": "^4.5.5"
+	}
 }
