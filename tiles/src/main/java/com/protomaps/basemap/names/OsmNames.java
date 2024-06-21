@@ -18,6 +18,13 @@ public class OsmNames {
       if (key.equals("name") || key.startsWith("name:")) {
         feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
       }
+
+      if (key.equals("name")) {
+        var script = Script.getScript(sf.getTag(key).toString());
+        if (!script.equals("Latin") && !script.equals("Generic")) {
+          feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+        }
+      }
     }
     return feature;
   }

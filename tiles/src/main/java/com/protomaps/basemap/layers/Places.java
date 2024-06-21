@@ -12,6 +12,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.names.Script;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -136,6 +137,11 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         // we also set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
         // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
+
+      var script = Script.getScript(sf.getTag("name").toString());
+      if (!script.equals("Latin") && !script.equals("Generic")) {
+        feat.setAttr("pmap:script", script);
+      }
 
       // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
       feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
