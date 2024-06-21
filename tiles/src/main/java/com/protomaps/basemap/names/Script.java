@@ -38,7 +38,8 @@ public class Script {
       return "Generic";
     }
 
-    String firstLetterCapitalized = overallScript.substring(0, 1).toUpperCase() + overallScript.substring(1).toLowerCase();
+    String firstLetterCapitalized =
+      overallScript.substring(0, 1).toUpperCase() + overallScript.substring(1).toLowerCase();
 
     return firstLetterCapitalized;
   }
