@@ -41,7 +41,7 @@ public class TextEngine {
     for (int i = 0; i < deltas.length; ++i) {
       int deltaXOffset = deltas[i][0];
       int deltaXAdvance = deltas[i][1];
-      String glyphKey = PgfRegistry.getGlyphKey(index, xOffset + deltaXOffset, yOffset, xAdvance + deltaXAdvance, yAdvance);
+      String glyphKey = FontRegistry.getGlyphKey(index, xOffset + deltaXOffset, yOffset, xAdvance + deltaXAdvance, yAdvance);
       if (encoding.get(glyphKey) != null) {
         return encoding.get(glyphKey);
       }

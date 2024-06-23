@@ -58,7 +58,7 @@ public class Basemap extends ForwardingProfile {
     registerSourceHandler("osm", physicalPoint);
     registerSourceHandler("ne", physicalPoint::processNe);
 
-    var place = new Places(naturalEarthDb);
+    var place = new Places(naturalEarthDb, fontRegistry);
     registerHandler(place);
     registerSourceHandler("osm", place);
     registerSourceHandler("ne", place::processNe);
@@ -151,6 +151,7 @@ public class Basemap extends ForwardingProfile {
 
     String pgfEncodingRepoHash = "e9c03fb";
     FontRegistry fontRegistry = new FontRegistry(pgfEncodingRepoHash);
+    fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
     planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, fontRegistry)).setOutput(Path.of(area + ".pmtiles"))
       .run();
