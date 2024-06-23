@@ -19,12 +19,14 @@ import com.protomaps.basemap.layers.Pois;
 import com.protomaps.basemap.layers.Roads;
 import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
+import com.protomaps.basemap.text.FontRegistry;
+
 import java.nio.file.Path;
 
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb) {
+  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, FontRegistry fontRegistry) {
 
     var admin = new Boundaries();
     registerHandler(admin);
@@ -56,7 +58,7 @@ public class Basemap extends ForwardingProfile {
     registerSourceHandler("osm", physicalPoint::processOsm);
     registerSourceHandler("ne", physicalPoint::processNe);
 
-    var place = new Places(naturalEarthDb);
+    var place = new Places(naturalEarthDb, fontRegistry);
     registerHandler(place);
     registerSourceHandler("osm", place::processOsm);
     registerSourceHandler("ne", place::processNe);
@@ -137,7 +139,9 @@ public class Basemap extends ForwardingProfile {
       .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
         "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
-    Downloader.create(planetiler.config()).add("ne", neUrl, nePath).run();
+    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
+      // .add("pgf-encoding", "https://api.github.com/repos/wipfli/pgf-encoding/zipball/e9c03fb", sourcesDir.resolve("main.zip"))
+      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
     //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
     var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
@@ -145,7 +149,11 @@ public class Basemap extends ForwardingProfile {
     //    var qrankDb = QrankDb.fromCsv(sourcesDir.resolve("qrank.csv.gz"));
     var qrankDb = QrankDb.empty();
 
-    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb)).setOutput(Path.of(area + ".pmtiles"))
+    String pgfEncodingRepoHash = "e9c03fb";
+    FontRegistry fontRegistry = new FontRegistry(pgfEncodingRepoHash);
+    fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
+
+    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, fontRegistry)).setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
 }

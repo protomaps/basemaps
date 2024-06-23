@@ -13,6 +13,8 @@ import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.names.Script;
+import com.protomaps.basemap.text.FontRegistry;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,9 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Places implements ForwardingProfile.FeaturePostProcessor {
 
   private NaturalEarthDb naturalEarthDb;
+  private FontRegistry fontRegistry;
 
-  public Places(NaturalEarthDb naturalEarthDb) {
+  public Places(NaturalEarthDb naturalEarthDb, FontRegistry fontRegistry) {
     this.naturalEarthDb = naturalEarthDb;
+    this.fontRegistry = fontRegistry;
   }
 
   @Override
