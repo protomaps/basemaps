@@ -10,9 +10,17 @@ import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.text.FontRegistry;
+
 import java.util.List;
 
 public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {
+
+  private FontRegistry fontRegistry;
+
+  public PhysicalPoint(FontRegistry fontRegistry) {
+    this.fontRegistry = fontRegistry;
+  }
 
   @Override
   public String name() {
@@ -60,7 +68,7 @@ public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {
         // Server sort features so client label collisions are pre-sorted
         waterLabelPosition.setSortKey((int) minZoom);
 
-        NeNames.setNeNames(waterLabelPosition, sf, 0);
+        NeNames.setNeNames(waterLabelPosition, sf, 0, fontRegistry);
       }
     }
   }
@@ -99,7 +107,7 @@ public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {
       // Server sort features so client label collisions are pre-sorted
       feat.setSortKey(minZoom);
 
-      OsmNames.setOsmNames(feat, sf, 0);
+      OsmNames.setOsmNames(feat, sf, 0, fontRegistry);
     }
 
     if (sf.hasTag("name") && sf.getTag("name") != null &&
@@ -220,7 +228,7 @@ public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {
       // Server sort features so client label collisions are pre-sorted
       waterLabelPosition.setSortKey(nameMinZoom);
 
-      OsmNames.setOsmNames(waterLabelPosition, sf, 0);
+      OsmNames.setOsmNames(waterLabelPosition, sf, 0, fontRegistry);
     }
   }
 

@@ -19,21 +19,46 @@ public class TextEngine {
 
   private static Integer[][] deltas = new Integer[][]{
     {0, 0},
-
-    {1, 0},
-    {0, 1},
     {-1, 0},
+    {0, 1},
     {0, -1},
-
-    {2, 0},
-    {0, 2},
+    {1, 0},
     {-2, 0},
+    {-1, 1},
+    {-1, -1},
+    {0, 2},
     {0, -2},
-
-    {3, 0},
-    {0, 3},
+    {1, 1},
+    {1, -1},
+    {2, 0},
     {-3, 0},
-    {0, -3}
+    {-2, 1},
+    {-2, -1},
+    {-1, 2},
+    {-1, -2},
+    {0, 3},
+    {0, -3},
+    {1, 2},
+    {1, -2},
+    {2, 1},
+    {2, -1},
+    {3, 0},
+    {-4, 0},
+    {-3, 1},
+    {-3, -1},
+    {-2, 2},
+    {-2, -2},
+    {-1, 3},
+    {-1, -3},
+    {0, 4},
+    {0, -4},
+    {1, 3},
+    {1, -3},
+    {2, 2},
+    {2, -2},
+    {3, 1},
+    {3, -1},
+    {4, 0},
   };
 
   private static int codepointFromGlyph(HashMap<String, Integer> encoding, int index, int xOffset, int yOffset, int xAdvance, int yAdvance) {
@@ -109,6 +134,24 @@ public class TextEngine {
     }
 
     return segments;
+  }
+
+  public static String encodeRegisteredScripts(String text, FontRegistry fontRegistry) {
+    if (text == null || text.isEmpty()) {
+      return "";
+    }
+    List<String> segments = segment(text, fontRegistry.getScripts());
+    String encodedText = "";
+    for (String segment : segments) {
+      String script = Script.getScript(segment);
+      if (fontRegistry.getScripts().contains(script)) {
+        encodedText += TextEngine.encode(segment, fontRegistry.getFont(script), fontRegistry.getEncoding(script));
+      }
+      else {
+        encodedText += segment;
+      }
+    }
+    return encodedText;
   }
 
   public static void main(String[] args) {

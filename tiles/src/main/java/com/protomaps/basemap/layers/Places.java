@@ -14,6 +14,7 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.names.Script;
 import com.protomaps.basemap.text.FontRegistry;
+import com.protomaps.basemap.text.TextEngine;
 
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       int population = parseIntOrNull(sf.getString("pop_max"));
 
       var feat = features.point(this.name())
-        .setAttr("name", sf.getString("name"))
+        // .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", minZoom)
         // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
         .setZoomRange((int) minZoom - 1, 6)
@@ -142,10 +143,17 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
         .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
 
-      var script = Script.getScript(sf.getTag("name").toString());
+      String name = sf.getTag("name").toString();
+      var script = Script.getScript(name);
+
       if (!script.equals("Latin") && !script.equals("Generic")) {
         feat.setAttr("pmap:script", script);
+        if (fontRegistry != null && fontRegistry.getScripts().contains(script)) {
+          name = TextEngine.encodeRegisteredScripts(name, fontRegistry);
+        }
       }
+
+      feat.setAttr("name", name);
 
       // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
       feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
@@ -156,7 +164,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         feat.setAttr("wikidata", sf.getString("wikidataid"));
       }
 
-      NeNames.setNeNames(feat, sf, 0);
+      NeNames.setNeNames(feat, sf, 0, fontRegistry);
     }
   }
 
@@ -398,7 +406,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       // label grid squares will be the consistent between adjacent tiles
       feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 64));
 
-      OsmNames.setOsmNames(feat, sf, 0);
+      OsmNames.setOsmNames(feat, sf, 0, fontRegistry);
       OsmNames.setOsmRefs(feat, sf, 0);
     }
   }

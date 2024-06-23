@@ -13,9 +13,17 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.locales.CartographicLocale;
 import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.text.FontRegistry;
+
 import java.util.*;
 
 public class Roads implements ForwardingProfile.FeaturePostProcessor {
+
+  private FontRegistry fontRegistry;
+
+  public Roads(FontRegistry fontRegistry) {
+    this.fontRegistry = fontRegistry;
+  }
 
   @Override
   public String name() {
@@ -182,7 +190,7 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
       // Server sort features so client label collisions are pre-sorted
       feat.setSortKey(minZoom);
 
-      OsmNames.setOsmNames(feat, sf, minZoomNames);
+      OsmNames.setOsmNames(feat, sf, minZoomNames, fontRegistry);
     }
   }
 

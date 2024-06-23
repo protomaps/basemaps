@@ -7,9 +7,17 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.text.FontRegistry;
+
 import java.util.List;
 
 public class Transit implements ForwardingProfile.FeaturePostProcessor {
+
+  private FontRegistry fontRegistry;
+
+  public Transit(FontRegistry fontRegistry) {
+    this.fontRegistry = fontRegistry;
+  }
 
   @Override
   public String name() {
@@ -120,7 +128,7 @@ public class Transit implements ForwardingProfile.FeaturePostProcessor {
       feature.setSortKey(minZoom);
 
       // TODO: (nvkelso 20230623) This should be variable, but 12 is better than 0 for line merging
-      OsmNames.setOsmNames(feature, sf, 12);
+      OsmNames.setOsmNames(feature, sf, 12, fontRegistry);
     }
   }
 

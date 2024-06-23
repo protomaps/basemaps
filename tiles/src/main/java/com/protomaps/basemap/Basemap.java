@@ -49,11 +49,11 @@ public class Basemap extends ForwardingProfile {
     registerHandler(natural);
     registerSourceHandler("osm", natural::processOsm);
 
-    var physicalLine = new PhysicalLine();
+    var physicalLine = new PhysicalLine(fontRegistry);
     registerHandler(physicalLine);
     registerSourceHandler("osm", physicalLine::processOsm);
 
-    var physicalPoint = new PhysicalPoint();
+    var physicalPoint = new PhysicalPoint(fontRegistry);
     registerHandler(physicalPoint);
     registerSourceHandler("osm", physicalPoint::processOsm);
     registerSourceHandler("ne", physicalPoint::processNe);
@@ -63,15 +63,15 @@ public class Basemap extends ForwardingProfile {
     registerSourceHandler("osm", place::processOsm);
     registerSourceHandler("ne", place::processNe);
 
-    var poi = new Pois(qrankDb);
+    var poi = new Pois(qrankDb, fontRegistry);
     registerHandler(poi);
     registerSourceHandler("osm", poi::processOsm);
 
-    var roads = new Roads();
+    var roads = new Roads(fontRegistry);
     registerHandler(roads);
     registerSourceHandler("osm", roads::processOsm);
 
-    var transit = new Transit();
+    var transit = new Transit(fontRegistry);
     registerHandler(transit);
     registerSourceHandler("osm", transit::processOsm);
 

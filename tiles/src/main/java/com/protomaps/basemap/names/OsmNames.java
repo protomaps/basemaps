@@ -2,6 +2,9 @@ package com.protomaps.basemap.names;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.protomaps.basemap.text.FontRegistry;
+import com.protomaps.basemap.text.TextEngine;
+
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Map;
@@ -11,16 +14,21 @@ public class OsmNames {
   private OsmNames() {}
 
   public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
-    int minZoom) {
+    int minZoom, FontRegistry fontRegistry) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
+      String value = sf.getTag(key).toString();
+      var script = Script.getScript(value);
+
       // Full names of places (default and translations)
       if (key.equals("name") || key.startsWith("name:")) {
-        feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
+        if (fontRegistry != null && fontRegistry.getScripts().contains(script)) {
+          value = TextEngine.encodeRegisteredScripts(value, fontRegistry);
+        }
+        feature.setAttrWithMinzoom(key, value, minZoom);
       }
 
       if (key.equals("name")) {
-        var script = Script.getScript(sf.getTag(key).toString());
         if (!script.equals("Latin") && !script.equals("Generic")) {
           feature.setAttrWithMinzoom("pmap:script", script, minZoom);
         }

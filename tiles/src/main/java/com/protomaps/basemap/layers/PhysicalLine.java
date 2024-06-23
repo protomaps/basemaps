@@ -7,9 +7,17 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.text.FontRegistry;
+
 import java.util.List;
 
 public class PhysicalLine implements ForwardingProfile.FeaturePostProcessor {
+
+  private FontRegistry fontRegistry;
+
+  public PhysicalLine(FontRegistry fontRegistry) {
+    this.fontRegistry = fontRegistry;
+  }
 
   @Override
   public String name() {
@@ -68,7 +76,7 @@ public class PhysicalLine implements ForwardingProfile.FeaturePostProcessor {
       // Server sort features so client label collisions are pre-sorted
       feat.setSortKey(minZoom);
 
-      OsmNames.setOsmNames(feat, sf, 0);
+      OsmNames.setOsmNames(feat, sf, 0, fontRegistry);
     }
   }
 
