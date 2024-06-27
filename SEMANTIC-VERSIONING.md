@@ -66,6 +66,7 @@ Upon our version `1.0.0` release Protomaps Basemap makes the following promises 
 1. **Simplification** within `kind` **values** at zooms 16 (or max zoom) by removing `common`, `common-optional`, and `optional` **properties** by merging or other method
 1. **Change** of <= -3 (earlier) to default `min_zoom` or `max_zoom` **values** to determine when `kind` is included
 1. **Change** of >= +2 (later) to default `min_zoom` or `max_zoom` **values** to determine when `kind` is included
+1. **Change** of version of a positioned glyph font for an already included script
 
 #### MINOR version increments:
 
@@ -81,6 +82,7 @@ Upon our version `1.0.0` release Protomaps Basemap makes the following promises 
 1. **Change** of <= -2 (earlier) to `min_zoom` or `max_zoom` **values** to determine when `kind` is included
 1. **Change** of >= +1 (later) to default `min_zoom` or `max_zoom` **values** to determine when `kind` is included
 1. **Change** the maximum Tilezen zoom (currently zoom 16).
+1. **Add** new positioned glyph font script
 
 #### PATCH version increments
 
