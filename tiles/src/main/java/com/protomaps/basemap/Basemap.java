@@ -140,8 +140,8 @@ public class Basemap extends ForwardingProfile {
         "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
     Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
-      // .add("pgf-encoding", "https://api.github.com/repos/wipfli/pgf-encoding/zipball/e9c03fb", sourcesDir.resolve("main.zip"))
-      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
+      .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", sourcesDir.resolve("pgf-encoding.zip"))
+      .run();
     //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
     var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
