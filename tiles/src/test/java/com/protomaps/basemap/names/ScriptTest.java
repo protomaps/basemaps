@@ -8,7 +8,13 @@ class ScriptTest {
 
   @Test
   void singleScript() {
+    // Languages using the Latin script include:
+    // ENGLISH, FRENCH, GERMAN, ITALIAN, PORTUGUESE, SPANISH
+    // ALBANIAN, CATALAN, CZECH, DANISH, DUTCH, ESTONIAN, FINNISH, HUNGARIAN
+    // ICELANDIC, LATVIAN, NORWEGIAN, ROMANIAN, SLOVENIAN, SWEDISH, TURKISH
     assertEquals("Latin", Script.getScript("Berlin"));
+    // Languages using the Latin script include:
+    // ARABIC, FARSI, URDU
     assertEquals("Arabic", Script.getScript("دبي"));
     // Languages using the Cyrillic script include:
     // BELARUSIAN, BULGARIAN, KAZAKH, KYRGYZ, MACEDONIAN, RUSSIAN,
@@ -24,14 +30,20 @@ class ScriptTest {
     assertEquals("Georgian", Script.getScript("თბილისი"));
     assertEquals("Greek", Script.getScript("Αθήνα"));
     assertEquals("Mongolian", Script.getScript("ᠤᠯᠠᠭᠠᠨᠪᠠᠭᠠᠲᠤᠷ"));
+    // Languages using the Devanagari script include:
+    // GUJARATI, HINDI, MARATHI, NEPALI
     assertEquals("Devanagari", Script.getScript("काठमाडौँ"));
     assertEquals("Hebrew", Script.getScript("תל אביב"));
+    // Languages using the Kannada script include:
+    // KANNADA, TULU, KONKANI, KODAVA, SANKETI, BEARY
     assertEquals("Kannada", Script.getScript("ಬೆಂಗಳೂರು"));
     assertEquals("Bengali", Script.getScript("ঢাকা"));
     assertEquals("Myanmar", Script.getScript("ရန်ကုန်"));
     assertEquals("Khmer", Script.getScript("ភ្នំពេញ"));
     assertEquals("Lao", Script.getScript("ປາກເຊ"));
     assertEquals("Malayalam", Script.getScript("കൊല്ലം"));
+    // Languages using the Gurmukhi script include:
+    // PUNJABI
     assertEquals("Gurmukhi", Script.getScript("ਜਲੰਧਰ"));
     assertEquals("Sinhala", Script.getScript("කොළඹ"));
     assertEquals("Tamil", Script.getScript("கொழும்பு"));
