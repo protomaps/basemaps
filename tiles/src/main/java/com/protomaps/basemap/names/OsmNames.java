@@ -2,6 +2,8 @@ package com.protomaps.basemap.names;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.protomaps.basemap.text.FontRegistry;
+import com.protomaps.basemap.text.TextEngine;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Map;
@@ -12,19 +14,32 @@ public class OsmNames {
 
   public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
     int minZoom) {
+    FontRegistry fontRegistry = FontRegistry.getInstance();
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
-      // Full names of places (default and translations)
-      if (key.equals("name") || key.startsWith("name:")) {
-        feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
-      }
+      String value = sf.getTag(key).toString();
+      var script = Script.getScript(value);
 
       if (key.equals("name")) {
-        var script = Script.getScript(sf.getTag(key).toString());
+        feature.setAttrWithMinzoom("name", value, minZoom);
+
         if (!script.equals("Latin") && !script.equals("Generic")) {
           feature.setAttrWithMinzoom("pmap:script", script, minZoom);
         }
+
+        String encodedValue = TextEngine.encodeRegisteredScripts(value);
+        feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
       }
+
+      if (key.startsWith("name:")) {
+        feature.setAttrWithMinzoom(key, value, minZoom);
+
+        if (fontRegistry.getScripts().contains(script)) {
+          String encodedValue = TextEngine.encodeRegisteredScripts(value);
+          feature.setAttrWithMinzoom("pmap:pgf:" + key, encodedValue, minZoom);
+        }
+      }
+
     }
     return feature;
   }
