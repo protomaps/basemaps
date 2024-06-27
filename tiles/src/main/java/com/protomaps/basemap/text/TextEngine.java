@@ -136,10 +136,11 @@ public class TextEngine {
     return segments;
   }
 
-  public static String encodeRegisteredScripts(String text, FontRegistry fontRegistry) {
+  public static String encodeRegisteredScripts(String text) {
     if (text == null || text.isEmpty()) {
       return "";
     }
+    FontRegistry fontRegistry = FontRegistry.getInstance();
     List<String> segments = segment(text, fontRegistry.getScripts());
     String encodedText = "";
     for (String segment : segments) {
@@ -155,8 +156,7 @@ public class TextEngine {
   }
 
   public static void main(String[] args) {
-    String pgfEncodingRepoHash = "e9c03fb";
-    FontRegistry fontRegistry = new FontRegistry(pgfEncodingRepoHash);
+    FontRegistry fontRegistry = FontRegistry.getInstance();
 
     String name = "NotoSansDevanagari-Regular";
     String version = "1";

@@ -26,7 +26,7 @@ import java.nio.file.Path;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, FontRegistry fontRegistry) {
+  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb) {
 
     var admin = new Boundaries();
     registerHandler(admin);
@@ -49,29 +49,29 @@ public class Basemap extends ForwardingProfile {
     registerHandler(natural);
     registerSourceHandler("osm", natural::processOsm);
 
-    var physicalLine = new PhysicalLine(fontRegistry);
+    var physicalLine = new PhysicalLine();
     registerHandler(physicalLine);
     registerSourceHandler("osm", physicalLine::processOsm);
 
-    var physicalPoint = new PhysicalPoint(fontRegistry);
+    var physicalPoint = new PhysicalPoint();
     registerHandler(physicalPoint);
     registerSourceHandler("osm", physicalPoint::processOsm);
     registerSourceHandler("ne", physicalPoint::processNe);
 
-    var place = new Places(naturalEarthDb, fontRegistry);
+    var place = new Places(naturalEarthDb);
     registerHandler(place);
     registerSourceHandler("osm", place::processOsm);
     registerSourceHandler("ne", place::processNe);
 
-    var poi = new Pois(qrankDb, fontRegistry);
+    var poi = new Pois(qrankDb);
     registerHandler(poi);
     registerSourceHandler("osm", poi::processOsm);
 
-    var roads = new Roads(fontRegistry);
+    var roads = new Roads();
     registerHandler(roads);
     registerSourceHandler("osm", roads::processOsm);
 
-    var transit = new Transit(fontRegistry);
+    var transit = new Transit();
     registerHandler(transit);
     registerSourceHandler("osm", transit::processOsm);
 
@@ -149,11 +149,10 @@ public class Basemap extends ForwardingProfile {
     //    var qrankDb = QrankDb.fromCsv(sourcesDir.resolve("qrank.csv.gz"));
     var qrankDb = QrankDb.empty();
 
-    String pgfEncodingRepoHash = "e9c03fb";
-    FontRegistry fontRegistry = new FontRegistry(pgfEncodingRepoHash);
+    FontRegistry fontRegistry = FontRegistry.getInstance();
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
-    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, fontRegistry)).setOutput(Path.of(area + ".pmtiles"))
+    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb)).setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
 }

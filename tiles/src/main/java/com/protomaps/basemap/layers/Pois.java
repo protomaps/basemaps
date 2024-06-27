@@ -12,18 +12,15 @@ import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
-import com.protomaps.basemap.text.FontRegistry;
 
 import java.util.List;
 
 public class Pois implements ForwardingProfile.FeaturePostProcessor {
 
   private QrankDb qrankDb;
-  private FontRegistry fontRegistry;
 
-  public Pois(QrankDb qrankDb, FontRegistry fontRegistry) {
+  public Pois(QrankDb qrankDb) {
     this.qrankDb = qrankDb;
-    this.fontRegistry = fontRegistry;
   }
 
   @Override
@@ -483,7 +480,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
           polyLabelPosition.setAttr("pmap:kind_detail", kindDetail);
         }
 
-        OsmNames.setOsmNames(polyLabelPosition, sf, 0, fontRegistry);
+        OsmNames.setOsmNames(polyLabelPosition, sf, 0);
 
         // Server sort features so client label collisions are pre-sorted
         // NOTE: (nvkelso 20230627) This could also include other params like the name
@@ -537,7 +534,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
           pointFeature.setAttr("pmap:kind_detail", kindDetail);
         }
 
-        OsmNames.setOsmNames(pointFeature, sf, 0, fontRegistry);
+        OsmNames.setOsmNames(pointFeature, sf, 0);
 
         // Some features should only be visible at very late zooms when they don't have a name
         if (!sf.hasTag("name") && (sf.hasTag("amenity", "atm", "bbq", "bench", "bicycle_parking",

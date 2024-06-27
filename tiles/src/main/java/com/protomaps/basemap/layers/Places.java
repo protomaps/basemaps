@@ -23,11 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Places implements ForwardingProfile.FeaturePostProcessor {
 
   private NaturalEarthDb naturalEarthDb;
-  private FontRegistry fontRegistry;
 
-  public Places(NaturalEarthDb naturalEarthDb, FontRegistry fontRegistry) {
+  public Places(NaturalEarthDb naturalEarthDb) {
     this.naturalEarthDb = naturalEarthDb;
-    this.fontRegistry = fontRegistry;
   }
 
   @Override
@@ -148,8 +146,9 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
 
       if (!script.equals("Latin") && !script.equals("Generic")) {
         feat.setAttr("pmap:script", script);
-        if (fontRegistry != null && fontRegistry.getScripts().contains(script)) {
-          name = TextEngine.encodeRegisteredScripts(name, fontRegistry);
+        FontRegistry fontRegistry = FontRegistry.getInstance();
+        if (fontRegistry.getScripts().contains(script)) {
+          name = TextEngine.encodeRegisteredScripts(name);
         }
       }
 
@@ -164,7 +163,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         feat.setAttr("wikidata", sf.getString("wikidataid"));
       }
 
-      NeNames.setNeNames(feat, sf, 0, fontRegistry);
+      NeNames.setNeNames(feat, sf, 0);
     }
   }
 
@@ -406,7 +405,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       // label grid squares will be the consistent between adjacent tiles
       feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 64));
 
-      OsmNames.setOsmNames(feat, sf, 0, fontRegistry);
+      OsmNames.setOsmNames(feat, sf, 0);
       OsmNames.setOsmRefs(feat, sf, 0);
     }
   }

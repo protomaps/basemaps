@@ -12,7 +12,7 @@ public class NeNames {
   private NeNames() {}
 
   public static FeatureCollector.Feature setNeNames(FeatureCollector.Feature feature, SourceFeature sf,
-    int minZoom, FontRegistry fontRegistry) {
+    int minZoom) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       String key = tag.getKey().toString();
       if (sf.getTag(key) == null) {
@@ -29,8 +29,9 @@ public class NeNames {
         key = key.replace("_", ":");
       }
 
-      if (fontRegistry != null && fontRegistry.getScripts().contains(script)) {
-        value = TextEngine.encodeRegisteredScripts(value, fontRegistry);
+      FontRegistry fontRegistry = FontRegistry.getInstance();
+      if (fontRegistry.getScripts().contains(script)) {
+        value = TextEngine.encodeRegisteredScripts(value);
       }
 
       feature.setAttrWithMinzoom(key, value, minZoom);

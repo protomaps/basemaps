@@ -3,6 +3,7 @@ package com.protomaps.basemap.text;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.awt.FontFormatException;
 
 public class FontRegistry {
 
-  public class FontBundle {
+  private class FontBundle {
     public String name;
     public String version;
     public Font font;
@@ -30,18 +31,45 @@ public class FontRegistry {
     }
   }
 
-  HashMap<String, FontBundle> registry;
-  String pgfEncodingRepoHash;
+  private HashMap<String, FontBundle> registry;
+  private static FontRegistry instance;
 
-  public FontRegistry(String pgfEncodingRepoHash) {
+  private FontRegistry() {
     this.registry = new HashMap<String, FontBundle>();
-    this.pgfEncodingRepoHash = pgfEncodingRepoHash;
   }
 
-  private static Font readFont(String zipFilePath, String fileNameInZip) {
+  public static synchronized FontRegistry getInstance() {
+    if (instance == null) {
+      instance = new FontRegistry();
+    }
+    return instance;
+  }
+
+  private static String getTopLevelFolderName(String zipFilePath) throws IOException {
+    try (ZipFile zipFile = new ZipFile(zipFilePath)) {
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            String entryName = entry.getName();
+
+            if (entry.isDirectory() && entryName.endsWith("/")) {
+                int slashIndex = entryName.indexOf('/');
+                if (slashIndex == entryName.length() - 1) {
+                    return entryName.substring(0, slashIndex);
+                }
+            }
+        }
+    }
+    // TODO: Handle error
+    return null;
+  }
+
+  private static Font readFont(String zipFilePath, String name) {
     Font font = null;
 
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
+        String topLevelFolder = getTopLevelFolderName(zipFilePath);
+        String fileNameInZip = topLevelFolder + "/fonts/" + name + ".ttf";
         ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
 
         if (zipEntry != null) {
@@ -68,10 +96,12 @@ public class FontRegistry {
       Integer.toString(yAdvance);
   }
 
-  private static HashMap<String, Integer> readEncoding(String zipFilePath, String fileNameInZip) {
+  private static HashMap<String, Integer> readEncoding(String zipFilePath, String name, String version) {
     HashMap<String, Integer> encoding = new HashMap<String, Integer>();
 
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
+        String topLevelFolder = getTopLevelFolderName(zipFilePath);
+        String fileNameInZip = topLevelFolder + "/encoding/" + name + "-v" + version + ".csv";
         ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
 
         if (zipEntry != null) {
@@ -106,14 +136,12 @@ public class FontRegistry {
     return encoding;
   }
 
-  public void loadFontBundle(String name, String version, String script) {
+  public synchronized void loadFontBundle(String name, String version, String script) {
     String zipFilePath = "data/sources/pgf-encoding.zip";
 
-    String fontFileNameInZip = "wipfli-pgf-encoding-" + pgfEncodingRepoHash + "/fonts/" + name + ".ttf";
-    Font font = readFont(zipFilePath, fontFileNameInZip);
+    Font font = readFont(zipFilePath, name);
 
-    String encodingFileNameInZip = "wipfli-pgf-encoding-" + pgfEncodingRepoHash + "/encoding/" + name + "-v" + version + ".csv";
-    HashMap<String, Integer> encoding = readEncoding(zipFilePath, encodingFileNameInZip);
+    HashMap<String, Integer> encoding = readEncoding(zipFilePath, name, version);
 
     FontBundle fontBundle = new FontBundle(name, version, font, encoding);
 
@@ -162,8 +190,7 @@ public class FontRegistry {
 
   public static void main(String[] args) {
 
-    String pgfEncodingRepoHash = "e9c03fb";
-    FontRegistry fontRegistry = new FontRegistry(pgfEncodingRepoHash);
+    FontRegistry fontRegistry = FontRegistry.getInstance();
 
     String name = "NotoSansDevanagari-Regular";
     String version = "1";

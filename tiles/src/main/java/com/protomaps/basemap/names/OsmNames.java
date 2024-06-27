@@ -14,7 +14,8 @@ public class OsmNames {
   private OsmNames() {}
 
   public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
-    int minZoom, FontRegistry fontRegistry) {
+    int minZoom) {
+    FontRegistry fontRegistry = FontRegistry.getInstance();
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
       String value = sf.getTag(key).toString();
@@ -22,8 +23,8 @@ public class OsmNames {
 
       // Full names of places (default and translations)
       if (key.equals("name") || key.startsWith("name:")) {
-        if (fontRegistry != null && fontRegistry.getScripts().contains(script)) {
-          value = TextEngine.encodeRegisteredScripts(value, fontRegistry);
+        if (fontRegistry.getScripts().contains(script)) {
+          value = TextEngine.encodeRegisteredScripts(value);
         }
         feature.setAttrWithMinzoom(key, value, minZoom);
       }
