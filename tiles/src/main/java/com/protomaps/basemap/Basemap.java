@@ -128,7 +128,7 @@ public class Basemap extends ForwardingProfile {
       result.put("pgf:" + script.toLowerCase() + ":name", fontRegistry.getName(script));
       result.put("pgf:" + script.toLowerCase() + ":version", fontRegistry.getVersion(script));
     }
-    
+
     return result;
   }
 
@@ -157,8 +157,9 @@ public class Basemap extends ForwardingProfile {
       .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
         "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
+    Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
     Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
-      .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", sourcesDir.resolve("pgf-encoding.zip"))
+      .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
       .run();
     //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
@@ -168,6 +169,8 @@ public class Basemap extends ForwardingProfile {
     var qrankDb = QrankDb.empty();
 
     FontRegistry fontRegistry = FontRegistry.getInstance();
+    fontRegistry.setZipFilePath(pgfEncodingZip.toString());
+
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
     planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb)).setOutput(Path.of(area + ".pmtiles"))

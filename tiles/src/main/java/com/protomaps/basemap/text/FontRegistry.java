@@ -32,6 +32,7 @@ public class FontRegistry {
   }
 
   private HashMap<String, FontBundle> registry;
+  private static String zipFilePath;
   private static FontRegistry instance;
 
   private FontRegistry() {
@@ -45,7 +46,11 @@ public class FontRegistry {
     return instance;
   }
 
-  private static String getTopLevelFolderName(String zipFilePath) throws IOException {
+  private static String getTopLevelFolderName() throws IOException {
+    if (zipFilePath == null) {
+      return null;
+    }
+
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
@@ -63,11 +68,15 @@ public class FontRegistry {
     return null;
   }
 
-  private static Font readFont(String zipFilePath, String name) {
+  private static Font readFont(String name) {
     Font font = null;
 
+    if (zipFilePath == null) {
+      return null;
+    }
+
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
-        String topLevelFolder = getTopLevelFolderName(zipFilePath);
+        String topLevelFolder = getTopLevelFolderName();
         String fileNameInZip = topLevelFolder + "/fonts/" + name + ".ttf";
         ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
 
@@ -95,11 +104,15 @@ public class FontRegistry {
       Integer.toString(yAdvance);
   }
 
-  private static HashMap<String, Integer> readEncoding(String zipFilePath, String name, String version) {
+  private static HashMap<String, Integer> readEncoding(String name, String version) {
     HashMap<String, Integer> encoding = new HashMap<String, Integer>();
 
+    if (zipFilePath == null) {
+      return null;
+    }
+
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
-        String topLevelFolder = getTopLevelFolderName(zipFilePath);
+        String topLevelFolder = getTopLevelFolderName();
         String fileNameInZip = topLevelFolder + "/encoding/" + name + "-v" + version + ".csv";
         ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
 
@@ -135,12 +148,19 @@ public class FontRegistry {
     return encoding;
   }
 
+  public synchronized void setZipFilePath(String zipFilePath_) {
+    zipFilePath = zipFilePath_;
+  }
+
   public synchronized void loadFontBundle(String name, String version, String script) {
-    String zipFilePath = "data/sources/pgf-encoding.zip";
 
-    Font font = readFont(zipFilePath, name);
+    if (zipFilePath == null) {
+      return;
+    }
 
-    HashMap<String, Integer> encoding = readEncoding(zipFilePath, name, version);
+    Font font = readFont(name);
+
+    HashMap<String, Integer> encoding = readEncoding(name, version);
 
     FontBundle fontBundle = new FontBundle(name, version, font, encoding);
 
@@ -182,23 +202,4 @@ public class FontRegistry {
   public List<String> getScripts() {
     return new ArrayList<>(registry.keySet());
   }
-
-  public static void main(String[] args) {
-
-    FontRegistry fontRegistry = FontRegistry.getInstance();
-
-    String name = "NotoSansDevanagari-Regular";
-    String version = "1";
-    String script = "Devanagari";
-
-    fontRegistry.loadFontBundle(name, version, script);
-
-    System.out.println(fontRegistry.getName(script));
-    System.out.println(fontRegistry.getVersion(script));
-    System.out.println(fontRegistry.getFont(script));
-    System.out.println(fontRegistry.getEncoding(script));
-    System.out.println(fontRegistry.getScripts());
-
-  }
-
 }

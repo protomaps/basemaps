@@ -159,37 +159,4 @@ public class TextEngine {
     }
     return encodedText;
   }
-
-  public static void main(String[] args) {
-    FontRegistry fontRegistry = FontRegistry.getInstance();
-
-    String name = "NotoSansDevanagari-Regular";
-    String version = "1";
-    String script = "Devanagari";
-
-    fontRegistry.loadFontBundle(name, version, script);
-
-    String text = "काठमाडौँ";
-    Font font = fontRegistry.getFont(script);
-    HashMap<String, Integer> encoding = fontRegistry.getEncoding(script);
-
-    String textEncoded = TextEngine.encode(text, font, encoding);
-    System.out.println(textEncoded);
-
-    for (int i = 0; i < textEncoded.length(); i++) {
-        char character = textEncoded.charAt(i);
-        int charCode = (int) character;
-        System.out.println("Character: " + character + ", ASCII: " + charCode);
-    }
-
-    text = "काठमाडौँ ఇది काठमाडौँ తెలుగు hallo";
-    List<String> scripts = new ArrayList<>(fontRegistry.getScripts());
-
-    List<String> segments = segment(text, scripts);
-
-    for (String segment : segments) {
-        System.out.println(segment);
-        System.out.println(Script.getScript(segment));
-    }
-  }
 }
