@@ -13,6 +13,8 @@ public class NeNames {
 
   public static FeatureCollector.Feature setNeNames(FeatureCollector.Feature feature, SourceFeature sf,
     int minZoom) {
+    FontRegistry fontRegistry = FontRegistry.getInstance();
+
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       String key = tag.getKey().toString();
       if (sf.getTag(key) == null) {
@@ -21,20 +23,29 @@ public class NeNames {
       String value = sf.getTag(key).toString();
       var script = Script.getScript(value);
 
-      if (key.equals("name") && !script.equals("Latin") && !script.equals("Generic")) {
-        feature.setAttrWithMinzoom("pmap:script", script, minZoom);
-      }
-
       if (key.startsWith("name_")) {
         key = key.replace("_", ":");
       }
 
-      FontRegistry fontRegistry = FontRegistry.getInstance();
-      if (fontRegistry.getScripts().contains(script)) {
-        value = TextEngine.encodeRegisteredScripts(value);
+      if (key.equals("name")) {
+        feature.setAttrWithMinzoom("name", value, minZoom);
+
+        if (!script.equals("Latin") && !script.equals("Generic")) {
+          feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+        }
+
+        String encodedValue = TextEngine.encodeRegisteredScripts(value);
+        feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
       }
 
-      feature.setAttrWithMinzoom(key, value, minZoom);
+      if (key.startsWith("name:")) {
+        feature.setAttrWithMinzoom(key, value, minZoom);
+
+        if (fontRegistry.getScripts().contains(script)) {
+          String encodedValue = TextEngine.encodeRegisteredScripts(value);
+          feature.setAttrWithMinzoom("pmap:pgf:" + key, encodedValue, minZoom);
+        }
+      }
     }
 
     return feature;

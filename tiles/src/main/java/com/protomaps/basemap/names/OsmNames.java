@@ -21,19 +21,26 @@ public class OsmNames {
       String value = sf.getTag(key).toString();
       var script = Script.getScript(value);
 
-      // Full names of places (default and translations)
-      if (key.equals("name") || key.startsWith("name:")) {
-        if (fontRegistry.getScripts().contains(script)) {
-          value = TextEngine.encodeRegisteredScripts(value);
-        }
-        feature.setAttrWithMinzoom(key, value, minZoom);
-      }
-
       if (key.equals("name")) {
+        feature.setAttrWithMinzoom("name", value, minZoom);
+
         if (!script.equals("Latin") && !script.equals("Generic")) {
           feature.setAttrWithMinzoom("pmap:script", script, minZoom);
         }
+
+        String encodedValue = TextEngine.encodeRegisteredScripts(value);
+        feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
       }
+
+      if (key.startsWith("name:")) {
+        feature.setAttrWithMinzoom(key, value, minZoom);
+
+        if (fontRegistry.getScripts().contains(script)) {
+          String encodedValue = TextEngine.encodeRegisteredScripts(value);
+          feature.setAttrWithMinzoom("pmap:pgf:" + key, encodedValue, minZoom);
+        }
+      }
+
     }
     return feature;
   }

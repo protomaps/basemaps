@@ -128,7 +128,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       int population = parseIntOrNull(sf.getString("pop_max"));
 
       var feat = features.point(this.name())
-        // .setAttr("name", sf.getString("name"))
+        .setAttr("name", sf.getString("name"))
         .setAttr("pmap:min_zoom", minZoom)
         // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
         .setZoomRange((int) minZoom - 1, 6)
@@ -148,11 +148,11 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         feat.setAttr("pmap:script", script);
         FontRegistry fontRegistry = FontRegistry.getInstance();
         if (fontRegistry.getScripts().contains(script)) {
-          name = TextEngine.encodeRegisteredScripts(name);
+          String encodedName = TextEngine.encodeRegisteredScripts(name);
+          feat.setAttr("pmap:pgf:name", encodedName);
         }
       }
 
-      feat.setAttr("name", name);
 
       // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
       feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)

@@ -120,6 +120,10 @@ public class TextEngine {
       return segments;
     }
 
+    if (scripts.isEmpty()) {
+      return new ArrayList<>(List.of(text));
+    }
+
     String inner = "";
     for (String script : scripts) {
       inner += "\\p{In" + script + "}";
