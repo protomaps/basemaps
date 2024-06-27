@@ -22,6 +22,9 @@ import com.protomaps.basemap.layers.Water;
 import com.protomaps.basemap.text.FontRegistry;
 
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class Basemap extends ForwardingProfile {
@@ -112,6 +115,21 @@ public class Basemap extends ForwardingProfile {
     return """
       <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>
       """.trim();
+  }
+
+  @Override
+  public Map<String, String> extraArchiveMetadata() {
+    Map<String, String> result = new HashMap<>();
+
+    FontRegistry fontRegistry = FontRegistry.getInstance();
+    List<String> scripts = fontRegistry.getScripts();
+
+    for (String script : scripts) {
+      result.put("pgf:" + script.toLowerCase() + ":name", fontRegistry.getName(script));
+      result.put("pgf:" + script.toLowerCase() + ":version", fontRegistry.getVersion(script));
+    }
+    
+    return result;
   }
 
   public static void main(String[] args) {
