@@ -71,14 +71,15 @@ public class TextEngine {
         return encoding.get(glyphKey);
       }
     }
-    // TODO: handle error
-    System.out.println("Could not find a matching glyph for index = " + index +
+    System.err.println("Could not find a matching glyph for index = " + index +
       ", xOffset = " + xOffset +
       ", yOffset = " + yOffset +
       ", xAdvance = " + xAdvance +
-      ", yAdvance = " + yAdvance + ". Aborting...");
-    System.exit(1);
-    return 0; // did not find any matching codepoint
+      ", yAdvance = " + yAdvance + ". Inserting an exclamation mark.");
+
+    // Unicode decimal 33 == "!"
+    // Excalmation mark means did not find a matching codepoint
+    return 33;
   }
 
   public static String encode(String text, Font font, HashMap<String, Integer> encoding) {

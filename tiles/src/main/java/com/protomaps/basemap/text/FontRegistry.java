@@ -60,7 +60,6 @@ public class FontRegistry {
             }
         }
     }
-    // TODO: Handle error
     return null;
   }
 
@@ -151,8 +150,7 @@ public class FontRegistry {
   public String getName(String script) {
     FontBundle fontBundle = registry.get(script);
     if (fontBundle == null) {
-      // TODO: handle error
-      System.exit(1);
+      return null;
     }
     return fontBundle.name;
   }
@@ -160,8 +158,7 @@ public class FontRegistry {
   public String getVersion(String script) {
     FontBundle fontBundle = registry.get(script);
     if (fontBundle == null) {
-      // TODO: handle error
-      System.exit(1);
+      return null;
     }
     return fontBundle.version;
   }
@@ -169,8 +166,7 @@ public class FontRegistry {
   public Font getFont(String script) {
     FontBundle fontBundle = registry.get(script);
     if (fontBundle == null) {
-      // TODO: handle error
-      System.exit(1);
+      return null;
     }
     return fontBundle.font;
   }
@@ -178,8 +174,7 @@ public class FontRegistry {
   public HashMap<String, Integer> getEncoding(String script) {
     FontBundle fontBundle = registry.get(script);
     if (fontBundle == null) {
-      // TODO: handle error
-      System.exit(1);
+      return null;
     }
     return fontBundle.encoding;
   }
