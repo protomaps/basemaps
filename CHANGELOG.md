@@ -1,3 +1,7 @@
+Tiles v3.7.0
+------
+- Use a positioned glyph font encoding for Devanagari via @wipfli [#265]
+
 Tiles v3.6.0
 ------
 - More places kinds (port from Tilezen), refine zoom levels via @nvkelso [#259]
