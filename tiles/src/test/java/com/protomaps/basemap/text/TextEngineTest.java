@@ -37,16 +37,6 @@ public class TextEngineTest {
     assertEquals(63700, textEncoded.codePointAt(5));
     assertEquals(63393, textEncoded.codePointAt(6));
 
-    // text = "काठमाडौँ ఇది काठमाडौँ తెలుగు hallo";
-    // List<String> scripts = new ArrayList<>(fontRegistry.getScripts());
-
-    // List<String> segments = TextEngine.segment(text, scripts);
-
-    // for (String segment : segments) {
-    //     System.out.println(segment);
-    //     System.out.println(Script.getScript(segment));
-    // }
-
   }
 
   @Test
