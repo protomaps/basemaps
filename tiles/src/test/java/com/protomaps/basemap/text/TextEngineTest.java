@@ -2,17 +2,11 @@ package com.protomaps.basemap.text;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.awt.Font;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import java.awt.Font;
-
 import org.junit.jupiter.api.Test;
-
-import com.protomaps.basemap.names.Script;
 
 public class TextEngineTest {
   @Test
@@ -70,7 +64,7 @@ public class TextEngineTest {
     fontRegistry.loadFontBundle(name, version, script);
 
     List<String> scripts = fontRegistry.getScripts();
-    
+
     String text = "काठमाडौँ 123";
     List<String> segments = TextEngine.segment(text, scripts);
 

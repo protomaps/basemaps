@@ -104,7 +104,7 @@
             <eclipse>
               <version>4.21.0</version>
               <!--suppress UnresolvedMavenProperty -->
-              <file>${maven.multiModuleProjectDirectory}/eclipse-formatter.xml</file>
+              <file>${project.basedir}/eclipse-formatter.xml</file>
             </eclipse>
           </java>
           <markdown>

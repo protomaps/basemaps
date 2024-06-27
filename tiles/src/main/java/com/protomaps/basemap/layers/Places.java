@@ -15,7 +15,6 @@ import com.protomaps.basemap.names.OsmNames;
 import com.protomaps.basemap.names.Script;
 import com.protomaps.basemap.text.FontRegistry;
 import com.protomaps.basemap.text.TextEngine;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

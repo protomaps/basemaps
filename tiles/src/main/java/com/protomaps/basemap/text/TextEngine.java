@@ -1,18 +1,15 @@
 package com.protomaps.basemap.text;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.protomaps.basemap.names.Script;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.font.GlyphMetrics;
-
+import java.awt.font.GlyphVector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.protomaps.basemap.names.Script;
 
 
 public class TextEngine {
@@ -61,12 +58,14 @@ public class TextEngine {
     {4, 0},
   };
 
-  private static int codepointFromGlyph(HashMap<String, Integer> encoding, int index, int xOffset, int yOffset, int xAdvance, int yAdvance) {
+  private static int codepointFromGlyph(HashMap<String, Integer> encoding, int index, int xOffset, int yOffset,
+    int xAdvance, int yAdvance) {
 
     for (int i = 0; i < deltas.length; ++i) {
       int deltaXOffset = deltas[i][0];
       int deltaXAdvance = deltas[i][1];
-      String glyphKey = FontRegistry.getGlyphKey(index, xOffset + deltaXOffset, yOffset, xAdvance + deltaXAdvance, yAdvance);
+      String glyphKey =
+        FontRegistry.getGlyphKey(index, xOffset + deltaXOffset, yOffset, xAdvance + deltaXAdvance, yAdvance);
       if (encoding.get(glyphKey) != null) {
         return encoding.get(glyphKey);
       }
@@ -152,8 +151,7 @@ public class TextEngine {
       String script = Script.getScript(segment);
       if (fontRegistry.getScripts().contains(script)) {
         encodedText += TextEngine.encode(segment, fontRegistry.getFont(script), fontRegistry.getEncoding(script));
-      }
-      else {
+      } else {
         encodedText += segment;
       }
     }

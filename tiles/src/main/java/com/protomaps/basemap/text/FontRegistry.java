@@ -1,19 +1,17 @@
 package com.protomaps.basemap.text;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Enumeration;
-
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import java.awt.Font;
-import java.awt.FontFormatException;
 
 public class FontRegistry {
 
@@ -52,18 +50,18 @@ public class FontRegistry {
     }
 
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            String entryName = entry.getName();
+      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = entries.nextElement();
+        String entryName = entry.getName();
 
-            if (entry.isDirectory() && entryName.endsWith("/")) {
-                int slashIndex = entryName.indexOf('/');
-                if (slashIndex == entryName.length() - 1) {
-                    return entryName.substring(0, slashIndex);
-                }
-            }
+        if (entry.isDirectory() && entryName.endsWith("/")) {
+          int slashIndex = entryName.indexOf('/');
+          if (slashIndex == entryName.length() - 1) {
+            return entryName.substring(0, slashIndex);
+          }
         }
+      }
     }
     return null;
   }
@@ -76,21 +74,21 @@ public class FontRegistry {
     }
 
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
-        String topLevelFolder = getTopLevelFolderName();
-        String fileNameInZip = topLevelFolder + "/fonts/" + name + ".ttf";
-        ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
+      String topLevelFolder = getTopLevelFolderName();
+      String fileNameInZip = topLevelFolder + "/fonts/" + name + ".ttf";
+      ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
 
-        if (zipEntry != null) {
-            try (InputStream inputStream = zipFile.getInputStream(zipEntry)) {
-              font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            }
-        } else {
-            System.out.println("readFont(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
-            System.exit(1);
+      if (zipEntry != null) {
+        try (InputStream inputStream = zipFile.getInputStream(zipEntry)) {
+          font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
         }
-    } catch (IOException | FontFormatException e) {
-        e.printStackTrace();
+      } else {
+        System.out.println("readFont(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
         System.exit(1);
+      }
+    } catch (IOException | FontFormatException e) {
+      e.printStackTrace();
+      System.exit(1);
     }
 
     return font;
@@ -112,37 +110,37 @@ public class FontRegistry {
     }
 
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
-        String topLevelFolder = getTopLevelFolderName();
-        String fileNameInZip = topLevelFolder + "/encoding/" + name + "-v" + version + ".csv";
-        ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
+      String topLevelFolder = getTopLevelFolderName();
+      String fileNameInZip = topLevelFolder + "/encoding/" + name + "-v" + version + ".csv";
+      ZipEntry zipEntry = zipFile.getEntry(fileNameInZip);
 
-        if (zipEntry != null) {
-            try (InputStream inputStream = zipFile.getInputStream(zipEntry)) {
-              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-              reader.readLine(); // skip header
-              String line = reader.readLine();
-              while (line != null) {
-                String[] parts = line.split(",");
+      if (zipEntry != null) {
+        try (InputStream inputStream = zipFile.getInputStream(zipEntry)) {
+          BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+          reader.readLine(); // skip header
+          String line = reader.readLine();
+          while (line != null) {
+            String[] parts = line.split(",");
 
-                int index = Integer.parseInt(parts[0].trim());
-                int xOffset = Integer.parseInt(parts[1].trim());
-                int yOffset = Integer.parseInt(parts[2].trim());
-                int xAdvance = Integer.parseInt(parts[3].trim());
-                int yAdvance = Integer.parseInt(parts[4].trim());
-                int codepoint = Integer.parseInt(parts[5].trim());
+            int index = Integer.parseInt(parts[0].trim());
+            int xOffset = Integer.parseInt(parts[1].trim());
+            int yOffset = Integer.parseInt(parts[2].trim());
+            int xAdvance = Integer.parseInt(parts[3].trim());
+            int yAdvance = Integer.parseInt(parts[4].trim());
+            int codepoint = Integer.parseInt(parts[5].trim());
 
-                String key = getGlyphKey(index, xOffset, yOffset, xAdvance, yAdvance);
-                encoding.put(key, codepoint);
-                line = reader.readLine();
-              }
-            }
-        } else {
-            System.out.println("readEncoding(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
-            System.exit(1);
+            String key = getGlyphKey(index, xOffset, yOffset, xAdvance, yAdvance);
+            encoding.put(key, codepoint);
+            line = reader.readLine();
+          }
         }
-    } catch (IOException e) {
-        e.printStackTrace();
+      } else {
+        System.out.println("readEncoding(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
         System.exit(1);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.exit(1);
     }
 
     return encoding;

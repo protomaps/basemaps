@@ -10,7 +10,6 @@ import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
-
 import java.util.List;
 
 public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {

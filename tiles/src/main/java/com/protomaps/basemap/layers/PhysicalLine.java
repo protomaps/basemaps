@@ -7,7 +7,6 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
-
 import java.util.List;
 
 public class PhysicalLine implements ForwardingProfile.FeaturePostProcessor {

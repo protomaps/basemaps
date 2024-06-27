@@ -4,7 +4,6 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.text.FontRegistry;
 import com.protomaps.basemap.text.TextEngine;
-
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Map;

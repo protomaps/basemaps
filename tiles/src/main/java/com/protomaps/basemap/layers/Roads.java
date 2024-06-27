@@ -13,7 +13,6 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.locales.CartographicLocale;
 import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
-
 import java.util.*;
 
 public class Roads implements ForwardingProfile.FeaturePostProcessor {

@@ -12,7 +12,6 @@ import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
-
 import java.util.List;
 
 public class Pois implements ForwardingProfile.FeaturePostProcessor {

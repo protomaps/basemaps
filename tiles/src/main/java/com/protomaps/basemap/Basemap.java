@@ -20,11 +20,10 @@ import com.protomaps.basemap.layers.Roads;
 import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
 import com.protomaps.basemap.text.FontRegistry;
-
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Basemap extends ForwardingProfile {
