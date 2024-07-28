@@ -7,3 +7,11 @@ This only generates the `layers` key of a style; you'll assemble `source`, `glyp
 ```
 npm run generate-layers protomaps light
 ```
+
+## Generate JSON style
+
+To generate a full style.json file, run:
+
+```
+npm run --silent generate-style protomaps light https://example.com/your-tilejson-url.json > style.json
+```
