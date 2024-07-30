@@ -1,3 +1,7 @@
+Styles v3.1.0
+------
+- change to `tsup` for building ESM/CJS/IIFE outputs via @iwpnd [#231]
+
 Tiles v3.7.0
 ------
 - Use a positioned glyph font encoding for Devanagari via @wipfli [#265]
