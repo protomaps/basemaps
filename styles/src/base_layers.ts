@@ -1,5 +1,6 @@
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { Theme } from "./themes";
+import { places_locality_text_field } from "./langugage";
 
 export function nolabels_layers(
   source: string,
@@ -1816,7 +1817,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       layout: {
         "icon-image": ["step", ["zoom"], "townspot", 8, ""],
         "icon-size": 0.7,
-        "text-field": "{name}",
+        "text-field": places_locality_text_field("hi", "Devanagari"),
         "text-font": [
           "case",
           ["<=", ["get", "pmap:min_zoom"], 5],
