@@ -92,6 +92,10 @@ public class Water implements ForwardingProfile.FeaturePostProcessor {
       // coalesce values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
+
+        if (sf.hasTag("amenity", "fountain")) {
+          kind = "fountain";
+        }
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
           kindDetail = sf.getString("water");
 

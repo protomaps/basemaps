@@ -21,4 +21,17 @@ class WaterTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void kindFountain() {
+    assertFeatures(15,
+      List.of(Map.of("pmap:kind", "fountain")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("natural", "water", "amenity", "fountain")),
+        "osm",
+        null,
+        0
+      )));
+  }
 }
