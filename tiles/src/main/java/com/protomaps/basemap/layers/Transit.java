@@ -86,13 +86,6 @@ public class Transit implements ForwardingProfile.FeaturePostProcessor {
         .setAttr("ref", sf.getString("ref"))
         .setAttr("route", sf.getString("route"))
         .setAttr("service", sf.getString("service"))
-        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-        //                      If an explicate value is needed it should bea kind, or included in kind_detail
-        .setAttr("aerialway", sf.getString("aerialway"))
-        .setAttr("aeroway", sf.getString("aeroway"))
-        .setAttr("highspeed", sf.getString("highspeed"))
-        .setAttr("man_made", sf.getString("pier"))
-        .setAttr("railway", sf.getString("railway"))
         .setZoomRange(minZoom, 15);
 
       // Core Tilezen schema properties
