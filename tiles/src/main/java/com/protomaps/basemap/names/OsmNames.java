@@ -28,6 +28,7 @@ public class OsmNames {
     "fa", // Persian
     "fi", // Finnish
     "fr", // French
+    "ga", // Irish
     "el", // Greek
     "he", // Hebrew
     "hi", // Hindi
