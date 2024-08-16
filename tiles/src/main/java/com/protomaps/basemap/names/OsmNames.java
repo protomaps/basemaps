@@ -6,11 +6,51 @@ import com.protomaps.basemap.text.FontRegistry;
 import com.protomaps.basemap.text.TextEngine;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class OsmNames {
 
   private OsmNames() {}
+
+  private static final String[] ALLOWED_LANGS = new String[]{
+    "ar", // Arabic
+    "bn", // Bengali
+    "de", // German
+    "en", // English
+    "es", // Spanish
+    "fa", // Persian
+    "fr", // French
+    "el", // Greek
+    "he", // Hebrew
+    "hi", // Hindi
+    "hu", // Hungarian
+    "id", // Indonesian
+    "it", // Italian
+    "ja", // Japanese
+    "ko", // Korean
+    "nl", // Dutch
+    "pl", // Polish
+    "pt", // Portuguese
+    "ru", // Russian
+    "sv", // Swedish
+    "tr", // Turkish
+    "uk", // Ukrainian
+    "ur", // Urdu
+    "vi", // Vietnamese
+    "zh", // Chinese (General)
+    "zh-Hans", // Chinese (Simplified)
+    "zh-Hant" // Chinese (Traditional)
+  };
+
+  private static final Set<String> ALLOWED_LANG_SET =
+    new HashSet<>(Stream.of(ALLOWED_LANGS).map(s -> "name:" + s).toList());
+
+  public static boolean isAllowed(String osmKey) {
+    return ALLOWED_LANG_SET.contains(osmKey);
+  }
 
   public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
     int minZoom) {
@@ -31,7 +71,7 @@ public class OsmNames {
         feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
       }
 
-      if (key.startsWith("name:")) {
+      if (isAllowed(key)) {
         feature.setAttrWithMinzoom(key, value, minZoom);
 
         if (fontRegistry.getScripts().contains(script)) {
