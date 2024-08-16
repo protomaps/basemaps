@@ -24,6 +24,7 @@ public class OsmNames {
     "el", // Greek
     "en", // English
     "es", // Spanish
+    "et", // Estonian
     "fa", // Persian
     "fr", // French
     "el", // Greek
