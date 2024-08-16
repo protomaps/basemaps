@@ -37,6 +37,8 @@ public class OsmNames {
     "it", // Italian
     "ja", // Japanese
     "ko", // Korean
+    "lt", // Lithuanian
+    "lv", // Latvian
     "ne", // Nepali
     "nl", // Dutch
     "mr", // Marathi
