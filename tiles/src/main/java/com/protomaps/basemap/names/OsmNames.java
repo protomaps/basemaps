@@ -28,6 +28,7 @@ public class OsmNames {
     "el", // Greek
     "he", // Hebrew
     "hi", // Hindi
+    "hr", // Croatian
     "hu", // Hungarian
     "id", // Indonesian
     "it", // Italian
