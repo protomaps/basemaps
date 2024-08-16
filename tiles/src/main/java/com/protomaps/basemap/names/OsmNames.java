@@ -17,7 +17,10 @@ public class OsmNames {
 
   private static final String[] ALLOWED_LANGS = new String[]{
     "ar", // Arabic
+    "bg", // Bulgarian
+    "da", // Danish
     "de", // German
+    "el", // Greek
     "en", // English
     "es", // Spanish
     "fa", // Persian
