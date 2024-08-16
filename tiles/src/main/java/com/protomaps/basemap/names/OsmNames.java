@@ -47,6 +47,8 @@ public class OsmNames {
     "pt", // Portuguese
     "ro", // Romanian
     "ru", // Russian
+    "sk", // Slovak
+    "sl", // Slovenian
     "sv", // Swedish
     "tr", // Turkish
     "uk", // Ukrainian
