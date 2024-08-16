@@ -30,6 +30,7 @@ public class OsmNames {
     "it", // Italian
     "ja", // Japanese
     "ko", // Korean
+    "ne", // Nepali
     "nl", // Dutch
     "pl", // Polish
     "pt", // Portuguese
