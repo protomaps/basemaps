@@ -41,6 +41,7 @@ public class OsmNames {
     "lv", // Latvian
     "ne", // Nepali
     "nl", // Dutch
+    "no", // Norwegian
     "mr", // Marathi
     "mt", // Maltese
     "pl", // Polish
