@@ -1,6 +1,6 @@
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { Theme } from "./themes";
-import { places_locality_text_field } from "./langugage";
+import { places_locality_text_field } from "./language";
 
 export function nolabels_layers(
   source: string,
