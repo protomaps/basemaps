@@ -187,15 +187,6 @@ public class PhysicalPoint implements ForwardingProfile.FeaturePostProcessor {
         // predictable client-side label collisions
         // 512 px zooms versus 256 px logical zooms
         .setAttr("pmap:min_zoom", nameMinZoom + 1)
-
-        // Core OSM tags for different kinds of places
-        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-        //                      If an explicate value is needed it should bea kind, or included in kind_detail
-        .setAttr("natural", sf.getString("natural"))
-        .setAttr("landuse", sf.getString("landuse"))
-        .setAttr("leisure", sf.getString("leisure"))
-        .setAttr("water", sf.getString("water"))
-        .setAttr("waterway", sf.getString("waterway"))
         // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)

@@ -31,11 +31,6 @@ public class Natural implements ForwardingProfile.FeaturePostProcessor {
         //.setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("pmap:kind", kind)
-        // Core OSM tags for different kinds of places
-        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-        //                      If an explicate value is needed it should bea kind, or included in kind_detail
-        .setAttr("natural", sf.getString("natural"))
-        .setAttr("landuse", sf.getString("landuse"))
         // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
         //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)

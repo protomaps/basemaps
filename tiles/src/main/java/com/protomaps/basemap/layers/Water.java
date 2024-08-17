@@ -138,13 +138,6 @@ public class Water implements ForwardingProfile.FeaturePostProcessor {
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
-        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-        //                      If an explicate value is needed it should bea kind, or included in kind_detail
-        .setAttr("natural", sf.getString("natural"))
-        .setAttr("landuse", sf.getString("landuse"))
-        .setAttr("leisure", sf.getString("leisure"))
-        .setAttr("water", sf.getString("water"))
-        .setAttr("waterway", sf.getString("waterway"))
         .setZoomRange(6, 15)
         .setMinPixelSize(1.0)
         .setBufferPixels(8);
