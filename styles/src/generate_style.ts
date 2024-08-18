@@ -9,7 +9,10 @@ if (process.argv.length < 3) {
 }
 const args = process.argv.slice(2);
 
-const layers = i(args[0], args[1]);
+const lang = 'hi';
+const script = 'Devanagari';
+
+const layers = i(args[0], args[1], lang, script);
 
 const style = {
   "version": 8,

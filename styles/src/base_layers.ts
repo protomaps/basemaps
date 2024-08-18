@@ -1,6 +1,6 @@
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { Theme } from "./themes";
-import { places_locality_text_field } from "./language";
+import { get_country_name, get_multiline_name } from "./language";
 
 export function nolabels_layers(
   source: string,
@@ -1635,7 +1635,12 @@ export function nolabels_layers(
   ];
 }
 
-export function labels_layers(source: string, t: Theme): LayerSpecification[] {
+export function labels_layers(
+  source: string, 
+  t: Theme,
+  lang: string,
+  script: string
+): LayerSpecification[] {
   return [
     {
       id: "physical_line_waterway_label",
@@ -1647,7 +1652,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       layout: {
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
-        "text-field": ["get", "name"],
+        "text-field": get_multiline_name(lang, script),
         "text-size": 12,
         "text-letter-spacing": 0.3,
       },
@@ -1663,7 +1668,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       filter: ["any", ["==", "pmap:kind", "peak"]],
       layout: {
         "text-font": ["Noto Sans Italic"],
-        "text-field": ["get", "name"],
+        "text-field": get_multiline_name(lang, script),
         "text-size": ["interpolate", ["linear"], ["zoom"], 10, 8, 16, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
@@ -1684,7 +1689,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
-        "text-field": ["get", "name"],
+        "text-field": get_multiline_name(lang, script),
         "text-size": 12,
       },
       paint: {
@@ -1714,7 +1719,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       ],
       layout: {
         "text-font": ["Noto Sans Medium"],
-        "text-field": ["get", "name"],
+        "text-field": get_multiline_name(lang, script),
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 10, 10, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
@@ -1732,7 +1737,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       filter: ["any", ["in", "pmap:kind", "lake", "water"]],
       layout: {
         "text-font": ["Noto Sans Medium"],
-        "text-field": ["get", "name"],
+        "text-field": get_multiline_name(lang, script),
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 0, 6, 12, 10, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
@@ -1755,7 +1760,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
-        "text-field": ["get", "name"],
+        "text-field": get_multiline_name(lang, script),
         "text-size": 12,
       },
       paint: {
@@ -1772,7 +1777,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       filter: ["==", "pmap:kind", "neighbourhood"],
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
-        "text-field": "{name}",
+        "text-field": get_multiline_name(lang, script),
         "text-font": ["Noto Sans Regular"],
         "text-max-width": 7,
         "text-letter-spacing": 0.1,
@@ -1817,7 +1822,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       layout: {
         "icon-image": ["step", ["zoom"], "townspot", 8, ""],
         "icon-size": 0.7,
-        "text-field": places_locality_text_field("hi", "Devanagari"),
+        "text-field": get_multiline_name(lang, script),
         "text-font": [
           "case",
           ["<=", ["get", "pmap:min_zoom"], 5],
@@ -1931,7 +1936,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
           ["zoom"],
           ["get", "name:short"],
           6,
-          ["get", "name"],
+          get_multiline_name(lang, script),
         ],
         "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 7, 16],
@@ -1953,7 +1958,7 @@ export function labels_layers(source: string, t: Theme): LayerSpecification[] {
       filter: ["==", "pmap:kind", "country"],
       layout: {
         "symbol-sort-key": ["get", "pmap:min_zoom"],
-        "text-field": "{name}",
+        "text-field": get_country_name(lang, script),
         "text-font": ["Noto Sans Medium"],
         "text-size": [
           "interpolate",

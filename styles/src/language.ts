@@ -35,10 +35,37 @@ function get_font_formatting(script: string) {
     }
 }
 
-export function places_locality_text_field(
+export function get_country_name(lang: string, script: string) {
+    let name_prefix;
+    if (script === 'Devanagari') {
+        name_prefix = 'pmap:pgf:';
+    }
+    else {
+        name_prefix = '';
+    }
+    return [
+        "format",
+        [
+            "coalesce",
+            ["get", `${name_prefix}name:${lang}`],
+            ["get", "name:en"]
+        ],
+        get_font_formatting(script)
+    ]
+}
+
+export function get_multiline_name(
     lang: string,
     script: string
 ) {
+    let name_prefix;
+    if (script === 'Devanagari') {
+        name_prefix = 'pmap:pgf:';
+    }
+    else {
+        name_prefix = '';
+    }
+
     const result = [
         "case",
         [
@@ -56,8 +83,8 @@ export function places_locality_text_field(
                 "format",
                 [
                     "coalesce",
-                    ["get", `pmap:pgf:name:${lang}`],
-                    ["get", "pmap:pgf:name:en"] // Always fallback to English 
+                    ["get", `${name_prefix}name:${lang}`],
+                    ["get", "name:en"] // Always fallback to English 
                 ],
                 get_font_formatting(script),
                 "\n",
@@ -66,13 +93,13 @@ export function places_locality_text_field(
                     "case",
                     [
                         "all",
-                        ["!", ["has", `pmap:pgf:name:${lang}`]],
-                        ["has", "pmap:pgf:name:en"],
+                        ["!", ["has", `${name_prefix}name:${lang}`]],
+                        ["has", "name:en"],
                         ["!", ["has", "pmap:script"]]
                     ],
                     // We did fallback to English in the first line and `name` is Latin
                     "",
-                    ["get", "pmap:pgf:name"]
+                    ["get", "name"]
                 ],
                 {
                     "text-font": [
@@ -88,8 +115,8 @@ export function places_locality_text_field(
                 "format",
                 [
                     "coalesce",
-                    ["get", `pmap:pgf:name:${lang}`],
-                    ["get", "pmap:pgf:name"]
+                    ["get", `${name_prefix}name:${lang}`],
+                    ["get", "pmap:name"]
                 ],
                 get_font_formatting(script)
             ]
@@ -111,7 +138,7 @@ export function places_locality_text_field(
             // Both `name` and `name2` are not in the target script
             [
                 "format",
-                ["get", `pmap:pgf:name:${lang}`],
+                ["get", `${name_prefix}name:${lang}`],
                 get_font_formatting(script),
                 "\n",
                 {},
@@ -129,7 +156,7 @@ export function places_locality_text_field(
                     "format",
                     [
                         "coalesce",
-                        ["get", `pmap:pgf:name:${lang}`],
+                        ["get", `${name_prefix}name:${lang}`],
                         ["get", "pmap:pgf:name"]
                     ],
                     get_font_formatting(script),
@@ -142,7 +169,7 @@ export function places_locality_text_field(
                     "format",
                     [
                         "coalesce",
-                        ["get", `pmap:pgf:name:${lang}`],
+                        ["get", `${name_prefix}name:${lang}`],
                         ["get", "pmap:pgf:name2"]
                     ],
                     get_font_formatting(script),
@@ -164,7 +191,7 @@ export function places_locality_text_field(
             // All three `name`, `name2`, and `name3` are not in the target script
             [
                 "format",
-                ["get", `pmap:pgf:name:${lang}`],
+                ["get", `${name_prefix}name:${lang}`],
                 get_font_formatting(script),
                 "\n",
                 {},
@@ -185,7 +212,7 @@ export function places_locality_text_field(
                     "format",
                     [
                         "coalesce",
-                        ["get", `pmap:pgf:name:${lang}`],
+                        ["get", `${name_prefix}name:${lang}`],
                         ["get", "pmap:pgf:name"]
                     ],
                     get_font_formatting(script),
@@ -202,7 +229,7 @@ export function places_locality_text_field(
                     "format",
                     [
                         "coalesce",
-                        ["get", `pmap:pgf:name:${lang}`],
+                        ["get", `${name_prefix}name:${lang}`],
                         ["get", "pmap:pgf:name2"]
                     ],
                     get_font_formatting(script),
@@ -218,7 +245,7 @@ export function places_locality_text_field(
                     "format",
                     [
                         "coalesce",
-                        ["get", `pmap:pgf:name:${lang}`],
+                        ["get", `${name_prefix}name:${lang}`],
                         ["get", "pmap:pgf:name3"]
                     ],
                     get_font_formatting(script),
