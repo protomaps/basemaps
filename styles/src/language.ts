@@ -116,7 +116,7 @@ export function get_multiline_name(
                 [
                     "coalesce",
                     ["get", `${name_prefix}name:${lang}`],
-                    ["get", "pmap:name"]
+                    ["get", "pmap:pgf:name"]
                 ],
                 get_font_formatting(script)
             ]
