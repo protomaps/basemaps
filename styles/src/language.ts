@@ -28,6 +28,36 @@ function get_name_block(script_segment: 'name' | 'name2' | 'name3') {
     ];
 }
 
+function is_not_in_target_script(lang: string, script: string, script_segment: 'name' | 'name2' | 'name3') {
+    
+    let suffix;
+    if (script_segment === 'name'){
+        suffix = '';
+    }
+    else if (script_segment === 'name2') {
+        suffix = '2';
+    }
+    else if (script_segment === 'name3') {
+        suffix = '3';
+    }
+
+    if (script === 'Latin') {
+        return ["has", `pmap:script${suffix}`]
+    }
+    else if (lang === 'ja') {
+        return [
+            "all",
+            ["!=", ["get", `pmap:script${suffix}`], "Han"],
+            ["!=", ["get", `pmap:script${suffix}`], "Hiragana"],
+            ["!=", ["get", `pmap:script${suffix}`], "Katakana"],
+            ["!=", ["get", `pmap:script${suffix}`], "Mixed-Japanese"] 
+        ];
+    }
+    else {
+        return ["!=", ["get", `pmap:script${suffix}`], script];
+    }
+}
+
 function get_font_formatting(script: string) {
     if (script === "Devanagari") {
         return {
@@ -69,23 +99,6 @@ export function get_multiline_name(
     else {
         name_prefix = '';
     }
-
-    let is_not_target_script;
-    if (script === 'Latin') {
-        is_not_target_script = ["has", "pmap:script"]
-    }
-    else if (lang === 'ja') {
-        is_not_target_script = [
-            "all",
-            ["!=", ["get", "pmap:script"], "Han"],
-            ["!=", ["get", "pmap:script"], "Hiragana"],
-            ["!=", ["get", "pmap:script"], "Katakana"],
-            ["!=", ["get", "pmap:script"], "Mixed-Japanese"] 
-        ];
-    }
-    else {
-        is_not_target_script = ["!=", ["get", "pmap:script"], script];
-    }
     
     const result = [
         "case",
@@ -110,7 +123,7 @@ export function get_multiline_name(
         // The local name has 1 script segment: `name`
         [
             "case",
-            is_not_target_script,
+            is_not_in_target_script(lang, script, 'name'),
             // `name` is not in the target script
             [
                 "format",
@@ -182,8 +195,8 @@ export function get_multiline_name(
             "case",
             [
                 "all",
-                script === "Latin" ? ["has", "pmap:script"] : ["!=", ["get", "pmap:script"], script],
-                script === "Latin" ? ["has", "pmap:script2"] : ["!=", ["get", "pmap:script2"], script]
+                is_not_in_target_script(lang, script, 'name'),
+                is_not_in_target_script(lang, script, 'name2')
             ],
             // Both `name` and `name2` are not in the target script
             [
@@ -200,8 +213,8 @@ export function get_multiline_name(
             // Either `name` or `name2` is in the target script
             [
                 "case",
-                script === "Latin" ? ["!", ["has", "pmap:script"]] : ["==", ["get", "pmap:script"], script],
-                // `name` is in the target script, and `name2` is not in the target script
+                is_not_in_target_script(lang, script, 'name2'),
+                // `name2` is not in the target script, therefore `name` is in the target script
                 [
                     "format",
                     [
@@ -215,7 +228,7 @@ export function get_multiline_name(
                     {},
                     ...get_name_block('name2')
                 ],
-                // `name2` is in the target script, and `name` is not in the target script
+                // `name2` is in the target script, therefore `name` is not in the target script
                 [
                     "format",
                     [
@@ -236,9 +249,9 @@ export function get_multiline_name(
             "case",
             [
                 "all",
-                script === "Latin" ? ["has", "pmap:script"] : ["!=", ["get", "pmap:script"], script],
-                script === "Latin" ? ["has", "pmap:script2"] : ["!=", ["get", "pmap:script2"], script],
-                script === "Latin" ? ["has", "pmap:script2"] : ["!=", ["get", "pmap:script3"], script]
+                is_not_in_target_script(lang, script, 'name'),
+                is_not_in_target_script(lang, script, 'name2'),
+                is_not_in_target_script(lang, script, 'name3')
             ],
             // All three `name`, `name2`, and `name3` are not in the target script
             [
@@ -258,7 +271,7 @@ export function get_multiline_name(
             // Exactly one of the 3 script segments `name`, `name2`, or `name3` is in the target script
             [
                 "case",
-                script === "Latin" ? ["!", ["has", "pmap:script"]] : ["==", ["get", "pmap:script"], script],
+                ["!", is_not_in_target_script(lang, script, 'name')],
                 // `name` is in the target script, and `name2` and `name3` are not
                 [
                     "format",
@@ -276,7 +289,7 @@ export function get_multiline_name(
                     {},
                     ...get_name_block('name3')
                 ],
-                script === "Latin" ? ["!", ["has", "pmap:script2"]] : ["==", ["get", "pmap:script2"], script],
+                ["!", is_not_in_target_script(lang, script, 'name2')],
                 // `name2` is in the target script, and `name` and `name3` are not
                 [
                     "format",
