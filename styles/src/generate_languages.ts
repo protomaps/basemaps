@@ -109,12 +109,12 @@ const language_script_pairs = [
     {
         "lang": "ja",
         "full_name": "Japanese",
-        "script": ""
+        "script": "Han"
     },
     {
         "lang": "ko",
         "full_name": "Korean",
-        "script": ""
+        "script": "Hangul"
     },
     {
         "lang": "lt",
@@ -209,17 +209,17 @@ const language_script_pairs = [
     {
         "lang": "zh",
         "full_name": "Chinese (General)",
-        "script": ""
+        "script": "Han"
     },
     {
         "lang": "zh-Hans",
         "full_name": "Chinese (Simplified)",
-        "script": ""
+        "script": "Han"
     },
     {
         "lang": "zh-Hant",
         "full_name": "Chinese (Traditional)",
-        "script": ""
+        "script": "Han"
     }
 ];
 

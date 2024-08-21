@@ -66,6 +66,26 @@ export function get_multiline_name(
         name_prefix = '';
     }
 
+    let is_not_target_script;
+    if (script === 'Latin') {
+        is_not_target_script = ["has", "pmap:script"]
+    }
+    else if (lang === 'ja') {
+        is_not_target_script = [
+            "all",
+            ["!=", ["get", "pmap:script"], "Han"],
+            ["!=", ["get", "pmap:script"], "Hiragana"],
+            ["!=", ["get", "pmap:script"], "Katakana"],
+            // Japanese labels often mix Han with Hiragana and Katakana, 
+            // but "Mixed" could be any two or more scripts. 
+            // Maybe we should have something like "Mixed-Japanese"...
+            ["!=", ["get", "pmap:script"], "Mixed"] 
+        ];
+    }
+    else {
+        is_not_target_script = ["!=", ["get", "pmap:script"], script];
+    }
+    
     const result = [
         "case",
         [
@@ -77,7 +97,7 @@ export function get_multiline_name(
         // The local name has 1 script segment: `name`
         [
             "case",
-            script === "Latin" ? ["has", "pmap:script"] : ["!=", ["get", "pmap:script"], script],
+            is_not_target_script,
             // `name` is not in the target script
             [
                 "format",
