@@ -76,10 +76,7 @@ export function get_multiline_name(
             ["!=", ["get", "pmap:script"], "Han"],
             ["!=", ["get", "pmap:script"], "Hiragana"],
             ["!=", ["get", "pmap:script"], "Katakana"],
-            // Japanese labels often mix Han with Hiragana and Katakana, 
-            // but "Mixed" could be any two or more scripts. 
-            // Maybe we should have something like "Mixed-Japanese"...
-            ["!=", ["get", "pmap:script"], "Mixed"] 
+            ["!=", ["get", "pmap:script"], "Mixed-Japanese"] 
         ];
     }
     else {
