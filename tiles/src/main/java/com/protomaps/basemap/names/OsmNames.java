@@ -34,7 +34,9 @@ public class OsmNames {
           }
 
           String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
-          feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
+          if (!encodedValue.equals(segments.get(index))) {
+            feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
+          }
         }
         if (segments.size() >= 2) {
           int index = 1;
@@ -47,7 +49,9 @@ public class OsmNames {
           }
 
           String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
-          feature.setAttrWithMinzoom("pmap:pgf:name2", encodedValue, minZoom);
+          if (!encodedValue.equals(segments.get(index))) {
+            feature.setAttrWithMinzoom("pmap:pgf:name2", encodedValue, minZoom);
+          }
         }
         if (segments.size() >= 3) {
           int index = 2;
@@ -60,7 +64,9 @@ public class OsmNames {
           }
 
           String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
-          feature.setAttrWithMinzoom("pmap:pgf:name3", encodedValue, minZoom);
+          if (!encodedValue.equals(segments.get(index))) {
+            feature.setAttrWithMinzoom("pmap:pgf:name3", encodedValue, minZoom);
+          }
         }
       }
 
