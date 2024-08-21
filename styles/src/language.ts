@@ -12,7 +12,11 @@ function get_name_block(script_segment: 'name' | 'name2' | 'name3') {
     }
 
     return [
-        ["get", `pmap:pgf:${script_segment}`],
+        [
+            "coalesce",
+            ["get", `pmap:pgf:${script_segment}`],
+            ["get", script_segment]
+        ],
         {
             "text-font": [
                 "case",
@@ -87,9 +91,21 @@ export function get_multiline_name(
         "case",
         [
             "all",
-            ["has", "pmap:pgf:name"],
-            ["!", ["has", "pmap:pgf:name2"]],
-            ["!", ["has", "pmap:pgf:name3"]]
+            [
+                "any",
+                ["has", "name"],
+                ["has", "pmap:pgf:name"]
+            ],
+            ["!", [
+                "any",
+                ["has", "name2"],
+                ["has", "pmap:pgf:name2"]
+            ]],
+            ["!", [
+                "any",
+                ["has", "name3"],
+                ["has", "pmap:pgf:name3"]
+            ]]
         ],
         // The local name has 1 script segment: `name`
         [
@@ -116,7 +132,11 @@ export function get_multiline_name(
                     ],
                     // We did fallback to English in the first line and `name` is Latin
                     "",
-                    ["get", "name"]
+                    [
+                        "coalesce",
+                        ["get", "pmap:pgf:name"],
+                        ["get", "name"]
+                    ]
                 ],
                 {
                     "text-font": [
@@ -133,16 +153,29 @@ export function get_multiline_name(
                 [
                     "coalesce",
                     ["get", `${name_prefix}name:${lang}`],
-                    ["get", "pmap:pgf:name"]
+                    ["get", "pmap:pgf:name"],
+                    ["get", "name"]
                 ],
                 get_font_formatting(script)
             ]
         ],
         [
             "all",
-            ["has", "pmap:pgf:name"],
-            ["has", "pmap:pgf:name2"],
-            ["!", ["has", "pmap:pgf:name3"]]
+            [
+                "any",
+                ["has", "name"],
+                ["has", "pmap:pgf:name"]
+            ],
+            [
+                "any",
+                ["has", "name2"],
+                ["has", "pmap:pgf:name2"]
+            ],
+            ["!", [
+                "any",
+                ["has", "name3"],
+                ["has", "pmap:pgf:name3"]
+            ]]
         ],
         // The local name has 2 script segments: `name` and `name2`
         [
@@ -174,7 +207,8 @@ export function get_multiline_name(
                     [
                         "coalesce",
                         ["get", `${name_prefix}name:${lang}`],
-                        ["get", "pmap:pgf:name"]
+                        ["get", "pmap:pgf:name"],
+                        ["get", "name"]
                     ],
                     get_font_formatting(script),
                     "\n",
@@ -187,7 +221,8 @@ export function get_multiline_name(
                     [
                         "coalesce",
                         ["get", `${name_prefix}name:${lang}`],
-                        ["get", "pmap:pgf:name2"]
+                        ["get", "pmap:pgf:name2"],
+                        ["get", "name2"]
                     ],
                     get_font_formatting(script),
                     "\n",
@@ -230,7 +265,8 @@ export function get_multiline_name(
                     [
                         "coalesce",
                         ["get", `${name_prefix}name:${lang}`],
-                        ["get", "pmap:pgf:name"]
+                        ["get", "pmap:pgf:name"],
+                        ["get", "name"]
                     ],
                     get_font_formatting(script),
                     "\n",
@@ -247,7 +283,8 @@ export function get_multiline_name(
                     [
                         "coalesce",
                         ["get", `${name_prefix}name:${lang}`],
-                        ["get", "pmap:pgf:name2"]
+                        ["get", "pmap:pgf:name2"],
+                        ["get", "name2"]
                     ],
                     get_font_formatting(script),
                     "\n",
@@ -263,7 +300,8 @@ export function get_multiline_name(
                     [
                         "coalesce",
                         ["get", `${name_prefix}name:${lang}`],
-                        ["get", "pmap:pgf:name3"]
+                        ["get", "pmap:pgf:name3"],
+                        ["get", "name3"]
                     ],
                     get_font_formatting(script),
                     "\n",
