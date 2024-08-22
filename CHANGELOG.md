@@ -1,3 +1,7 @@
+Tiles v4.0.0-alpha.2
+------
+- Segment name by script via @wipfli [#273]
+
 Tiles v3.7.1
 ------
 - change fountains in `water` layer to `kind=fountain` [#279]
