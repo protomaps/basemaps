@@ -7,6 +7,7 @@ import com.protomaps.basemap.text.TextEngine;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -55,7 +56,6 @@ public class OsmNames {
     "uk", // Ukrainian
     "ur", // Urdu
     "vi", // Vietnamese
-    "zh", // Chinese (General)
     "zh-Hans", // Chinese (Simplified)
     "zh-Hant" // Chinese (Traditional)
   };
@@ -76,14 +76,52 @@ public class OsmNames {
       var script = Script.getScript(value);
 
       if (key.equals("name")) {
-        feature.setAttrWithMinzoom("name", value, minZoom);
+        List<String> segments = ScriptSegmenter.segmentByScript(value);
+        if (segments.size() >= 1) {
+          int index = 0;
+          feature.setAttrWithMinzoom("name", segments.get(index), minZoom);
 
-        if (!script.equals("Latin") && !script.equals("Generic")) {
-          feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+          script = Script.getScript(segments.get(index));
+
+          if (!script.equals("Latin") && !script.equals("Generic")) {
+            feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+          }
+
+          String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
+          if (!encodedValue.equals(segments.get(index))) {
+            feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
+          }
         }
+        if (segments.size() >= 2) {
+          int index = 1;
+          feature.setAttrWithMinzoom("name2", segments.get(index), minZoom);
 
-        String encodedValue = TextEngine.encodeRegisteredScripts(value);
-        feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
+          script = Script.getScript(segments.get(index));
+
+          if (!script.equals("Latin") && !script.equals("Generic")) {
+            feature.setAttrWithMinzoom("pmap:script2", script, minZoom);
+          }
+
+          String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
+          if (!encodedValue.equals(segments.get(index))) {
+            feature.setAttrWithMinzoom("pmap:pgf:name2", encodedValue, minZoom);
+          }
+        }
+        if (segments.size() >= 3) {
+          int index = 2;
+          feature.setAttrWithMinzoom("name3", segments.get(index), minZoom);
+
+          script = Script.getScript(segments.get(index));
+
+          if (!script.equals("Latin") && !script.equals("Generic")) {
+            feature.setAttrWithMinzoom("pmap:script3", script, minZoom);
+          }
+
+          String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
+          if (!encodedValue.equals(segments.get(index))) {
+            feature.setAttrWithMinzoom("pmap:pgf:name3", encodedValue, minZoom);
+          }
+        }
       }
 
       if (isAllowed(key)) {
@@ -91,10 +129,22 @@ public class OsmNames {
 
         if (fontRegistry.getScripts().contains(script)) {
           String encodedValue = TextEngine.encodeRegisteredScripts(value);
-          feature.setAttrWithMinzoom("pmap:pgf:" + key, encodedValue, minZoom);
+          if (!encodedValue.equals(value)) {
+            feature.setAttrWithMinzoom("pmap:pgf:" + key, encodedValue, minZoom);
+          }
         }
       }
 
+    }
+
+    // Backfill name:zh to name:zh-Hant and name:zh-Hans if those are not available
+    if (sf.hasTag("name:zh")) {
+      if (!sf.hasTag("name:zh-Hant")) {
+        feature.setAttrWithMinzoom("name:zh-Hant", sf.getTag("name:zh"), minZoom);
+      }
+      if (!sf.hasTag("name:zh-Hans")) {
+        feature.setAttrWithMinzoom("name:zh-Hans", sf.getTag("name:zh"), minZoom);
+      }
     }
     return feature;
   }
