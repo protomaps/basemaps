@@ -378,9 +378,6 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         .setAttr("capital", sf.getString("capital"))
         .setAttr("population", population)
         .setAttr("pmap:population_rank", populationRank)
-        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-        //                      If an explicate value is needed it should be a kind, or included in kind_detail
-        .setAttr("place", sf.getString("place"))
         // Generally we use NE and low zooms, and OSM at high zooms
         // With exceptions for country and region labels
         .setZoomRange(Math.max((int) minZoom, themeMinZoom), (int) maxZoom);

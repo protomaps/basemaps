@@ -452,25 +452,8 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
-          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-          //                      If an explicate value is needed it should be a kind, or included in kind_detail
-          .setAttr("amenity", sf.getString("amenity"))
-          .setAttr("attraction", sf.getString("attraction"))
-          .setAttr("craft", sf.getString("craft"))
-          .setAttr("historic", sf.getString("historic"))
-          .setAttr("landuse", sf.getString("landuse"))
-          .setAttr("leisure", sf.getString("leisure"))
-          .setAttr("natural", sf.getString("natural"))
-          .setAttr("railway", sf.getString("railway"))
-          .setAttr("shop", sf.getString("shop"))
-          .setAttr("tourism", sf.getString("tourism"))
           // Extra OSM tags for certain kinds of places
           // These are duplicate of what's in the kind_detail tag
-          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-          //                      If an explicate value is needed it should be a kind, or included in kind_detail
-          .setAttr("cuisine", sf.getString("cuisine"))
-          .setAttr("religion", sf.getString("religion"))
-          .setAttr("sport", sf.getString("sport"))
           .setZoomRange(Math.min(15, minZoom), 15)
           .setBufferPixels(128);
 
@@ -506,25 +489,6 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
-          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-          //                      If an explicate value is needed it should bea kind, or included in kind_detail
-          .setAttr("amenity", sf.getString("amenity"))
-          .setAttr("attraction", sf.getString("attraction"))
-          .setAttr("craft", sf.getString("craft"))
-          .setAttr("historic", sf.getString("historic"))
-          .setAttr("landuse", sf.getString("landuse"))
-          .setAttr("leisure", sf.getString("leisure"))
-          .setAttr("natural", sf.getString("natural"))
-          .setAttr("railway", sf.getString("railway"))
-          .setAttr("shop", sf.getString("shop"))
-          .setAttr("tourism", sf.getString("tourism"))
-          // Extra OSM tags for certain kinds of places
-          // These are duplicate of what's in the kind_detail tag
-          // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-          //                      If an explicate value is needed it should bea kind, or included in kind_detail
-          .setAttr("cuisine", sf.getString("cuisine"))
-          .setAttr("religion", sf.getString("religion"))
-          .setAttr("sport", sf.getString("sport"))
           .setZoomRange(Math.min(minZoom, 15), 15)
           .setBufferPixels(128);
 
