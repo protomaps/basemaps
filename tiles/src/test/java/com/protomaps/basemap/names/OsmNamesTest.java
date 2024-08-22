@@ -10,7 +10,7 @@ class OsmNamesTest {
   void checkNames() {
     assertTrue(OsmNames.isAllowed("name:en"));
     assertTrue(OsmNames.isAllowed("name:nl"));
-    assertTrue(OsmNames.isAllowed("name:zh"));
+    assertFalse(OsmNames.isAllowed("name:zh"));
     assertTrue(OsmNames.isAllowed("name:zh-Hans"));
     assertTrue(OsmNames.isAllowed("name:zh-Hant"));
     assertFalse(OsmNames.isAllowed("name:dk"));
