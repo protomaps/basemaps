@@ -26,3 +26,5 @@ npm run generate-languages protomaps light https://example.com/your-tilejson-url
 ```
 
 This will create files in the `languages/` folder like `languages/style-en.json`, `languages/style-de.json` etc...
+
+You can inspect the different language styles by running a http server in the `/styles` folder and opening `index.html` in your web browser. Different languages can be chosen with a dropdown menu.
