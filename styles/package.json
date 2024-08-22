@@ -25,7 +25,6 @@
   ],
   "scripts": {
     "generate-layers": "tsx src/generate_layers.ts",
-    "generate-style": "tsx src/generate_style.ts",
     "generate-languages": "tsx src/generate_languages.ts",
     "dist-light": "mkdir -p dist/layers && npm run --silent generate-layers protomaps light > dist/layers/light.json",
     "dist-dark": "mkdir -p dist/layers && npm run --silent generate-layers protomaps dark > dist/layers/dark.json",
