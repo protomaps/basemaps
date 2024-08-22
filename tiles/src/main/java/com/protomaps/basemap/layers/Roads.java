@@ -144,6 +144,8 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
         // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
+        // `highway` is a temporary attribute that gets removed in the post-process step
+        .setAttr("highway", highway)
         .setMinPixelSize(0)
         .setPixelTolerance(0)
         .setZoomRange(minZoom, maxZoom);
