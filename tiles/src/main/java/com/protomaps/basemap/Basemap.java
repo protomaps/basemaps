@@ -63,7 +63,6 @@ public class Basemap extends ForwardingProfile {
     var place = new Places(naturalEarthDb);
     registerHandler(place);
     registerSourceHandler("osm", place::processOsm);
-    registerSourceHandler("ne", place::processNe);
 
     var poi = new Pois(qrankDb);
     registerHandler(poi);

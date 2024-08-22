@@ -10,11 +10,7 @@ import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.NaturalEarthDb;
-import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
-import com.protomaps.basemap.names.Script;
-import com.protomaps.basemap.text.FontRegistry;
-import com.protomaps.basemap.text.TextEngine;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -70,102 +66,6 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       9, 4
     ), 0);
 
-  /*
-  This generates zoom 0 to zoom 6.
-   */
-  public void processNe(SourceFeature sf, FeatureCollector features) {
-    var sourceLayer = sf.getSourceLayer();
-
-    if (!sourceLayer.equals("ne_10m_populated_places")) {
-      return;
-    }
-
-    // (nvkelso 20230817) We could omit the rest of this function and rely solely on
-    //                    OSM for features (but using the NE attributes above.
-    //                    We don't do that because OSM has too many names which
-    //                    would bloat low zoom file size. Once OSM name localization
-    //                    is configurable the below logic should be removed.
-
-    // Setup low zoom content
-    var kind = "";
-    var kindDetail = "";
-
-    // Test for props because of Natural Earth funk
-    // Test for tz_place because of zoom 0 funk
-    if (sf.isPoint() && sf.hasTag("featurecla") && sf.hasTag("min_zoom")) {
-      switch (sf.getString("featurecla")) {
-        case "Admin-0 capital":
-        case "Admin-0 capital alt":
-        case "Admin-0 region capital":
-          kind = "locality";
-          break;
-        case "Admin-1 capital":
-        case "Admin-1 region capital":
-          kind = "locality";
-          break;
-        case "Populated place":
-          kind = "locality";
-          break;
-        case "Historic place":
-          kind = "locality";
-          kindDetail = "hamlet";
-          break;
-        case "Scientific station":
-          kind = "locality";
-          kindDetail = "scientific_station";
-          break;
-        default:
-          // Important to reset to empty string here
-          kind = "";
-          break;
-      }
-    }
-
-    if (!kind.isEmpty()) {
-      double minZoom = sf.getString("min_zoom") == null ? 10.0f : Double.parseDouble(sf.getString("min_zoom"));
-      int populationRank = sf.getString("rank_max") == null ? 0 : (int) Double.parseDouble(sf.getString("rank_max"));
-      int population = parseIntOrNull(sf.getString("pop_max"));
-
-      var feat = features.point(this.name())
-        .setAttr("name", sf.getString("name"))
-        .setAttr("pmap:min_zoom", minZoom)
-        // We subtract 1 to achieve intended compilation balance vis-a-vis 256 zooms in NE and 512 zooms in Planetiler
-        .setZoomRange((int) minZoom - 1, 6)
-        .setAttr("pmap:kind", kind)
-        .setAttr("pmap:kind_detail", kindDetail)
-        .setAttr("population", population)
-        .setAttr("pmap:population_rank", populationRank)
-        // Server sort features so client label collisions are pre-sorted
-        // we also set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-        // since all these are locality, we hard code kindRank to 2 (needs to match OSM section below)
-        .setSortKey(getSortKey(minZoom, 2, populationRank, population, sf.getString("name")));
-
-      String name = sf.getTag("name").toString();
-      var script = Script.getScript(name);
-
-      if (!script.equals("Latin") && !script.equals("Generic")) {
-        feat.setAttr("pmap:script", script);
-        FontRegistry fontRegistry = FontRegistry.getInstance();
-        if (fontRegistry.getScripts().contains(script)) {
-          String encodedName = TextEngine.encodeRegisteredScripts(name);
-          feat.setAttr("pmap:pgf:name", encodedName);
-        }
-      }
-
-
-      // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
-      feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
-        .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
-        .setBufferPixels(64);
-
-      if (sf.hasTag("wikidataid")) {
-        feat.setAttr("wikidata", sf.getString("wikidataid"));
-      }
-
-      NeNames.setNeNames(feat, sf, 0);
-    }
-  }
-
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.isPoint() && sf.hasTag("name") &&
       (sf.hasTag("place", "suburb", "town", "village", "locality", "hamlet",
@@ -174,7 +74,6 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       String kind = "other";
       int kindRank = 6;
 
-      int themeMinZoom = 7;
       double minZoom = 12.0;
       double maxZoom = 15.0;
       int population = 0;
@@ -192,7 +91,6 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         case "country":
           // (nvkelso 20230802) OSM countries are allowlisted to show up at earlier zooms
           //                    TODO: Really these should switch over to NE source
-          themeMinZoom = 0;
           kind = "country";
           minZoom = 5.0;
           maxZoom = 8.0;
@@ -207,7 +105,6 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         case "province":
           // (nvkelso 20230802) OSM regions are allowlisted to show up at earlier zooms
           //                    TODO: Really these should switch over to NE source
-          themeMinZoom = 0;
           kind = "region";
           minZoom = 8.0;
           maxZoom = 11.0;
@@ -380,7 +277,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
         .setAttr("pmap:population_rank", populationRank)
         // Generally we use NE and low zooms, and OSM at high zooms
         // With exceptions for country and region labels
-        .setZoomRange(Math.max((int) minZoom, themeMinZoom), (int) maxZoom);
+        .setZoomRange((int) minZoom, (int) maxZoom);
 
       // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
       if (sf.hasTag("wikidata")) {
