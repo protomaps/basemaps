@@ -36,11 +36,6 @@ public class PhysicalLine implements ForwardingProfile.FeaturePostProcessor {
         .setAttr("pmap:kind", kind)
         // Used for client-side label collisions
         .setAttr("pmap:min_zoom", minZoom + 1)
-        // Core OSM tags for different kinds of places
-        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-        //                      If an explicate value is needed it should bea kind, or included in kind_detail
-        .setAttr("waterway", sf.getString("waterway"))
-        .setAttr("natural", sf.getString("natural"))
         // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
         //.setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         //.setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)

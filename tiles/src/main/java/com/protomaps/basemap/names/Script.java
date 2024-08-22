@@ -29,6 +29,13 @@ public class Script {
         if (script.equals(overallScript)) {
           continue;
         } else {
+          for (int j = 0; j < text.length(); ++j) {
+            Character.UnicodeScript unicodeScript = Character.UnicodeScript.of(text.charAt(j));
+            if (unicodeScript.equals(Character.UnicodeScript.KATAKANA) ||
+              unicodeScript.equals(Character.UnicodeScript.HIRAGANA)) {
+              return "Mixed-Japanese";
+            }
+          }
           return "Mixed";
         }
       }

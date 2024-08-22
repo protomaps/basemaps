@@ -144,9 +144,6 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
         // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
-        // DEPRECATION WARNING: Marked for deprecation in v4 schema, do not use these for styling
-        //                      If an explicate value is needed it should bea kind, or included in kind_detail
-        .setAttr("highway", highway)
         .setMinPixelSize(0)
         .setPixelTolerance(0)
         .setZoomRange(minZoom, maxZoom);

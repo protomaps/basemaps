@@ -109,4 +109,9 @@ class ScriptTest {
   void devanagariTamil() {
     assertEquals("Mixed", Script.getScript("काठमाडौँ கொழும்பு"));
   }
+
+  @Test
+  void mixedJapanese() {
+    assertEquals("Mixed-Japanese", Script.getScript("つつじケ丘五丁目"));
+  }
 }
