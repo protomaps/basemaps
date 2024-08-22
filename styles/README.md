@@ -40,7 +40,7 @@ dist/
       style-ar.json
       style-bg.json
       ...
-    constract/
+    contrast/
       style-ar.json
       style.bg.json
       ...
