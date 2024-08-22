@@ -1,10 +1,10 @@
 package com.protomaps.basemap.names;
 
 import java.lang.Character.UnicodeScript;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ScriptSegmenter {
 
@@ -19,10 +19,10 @@ public class ScriptSegmenter {
   public static String cleanEndsAndZWSP(String input) {
     String result = input.strip();
     if (result.endsWith("/") ||
-        result.endsWith("-") ||
-        result.endsWith(";") ||
-        result.endsWith("(") ||
-        result.endsWith(",")) {
+      result.endsWith("-") ||
+      result.endsWith(";") ||
+      result.endsWith("(") ||
+      result.endsWith(",")) {
       result = result.substring(0, result.length() - 1);
       result = result.strip();
     }
@@ -63,21 +63,21 @@ public class ScriptSegmenter {
     Set<UnicodeScript> scriptsInLine = new HashSet<>();
 
     if (line.endsWith(" I") ||
-        line.endsWith("-I") ||
-        line.endsWith(" V") ||
-        line.endsWith("-V")) {
+      line.endsWith("-I") ||
+      line.endsWith(" V") ||
+      line.endsWith("-V")) {
       line = line.substring(0, line.length() - 2);
     }
     if (line.endsWith(" II") ||
-        line.endsWith("-II") ||
-        line.endsWith(" IV") ||
-        line.endsWith("-IV") ||
-        line.endsWith(" VI") ||
-        line.endsWith("-VI")) {
+      line.endsWith("-II") ||
+      line.endsWith(" IV") ||
+      line.endsWith("-IV") ||
+      line.endsWith(" VI") ||
+      line.endsWith("-VI")) {
       line = line.substring(0, line.length() - 3);
     }
     if (line.endsWith(" III") ||
-        line.endsWith("-III")) {
+      line.endsWith("-III")) {
       line = line.substring(0, line.length() - 4);
     }
     for (char ch : line.toCharArray()) {
@@ -97,9 +97,9 @@ public class ScriptSegmenter {
     }
 
     if (scriptsInLine.size() == 3 &&
-        scriptsInLine.contains(UnicodeScript.HAN) &&
-        scriptsInLine.contains(UnicodeScript.HIRAGANA) &&
-        scriptsInLine.contains(UnicodeScript.KATAKANA)) {
+      scriptsInLine.contains(UnicodeScript.HAN) &&
+      scriptsInLine.contains(UnicodeScript.HIRAGANA) &&
+      scriptsInLine.contains(UnicodeScript.KATAKANA)) {
       return false;
     }
 
@@ -163,4 +163,3 @@ public class ScriptSegmenter {
     return segments;
   }
 }
-

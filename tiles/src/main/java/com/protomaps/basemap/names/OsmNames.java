@@ -7,8 +7,8 @@ import com.protomaps.basemap.text.TextEngine;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
