@@ -11,20 +11,38 @@ npm ci
 
 This only generates the `layers` key of a style; you'll assemble `source`, `glyphs`, `sprite` yourself.
 
-`generate-layers SOURCE_NAME THEME`
+`generate-layers SOURCE_NAME THEME LANG SCRIPT`
+
+For example, if you want to create the layers for a protomaps basemap in the `light` theme where you have a source called `protomaps` in your style.json file, and you want to localize the map to English `en` which uses the `Latin` script, then run this command:
 
 ```
-npm run generate-layers protomaps light
+npm run generate-layers --silent protomaps light en Latin
 ```
 
-## Generate JSON style
+This will output the layers to your console.
 
-To generate style.json files for each language, run:
+## Generate JSON styles in all themes and languages
+
+To generate style.json files in all themes and supported languages, run:
 
 ```
-npm run generate-languages protomaps light https://example.com/your-tilejson-url.json
+npm run generate-styles https://example.com/your-tilejson-url.json
 ```
 
-This will create files in the `languages/` folder like `languages/style-en.json`, `languages/style-de.json` etc...
+Note that you have to replace the tilejson url with your own.
 
-You can inspect the different language styles by running a http server in the `/styles` folder and opening `index.html` in your web browser. Different languages can be chosen with a dropdown menu.
+This will create files in the `dist/styles/` folder like this:
+
+```
+dist/
+  styles/
+    black/
+      style-ar.json
+      style-bg.json
+      ...
+    constract/
+      style-ar.json
+      style.bg.json
+      ...
+    ...
+```
