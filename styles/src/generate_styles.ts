@@ -17,8 +17,8 @@ const tileJson = args[0];
 
 for (const theme of Object.keys(themes)) {
   for (const { lang, full_name, script } of language_script_pairs) {
-    const layers = i('protomaps', theme, lang, script);
-  
+    const layers = i("protomaps", theme, lang, script);
+
     const style = {
       version: 8,
       sources: {
@@ -34,10 +34,10 @@ for (const theme of Object.keys(themes)) {
       glyphs:
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
     };
-  
+
     const directory = `dist/styles/${theme}`;
     if (!fs.existsSync(directory)) {
-      fs.mkdirSync(directory, {recursive: true});
+      fs.mkdirSync(directory, { recursive: true });
       console.log(`Directory ${directory} created successfully!`);
     }
 
