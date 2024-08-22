@@ -35,7 +35,9 @@
     "build": "tsup && npm run dist-all",
     "test": "tsx test/index.test.ts",
     "tsc": "tsc --noEmit --watch",
-    "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
+    "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space",
+    "format": "biome format src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space --write"
+
   },
   "repository": {
     "type": "git",

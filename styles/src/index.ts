@@ -2,9 +2,16 @@ import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { labels_layers, nolabels_layers } from "./base_layers";
 import themes, { Theme } from "./themes";
 
-export default function (source: string, key: string, lang: string, script: string): LayerSpecification[] {
+export default function (
+  source: string,
+  key: string,
+  lang: string,
+  script: string,
+): LayerSpecification[] {
   const theme = themes[key];
-  return nolabels_layers(source, theme).concat(labels_layers(source, theme, lang, script));
+  return nolabels_layers(source, theme).concat(
+    labels_layers(source, theme, lang, script),
+  );
 }
 
 export function noLabels(source: string, key: string): LayerSpecification[] {
@@ -12,7 +19,12 @@ export function noLabels(source: string, key: string): LayerSpecification[] {
   return nolabels_layers(source, theme);
 }
 
-export function labels(source: string, key: string, lang: string, script: string): LayerSpecification[] {
+export function labels(
+  source: string,
+  key: string,
+  lang: string,
+  script: string,
+): LayerSpecification[] {
   const theme = themes[key];
   return labels_layers(source, theme, lang, script);
 }
@@ -20,17 +32,19 @@ export function labels(source: string, key: string, lang: string, script: string
 export function layersWithCustomTheme(
   source: string,
   theme: Theme,
-  lang: string, 
+  lang: string,
   script: string,
 ): LayerSpecification[] {
-  return nolabels_layers(source, theme).concat(labels_layers(source, theme, lang, script));
+  return nolabels_layers(source, theme).concat(
+    labels_layers(source, theme, lang, script),
+  );
 }
 
 export function layersWithPartialCustomTheme(
   source: string,
   key: string,
   partialTheme: Partial<Theme>,
-  lang: string, 
+  lang: string,
   script: string,
 ): LayerSpecification[] {
   const mergedTheme = { ...themes[key], ...partialTheme };
@@ -49,7 +63,7 @@ export function noLabelsWithCustomTheme(
 export function labelsWithCustomTheme(
   source: string,
   theme: Theme,
-  lang: string, 
+  lang: string,
   script: string,
 ): LayerSpecification[] {
   return labels_layers(source, theme, lang, script);

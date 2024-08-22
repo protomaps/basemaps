@@ -1636,10 +1636,10 @@ export function nolabels_layers(
 }
 
 export function labels_layers(
-  source: string, 
+  source: string,
   t: Theme,
   lang: string,
-  script: string
+  script: string,
 ): LayerSpecification[] {
   return [
     {
