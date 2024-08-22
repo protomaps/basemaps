@@ -109,7 +109,8 @@ const language_script_pairs = [
     {
         "lang": "ja",
         "full_name": "Japanese",
-        "script": "Han"
+        // Japanese is a special case, using multiple scripts
+        "script": ""
     },
     {
         "lang": "ko",
@@ -207,11 +208,6 @@ const language_script_pairs = [
         "script": "Latin"
     },
     {
-        "lang": "zh",
-        "full_name": "Chinese (General)",
-        "script": "Han"
-    },
-    {
         "lang": "zh-Hans",
         "full_name": "Chinese (Simplified)",
         "script": "Han"
@@ -225,10 +221,6 @@ const language_script_pairs = [
 
 for (const {lang, full_name, script} of language_script_pairs) {
 
-    // console.log(`<option value="${lang}">${full_name}</option>`)
-    //     console.log(`else if (['${lang}'].includes(language)) {
-    //     script = '${script}';
-    // }`)
     const layers = i(args[0], args[1], lang, script);
 
     const style = {
@@ -246,7 +238,7 @@ for (const {lang, full_name, script} of language_script_pairs) {
     }
 
     try {
-        await writeFile(`languages/style-${lang}-${script}.json`, JSON.stringify(style, null, 2));
+        await writeFile(`languages/style-${lang}.json`, JSON.stringify(style, null, 2));
     } catch (err) {
         console.error('An error occurred while writing to the file:', err); 
     }
