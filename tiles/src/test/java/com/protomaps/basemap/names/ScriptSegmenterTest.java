@@ -92,4 +92,40 @@ public class ScriptSegmenterTest {
     // Latin and Greek
     assertEquals(true, ScriptSegmenter.shouldSegment("Athens Αθήνα"));
   }
+
+  @Test
+  void segmentByScript() {
+    // Mixed Japanese
+    assertEquals(1, ScriptSegmenter.segmentByScript("つつじケ丘五丁目").size());
+    assertEquals("つつじケ丘五丁目", ScriptSegmenter.segmentByScript("つつじケ丘五丁目").get(0));
+
+    // Typo Greek in Latin
+    assertEquals(1, ScriptSegmenter.segmentByScript("Tazaγart").size());
+    assertEquals("Tazaγart", ScriptSegmenter.segmentByScript("Tazaγart").get(0));
+
+    // Latin in Cyrillic
+    assertEquals(1, ScriptSegmenter.segmentByScript("Æлбортыхъæу").size());
+    assertEquals("Æлбортыхъæу", ScriptSegmenter.segmentByScript("Æлбортыхъæу").get(0));
+
+    // Latin Han repeated script
+    assertEquals(1, ScriptSegmenter.segmentByScript("第2D區 Area 2D").size());
+    assertEquals("第2D區 Area 2D", ScriptSegmenter.segmentByScript("第2D區 Area 2D").get(0));
+
+    // Arabic Latin
+    assertEquals(2, ScriptSegmenter.segmentByScript("Quartier 7 / حارة 7").size());
+    assertEquals("Quartier 7", ScriptSegmenter.segmentByScript("Quartier 7 / حارة 7").get(0));
+    assertEquals("حارة 7", ScriptSegmenter.segmentByScript("Quartier 7 / حارة 7").get(1));
+
+    // Latin Hangul
+    assertEquals(2, ScriptSegmenter.segmentByScript("긴계단 (Gingyedan)").size());
+    assertEquals("긴계단", ScriptSegmenter.segmentByScript("긴계단 (Gingyedan)").get(0));
+    assertEquals("Gingyedan", ScriptSegmenter.segmentByScript("긴계단 (Gingyedan)").get(1));
+
+    // Latin Tifinagh Arabic
+    assertEquals(3, ScriptSegmenter.segmentByScript("Casablanca ⴰⵏⴼⴰ الدار البيضاء").size());
+    assertEquals("Casablanca", ScriptSegmenter.segmentByScript("Casablanca ⴰⵏⴼⴰ الدار البيضاء").get(0));
+    assertEquals("ⴰⵏⴼⴰ", ScriptSegmenter.segmentByScript("Casablanca ⴰⵏⴼⴰ الدار البيضاء").get(1));
+    assertEquals("الدار البيضاء", ScriptSegmenter.segmentByScript("Casablanca ⴰⵏⴼⴰ الدار البيضاء").get(2));
+
+  }
 }

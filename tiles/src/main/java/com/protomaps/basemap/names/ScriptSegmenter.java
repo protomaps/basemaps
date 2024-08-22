@@ -109,7 +109,6 @@ public class ScriptSegmenter {
     return false;
   }
 
-  // Quartier 7 / حارة 7
   public static List<String> segmentByScript(String input) {
     List<String> segments = new ArrayList<>();
     if (input == null || input.isEmpty()) {
@@ -123,8 +122,6 @@ public class ScriptSegmenter {
 
     StringBuilder currentSegment = new StringBuilder();
     Character.UnicodeScript currentScript = getCharScript(input.charAt(0));
-
-    // 31 GD چک
 
     for (char ch : input.toCharArray()) {
       Character.UnicodeScript script = getCharScript(ch);
@@ -165,87 +162,5 @@ public class ScriptSegmenter {
 
     return segments;
   }
-
-  public static void main(String[] args) {
-
-    String line = "つつじケ丘五丁目";
-    // Tazaγart for "γ"
-    // Бежантыхъæу for "æ"
-    // Æлбортыхъæу for "Æ"
-
-    List<String> segments = segmentByScript(line);
-
-    System.out.println(line);
-    for (String segment : segments) {
-      System.out.println(" \"" + segment + "\", " + Script.getScript(segment));
-    }
-
-  }
 }
 
-// Βατóς
-// [LATIN, GREEK]
-// "Βατóς"
-
-// Mετόχι
-// [LATIN, GREEK]
-// "Mετόχι"
-
-// Уæллаг Захъхъор
-// [LATIN, CYRILLIC]
-// "Уæллаг Захъхъор"
-
-// Morze Bałtyckie - Baltijos jūra - Baltijas jūra - Läänemeri - Itämeri -
-// Östersjön - Østersøen - Ostsee - Балтийское море
-// [LATIN, CYRILLIC]
-// "Morze Bałtyckie - Baltijos jūra - Baltijas jūra - Läänemeri - Itämeri -
-// Östersjön - Østersøen - Ostsee"
-// "Балтийское море"
-
-// Xaafuun حافون‎
-// [LATIN, ARABIC]
-// "Xaafuun"
-// "حافون‎"
-
-// 긴계단 (Gingyedan)
-// [LATIN, HANGUL]
-// "긴계단"
-// "Gingyedan"
-
-// "Maţarī, مطري"
-// [ARABIC, LATIN]
-// ""Maţarī"
-// "مطري""
-
-// 沼の平(numanodaira)
-// [HAN, HIRAGANA, LATIN]
-// "沼の平(numanodaira)"
-
-// كöردوا قرة بلان
-// [ARABIC, LATIN]
-// "كöردوا قرة بلان"
-
-// LEM 027 - ΚΟΥΚΟΝΗΣΙ
-// [LATIN, GREEK]
-// "LEM 027"
-// "ΚΟΥΚΟΝΗΣΙ"
-
-// 28/10 R چک
-// [ARABIC, LATIN]
-// "28/10 R"
-// "چک"
-
-// 第2D區 Area 2D
-// [HAN, LATIN]
-// "第2D區 Area 2D"
-
-// Indian Island / Alənαpayí-Mənəhan
-// [LATIN, GREEK]
-// "Indian Island / Alənαpayí-Mənəhan"
-
-// Cité Portugaise الحي البرتغالي
-// [ARABIC, LATIN]
-// "Cité Portugaise"
-// "الحي البرتغالي"
-
-//  // Дæллаг Сарабукъ

@@ -56,7 +56,6 @@ public class OsmNames {
     "uk", // Ukrainian
     "ur", // Urdu
     "vi", // Vietnamese
-    "zh", // Chinese (General)
     "zh-Hans", // Chinese (Simplified)
     "zh-Hant" // Chinese (Traditional)
   };
@@ -136,6 +135,16 @@ public class OsmNames {
         }
       }
 
+    }
+
+    // Backfill name:zh to name:zh-Hant and name:zh-Hans if those are not available
+    if (sf.hasTag("name:zh")) {
+      if (!sf.hasTag("name:zh-Hant")) {
+        feature.setAttrWithMinzoom("name:zh-Hant", sf.getTag("name:zh"), minZoom);
+      }
+      if (!sf.hasTag("name:zh-Hans")) {
+        feature.setAttrWithMinzoom("name:zh-Hans", sf.getTag("name:zh"), minZoom);
+      }
     }
     return feature;
   }
