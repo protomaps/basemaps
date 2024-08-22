@@ -288,3 +288,212 @@ export function get_multiline_name(lang: string, script: string) {
   ];
   return result;
 }
+
+export const language_script_pairs = [
+  {
+    lang: "ar",
+    full_name: "Arabic",
+    script: "Arabic",
+  },
+  {
+    lang: "cs",
+    full_name: "Czech",
+    script: "Latin",
+  },
+  {
+    lang: "bg",
+    full_name: "Bulgarian",
+    script: "Cyrillic",
+  },
+  {
+    lang: "da",
+    full_name: "Danish",
+    script: "Latin",
+  },
+  {
+    lang: "de",
+    full_name: "German",
+    script: "Latin",
+  },
+  {
+    lang: "el",
+    full_name: "Greek",
+    script: "Greek",
+  },
+  {
+    lang: "en",
+    full_name: "English",
+    script: "Latin",
+  },
+  {
+    lang: "es",
+    full_name: "Spanish",
+    script: "Latin",
+  },
+  {
+    lang: "et",
+    full_name: "Estonian",
+    script: "Latin",
+  },
+  {
+    lang: "fa",
+    full_name: "Persian",
+    script: "Arabic",
+  },
+  {
+    lang: "fi",
+    full_name: "Finnish",
+    script: "Latin",
+  },
+  {
+    lang: "fr",
+    full_name: "French",
+    script: "Latin",
+  },
+  {
+    lang: "ga",
+    full_name: "Irish",
+    script: "Latin",
+  },
+  {
+    lang: "he",
+    full_name: "Hebrew",
+    script: "Hebrew",
+  },
+  {
+    lang: "hi",
+    full_name: "Hindi",
+    script: "Devanagari",
+  },
+  {
+    lang: "hr",
+    full_name: "Croatian",
+    script: "Latin",
+  },
+  {
+    lang: "hu",
+    full_name: "Hungarian",
+    script: "Latin",
+  },
+  {
+    lang: "id",
+    full_name: "Indonesian",
+    script: "Latin",
+  },
+  {
+    lang: "it",
+    full_name: "Italian",
+    script: "Latin",
+  },
+  {
+    lang: "ja",
+    full_name: "Japanese",
+    // Japanese is a special case, using multiple scripts
+    script: "",
+  },
+  {
+    lang: "ko",
+    full_name: "Korean",
+    script: "Hangul",
+  },
+  {
+    lang: "lt",
+    full_name: "Lithuanian",
+    script: "Latin",
+  },
+  {
+    lang: "lv",
+    full_name: "Latvian",
+    script: "Latin",
+  },
+  {
+    lang: "ne",
+    full_name: "Nepali",
+    script: "Devanagari",
+  },
+  {
+    lang: "nl",
+    full_name: "Dutch",
+    script: "Latin",
+  },
+  {
+    lang: "no",
+    full_name: "Norwegian",
+    script: "Latin",
+  },
+  {
+    lang: "mr",
+    full_name: "Marathi",
+    script: "Devanagari",
+  },
+  {
+    lang: "mt",
+    full_name: "Maltese",
+    script: "Latin",
+  },
+  {
+    lang: "pl",
+    full_name: "Polish",
+    script: "Latin",
+  },
+  {
+    lang: "pt",
+    full_name: "Portuguese",
+    script: "Latin",
+  },
+  {
+    lang: "ro",
+    full_name: "Romanian",
+    script: "Latin",
+  },
+  {
+    lang: "ru",
+    full_name: "Russian",
+    script: "Cyrillic",
+  },
+  {
+    lang: "sk",
+    full_name: "Slovak",
+    script: "Latin",
+  },
+  {
+    lang: "sl",
+    full_name: "Slovenian",
+    script: "Latin",
+  },
+  {
+    lang: "sv",
+    full_name: "Swedish",
+    script: "Latin",
+  },
+  {
+    lang: "tr",
+    full_name: "Turkish",
+    script: "Latin",
+  },
+  {
+    lang: "uk",
+    full_name: "Ukrainian",
+    script: "Cyrillic",
+  },
+  {
+    lang: "ur",
+    full_name: "Urdu",
+    script: "Arabic",
+  },
+  {
+    lang: "vi",
+    full_name: "Vietnamese",
+    script: "Latin",
+  },
+  {
+    lang: "zh-Hans",
+    full_name: "Chinese (Simplified)",
+    script: "Han",
+  },
+  {
+    lang: "zh-Hant",
+    full_name: "Chinese (Traditional)",
+    script: "Han",
+  },
+];
