@@ -123,8 +123,8 @@ function getMaplibreStyle(
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
   } else {
-    const pair = language_script_pairs.find(d => d.lang === lang);
-    const script = pair === undefined ? 'Latin' : pair.script;
+    const pair = language_script_pairs.find((d) => d.lang === lang);
+    const script = pair === undefined ? "Latin" : pair.script;
     style.layers = style.layers.concat(
       layers("protomaps", theme, lang, script),
     );
@@ -132,9 +132,14 @@ function getMaplibreStyle(
   return style;
 }
 
-function StyleJsonPane(props: { theme: string, lang: string}) {
+function StyleJsonPane(props: { theme: string; lang: string }) {
   const stringified = JSON.stringify(
-    getMaplibreStyle(props.theme, props.lang, false, "https://example.com/tiles.json"),
+    getMaplibreStyle(
+      props.theme,
+      props.lang,
+      false,
+      "https://example.com/tiles.json",
+    ),
     null,
     4,
   );
@@ -403,7 +408,9 @@ export default function MapViewComponent() {
         </select>
         <select onChange={(e) => setLang(e.target.value)} value={lang}>
           {language_script_pairs.map((pair) => (
-            <option key={pair.lang} value={pair.lang}>{pair.full_name}</option>
+            <option key={pair.lang} value={pair.lang}>
+              {pair.full_name}
+            </option>
           ))}
         </select>
         <input
