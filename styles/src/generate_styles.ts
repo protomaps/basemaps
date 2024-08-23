@@ -1,11 +1,11 @@
 // @ts-nocheck
 declare const process: unknown;
 
-import i from "./index";
-import { writeFile } from "fs/promises";
 import fs from "fs";
-import themes from "./themes";
+import { writeFile } from "fs/promises";
+import i from "./index";
 import { language_script_pairs } from "./language";
+import themes from "./themes";
 
 if (process.argv.length < 2) {
   process.stdout.write("usage: generate-styles TILEJSON_URL");

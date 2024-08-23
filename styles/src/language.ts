@@ -1,5 +1,5 @@
 function get_name_block(script_segment: "name" | "name2" | "name3") {
-  let script;
+  let script: string;
 
   if (script_segment === "name") {
     script = "script";
@@ -31,7 +31,7 @@ function is_not_in_target_script(
   script: string,
   script_segment: "name" | "name2" | "name3",
 ) {
-  let suffix;
+  let suffix: string;
   if (script_segment === "name") {
     suffix = "";
   } else if (script_segment === "name2") {
