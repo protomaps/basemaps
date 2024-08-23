@@ -37,7 +37,7 @@
     "tsc-watch": "tsc --noEmit --watch",
     "tsc": "tsc --noEmit",
     "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space",
-    "format": "biome format  --write src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
+    "format": "biome format --write src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
   },
   "repository": {
     "type": "git",

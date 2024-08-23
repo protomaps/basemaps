@@ -121,7 +121,9 @@ function getMaplibreStyle(
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
   } else {
-    style.layers = style.layers.concat(layers("protomaps", theme));
+    style.layers = style.layers.concat(
+      layers("protomaps", theme, "en", "Latin"),
+    );
   }
   return style;
 }
