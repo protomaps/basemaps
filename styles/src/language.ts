@@ -42,7 +42,9 @@ function is_not_in_target_script(
 
   if (script === "Latin") {
     return ["has", `pmap:script${suffix}`];
-  } else if (lang === "ja") {
+  }
+
+  if (lang === "ja") {
     return [
       "all",
       ["!=", ["get", `pmap:script${suffix}`], "Han"],
@@ -50,9 +52,9 @@ function is_not_in_target_script(
       ["!=", ["get", `pmap:script${suffix}`], "Katakana"],
       ["!=", ["get", `pmap:script${suffix}`], "Mixed-Japanese"],
     ];
-  } else {
-    return ["!=", ["get", `pmap:script${suffix}`], script];
   }
+
+  return ["!=", ["get", `pmap:script${suffix}`], script];
 }
 
 function get_font_formatting(script: string) {
@@ -60,13 +62,12 @@ function get_font_formatting(script: string) {
     return {
       "text-font": ["literal", ["Noto Sans Devanagari Regular v1"]],
     };
-  } else {
-    return {};
   }
+  return {};
 }
 
 export function get_country_name(lang: string, script: string) {
-  let name_prefix;
+  let name_prefix: string;
   if (script === "Devanagari") {
     name_prefix = "pmap:pgf:";
   } else {
@@ -80,7 +81,7 @@ export function get_country_name(lang: string, script: string) {
 }
 
 export function get_multiline_name(lang: string, script: string) {
-  let name_prefix;
+  let name_prefix: string;
   if (script === "Devanagari") {
     name_prefix = "pmap:pgf:";
   } else {

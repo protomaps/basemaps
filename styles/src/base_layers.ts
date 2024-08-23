@@ -3,8 +3,8 @@ import {
   ExpressionSpecification,
   LayerSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
-import { Theme } from "./themes";
 import { get_country_name, get_multiline_name } from "./language";
+import { Theme } from "./themes";
 
 export function nolabels_layers(
   source: string,
@@ -1675,7 +1675,10 @@ export function labels_layers(
       filter: ["any", ["==", "pmap:kind", "peak"]],
       layout: {
         "text-font": ["Noto Sans Italic"],
-        "text-field": get_multiline_name(lang, script) as any,
+        "text-field": get_multiline_name(
+          lang,
+          script,
+        ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": ["interpolate", ["linear"], ["zoom"], 10, 8, 16, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
