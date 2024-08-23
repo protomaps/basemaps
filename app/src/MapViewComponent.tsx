@@ -185,7 +185,7 @@ function MapLibreView(props: {
     const map = new maplibregl.Map({
       hash: "map",
       container: "map",
-      style: getMaplibreStyle("", "de", false),
+      style: getMaplibreStyle("", "en", false),
     });
 
     map.addControl(new maplibregl.NavigationControl());
