@@ -17,10 +17,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version-file: 'app/.nvmrc'
       - run: echo "VITE_GIT_SHA=$(git rev-parse --short HEAD)" >> app/.env
       - name: Check styles
-        run: npm install && npx tsc --noEmit && npm run check
+        run: npm ci && npm tsc && npm run check
         working-directory: styles
       - run: npm install && npx tsc --noEmit && npm run check && npx vite build
         working-directory: app

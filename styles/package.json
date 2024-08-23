@@ -34,10 +34,10 @@
     "dist-all": "npm run dist-light && npm run dist-dark && npm run dist-white && npm run dist-grayscale && npm run dist-black",
     "build": "tsup && npm run dist-all",
     "test": "tsx test/index.test.ts",
-    "tsc": "tsc --noEmit --watch",
+    "tsc-watch": "tsc --noEmit --watch",
+    "tsc": "tsc --noEmit",
     "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space",
-    "format": "biome format src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space --write"
-
+    "format": "biome format  --write src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
   },
   "repository": {
     "type": "git",
