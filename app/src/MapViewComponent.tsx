@@ -203,7 +203,7 @@ function MapLibreView(props: {
       maxWidth: "none",
     });
 
-    map.on("mousedown", (e) => {
+    map.on("contextmenu", (e) => {
       const features = map.queryRenderedFeatures(e.point);
       if (features.length) {
         const content = renderToString(
