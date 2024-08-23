@@ -1,3 +1,7 @@
+Tiles v4.0.0-alpha.3
+------
+- Replace Natural Earth places at low zooms with OSM [#289]
+
 Tiles v4.0.0-alpha.2
 ------
 - Segment name by script via @wipfli [#273]
