@@ -240,7 +240,7 @@ export default function VisualTestsComponent() {
       const leftLayers = await layersForVersion(leftLayersStr);
       const rightLayers = rightLayersStr
         ? await layersForVersion(rightLayersStr)
-        : layers("protomaps", "light");
+        : layers("protomaps", "light", "en", "Latin");
 
       setDisplayInfo([
         leftTiles,

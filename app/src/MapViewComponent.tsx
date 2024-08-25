@@ -13,6 +13,7 @@ import {
 import { renderToString } from "react-dom/server";
 import { useDropzone } from "react-dropzone";
 import layers from "../../styles/src/index.ts";
+import { language_script_pairs } from "../../styles/src/language.ts";
 
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
@@ -68,6 +69,7 @@ export const isValidPMTiles = (tiles?: string): boolean => {
 
 function getMaplibreStyle(
   theme: string,
+  lang: string,
   localSprites: boolean,
   tiles?: string,
   npmLayers?: LayerSpecification[],
@@ -121,14 +123,19 @@ function getMaplibreStyle(
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
   } else {
-    style.layers = style.layers.concat(layers("protomaps", theme));
+    style.layers = style.layers.concat(layers("protomaps", theme, lang));
   }
   return style;
 }
 
-function StyleJsonPane(props: { theme: string }) {
+function StyleJsonPane(props: { theme: string; lang: string }) {
   const stringified = JSON.stringify(
-    getMaplibreStyle(props.theme, false, "https://example.com/tiles.json"),
+    getMaplibreStyle(
+      props.theme,
+      props.lang,
+      false,
+      "https://example.com/tiles.json",
+    ),
     null,
     4,
   );
@@ -150,6 +157,7 @@ function StyleJsonPane(props: { theme: string }) {
 
 function MapLibreView(props: {
   theme: string;
+  lang: string;
   localSprites: boolean;
   tiles?: string;
   npmLayers: LayerSpecification[];
@@ -173,7 +181,7 @@ function MapLibreView(props: {
     const map = new maplibregl.Map({
       hash: "map",
       container: "map",
-      style: getMaplibreStyle("", false),
+      style: getMaplibreStyle("", "en", false),
     });
 
     map.addControl(new maplibregl.NavigationControl());
@@ -196,7 +204,7 @@ function MapLibreView(props: {
       maxWidth: "none",
     });
 
-    map.on("mousedown", (e) => {
+    map.on("contextmenu", (e) => {
       const features = map.queryRenderedFeatures(e.point);
       if (features.length) {
         const content = renderToString(
@@ -251,6 +259,7 @@ function MapLibreView(props: {
         mapRef.current.setStyle(
           getMaplibreStyle(
             props.theme,
+            props.lang,
             props.localSprites,
             props.tiles,
             props.npmLayers,
@@ -264,6 +273,7 @@ function MapLibreView(props: {
   }, [
     props.tiles,
     props.theme,
+    props.lang,
     props.localSprites,
     props.npmLayers,
     props.droppedArchive,
@@ -276,6 +286,7 @@ function MapLibreView(props: {
 export default function MapViewComponent() {
   const hash = parseHash(location.hash);
   const [theme, setTheme] = useState<string>(hash.theme || "light");
+  const [lang, setLang] = useState<string>(hash.lang || "en");
   const [tiles, setTiles] = useState<string | undefined>(hash.tiles);
   const [localSprites, setLocalSprites] = useState<boolean>(
     hash.local_sprites === "true",
@@ -291,6 +302,7 @@ export default function MapViewComponent() {
   useEffect(() => {
     const record = {
       theme: theme,
+      lang: lang,
       tiles: tiles,
       local_sprites: localSprites ? "true" : undefined,
       npm_version: publishedStyleVersion,
@@ -368,6 +380,8 @@ export default function MapViewComponent() {
     })();
   }, [publishedStyleVersion, theme]);
 
+  language_script_pairs.sort((a, b) => a.full_name.localeCompare(b.full_name));
+
   return (
     <div className="map-container">
       <nav>
@@ -387,6 +401,13 @@ export default function MapViewComponent() {
           <option value="white">data viz (white)</option>
           <option value="grayscale">data viz (grayscale)</option>
           <option value="black">data viz (black)</option>
+        </select>
+        <select onChange={(e) => setLang(e.target.value)} value={lang}>
+          {language_script_pairs.map((pair) => (
+            <option key={pair.lang} value={pair.lang}>
+              {pair.full_name}
+            </option>
+          ))}
         </select>
         <input
           id="localSprites"
@@ -431,10 +452,11 @@ export default function MapViewComponent() {
           tiles={tiles}
           localSprites={localSprites}
           theme={theme}
+          lang={lang}
           npmLayers={npmLayers}
           droppedArchive={droppedArchive}
         />
-        {showStyleJson && <StyleJsonPane theme={theme} />}
+        {showStyleJson && <StyleJsonPane theme={theme} lang={lang} />}
       </div>
     </div>
   );

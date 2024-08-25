@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "tsc": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest",
-    "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
+    "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space",
+    "format": "biome format --write src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
   },
   "dependencies": {
     "maplibre-gl": "^4.1.3",

@@ -34,7 +34,8 @@ java -jar target/*-with-deps.jar --download --force --area=monaco
 
 ```shell
 cd app
-npm install
+nvm use
+npm ci
 npm run dev
 ```
 
