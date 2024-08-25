@@ -113,7 +113,7 @@ export function get_multiline_name(lang: string, script?: string) {
         [
           "any",
           ["is-supported-script", ["get", "name"]],
-          ["has", "pmap:pgf:name"]
+          ["has", "pmap:pgf:name"],
         ],
         // `name` can be rendered correctly
         [
@@ -148,7 +148,7 @@ export function get_multiline_name(lang: string, script?: string) {
           },
         ],
         // `name` cannot be rendered correctly, fallback to `name:en`
-        ["get", "name:en"]
+        ["get", "name:en"],
       ],
       // `name` is in the target script
       [
