@@ -109,35 +109,46 @@ export function get_multiline_name(lang: string, script?: string) {
       is_not_in_target_script(lang, _script, "name"),
       // `name` is not in the target script
       [
-        "format",
+        "case",
         [
-          "coalesce",
-          ["get", `${name_prefix}name:${lang}`],
-          ["get", "name:en"], // Always fallback to English
+          "any",
+          ["is-supported-script", ["get", "name"]],
+          ["has", "pmap:pgf:name"]
         ],
-        get_font_formatting(_script),
-        "\n",
-        {},
+        // `name` can be rendered correctly
         [
-          "case",
+          "format",
           [
-            "all",
-            ["!", ["has", `${name_prefix}name:${lang}`]],
-            ["has", "name:en"],
-            ["!", ["has", "pmap:script"]],
+            "coalesce",
+            ["get", `${name_prefix}name:${lang}`],
+            ["get", "name:en"], // Always fallback to English
           ],
-          // We did fallback to English in the first line and `name` is Latin
-          "",
-          ["coalesce", ["get", "pmap:pgf:name"], ["get", "name"]],
-        ],
-        {
-          "text-font": [
+          get_font_formatting(_script),
+          "\n",
+          {},
+          [
             "case",
-            ["==", ["get", "pmap:script"], "Devanagari"],
-            ["literal", ["Noto Sans Devanagari Regular v1"]],
-            ["literal", ["Noto Sans Regular"]],
+            [
+              "all",
+              ["!", ["has", `${name_prefix}name:${lang}`]],
+              ["has", "name:en"],
+              ["!", ["has", "pmap:script"]],
+            ],
+            // We did fallback to English in the first line and `name` is Latin
+            "",
+            ["coalesce", ["get", "pmap:pgf:name"], ["get", "name"]],
           ],
-        },
+          {
+            "text-font": [
+              "case",
+              ["==", ["get", "pmap:script"], "Devanagari"],
+              ["literal", ["Noto Sans Devanagari Regular v1"]],
+              ["literal", ["Noto Sans Regular"]],
+            ],
+          },
+        ],
+        // `name` cannot be rendered correctly, fallback to `name:en`
+        ["get", "name:en"]
       ],
       // `name` is in the target script
       [
