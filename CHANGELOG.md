@@ -2,6 +2,14 @@ Styles v4.0.0-alpha.0
 ------
 - Add lang and script parameters to TypeScript style generation [#275]
 
+Tiles v4.0.0-alpha.3
+------
+- Replace Natural Earth places at low zooms with OSM [#289]
+
+Tiles v4.0.0-alpha.2
+------
+- Segment name by script via @wipfli [#273]
+
 Tiles v3.7.1
 ------
 - change fountains in `water` layer to `kind=fountain` [#279]

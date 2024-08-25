@@ -63,7 +63,6 @@ public class Basemap extends ForwardingProfile {
     var place = new Places(naturalEarthDb);
     registerHandler(place);
     registerSourceHandler("osm", place::processOsm);
-    registerSourceHandler("ne", place::processNe);
 
     var poi = new Pois(qrankDb);
     registerHandler(poi);
@@ -101,7 +100,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.0.0-alpha.1";
+    return "4.0.0-alpha.3";
   }
 
   @Override
