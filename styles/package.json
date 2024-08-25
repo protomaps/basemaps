@@ -24,14 +24,7 @@
     "src"
   ],
   "scripts": {
-    "generate-layers": "tsx src/generate_layers.ts",
     "generate-styles": "tsx src/generate_styles.ts",
-    "dist-light": "mkdir -p dist/layers && npm run --silent generate-layers protomaps light en Latin > dist/layers/light.json",
-    "dist-dark": "mkdir -p dist/layers && npm run --silent generate-layers protomaps dark en Latin > dist/layers/dark.json",
-    "dist-white": "mkdir -p dist/layers && npm run --silent generate-layers protomaps white en Latin > dist/layers/white.json",
-    "dist-grayscale": "mkdir -p dist/layers && npm run --silent generate-layers protomaps grayscale en Latin > dist/layers/grayscale.json",
-    "dist-black": "mkdir -p dist/layers && npm run --silent generate-layers protomaps black en Latin > dist/layers/black.json",
-    "dist-all": "npm run dist-light && npm run dist-dark && npm run dist-white && npm run dist-grayscale && npm run dist-black",
     "build": "tsup && npm run dist-all",
     "test": "tsx test/index.test.ts",
     "tsc-watch": "tsc --noEmit --watch",

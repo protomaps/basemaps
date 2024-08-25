@@ -43,7 +43,7 @@ for (const theme of Object.keys(themes)) {
 
     try {
       await writeFile(
-        `${directory}/style-${lang}.json`,
+        `${directory}/${lang}.json`,
         JSON.stringify(style, null, 2),
       );
     } catch (err) {
