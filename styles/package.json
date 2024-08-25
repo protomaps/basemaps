@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "generate-styles": "tsx src/generate_styles.ts",
-    "build": "tsup && npm run dist-all",
+    "build": "tsup && npm run generate-styles https://example.com/tiles.json",
     "test": "tsx test/index.test.ts",
     "tsc-watch": "tsc --noEmit --watch",
     "tsc": "tsc --noEmit",
