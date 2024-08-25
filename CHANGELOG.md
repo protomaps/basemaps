@@ -1,3 +1,7 @@
+Styles v4.0.0-alpha.0
+------
+- Add lang and script parameters to TypeScript style generation [#275]
+
 Tiles v3.7.1
 ------
 - change fountains in `water` layer to `kind=fountain` [#279]
