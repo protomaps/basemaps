@@ -123,11 +123,7 @@ function getMaplibreStyle(
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
   } else {
-    const pair = language_script_pairs.find((d) => d.lang === lang);
-    const script = pair === undefined ? "Latin" : pair.script;
-    style.layers = style.layers.concat(
-      layers("protomaps", theme, lang, script),
-    );
+    style.layers = style.layers.concat(layers("protomaps", theme, lang));
   }
   return style;
 }

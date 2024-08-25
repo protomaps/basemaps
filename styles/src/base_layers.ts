@@ -1643,7 +1643,7 @@ export function labels_layers(
   source: string,
   t: Theme,
   lang: string,
-  script: string,
+  script?: string,
 ): LayerSpecification[] {
   return [
     {

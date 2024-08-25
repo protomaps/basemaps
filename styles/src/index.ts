@@ -6,7 +6,7 @@ export default function (
   source: string,
   key: string,
   lang: string,
-  script: string,
+  script?: string,
 ): LayerSpecification[] {
   const theme = themes[key];
   return nolabels_layers(source, theme).concat(
@@ -23,7 +23,7 @@ export function labels(
   source: string,
   key: string,
   lang: string,
-  script: string,
+  script?: string,
 ): LayerSpecification[] {
   const theme = themes[key];
   return labels_layers(source, theme, lang, script);
@@ -33,7 +33,7 @@ export function layersWithCustomTheme(
   source: string,
   theme: Theme,
   lang: string,
-  script: string,
+  script?: string,
 ): LayerSpecification[] {
   return nolabels_layers(source, theme).concat(
     labels_layers(source, theme, lang, script),
@@ -45,7 +45,7 @@ export function layersWithPartialCustomTheme(
   key: string,
   partialTheme: Partial<Theme>,
   lang: string,
-  script: string,
+  script?: string,
 ): LayerSpecification[] {
   const mergedTheme = { ...themes[key], ...partialTheme };
   return nolabels_layers(source, mergedTheme).concat(
@@ -64,7 +64,7 @@ export function labelsWithCustomTheme(
   source: string,
   theme: Theme,
   lang: string,
-  script: string,
+  script?: string,
 ): LayerSpecification[] {
   return labels_layers(source, theme, lang, script);
 }

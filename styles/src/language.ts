@@ -66,7 +66,13 @@ function get_font_formatting(script: string) {
   return {};
 }
 
-export function get_country_name(lang: string, script: string) {
+function get_default_script(lang: string) {
+  const pair = language_script_pairs.find(d => d.lang === lang);
+  return pair === undefined ? "Latin" : pair.script;
+}
+
+export function get_country_name(lang: string, script?: string) {
+  script = script || get_default_script(lang);
   let name_prefix: string;
   if (script === "Devanagari") {
     name_prefix = "pmap:pgf:";
@@ -80,7 +86,8 @@ export function get_country_name(lang: string, script: string) {
   ];
 }
 
-export function get_multiline_name(lang: string, script: string) {
+export function get_multiline_name(lang: string, script?: string) {
+  script = script || get_default_script(lang);
   let name_prefix: string;
   if (script === "Devanagari") {
     name_prefix = "pmap:pgf:";
