@@ -67,14 +67,14 @@ function get_font_formatting(script: string) {
 }
 
 function get_default_script(lang: string) {
-  const pair = language_script_pairs.find(d => d.lang === lang);
+  const pair = language_script_pairs.find((d) => d.lang === lang);
   return pair === undefined ? "Latin" : pair.script;
 }
 
 export function get_country_name(lang: string, script?: string) {
-  script = script || get_default_script(lang);
+  const _script = script || get_default_script(lang);
   let name_prefix: string;
-  if (script === "Devanagari") {
+  if (_script === "Devanagari") {
     name_prefix = "pmap:pgf:";
   } else {
     name_prefix = "";
@@ -82,14 +82,14 @@ export function get_country_name(lang: string, script?: string) {
   return [
     "format",
     ["coalesce", ["get", `${name_prefix}name:${lang}`], ["get", "name:en"]],
-    get_font_formatting(script),
+    get_font_formatting(_script),
   ];
 }
 
 export function get_multiline_name(lang: string, script?: string) {
-  script = script || get_default_script(lang);
+  const _script = script || get_default_script(lang);
   let name_prefix: string;
-  if (script === "Devanagari") {
+  if (_script === "Devanagari") {
     name_prefix = "pmap:pgf:";
   } else {
     name_prefix = "";
@@ -106,7 +106,7 @@ export function get_multiline_name(lang: string, script?: string) {
     // The local name has 1 script segment: `name`
     [
       "case",
-      is_not_in_target_script(lang, script, "name"),
+      is_not_in_target_script(lang, _script, "name"),
       // `name` is not in the target script
       [
         "format",
@@ -115,7 +115,7 @@ export function get_multiline_name(lang: string, script?: string) {
           ["get", `${name_prefix}name:${lang}`],
           ["get", "name:en"], // Always fallback to English
         ],
-        get_font_formatting(script),
+        get_font_formatting(_script),
         "\n",
         {},
         [
@@ -148,7 +148,7 @@ export function get_multiline_name(lang: string, script?: string) {
           ["get", "pmap:pgf:name"],
           ["get", "name"],
         ],
-        get_font_formatting(script),
+        get_font_formatting(_script),
       ],
     ],
     [
@@ -162,14 +162,14 @@ export function get_multiline_name(lang: string, script?: string) {
       "case",
       [
         "all",
-        is_not_in_target_script(lang, script, "name"),
-        is_not_in_target_script(lang, script, "name2"),
+        is_not_in_target_script(lang, _script, "name"),
+        is_not_in_target_script(lang, _script, "name2"),
       ],
       // Both `name` and `name2` are not in the target script
       [
         "format",
         ["get", `${name_prefix}name:${lang}`],
-        get_font_formatting(script),
+        get_font_formatting(_script),
         "\n",
         {},
         ...get_name_block("name"),
@@ -180,7 +180,7 @@ export function get_multiline_name(lang: string, script?: string) {
       // Either `name` or `name2` is in the target script
       [
         "case",
-        is_not_in_target_script(lang, script, "name2"),
+        is_not_in_target_script(lang, _script, "name2"),
         // `name2` is not in the target script, therefore `name` is in the target script
         [
           "format",
@@ -190,7 +190,7 @@ export function get_multiline_name(lang: string, script?: string) {
             ["get", "pmap:pgf:name"],
             ["get", "name"],
           ],
-          get_font_formatting(script),
+          get_font_formatting(_script),
           "\n",
           {},
           ...get_name_block("name2"),
@@ -204,7 +204,7 @@ export function get_multiline_name(lang: string, script?: string) {
             ["get", "pmap:pgf:name2"],
             ["get", "name2"],
           ],
-          get_font_formatting(script),
+          get_font_formatting(_script),
           "\n",
           {},
           ...get_name_block("name"),
@@ -216,15 +216,15 @@ export function get_multiline_name(lang: string, script?: string) {
       "case",
       [
         "all",
-        is_not_in_target_script(lang, script, "name"),
-        is_not_in_target_script(lang, script, "name2"),
-        is_not_in_target_script(lang, script, "name3"),
+        is_not_in_target_script(lang, _script, "name"),
+        is_not_in_target_script(lang, _script, "name2"),
+        is_not_in_target_script(lang, _script, "name3"),
       ],
       // All three `name`, `name2`, and `name3` are not in the target script
       [
         "format",
         ["get", `${name_prefix}name:${lang}`],
-        get_font_formatting(script),
+        get_font_formatting(_script),
         "\n",
         {},
         ...get_name_block("name"),
@@ -238,7 +238,7 @@ export function get_multiline_name(lang: string, script?: string) {
       // Exactly one of the 3 script segments `name`, `name2`, or `name3` is in the target script
       [
         "case",
-        ["!", is_not_in_target_script(lang, script, "name")],
+        ["!", is_not_in_target_script(lang, _script, "name")],
         // `name` is in the target script, and `name2` and `name3` are not
         [
           "format",
@@ -248,7 +248,7 @@ export function get_multiline_name(lang: string, script?: string) {
             ["get", "pmap:pgf:name"],
             ["get", "name"],
           ],
-          get_font_formatting(script),
+          get_font_formatting(_script),
           "\n",
           {},
           ...get_name_block("name2"),
@@ -256,7 +256,7 @@ export function get_multiline_name(lang: string, script?: string) {
           {},
           ...get_name_block("name3"),
         ],
-        ["!", is_not_in_target_script(lang, script, "name2")],
+        ["!", is_not_in_target_script(lang, _script, "name2")],
         // `name2` is in the target script, and `name` and `name3` are not
         [
           "format",
@@ -266,7 +266,7 @@ export function get_multiline_name(lang: string, script?: string) {
             ["get", "pmap:pgf:name2"],
             ["get", "name2"],
           ],
-          get_font_formatting(script),
+          get_font_formatting(_script),
           "\n",
           {},
           ...get_name_block("name"),
@@ -283,7 +283,7 @@ export function get_multiline_name(lang: string, script?: string) {
             ["get", "pmap:pgf:name3"],
             ["get", "name3"],
           ],
-          get_font_formatting(script),
+          get_font_formatting(_script),
           "\n",
           {},
           ...get_name_block("name"),
