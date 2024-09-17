@@ -18,6 +18,7 @@ import { language_script_pairs } from "../../styles/src/language.ts";
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 import { FileSource, PMTiles, Protocol } from "pmtiles";
+import { Build } from "./BuildsComponent";
 import { createHash, parseHash } from "./hash";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
@@ -159,6 +160,7 @@ function MapLibreView(props: {
   theme: string;
   lang: string;
   localSprites: boolean;
+  showBoxes: boolean;
   tiles?: string;
   npmLayers: LayerSpecification[];
   droppedArchive?: PMTiles;
@@ -247,6 +249,13 @@ function MapLibreView(props: {
   }, [props.droppedArchive]);
 
   useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.showTileBoundaries = props.showBoxes;
+      mapRef.current.showCollisionBoxes = props.showBoxes;
+    }
+  }, [props.showBoxes]);
+
+  useEffect(() => {
     (async () => {
       if (mapRef.current) {
         let minZoom: number | undefined;
@@ -291,6 +300,9 @@ export default function MapViewComponent() {
   const [localSprites, setLocalSprites] = useState<boolean>(
     hash.local_sprites === "true",
   );
+  const [showBoxes, setShowBoxes] = useState<boolean>(
+    hash.show_boxes === "true",
+  );
   const [showStyleJson, setShowStyleJson] = useState<boolean>(false);
   const [publishedStyleVersion, setPublishedStyleVersion] = useState<
     string | undefined
@@ -305,6 +317,7 @@ export default function MapViewComponent() {
       lang: lang,
       tiles: tiles,
       local_sprites: localSprites ? "true" : undefined,
+      show_boxes: showBoxes ? "true" : undefined,
       npm_version: publishedStyleVersion,
     };
     location.hash = createHash(location.hash, record);
@@ -325,7 +338,13 @@ export default function MapViewComponent() {
           return r.json();
         })
         .then((j) => {
-          setTiles(`https://build.protomaps.com/${j[j.length - 1].key}`);
+          // freeze at 0917 while we transition to v4
+          const builds = j.filter(
+            (build: Build) => build.key <= "20240917.pmtiles",
+          );
+          setTiles(
+            `https://build.protomaps.com/${builds[builds.length - 1].key}`,
+          );
         });
     }
   }, [tiles]);
@@ -416,6 +435,13 @@ export default function MapViewComponent() {
           onChange={(e) => setLocalSprites(e.currentTarget.checked)}
         />
         <label htmlFor="localSprites">local sprites</label>
+        <input
+          id="showBoxes"
+          type="checkbox"
+          checked={showBoxes}
+          onChange={(e) => setShowBoxes(e.currentTarget.checked)}
+        />
+        <label htmlFor="showBoxes">boxes</label>
         {knownNpmVersions.length === 0 ? (
           <button type="button" onClick={loadVersionsFromNpm}>
             npm version...
@@ -451,6 +477,7 @@ export default function MapViewComponent() {
         <MapLibreView
           tiles={tiles}
           localSprites={localSprites}
+          showBoxes={showBoxes}
           theme={theme}
           lang={lang}
           npmLayers={npmLayers}

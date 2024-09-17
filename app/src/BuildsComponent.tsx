@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-interface Build {
+export interface Build {
   uploaded: string;
   key: string;
   size: number;
