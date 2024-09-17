@@ -337,6 +337,8 @@ export default function MapViewComponent() {
           return r.json();
         })
         .then((j) => {
+          // freeze at 0917 while we transition to v4
+          j = j.filter((build:any) => build.key <= "20240917.pmtiles");
           setTiles(`https://build.protomaps.com/${j[j.length - 1].key}`);
         });
     }
