@@ -41,7 +41,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
       sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
         "village_green", "allotments") ||
       sf.hasTag("leisure") ||
-      sf.hasTag("natural", "beach") ||
+      sf.hasTag("natural", "beach", "peak") ||
       sf.hasTag("railway", "station") ||
       sf.hasTag("highway", "bus_stop") ||
       sf.hasTag("shop") ||
@@ -109,6 +109,10 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
       } else if (sf.hasTag("highway", "bus_stop")) {
         kind = sf.getString("highway");
         minZoom = 17;
+      } else if (sf.hasTag("natural", "peak")) {
+        kind = sf.getString("natural");
+        // TODO: rank based on ele
+        minZoom = 13;
       } else {
         // Avoid problem of too many "other" kinds
         // All these will default to min_zoom of 15
@@ -441,17 +445,18 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
           // (there is no merging of POIs like with lines and polygons in other layers)
           .setId(FeatureId.create(sf))
           // Core Tilezen schema properties
-          .setAttr("pmap:kind", kind)
+          .setAttr("kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", minZoom + 1)
+          .setAttr("min_zoom", minZoom + 1)
           //
           // DEBUG
-          //.setAttr("pmap:area_debug", wayArea)
+          //.setAttr("area_debug", wayArea)
           //
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
+          .setAttr("ele", sf.getString("ele"))
           // Extra OSM tags for certain kinds of places
           // These are duplicate of what's in the kind_detail tag
           .setZoomRange(Math.min(15, minZoom), 15)
@@ -459,7 +464,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
 
         // Core Tilezen schema properties
         if (!kindDetail.isEmpty()) {
-          polyLabelPosition.setAttr("pmap:kind_detail", kindDetail);
+          polyLabelPosition.setAttr("kind_detail", kindDetail);
         }
 
         OsmNames.setOsmNames(polyLabelPosition, sf, 0);
@@ -482,10 +487,10 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
           // (there is no merging of POIs like with lines and polygons in other layers)
           .setId(FeatureId.create(sf))
           // Core Tilezen schema properties
-          .setAttr("pmap:kind", kind)
+          .setAttr("kind", kind)
           // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
           // 512 px zooms versus 256 px logical zooms
-          .setAttr("pmap:min_zoom", minZoom + 1)
+          .setAttr("min_zoom", minZoom + 1)
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
@@ -494,7 +499,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
 
         // Core Tilezen schema properties
         if (!kindDetail.isEmpty()) {
-          pointFeature.setAttr("pmap:kind_detail", kindDetail);
+          pointFeature.setAttr("kind_detail", kindDetail);
         }
 
         OsmNames.setOsmNames(pointFeature, sf, 0);
@@ -510,7 +515,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
           sf.hasTag("historic", "landmark", "wayside_cross") ||
           sf.hasTag("leisure", "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area") ||
           sf.hasTag("tourism", "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut"))) {
-          pointFeature.setAttr("pmap:min_zoom", 17);
+          pointFeature.setAttr("min_zoom", 17);
         }
 
         if (sf.hasTag("amenity", "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
@@ -527,7 +532,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
             "travel_agency") ||
           sf.hasTag("tourism", "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
             "guest_house", "hostel")) {
-          pointFeature.setAttr("pmap:min_zoom", 17);
+          pointFeature.setAttr("min_zoom", 17);
         }
 
         // Server sort features so client label collisions are pre-sorted
@@ -548,7 +553,7 @@ public class Pois implements ForwardingProfile.FeaturePostProcessor {
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
 
-    // TODO: (nvkelso 20230623) Consider adding a "pmap:rank" here for POIs, like for Places
+    // TODO: (nvkelso 20230623) Consider adding a "rank" here for POIs, like for Places
 
     return items;
   }

@@ -135,9 +135,9 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
       var feat = features.line("roads")
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
-        .setAttr("pmap:kind", kind)
+        .setAttr("kind", kind)
         // To power better client label collisions
-        .setAttr("pmap:min_zoom", minZoom + 1)
+        .setAttr("min_zoom", minZoom + 1)
         .setAttrWithMinzoom("ref", shield.text(), minZoomShieldText)
         .setAttrWithMinzoom("shield_text_length", shieldTextLength, minZoomShieldText)
         .setAttrWithMinzoom("network", shield.network(), minZoomShieldText)
@@ -152,9 +152,9 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
 
       // Core Tilezen schema properties
       if (!kindDetail.isEmpty()) {
-        feat.setAttr("pmap:kind_detail", kindDetail);
+        feat.setAttr("kind_detail", kindDetail);
       } else {
-        feat.setAttr("pmap:kind_detail", highway);
+        feat.setAttr("kind_detail", highway);
       }
 
       // Core OSM tags for different kinds of places
@@ -164,18 +164,18 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
 
       if (sf.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
         "tertiary_link")) {
-        feat.setAttr("pmap:link", 1);
+        feat.setAttr("link", 1);
       }
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
       // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
       if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
-        feat.setAttrWithMinzoom("pmap:level", 1, 12);
+        feat.setAttrWithMinzoom("level", 1, 12);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
-        feat.setAttrWithMinzoom("pmap:level", -1, 12);
+        feat.setAttrWithMinzoom("level", -1, 12);
       } else {
-        feat.setAttrWithMinzoom("pmap:level", 0, 12);
+        feat.setAttrWithMinzoom("level", 0, 12);
       }
 
       // Server sort features so client label collisions are pre-sorted
@@ -198,8 +198,8 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
 
     for (var item : items) {
       item.attrs().remove("highway");
-      if (!item.attrs().containsKey("pmap:level")) {
-        item.attrs().put("pmap:level", 0);
+      if (!item.attrs().containsKey("level")) {
+        item.attrs().put("level", 0);
       }
     }
 

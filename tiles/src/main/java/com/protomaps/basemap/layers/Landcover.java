@@ -26,7 +26,7 @@ public class Landcover implements ForwardingProfile.FeaturePostProcessor {
 
     features.polygon(this.name())
       .setId(FeatureId.create(sf))
-      .setAttr("pmap:kind", kind)
+      .setAttr("kind", kind)
       .setZoomRange(0, 7)
       .setSortKey(sortKey)
       .setMinPixelSize(0.0);

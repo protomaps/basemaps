@@ -76,7 +76,7 @@ public class Buildings implements ForwardingProfile.FeaturePostProcessor {
       var feature = features.polygon(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
-        .setAttr("pmap:kind", kind)
+        .setAttr("kind", kind)
         // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 13)
         // NOTE: Height is quantized by zoom in a post-process step
@@ -85,7 +85,7 @@ public class Buildings implements ForwardingProfile.FeaturePostProcessor {
 
       if (kind.equals("building_part")) {
         // We don't need to set WithMinzoom because that's implicate with the ZoomRange
-        feature.setAttr("pmap:kind_detail", sf.getString("building:part"));
+        feature.setAttr("kind_detail", sf.getString("building:part"));
         feature.setAttr(MIN_HEIGHT_KEY, height.min_height());
       }
 

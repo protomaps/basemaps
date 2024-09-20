@@ -30,11 +30,11 @@ public class NeNames {
         feature.setAttrWithMinzoom("name", value, minZoom);
 
         if (!script.equals("Latin") && !script.equals("Generic")) {
-          feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+          feature.setAttrWithMinzoom("script", script, minZoom);
         }
 
         String encodedValue = TextEngine.encodeRegisteredScripts(value);
-        feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
+        feature.setAttrWithMinzoom("pgf:name", encodedValue, minZoom);
       }
 
       if (key.startsWith("name:")) {
@@ -42,7 +42,7 @@ public class NeNames {
 
         if (fontRegistry.getScripts().contains(script)) {
           String encodedValue = TextEngine.encodeRegisteredScripts(value);
-          feature.setAttrWithMinzoom("pmap:pgf:" + key, encodedValue, minZoom);
+          feature.setAttrWithMinzoom("pgf:" + key, encodedValue, minZoom);
         }
       }
     }

@@ -1,3 +1,10 @@
+Tiles v4.0.0-alpha.3
+------
+- remove all `pmap:` prefixes (breaking change) [#282]
+- remove `physical_point`, `natural` and `physical_line` layers.
+	- move into `landuse`, `water`, `pois` and `earth` layers to align with Tilezen. 
+	- Some layers are now mixed geometry types.
+
 Styles v4.0.0-alpha.0
 ------
 - Add lang and script parameters to TypeScript style generation [#275]

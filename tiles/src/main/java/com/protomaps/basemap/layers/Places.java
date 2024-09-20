@@ -268,13 +268,13 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       var feat = features.point(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
-        .setAttr("pmap:kind", kind)
-        .setAttr("pmap:kind_detail", place)
-        .setAttr("pmap:min_zoom", minZoom + 1)
+        .setAttr("kind", kind)
+        .setAttr("kind_detail", place)
+        .setAttr("min_zoom", minZoom + 1)
         // Core OSM tags for different kinds of places
         .setAttr("capital", sf.getString("capital"))
         .setAttr("population", population)
-        .setAttr("pmap:population_rank", populationRank)
+        .setAttr("population_rank", populationRank)
         // Generally we use NE and low zooms, and OSM at high zooms
         // With exceptions for country and region labels
         .setZoomRange((int) minZoom, (int) maxZoom);

@@ -18,10 +18,11 @@ public class Landuse implements ForwardingProfile.FeaturePostProcessor {
       sf.hasTag("amenity", "hospital", "school", "kindergarten", "university", "college") ||
       sf.hasTag("boundary", "national_park", "protected_area") ||
       sf.hasTag("landuse", "recreation_ground", "industrial", "brownfield", "railway", "cemetery", "commercial",
-        "grass", "orchard", "farmland", "farmyard", "residential", "military", "village_green", "allotments") ||
+        "grass", "orchard", "farmland", "farmyard", "residential", "military", "village_green", "allotments", "forest",
+        "meadow", "grass") ||
       sf.hasTag("leisure", "park", "garden", "golf_course", "dog_park", "playground", "pitch", "nature_reserve") ||
       sf.hasTag("man_made", "pier", "bridge") ||
-      sf.hasTag("natural", "beach") ||
+      sf.hasTag("natural", "beach", "wood", "glacier", "grass", "scrub", "sand", "wetland", "bare_rock") ||
       // TODO: (nvkelso 20230622) This use of the place tag here is dubious, though paired with "residential"
       sf.hasTag("place", "neighbourhood") ||
       sf.hasTag("railway", "platform") ||
@@ -152,7 +153,7 @@ public class Landuse implements ForwardingProfile.FeaturePostProcessor {
       features.polygon(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
-        .setAttr("pmap:kind", kind)
+        .setAttr("kind", kind)
         // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
         //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)

@@ -31,7 +31,7 @@ class BoundariesTest extends LayerTest {
     profile.processFeature(way, collector);
 
     assertFeatures(12,
-      List.of(Map.of("pmap:kind", "country")),
+      List.of(Map.of("kind", "country")),
       collector);
   }
 
