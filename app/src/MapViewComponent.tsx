@@ -337,9 +337,7 @@ export default function MapViewComponent() {
           return r.json();
         })
         .then((j) => {
-          setTiles(
-            `https://build.protomaps.com/${j[j.length - 1].key}`,
-          );
+          setTiles(`https://build.protomaps.com/${j[j.length - 1].key}`);
         });
     }
   }, [tiles]);
