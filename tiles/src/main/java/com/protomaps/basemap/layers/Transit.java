@@ -77,9 +77,9 @@ public class Transit implements ForwardingProfile.FeaturePostProcessor {
       var feature = features.line(this.name())
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
-        .setAttr("pmap:kind", kind)
+        .setAttr("kind", kind)
         // Used for client-side label collisions
-        .setAttr("pmap:min_zoom", minZoom + 1)
+        .setAttr("min_zoom", minZoom + 1)
         // Core OSM tags for different kinds of places
         .setAttr("layer", Parse.parseIntOrNull(sf.getString("layer")))
         .setAttr("network", sf.getString("network"))
@@ -90,18 +90,18 @@ public class Transit implements ForwardingProfile.FeaturePostProcessor {
 
       // Core Tilezen schema properties
       if (!kindDetail.isEmpty()) {
-        feature.setAttr("pmap:kind_detail", kindDetail);
+        feature.setAttr("kind_detail", kindDetail);
       }
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
       // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
       if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
-        feature.setAttr("pmap:level", 1);
+        feature.setAttr("level", 1);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
-        feature.setAttr("pmap:level", -1);
+        feature.setAttr("level", -1);
       } else {
-        feature.setAttr("pmap:level", 0);
+        feature.setAttr("level", 0);
       }
 
       // Too many small pier lines otherwise

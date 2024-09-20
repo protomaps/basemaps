@@ -11,9 +11,6 @@ import com.protomaps.basemap.layers.Buildings;
 import com.protomaps.basemap.layers.Earth;
 import com.protomaps.basemap.layers.Landcover;
 import com.protomaps.basemap.layers.Landuse;
-import com.protomaps.basemap.layers.Natural;
-import com.protomaps.basemap.layers.PhysicalLine;
-import com.protomaps.basemap.layers.PhysicalPoint;
 import com.protomaps.basemap.layers.Places;
 import com.protomaps.basemap.layers.Pois;
 import com.protomaps.basemap.layers.Roads;
@@ -47,19 +44,6 @@ public class Basemap extends ForwardingProfile {
     registerHandler(landcover);
     registerSourceHandler("landcover", landcover::processLandcover);
 
-    var natural = new Natural();
-    registerHandler(natural);
-    registerSourceHandler("osm", natural::processOsm);
-
-    var physicalLine = new PhysicalLine();
-    registerHandler(physicalLine);
-    registerSourceHandler("osm", physicalLine::processOsm);
-
-    var physicalPoint = new PhysicalPoint();
-    registerHandler(physicalPoint);
-    registerSourceHandler("osm", physicalPoint::processOsm);
-    registerSourceHandler("ne", physicalPoint::processNe);
-
     var place = new Places(naturalEarthDb);
     registerHandler(place);
     registerSourceHandler("osm", place::processOsm);
@@ -84,6 +68,8 @@ public class Basemap extends ForwardingProfile {
 
     var earth = new Earth();
     registerHandler(earth);
+
+    registerSourceHandler("osm", earth::processOsm);
     registerSourceHandler("osm_land", earth::processPreparedOsm);
     registerSourceHandler("ne", earth::processNe);
   }
@@ -100,7 +86,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.0.0-alpha.3";
+    return "4.0.0-alpha.4";
   }
 
   @Override
@@ -111,7 +97,7 @@ public class Basemap extends ForwardingProfile {
   @Override
   public String attribution() {
     return """
-      <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>
+      <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap</a>
       """.trim();
   }
 

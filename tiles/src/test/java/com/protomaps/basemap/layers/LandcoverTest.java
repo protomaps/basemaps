@@ -23,7 +23,7 @@ class LandcoverTest extends LayerTest {
   })
   void simple(String daylightClassString, String expectedString, Integer expectedSortKey) {
     assertFeatures(7,
-      List.of(Map.of("pmap:kind", expectedString, "_sortkey", expectedSortKey)),
+      List.of(Map.of("kind", expectedString, "_sortkey", expectedSortKey)),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("class", daylightClassString)),

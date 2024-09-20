@@ -84,12 +84,12 @@ public class OsmNames {
           script = Script.getScript(segments.get(index));
 
           if (!script.equals("Latin") && !script.equals("Generic")) {
-            feature.setAttrWithMinzoom("pmap:script", script, minZoom);
+            feature.setAttrWithMinzoom("script", script, minZoom);
           }
 
           String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
           if (!encodedValue.equals(segments.get(index))) {
-            feature.setAttrWithMinzoom("pmap:pgf:name", encodedValue, minZoom);
+            feature.setAttrWithMinzoom("pgf:name", encodedValue, minZoom);
           }
         }
         if (segments.size() >= 2) {
@@ -99,12 +99,12 @@ public class OsmNames {
           script = Script.getScript(segments.get(index));
 
           if (!script.equals("Latin") && !script.equals("Generic")) {
-            feature.setAttrWithMinzoom("pmap:script2", script, minZoom);
+            feature.setAttrWithMinzoom("script2", script, minZoom);
           }
 
           String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
           if (!encodedValue.equals(segments.get(index))) {
-            feature.setAttrWithMinzoom("pmap:pgf:name2", encodedValue, minZoom);
+            feature.setAttrWithMinzoom("pgf:name2", encodedValue, minZoom);
           }
         }
         if (segments.size() >= 3) {
@@ -114,12 +114,12 @@ public class OsmNames {
           script = Script.getScript(segments.get(index));
 
           if (!script.equals("Latin") && !script.equals("Generic")) {
-            feature.setAttrWithMinzoom("pmap:script3", script, minZoom);
+            feature.setAttrWithMinzoom("script3", script, minZoom);
           }
 
           String encodedValue = TextEngine.encodeRegisteredScripts(segments.get(index));
           if (!encodedValue.equals(segments.get(index))) {
-            feature.setAttrWithMinzoom("pmap:pgf:name3", encodedValue, minZoom);
+            feature.setAttrWithMinzoom("pgf:name3", encodedValue, minZoom);
           }
         }
       }
@@ -130,7 +130,7 @@ public class OsmNames {
         if (fontRegistry.getScripts().contains(script)) {
           String encodedValue = TextEngine.encodeRegisteredScripts(value);
           if (!encodedValue.equals(value)) {
-            feature.setAttrWithMinzoom("pmap:pgf:" + key, encodedValue, minZoom);
+            feature.setAttrWithMinzoom("pgf:" + key, encodedValue, minZoom);
           }
         }
       }

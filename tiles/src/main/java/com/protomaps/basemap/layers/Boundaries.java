@@ -143,15 +143,15 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
 
       var line = features.line(this.name())
         // Core Tilezen schema properties
-        .setAttr("pmap:kind", kind)
+        .setAttr("kind", kind)
         // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
         //.setAttr("name", sf.getString("name"))
         // Preview v4 schema (disabled)
-        //.setAttr("pmap:min_zoom", sf.getLong("min_zoom"))
-        .setAttr("pmap:min_admin_level", adminLevel)
+        //.setAttr("min_zoom", sf.getLong("min_zoom"))
+        .setAttr("min_admin_level", adminLevel)
         // Reduce file size at low zooms
-        //.setAttr("pmap:ne_id", sf.getString("ne_id"))
-        .setAttr("pmap:brk_a3", sf.getString("brk_a3"))
+        //.setAttr("ne_id", sf.getString("ne_id"))
+        .setAttr("brk_a3", sf.getString("brk_a3"))
         .setZoomRange(
           sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
           themeMaxZoom)
@@ -161,7 +161,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
 
       // Core Tilezen schema properties
       if (!kindDetail.isEmpty()) {
-        line.setAttr("pmap:kind_detail", kindDetail);
+        line.setAttr("kind_detail", kindDetail);
       }
 
       if (disputed) {
@@ -238,16 +238,16 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
           var line = features.line(this.name())
             .setId(FeatureId.create(sf))
             // Core Tilezen schema properties
-            .setAttr("pmap:kind", kind)
-            .setAttr("pmap:min_admin_level", minAdminLevel.getAsInt())
+            .setAttr("kind", kind)
+            .setAttr("min_admin_level", minAdminLevel.getAsInt())
             .setMinPixelSize(0)
             // Preview v4 schema (disabled)
-            //.setAttr("pmap:min_zoom", min_zoom)
+            //.setAttr("min_zoom", min_zoom)
             .setMinZoom(themeMinZoom);
 
           // Core Tilezen schema properties
           if (!kindDetail.isEmpty()) {
-            line.setAttr("pmap:kind_detail", kindDetail);
+            line.setAttr("kind_detail", kindDetail);
           }
 
           // Core Tilezen schema properties

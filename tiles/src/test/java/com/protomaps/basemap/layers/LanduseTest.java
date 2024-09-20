@@ -12,7 +12,7 @@ class LanduseTest extends LayerTest {
   @Test
   void simple() {
     assertFeatures(15,
-      List.of(Map.of("pmap:kind", "hospital")),
+      List.of(Map.of("kind", "hospital")),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("amenity", "hospital")),
@@ -25,7 +25,7 @@ class LanduseTest extends LayerTest {
   @Test
   void landuseVillageGreen() {
     assertFeatures(15,
-      List.of(Map.of("pmap:kind", "village_green")),
+      List.of(Map.of("kind", "village_green")),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("landuse", "village_green")),
@@ -38,10 +38,23 @@ class LanduseTest extends LayerTest {
   @Test
   void landuseAllotments() {
     assertFeatures(15,
-      List.of(Map.of("pmap:kind", "allotments")),
+      List.of(Map.of("kind", "allotments")),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("landuse", "allotments")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void landuseGlacier() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "glacier")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("natural", "glacier")),
         "osm",
         null,
         0
