@@ -21,6 +21,7 @@ export function nolabels_layers(
     {
       id: "earth",
       type: "fill",
+      filter: ["==", ["geometry-type"], "Polygon"],
       source: source,
       "source-layer": "earth",
       paint: {
@@ -36,7 +37,7 @@ export function nolabels_layers(
         "any",
         [
           "in",
-          "pmap:kind",
+          "kind",
           "national_park",
           "park",
           "cemetery",
@@ -65,7 +66,7 @@ export function nolabels_layers(
       "source-layer": "landuse",
       filter: [
         "any",
-        ["in", "pmap:kind", "allotments", "village_green", "playground"],
+        ["in", "kind", "allotments", "village_green", "playground"],
       ],
       paint: {
         "fill-color": t.park_b,
@@ -77,7 +78,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "pmap:kind", "hospital"]],
+      filter: ["any", ["==", "kind", "hospital"]],
       paint: {
         "fill-color": t.hospital,
       },
@@ -87,7 +88,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "pmap:kind", "industrial"]],
+      filter: ["any", ["==", "kind", "industrial"]],
       paint: {
         "fill-color": t.industrial,
       },
@@ -97,7 +98,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "pmap:kind", "school", "university", "college"]],
+      filter: ["any", ["in", "kind", "school", "university", "college"]],
       paint: {
         "fill-color": t.school,
       },
@@ -107,7 +108,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "pmap:kind", "beach"]],
+      filter: ["any", ["in", "kind", "beach"]],
       paint: {
         "fill-color": t.beach,
       },
@@ -117,7 +118,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "pmap:kind", "zoo"]],
+      filter: ["any", ["in", "kind", "zoo"]],
       paint: {
         "fill-color": t.zoo,
       },
@@ -127,20 +128,17 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: [
-        "any",
-        ["in", "pmap:kind", "military", "naval_base", "airfield"],
-      ],
+      filter: ["any", ["in", "kind", "military", "naval_base", "airfield"]],
       paint: {
         "fill-color": t.zoo,
       },
     },
     {
-      id: "natural_wood",
+      id: "landuse_wood",
       type: "fill",
       source: source,
-      "source-layer": "natural",
-      filter: ["any", ["in", "pmap:kind", "wood", "nature_reserve", "forest"]],
+      "source-layer": "landuse",
+      filter: ["any", ["in", "kind", "wood", "nature_reserve", "forest"]],
       paint: {
         "fill-color": [
           "interpolate",
@@ -154,11 +152,11 @@ export function nolabels_layers(
       },
     },
     {
-      id: "natural_scrub",
+      id: "landuse_scrub",
       type: "fill",
       source: source,
-      "source-layer": "natural",
-      filter: ["in", "pmap:kind", "scrub", "grassland", "grass"],
+      "source-layer": "landuse",
+      filter: ["in", "kind", "scrub", "grassland", "grass"],
       paint: {
         "fill-color": [
           "interpolate",
@@ -172,21 +170,21 @@ export function nolabels_layers(
       },
     },
     {
-      id: "natural_glacier",
+      id: "landuse_glacier",
       type: "fill",
       source: source,
-      "source-layer": "natural",
-      filter: ["==", "pmap:kind", "glacier"],
+      "source-layer": "landuse",
+      filter: ["==", "kind", "glacier"],
       paint: {
         "fill-color": t.glacier,
       },
     },
     {
-      id: "natural_sand",
+      id: "landuse_sand",
       type: "fill",
       source: source,
-      "source-layer": "natural",
-      filter: ["==", "pmap:kind", "sand"],
+      "source-layer": "landuse",
+      filter: ["==", "kind", "sand"],
       paint: {
         "fill-color": t.sand,
       },
@@ -196,7 +194,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "pmap:kind", "aerodrome"]],
+      filter: ["any", ["in", "kind", "aerodrome"]],
       paint: {
         "fill-color": t.aerodrome,
       },
@@ -206,7 +204,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "transit",
-      filter: ["any", ["in", "pmap:kind_detail", "runway"]],
+      filter: ["any", ["in", "kind_detail", "runway"]],
       paint: {
         "line-color": t.runway,
         "line-width": [
@@ -228,7 +226,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "transit",
       minzoom: 13,
-      filter: ["any", ["in", "pmap:kind_detail", "taxiway"]],
+      filter: ["any", ["in", "kind_detail", "taxiway"]],
       paint: {
         "line-color": t.runway,
         "line-width": [
@@ -252,7 +250,7 @@ export function nolabels_layers(
     //   minzoom: 14,
     //   filter: [
     //     "any",
-    //     ["in", "pmap:kind_detail", "runway", "taxiway"],
+    //     ["in", "kind_detail", "runway", "taxiway"],
     //   ],
     //   paint: {
     //     "fill-color": t.runway,
@@ -261,6 +259,7 @@ export function nolabels_layers(
     {
       id: "water",
       type: "fill",
+      filter: ["==", ["geometry-type"], "Polygon"],
       source: source,
       "source-layer": "water",
       paint: {
@@ -268,24 +267,24 @@ export function nolabels_layers(
       },
     },
     {
-      id: "physical_line_stream",
+      id: "water_stream",
       type: "line",
       source: source,
-      "source-layer": "physical_line",
+      "source-layer": "water",
       minzoom: 14,
-      filter: ["all", ["in", "pmap:kind", "stream"]],
+      filter: ["in", "kind", "stream"],
       paint: {
         "line-color": t.water,
         "line-width": 0.5,
       },
     },
     {
-      id: "physical_line_river",
+      id: "water_river",
       type: "line",
       source: source,
-      "source-layer": "physical_line",
+      "source-layer": "water",
       minzoom: 9,
-      filter: ["all", ["in", "pmap:kind", "river"]],
+      filter: ["in", "kind", "river"],
       paint: {
         "line-color": t.water,
         "line-width": [
@@ -306,7 +305,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "pmap:kind", "pedestrian"]],
+      filter: ["any", ["==", "kind", "pedestrian"]],
       paint: {
         "fill-color": t.pedestrian,
       },
@@ -316,7 +315,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "pmap:kind", "pier"]],
+      filter: ["any", ["==", "kind", "pier"]],
       paint: {
         "fill-color": t.pier,
       },
@@ -326,11 +325,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["in", "pmap:kind", "other", "path"],
-      ],
+      filter: ["all", ["<", "level", 0], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.tunnel_other_casing,
         "line-gap-width": [
@@ -349,11 +344,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-      ],
+      filter: ["all", ["<", "level", 0], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.tunnel_minor_casing,
         "line-dasharray": [3, 2],
@@ -386,7 +377,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:link", 1]],
+      filter: ["all", ["<", "level", 0], ["==", "link", 1]],
       paint: {
         "line-color": t.tunnel_link_casing,
         "line-dasharray": [3, 2],
@@ -417,11 +408,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "medium_road"],
-      ],
+      filter: ["all", ["<", "level", 0], ["==", "kind", "medium_road"]],
       paint: {
         "line-color": t.tunnel_medium_casing,
         "line-dasharray": [3, 2],
@@ -452,11 +439,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "major_road"],
-      ],
+      filter: ["all", ["<", "level", 0], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.tunnel_major_casing,
         "line-dasharray": [3, 2],
@@ -489,9 +472,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "highway"],
-        ["!=", "pmap:link", 1],
+        ["<", "level", 0],
+        ["==", "kind", "highway"],
+        ["!=", "link", 1],
       ],
       paint: {
         "line-color": t.tunnel_highway_casing,
@@ -525,11 +508,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["in", "pmap:kind", "other", "path"],
-      ],
+      filter: ["all", ["<", "level", 0], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.tunnel_other,
         "line-dasharray": [4.5, 0.5],
@@ -549,11 +528,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-      ],
+      filter: ["all", ["<", "level", 0], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.tunnel_minor,
         "line-width": [
@@ -576,7 +551,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "pmap:level", 0], ["==", "pmap:link", 1]],
+      filter: ["all", ["<", "level", 0], ["==", "link", 1]],
       paint: {
         "line-color": t.tunnel_minor,
         "line-width": [
@@ -597,11 +572,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "medium_road"],
-      ],
+      filter: ["all", ["<", "level", 0], ["==", "kind", "medium_road"]],
       paint: {
         "line-color": t.tunnel_medium,
         "line-width": [
@@ -624,11 +595,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "major_road"],
-      ],
+      filter: ["all", ["<", "level", 0], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.tunnel_major,
         "line-width": [
@@ -653,9 +620,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["<", "pmap:level", 0],
-        ["==", "pmap:kind", "highway"],
-        ["!=", "pmap:link", 1],
+        ["<", "level", 0],
+        ["==", "kind", "highway"],
+        ["!=", "link", 1],
       ],
       paint: {
         "line-color": t.tunnel_highway,
@@ -691,7 +658,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "transit",
-      filter: ["any", ["==", "pmap:kind", "pier"]],
+      filter: ["any", ["==", "kind", "pier"]],
       paint: {
         "line-color": t.transit_pier,
         "line-width": [
@@ -715,9 +682,9 @@ export function nolabels_layers(
       minzoom: 13,
       filter: [
         "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-        ["==", "pmap:kind_detail", "service"],
+        ["==", "level", 0],
+        ["==", "kind", "minor_road"],
+        ["==", "kind_detail", "service"],
       ],
       paint: {
         "line-color": t.minor_service_casing,
@@ -748,9 +715,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-        ["!=", "pmap:kind_detail", "service"],
+        ["==", "level", 0],
+        ["==", "kind", "minor_road"],
+        ["!=", "kind_detail", "service"],
       ],
       paint: {
         "line-color": t.minor_casing,
@@ -784,7 +751,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 13,
-      filter: ["all", ["==", "pmap:link", 1]],
+      filter: ["all", ["==", "link", 1]],
       paint: {
         "line-color": t.minor_casing,
         "line-gap-width": [
@@ -814,11 +781,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "medium_road"],
-      ],
+      filter: ["all", ["==", "level", 0], ["==", "kind", "medium_road"]],
       paint: {
         "line-color": t.medium_casing,
         "line-gap-width": [
@@ -851,11 +814,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "major_road"],
-      ],
+      filter: ["all", ["==", "level", 0], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.major_casing_late,
         "line-gap-width": [
@@ -890,9 +849,9 @@ export function nolabels_layers(
       minzoom: 12,
       filter: [
         "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "highway"],
-        ["!=", "pmap:link", 1],
+        ["==", "level", 0],
+        ["==", "kind", "highway"],
+        ["!=", "link", 1],
       ],
       paint: {
         "line-color": t.highway_casing_late,
@@ -925,11 +884,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["==", "pmap:level", 0],
-        ["in", "pmap:kind", "other", "path"],
-      ],
+      filter: ["all", ["==", "level", 0], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.other,
         "line-dasharray": [3, 1],
@@ -949,7 +904,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["==", "pmap:link", 1]],
+      filter: ["all", ["==", "link", 1]],
       paint: {
         "line-color": t.link,
         "line-width": [
@@ -972,9 +927,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-        ["==", "pmap:kind_detail", "service"],
+        ["==", "level", 0],
+        ["==", "kind", "minor_road"],
+        ["==", "kind_detail", "service"],
       ],
       paint: {
         "line-color": t.minor_service,
@@ -996,9 +951,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-        ["!=", "pmap:kind_detail", "service"],
+        ["==", "level", 0],
+        ["==", "kind", "minor_road"],
+        ["!=", "kind_detail", "service"],
       ],
       paint: {
         "line-color": [
@@ -1030,11 +985,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "medium_road"],
-      ],
+      filter: ["all", ["==", "level", 0], ["==", "kind", "medium_road"]],
       paint: {
         "line-color": t.medium,
         "line-width": [
@@ -1058,11 +1009,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       maxzoom: 12,
-      filter: [
-        "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "major_road"],
-      ],
+      filter: ["all", ["==", "level", 0], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.major_casing_early,
         "line-gap-width": [
@@ -1092,11 +1039,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: [
-        "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "major_road"],
-      ],
+      filter: ["all", ["==", "level", 0], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.major,
         "line-width": [
@@ -1122,9 +1065,9 @@ export function nolabels_layers(
       maxzoom: 12,
       filter: [
         "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "highway"],
-        ["!=", "pmap:link", 1],
+        ["==", "level", 0],
+        ["==", "kind", "highway"],
+        ["!=", "link", 1],
       ],
       paint: {
         "line-color": t.highway_casing_early,
@@ -1157,9 +1100,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "pmap:level", 0],
-        ["==", "pmap:kind", "highway"],
-        ["!=", "pmap:link", 1],
+        ["==", "level", 0],
+        ["==", "kind", "highway"],
+        ["!=", "link", 1],
       ],
       paint: {
         "line-color": t.highway,
@@ -1185,7 +1128,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "transit",
-      filter: ["all", ["==", "pmap:kind", "rail"]],
+      filter: ["all", ["==", "kind", "rail"]],
       paint: {
         "line-dasharray": [0.3, 0.75],
         "line-opacity": 0.5,
@@ -1208,7 +1151,7 @@ export function nolabels_layers(
     //   type: "line",
     //   source: source,
     //   "source-layer": "transit",
-    //   filter: ["all", ["==", "pmap:kind", "rail"]],
+    //   filter: ["all", ["==", "kind", "rail"]],
     //   paint: {
     //     "line-color": t.railway_tracks,
     //     "line-width": 0.8,
@@ -1220,7 +1163,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "boundaries",
-      filter: ["<=", "pmap:min_admin_level", 2],
+      filter: ["<=", "min_admin_level", 2],
       paint: {
         "line-color": t.boundaries,
         "line-width": 1,
@@ -1232,7 +1175,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "boundaries",
-      filter: [">", "pmap:min_admin_level", 2],
+      filter: [">", "min_admin_level", 2],
       paint: {
         "line-color": t.boundaries,
         "line-width": 0.5,
@@ -1245,11 +1188,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["in", "pmap:kind", "other", "path"],
-      ],
+      filter: ["all", [">", "level", 0], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.bridges_other_casing,
         "line-gap-width": [
@@ -1269,7 +1208,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:link", 1]],
+      filter: ["all", [">", "level", 0], ["==", "link", 1]],
       paint: {
         "line-color": t.bridges_minor_casing,
         "line-gap-width": [
@@ -1300,11 +1239,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-      ],
+      filter: ["all", [">", "level", 0], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.bridges_minor_casing,
         "line-gap-width": [
@@ -1337,11 +1272,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "medium_road"],
-      ],
+      filter: ["all", [">", "level", 0], ["==", "kind", "medium_road"]],
       paint: {
         "line-color": t.bridges_medium_casing,
         "line-gap-width": [
@@ -1374,11 +1305,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "major_road"],
-      ],
+      filter: ["all", [">", "level", 0], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.bridges_major_casing,
         "line-gap-width": [
@@ -1409,7 +1336,7 @@ export function nolabels_layers(
     //   source: source,
     //   "source-layer": "roads",
     //   minzoom: 12,
-    //   filter: ["all", [">", "pmap:level", 0], ["==", "pmap:kind", "highway"], ["!=", "pmap:link", 1]],
+    //   filter: ["all", [">", "level", 0], ["==", "kind", "highway"], ["!=", "link", 1]],
     //   paint: {
     //     "line-color": t.bridges_highway_casing,
     //     "line-gap-width": [
@@ -1443,11 +1370,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["in", "pmap:kind", "other", "path"],
-      ],
+      filter: ["all", [">", "level", 0], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.bridges_other,
         "line-dasharray": [2, 1],
@@ -1468,11 +1391,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "minor_road"],
-      ],
+      filter: ["all", [">", "level", 0], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.bridges_minor,
         "line-width": [
@@ -1496,7 +1415,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "pmap:level", 0], ["==", "pmap:link", 1]],
+      filter: ["all", [">", "level", 0], ["==", "link", 1]],
       paint: {
         "line-color": t.bridges_minor,
         "line-width": [
@@ -1518,11 +1437,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "medium_road"],
-      ],
+      filter: ["all", [">", "level", 0], ["==", "kind", "medium_road"]],
       paint: {
         "line-color": t.bridges_medium,
         "line-width": [
@@ -1546,11 +1461,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: [
-        "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "major_road"],
-      ],
+      filter: ["all", [">", "level", 0], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.bridges_major,
         "line-width": [
@@ -1576,9 +1487,9 @@ export function nolabels_layers(
       minzoom: 12,
       filter: [
         "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "highway"],
-        ["!=", "pmap:link", 1],
+        [">", "level", 0],
+        ["==", "kind", "highway"],
+        ["!=", "link", 1],
       ],
       paint: {
         "line-color": t.bridges_highway_casing,
@@ -1613,9 +1524,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        [">", "pmap:level", 0],
-        ["==", "pmap:kind", "highway"],
-        ["!=", "pmap:link", 1],
+        [">", "level", 0],
+        ["==", "kind", "highway"],
+        ["!=", "link", 1],
       ],
       paint: {
         "line-color": t.bridges_highway,
@@ -1647,12 +1558,12 @@ export function labels_layers(
 ): LayerSpecification[] {
   return [
     {
-      id: "physical_line_waterway_label",
+      id: "water_waterway_label",
       type: "symbol",
       source: source,
-      "source-layer": "physical_line",
+      "source-layer": "water",
       minzoom: 13,
-      filter: ["all", ["in", "pmap:kind", "river", "stream"]],
+      filter: ["all", ["in", "kind", "river", "stream"]],
       layout: {
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
@@ -1668,11 +1579,11 @@ export function labels_layers(
       },
     },
     {
-      id: "physical_point_peak",
+      id: "pois_peak",
       type: "symbol",
       source: source,
-      "source-layer": "physical_point",
-      filter: ["any", ["==", "pmap:kind", "peak"]],
+      "source-layer": "pois",
+      filter: ["any", ["==", "kind", "peak"]],
       layout: {
         "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
@@ -1694,9 +1605,9 @@ export function labels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 15,
-      filter: ["any", ["in", "pmap:kind", "minor_road", "other", "path"]],
+      filter: ["any", ["in", "kind", "minor_road", "other", "path"]],
       layout: {
-        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
         "text-field": get_multiline_name(
@@ -1712,15 +1623,15 @@ export function labels_layers(
       },
     },
     {
-      id: "physical_point_ocean",
+      id: "water_label_ocean",
       type: "symbol",
       source: source,
-      "source-layer": "physical_point",
+      "source-layer": "water",
       filter: [
         "any",
         [
           "in",
-          "pmap:kind",
+          "kind",
           "sea",
           "ocean",
           "lake",
@@ -1746,11 +1657,11 @@ export function labels_layers(
       },
     },
     {
-      id: "physical_point_lakes",
+      id: "water_label_lakes",
       type: "symbol",
       source: source,
-      "source-layer": "physical_point",
-      filter: ["any", ["in", "pmap:kind", "lake", "water"]],
+      "source-layer": "water",
+      filter: ["any", ["in", "kind", "lake", "water"]],
       layout: {
         "text-font": ["Noto Sans Medium"],
         "text-field": get_multiline_name(
@@ -1771,12 +1682,9 @@ export function labels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 11,
-      filter: [
-        "any",
-        ["in", "pmap:kind", "highway", "major_road", "medium_road"],
-      ],
+      filter: ["any", ["in", "kind", "highway", "major_road", "medium_road"]],
       layout: {
-        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
         "text-field": get_multiline_name(
@@ -1796,9 +1704,9 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "pmap:kind", "neighbourhood"],
+      filter: ["==", "kind", "neighbourhood"],
       layout: {
-        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "symbol-sort-key": ["get", "min_zoom"],
         "text-field": get_multiline_name(
           lang,
           script,
@@ -1843,7 +1751,7 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "pmap:kind", "locality"],
+      filter: ["==", "kind", "locality"],
       layout: {
         "icon-image": ["step", ["zoom"], "townspot", 8, ""],
         "icon-size": 0.7,
@@ -1853,7 +1761,7 @@ export function labels_layers(
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-font": [
           "case",
-          ["<=", ["get", "pmap:min_zoom"], 5],
+          ["<=", ["get", "min_zoom"], 5],
           ["literal", ["Noto Sans Medium"]],
           ["literal", ["Noto Sans Regular"]],
         ],
@@ -1875,54 +1783,54 @@ export function labels_layers(
           2,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 13],
+            ["<", ["get", "population_rank"], 13],
             8,
-            [">=", ["get", "pmap:population_rank"], 13],
+            [">=", ["get", "population_rank"], 13],
             13,
             0,
           ],
           4,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 13],
+            ["<", ["get", "population_rank"], 13],
             10,
-            [">=", ["get", "pmap:population_rank"], 13],
+            [">=", ["get", "population_rank"], 13],
             15,
             0,
           ],
           6,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 12],
+            ["<", ["get", "population_rank"], 12],
             11,
-            [">=", ["get", "pmap:population_rank"], 12],
+            [">=", ["get", "population_rank"], 12],
             17,
             0,
           ],
           8,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 11],
+            ["<", ["get", "population_rank"], 11],
             11,
-            [">=", ["get", "pmap:population_rank"], 11],
+            [">=", ["get", "population_rank"], 11],
             18,
             0,
           ],
           10,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 9],
+            ["<", ["get", "population_rank"], 9],
             12,
-            [">=", ["get", "pmap:population_rank"], 9],
+            [">=", ["get", "population_rank"], 9],
             20,
             0,
           ],
           15,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 8],
+            ["<", ["get", "population_rank"], 8],
             12,
-            [">=", ["get", "pmap:population_rank"], 8],
+            [">=", ["get", "population_rank"], 8],
             22,
             0,
           ],
@@ -1956,9 +1864,9 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "pmap:kind", "region"],
+      filter: ["==", "kind", "region"],
       layout: {
-        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "symbol-sort-key": ["get", "min_zoom"],
         "text-field": [
           "step",
           ["zoom"],
@@ -1983,9 +1891,9 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "pmap:kind", "country"],
+      filter: ["==", "kind", "country"],
       layout: {
-        "symbol-sort-key": ["get", "pmap:min_zoom"],
+        "symbol-sort-key": ["get", "min_zoom"],
         "text-field": get_country_name(
           lang,
           script,
@@ -1998,27 +1906,27 @@ export function labels_layers(
           2,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 10],
+            ["<", ["get", "population_rank"], 10],
             8,
-            [">=", ["get", "pmap:population_rank"], 10],
+            [">=", ["get", "population_rank"], 10],
             12,
             0,
           ],
           6,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 8],
+            ["<", ["get", "population_rank"], 8],
             10,
-            [">=", ["get", "pmap:population_rank"], 8],
+            [">=", ["get", "population_rank"], 8],
             18,
             0,
           ],
           8,
           [
             "case",
-            ["<", ["get", "pmap:population_rank"], 7],
+            ["<", ["get", "population_rank"], 7],
             11,
-            [">=", ["get", "pmap:population_rank"], 7],
+            [">=", ["get", "population_rank"], 7],
             20,
             0,
           ],
