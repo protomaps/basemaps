@@ -1,3 +1,8 @@
+Styles v4.0.0-alpha.1
+------
+- remove all `pmap:` prefixes from style (breaking change) (#282)
+- refactor layers as described in tiles v4.0.0-alpha.3
+
 Tiles v4.0.0-alpha.3
 ------
 - remove all `pmap:` prefixes (breaking change) [#282]
