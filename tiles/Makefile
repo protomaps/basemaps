@@ -86,20 +86,6 @@ eu-lowzoom:
 data/sources/planet-latest.osm.pbf:
 	aws s3 cp --no-sign-request s3://osm-pds/planet-latest.osm.pbf data/sources/
 
-# several hours
-data/sources/daylight-latest.osm.pbf:
-	wget https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.26/planet-v1.26.osm.pbf --output-document=data/sources/daylight.osm.pbf
-	wget https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.26/admin-v1.26.osc.bz2 --output-document=data/sources/admin.osc.bz2
-	wget https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.26/coastlines-v1.26.tgz --output-document=data/sources/coastlines.osc.bz2
-	osmium apply-changes data/sources/daylight.osm.pbf data/sources/admin.osc.bz2 data/sources/coastlines.osc.bz2 -o data/sources/daylight-latest.osm.pbf
-
-# plan for over night
-daylight-buildings: data/sources/daylight-latest.osm.pbf
-	wget https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.26/ms-ml-buildings-v1.26.osc.bz2 --output-document=buildings.osc.bz2
-	osmium apply-changes data/sources/daylight-latest.osm.pbf data/sources/buildings.osc.bz2 -o data/sources/daylight-buildings.osm.pbf
-	osmium renumber data/sources/daylight-buildings.osm.pbf -o data/sources/planet-latest.osm.pbf
-	rm data/sources/daylight-buildings.osm.pbf data/sources/daylight-latest.osm.pbf
- 
 planet: data/sources/planet-latest.osm.pbf
 	java -Xmx24g \
   	-jar target/*-with-deps.jar \
