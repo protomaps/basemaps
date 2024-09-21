@@ -106,13 +106,26 @@ interface MaperturePayload {
 
 export default function BuildsComponent() {
   const [builds, setBuilds] = useState<Build[]>([]);
+  const [latestStyle, setLatestStyle] = useState<string>();
 
   // the index is starting from the top (0)
   const [cmpA, setCmpA] = useState<number>(1);
   const [cmpB, setCmpB] = useState<number>(0);
 
-  const style = "2.0.0-alpha.0";
   const theme = "light";
+
+  useEffect(() => {
+    fetch("https://registry.npmjs.org/protomaps-themes-base", {
+      headers: { Accept: "application/vnd.npm.install-v1+json" },
+    })
+      .then((resp) => resp.json())
+      .then((j) => {
+        const versions = Object.keys(j.versions).filter(
+          (v) => +v.split(".")[0] >= 2,
+        );
+        setLatestStyle(versions[versions.length - 1]);
+      });
+  }, []);
 
   const openVisualTests = () => {
     const left = `https://build.protomaps.com/${builds[cmpA].key}`;
@@ -124,18 +137,18 @@ export default function BuildsComponent() {
     const leftKey = builds[cmpA].key.replace(".pmtiles", "");
     const rightKey = builds[cmpB].key.replace(".pmtiles", "");
     const left: MaperturePayload = {
-      name: `${leftKey} ${style} ${theme}`,
+      name: `${leftKey} ${latestStyle} ${theme}`,
       type: "maplibre-gl",
       renderer: "maplibre-gl",
       index: 0,
-      url: `https://build-metadata.protomaps.dev/style@${style}+theme@${theme}+tiles@${leftKey}.json`,
+      url: `https://build-metadata.protomaps.dev/style@${latestStyle}+theme@${theme}+tiles@${leftKey}.json`,
     };
     const right: MaperturePayload = {
-      name: `${rightKey} ${style} ${theme}`,
+      name: `${rightKey} ${latestStyle} ${theme}`,
       type: "maplibre-gl",
       renderer: "maplibre-gl",
       index: 0,
-      url: `https://build-metadata.protomaps.dev/style@${style}+theme@${theme}+tiles@${rightKey}.json`,
+      url: `https://build-metadata.protomaps.dev/style@${latestStyle}+theme@${theme}+tiles@${rightKey}.json`,
     };
     const payload = JSON.stringify([left, right]);
     open(
@@ -164,9 +177,11 @@ export default function BuildsComponent() {
       <button type="button" onClick={openVisualTests}>
         Compare visual tests
       </button>
-      <button type="button" onClick={openMaperture}>
-        Compare in Maperture
-      </button>
+      {latestStyle ? (
+        <button type="button" onClick={openMaperture}>
+          Compare in Maperture (style {latestStyle})
+        </button>
+      ) : null}
       <table>
         <tbody>
           {builds.map((build: Build, idx: number) => (

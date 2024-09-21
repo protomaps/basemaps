@@ -457,7 +457,7 @@ export default function MapViewComponent() {
         <button type="button" onClick={() => setShowStyleJson(!showStyleJson)}>
           get style JSON
         </button>
-        <a href="/visualtests/">visual tests</a>|
+        <a href="/builds/">builds</a>|<a href="/visualtests/">visual tests</a>|
         <a
           target="_blank"
           rel="noreferrer"
