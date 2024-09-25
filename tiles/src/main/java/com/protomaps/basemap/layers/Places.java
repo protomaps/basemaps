@@ -37,7 +37,7 @@ public class Places implements ForwardingProfile.FeaturePostProcessor {
       //                    but results in "Too many possible values"
       // Order ASCENDING (smaller manually curated Natural Earth min_zoom win over larger values, across kinds)
       // minZoom is a float with 1 significant digit for manually curated places
-      .orderByInt((int)(minZoom * 10), 0, 150)
+      .orderByInt((int) (minZoom * 10), 0, 150)
       // Order ASCENDING (smaller values win, countries then locality then neighbourhood, breaks ties for same minZoom)
       .thenByInt(kindRank, 0, 12)
       // Order DESCENDING (larger values win, San Francisco rank 11 wins over Oakland rank 10)
