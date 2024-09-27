@@ -55,4 +55,21 @@ class BuildingsTest extends LayerTest {
     result = Buildings.parseHeight(null, "0.5", null);
     assertEquals(5, result.height());
   }
+
+
+  @Test
+  void railwayTagIsBuilding() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "building")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 1, 1, 0, 1, 0, 0),
+        new HashMap<>(Map.of(
+          "railway", "signal_box",
+          "building", "yes"
+        )),
+        "osm",
+        null,
+        0
+      )));
+  }
 }
