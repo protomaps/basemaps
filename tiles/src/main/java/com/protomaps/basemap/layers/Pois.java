@@ -456,7 +456,7 @@ public class Pois implements ForwardingProfile.LayerPostProcesser {
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
-          .setAttr("ele", sf.getString("ele"))
+          .setAttr("elevation", sf.getString("ele"))
           // Extra OSM tags for certain kinds of places
           // These are duplicate of what's in the kind_detail tag
           .setZoomRange(Math.min(15, minZoom), 15)
