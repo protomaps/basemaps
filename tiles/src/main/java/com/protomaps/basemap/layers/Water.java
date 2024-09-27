@@ -13,7 +13,7 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class Water implements ForwardingProfile.FeaturePostProcessor {
+public class Water implements ForwardingProfile.LayerPostProcesser {
 
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);

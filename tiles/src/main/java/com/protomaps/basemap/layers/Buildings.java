@@ -14,7 +14,7 @@ import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Buildings implements ForwardingProfile.FeaturePostProcessor {
+public class Buildings implements ForwardingProfile.LayerPostProcesser {
 
   static final String HEIGHT_KEY = "height";
   static final String MIN_HEIGHT_KEY = "height";

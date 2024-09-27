@@ -26,6 +26,24 @@ class LinkSimplifyTest {
   }
 
   @Test
+  void testOtherTags() throws GeometryException {
+    List<VectorTile.Feature> items = new ArrayList<>();
+
+    items.add(new VectorTile.Feature("mylayer", 1,
+      VectorTile.encodeGeometry(newLineString(0, 0, 10, 0)),
+      Map.of("highway", "tag1_link")
+    ));
+
+    items.add(new VectorTile.Feature("mylayer", 1,
+      VectorTile.encodeGeometry(newLineString(0, 0, 10, 0)),
+      Map.of("railway", "rail")
+    ));
+
+    var result = LinkSimplify.linkSimplify(items, "highway", "tag1", "tag1_link");
+    assertEquals(1, result.size());
+  }
+
+  @Test
   void testLinkConnectsMainAtAnyPoint() throws GeometryException {
     List<VectorTile.Feature> items = new ArrayList<VectorTile.Feature>();
 

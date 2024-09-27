@@ -32,7 +32,7 @@ public class LinkSimplify {
 
     for (VectorTile.Feature item : items) {
       if (item.geometry().geomType() == GeometryType.LINE) {
-        if (item.attrs().get(key).equals(linkval)) {
+        if (item.tags().containsKey(key) && item.tags().get(key).equals(linkval)) {
           Coordinate[] coordinates = item.geometry().decode().getCoordinates();
           if (coordinates.length == 0)
             continue;
@@ -49,7 +49,7 @@ public class LinkSimplify {
             degrees.put(end, 1);
           }
 
-        } else if (item.attrs().get(key).equals(mainval)) {
+        } else if (item.tags().containsKey(key) && item.tags().get(key).equals(mainval)) {
           Coordinate[] coordinates = item.geometry().decode().getCoordinates();
           for (Coordinate c : coordinates) {
             if (degrees.containsKey(c)) {
@@ -65,7 +65,8 @@ public class LinkSimplify {
     List<VectorTile.Feature> output = new ArrayList<>();
 
     for (VectorTile.Feature item : items) {
-      if (item.geometry().geomType() == GeometryType.LINE && item.attrs().get(key).equals(linkval)) {
+      if (item.geometry().geomType() == GeometryType.LINE && item.tags().containsKey(key) &&
+        item.tags().get(key).equals(linkval)) {
         Coordinate[] coordinates = item.geometry().decode().getCoordinates();
         if (coordinates.length == 0)
           continue;

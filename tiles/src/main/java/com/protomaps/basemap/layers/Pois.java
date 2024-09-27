@@ -14,7 +14,7 @@ import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class Pois implements ForwardingProfile.FeaturePostProcessor {
+public class Pois implements ForwardingProfile.LayerPostProcesser {
 
   private QrankDb qrankDb;
 

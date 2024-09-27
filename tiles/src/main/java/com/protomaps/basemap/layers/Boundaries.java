@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.OptionalInt;
 
 public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
-  ForwardingProfile.FeaturePostProcessor {
+  ForwardingProfile.LayerPostProcesser {
 
   @Override
   public String name() {

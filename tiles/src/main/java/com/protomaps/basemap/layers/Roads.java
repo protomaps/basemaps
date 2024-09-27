@@ -15,7 +15,7 @@ import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
-public class Roads implements ForwardingProfile.FeaturePostProcessor {
+public class Roads implements ForwardingProfile.LayerPostProcesser {
 
   @Override
   public String name() {
@@ -197,9 +197,9 @@ public class Roads implements ForwardingProfile.FeaturePostProcessor {
     }
 
     for (var item : items) {
-      item.attrs().remove("highway");
-      if (!item.attrs().containsKey("level")) {
-        item.attrs().put("level", 0);
+      item.tags().remove("highway");
+      if (!item.tags().containsKey("level")) {
+        item.tags().put("level", 0);
       }
     }
 
