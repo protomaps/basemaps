@@ -1,5 +1,7 @@
 package com.protomaps.basemap.layers;
 
+import static com.protomaps.basemap.feature.Area.worldAreaToSquareMeters;
+
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
@@ -10,7 +12,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
-public class Landuse implements ForwardingProfile.FeaturePostProcessor {
+public class Landuse implements ForwardingProfile.LayerPostProcesser {
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("aeroway", "aerodrome", "runway") ||
@@ -154,10 +156,13 @@ public class Landuse implements ForwardingProfile.FeaturePostProcessor {
         .setId(FeatureId.create(sf))
         // Core Tilezen schema properties
         .setAttr("kind", kind)
+        .setAttr("sort_rank", 189)
+        .setAttr("area", worldAreaToSquareMeters(sf))
         // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
         //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)
         .setMinPixelSize(2.0);
+
 
       // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
       //OsmNames.setOsmNames(poly, sf, 0);
