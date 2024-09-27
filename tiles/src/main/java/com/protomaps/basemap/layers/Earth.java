@@ -10,7 +10,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class Earth implements ForwardingProfile.FeaturePostProcessor {
+public class Earth implements ForwardingProfile.LayerPostProcesser {
   @Override
   public String name() {
     return "earth";

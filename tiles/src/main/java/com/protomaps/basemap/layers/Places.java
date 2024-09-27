@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Places implements ForwardingProfile.FeaturePostProcessor {
+public class Places implements ForwardingProfile.LayerPostProcesser {
 
   private NaturalEarthDb naturalEarthDb;
 
