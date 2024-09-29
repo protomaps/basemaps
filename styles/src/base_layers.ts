@@ -3,7 +3,11 @@ import {
   ExpressionSpecification,
   LayerSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
-import { get_country_name, get_multiline_name } from "./language";
+import {
+  get_country_name,
+  get_multiline_name,
+  get_dual_name,
+} from "./language";
 import { Theme } from "./themes";
 
 export function nolabels_layers(
@@ -1554,8 +1558,13 @@ export function labels_layers(
   source: string,
   t: Theme,
   lang: string,
-  script?: string,
+  langSecondary?: string,
 ): LayerSpecification[] {
+  const textField = (
+    langSecondary === undefined
+      ? get_multiline_name(lang)
+      : get_dual_name(lang, langSecondary)
+  ) as DataDrivenPropertyValueSpecification<string>;
   return [
     {
       id: "water_waterway_label",
@@ -1567,10 +1576,7 @@ export function labels_layers(
       layout: {
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-size": 12,
         "text-letter-spacing": 0.3,
       },
@@ -1586,10 +1592,7 @@ export function labels_layers(
       filter: ["any", ["==", "kind", "peak"]],
       layout: {
         "text-font": ["Noto Sans Italic"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-size": ["interpolate", ["linear"], ["zoom"], 10, 8, 16, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
@@ -1610,10 +1613,7 @@ export function labels_layers(
         "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-size": 12,
       },
       paint: {
@@ -1643,10 +1643,7 @@ export function labels_layers(
       ],
       layout: {
         "text-font": ["Noto Sans Medium"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 10, 10, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
@@ -1664,10 +1661,7 @@ export function labels_layers(
       filter: ["any", ["in", "kind", "lake", "water"]],
       layout: {
         "text-font": ["Noto Sans Medium"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 0, 6, 12, 10, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
@@ -1687,10 +1681,7 @@ export function labels_layers(
         "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-size": 12,
       },
       paint: {
@@ -1707,10 +1698,7 @@ export function labels_layers(
       filter: ["==", "kind", "neighbourhood"],
       layout: {
         "symbol-sort-key": ["get", "min_zoom"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-font": ["Noto Sans Regular"],
         "text-max-width": 7,
         "text-letter-spacing": 0.1,
@@ -1755,10 +1743,7 @@ export function labels_layers(
       layout: {
         "icon-image": ["step", ["zoom"], "townspot", 8, ""],
         "icon-size": 0.7,
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": textField,
         "text-font": [
           "case",
           ["<=", ["get", "min_zoom"], 5],
@@ -1872,7 +1857,7 @@ export function labels_layers(
           ["zoom"],
           ["get", "name:short"],
           6,
-          get_multiline_name(lang, script) as ExpressionSpecification,
+          textField as ExpressionSpecification,
         ],
         "text-font": ["Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 7, 16],
@@ -1894,10 +1879,9 @@ export function labels_layers(
       filter: ["==", "kind", "country"],
       layout: {
         "symbol-sort-key": ["get", "min_zoom"],
-        "text-field": get_country_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-field": (langSecondary === undefined
+          ? get_country_name(lang)
+          : textField) as DataDrivenPropertyValueSpecification<string>,
         "text-font": ["Noto Sans Medium"],
         "text-size": [
           "interpolate",

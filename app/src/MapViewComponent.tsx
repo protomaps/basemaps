@@ -70,6 +70,7 @@ export const isValidPMTiles = (tiles?: string): boolean => {
 function getMaplibreStyle(
   theme: string,
   lang: string,
+  langSecondary: string,
   localSprites: boolean,
   tiles?: string,
   npmLayers?: LayerSpecification[],
@@ -123,16 +124,23 @@ function getMaplibreStyle(
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
   } else {
-    style.layers = style.layers.concat(layers("protomaps", theme, lang));
+    style.layers = style.layers.concat(
+      layers("protomaps", theme, lang, langSecondary),
+    );
   }
   return style;
 }
 
-function StyleJsonPane(props: { theme: string; lang: string }) {
+function StyleJsonPane(props: {
+  theme: string;
+  lang: string;
+  langSecondary: string;
+}) {
   const stringified = JSON.stringify(
     getMaplibreStyle(
       props.theme,
       props.lang,
+      props.langSecondary,
       false,
       "https://example.com/tiles.json",
     ),
@@ -158,6 +166,7 @@ function StyleJsonPane(props: { theme: string; lang: string }) {
 function MapLibreView(props: {
   theme: string;
   lang: string;
+  langSecondary: string;
   localSprites: boolean;
   showBoxes: boolean;
   tiles?: string;
@@ -182,7 +191,7 @@ function MapLibreView(props: {
     const map = new maplibregl.Map({
       hash: "map",
       container: "map",
-      style: getMaplibreStyle("", "en", false),
+      style: getMaplibreStyle("", "en", undefined as any, false),
     });
 
     map.addControl(new maplibregl.NavigationControl());
@@ -268,6 +277,7 @@ function MapLibreView(props: {
           getMaplibreStyle(
             props.theme,
             props.lang,
+            props.langSecondary,
             props.localSprites,
             props.tiles,
             props.npmLayers,
@@ -282,6 +292,7 @@ function MapLibreView(props: {
     props.tiles,
     props.theme,
     props.lang,
+    props.langSecondary,
     props.localSprites,
     props.npmLayers,
     props.droppedArchive,
@@ -295,6 +306,9 @@ export default function MapViewComponent() {
   const hash = parseHash(location.hash);
   const [theme, setTheme] = useState<string>(hash.theme || "light");
   const [lang, setLang] = useState<string>(hash.lang || "en");
+  const [langSecondary, setLangSecondary] = useState<string>(
+    hash.langSecondary || (undefined as any),
+  );
   const [tiles, setTiles] = useState<string | undefined>(hash.tiles);
   const [localSprites, setLocalSprites] = useState<boolean>(
     hash.local_sprites === "true",
@@ -314,6 +328,7 @@ export default function MapViewComponent() {
     const record = {
       theme: theme,
       lang: lang,
+      langSecondary: langSecondary,
       tiles: tiles,
       local_sprites: localSprites ? "true" : undefined,
       show_boxes: showBoxes ? "true" : undefined,
@@ -327,8 +342,6 @@ export default function MapViewComponent() {
   }, []);
 
   const { getRootProps } = useDropzone({ onDrop });
-
-  // TODO: language tag selector
 
   useEffect(() => {
     if (!tiles) {
@@ -421,6 +434,25 @@ export default function MapViewComponent() {
             </option>
           ))}
         </select>
+        <select
+          onChange={(e) =>
+            setLangSecondary(
+              e.target.value === "2nd language..."
+                ? (undefined as any)
+                : e.target.value,
+            )
+          }
+          value={langSecondary}
+        >
+          <option key="undefined" value={undefined}>
+            2nd language...
+          </option>
+          {language_script_pairs.map((pair) => (
+            <option key={pair.lang} value={pair.lang}>
+              {pair.full_name}
+            </option>
+          ))}
+        </select>
         <input
           id="localSprites"
           type="checkbox"
@@ -473,10 +505,17 @@ export default function MapViewComponent() {
           showBoxes={showBoxes}
           theme={theme}
           lang={lang}
+          langSecondary={langSecondary}
           npmLayers={npmLayers}
           droppedArchive={droppedArchive}
         />
-        {showStyleJson && <StyleJsonPane theme={theme} lang={lang} />}
+        {showStyleJson && (
+          <StyleJsonPane
+            theme={theme}
+            lang={lang}
+            langSecondary={langSecondary}
+          />
+        )}
       </div>
     </div>
   );
