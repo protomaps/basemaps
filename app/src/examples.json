@@ -65,8 +65,15 @@
   {
     "name": "landuse-urban-green",
     "description": "show village_green, allotments, playgrounds",
-    "center": [7.3217, 51.50406],
     "tags": [],
+    "center": [7.3217, 51.50406],
     "zoom": 15
+  },
+  {
+    "name": "san-francisco-piers",
+    "description": "piers in the roads layer are rendered",
+    "tags": ["roads"],
+    "center": [-122.440512, 37.807891],
+    "zoom": 16
   }
 ]

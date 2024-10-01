@@ -183,6 +183,7 @@ function ExampleComponent(props: { result: ExampleResult }) {
         <img alt="diff" ref={diffRef} />
       </div>
       <a href={linkTo({ name: example.name })}>{example.name}</a>
+      <a href={`/map/#map=${example.zoom}/${example.center[1]}/${example.center[0]}`} target="_blank">(map)</a>
       <span>{example.description}</span>
       {example.tags.map((tag: string) => (
         <a href={linkTo({ tag: tag })} key={tag}>
@@ -359,12 +360,12 @@ export default function VisualTestsComponent() {
         <canvas ref={canvasDiffRef} />
       </div>
       <div style={{ width: "500px", display: "inline-block" }}>
-        {displayInfo[0]}
+        leftTiles={displayInfo[0]}
         <br />
         {displayInfo[2]}
       </div>
       <div style={{ width: "500px", display: "inline-block" }}>
-        {displayInfo[1]}
+        rightTiles={displayInfo[1]}
         <br />
         {displayInfo[3]}
       </div>
