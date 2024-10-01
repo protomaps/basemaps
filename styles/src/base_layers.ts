@@ -34,18 +34,15 @@ export function nolabels_layers(
       source: source,
       "source-layer": "landuse",
       filter: [
-        "any",
-        [
-          "in",
-          "kind",
-          "national_park",
-          "park",
-          "cemetery",
-          "protected_area",
-          "nature_reserve",
-          "forest",
-          "golf_course",
-        ],
+        "in",
+        "kind",
+        "national_park",
+        "park",
+        "cemetery",
+        "protected_area",
+        "nature_reserve",
+        "forest",
+        "golf_course",
       ],
       paint: {
         "fill-color": [
@@ -64,10 +61,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: [
-        "any",
-        ["in", "kind", "allotments", "village_green", "playground"],
-      ],
+      filter: ["in", "kind", "allotments", "village_green", "playground"],
       paint: {
         "fill-color": t.park_b,
         "fill-opacity": 0.7,
@@ -78,7 +72,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "kind", "hospital"]],
+      filter: ["==", "kind", "hospital"],
       paint: {
         "fill-color": t.hospital,
       },
@@ -88,7 +82,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "kind", "industrial"]],
+      filter: ["==", "kind", "industrial"],
       paint: {
         "fill-color": t.industrial,
       },
@@ -98,7 +92,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "kind", "school", "university", "college"]],
+      filter: ["in", "kind", "school", "university", "college"],
       paint: {
         "fill-color": t.school,
       },
@@ -108,7 +102,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "kind", "beach"]],
+      filter: ["in", "kind", "beach"],
       paint: {
         "fill-color": t.beach,
       },
@@ -118,7 +112,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "kind", "zoo"]],
+      filter: ["in", "kind", "zoo"],
       paint: {
         "fill-color": t.zoo,
       },
@@ -128,7 +122,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "kind", "military", "naval_base", "airfield"]],
+      filter: ["in", "kind", "military", "naval_base", "airfield"],
       paint: {
         "fill-color": t.zoo,
       },
@@ -138,7 +132,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "kind", "wood", "nature_reserve", "forest"]],
+      filter: ["in", "kind", "wood", "nature_reserve", "forest"],
       paint: {
         "fill-color": [
           "interpolate",
@@ -194,17 +188,17 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["in", "kind", "aerodrome"]],
+      filter: ["in", "kind", "aerodrome"],
       paint: {
         "fill-color": t.aerodrome,
       },
     },
     {
-      id: "transit_runway",
+      id: "roads_runway",
       type: "line",
       source: source,
-      "source-layer": "transit",
-      filter: ["any", ["in", "kind_detail", "runway"]],
+      "source-layer": "roads",
+      filter: ["==", "kind_detail", "runway"],
       paint: {
         "line-color": t.runway,
         "line-width": [
@@ -221,12 +215,12 @@ export function nolabels_layers(
       },
     },
     {
-      id: "transit_taxiway",
+      id: "roads_taxiway",
       type: "line",
       source: source,
-      "source-layer": "transit",
+      "source-layer": "roads",
       minzoom: 13,
-      filter: ["any", ["in", "kind_detail", "taxiway"]],
+      filter: ["==", "kind_detail", "taxiway"],
       paint: {
         "line-color": t.runway,
         "line-width": [
@@ -305,7 +299,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "kind", "pedestrian"]],
+      filter: ["==", "kind", "pedestrian"],
       paint: {
         "fill-color": t.pedestrian,
       },
@@ -315,7 +309,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["any", ["==", "kind", "pier"]],
+      filter: ["==", "kind", "pier"],
       paint: {
         "fill-color": t.pier,
       },
@@ -325,7 +319,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["in", "kind", "other", "path"]],
+      filter: ["all", ["has", "is_tunnel"], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.tunnel_other_casing,
         "line-gap-width": [
@@ -344,7 +338,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "kind", "minor_road"]],
+      filter: ["all", ["has", "is_tunnel"], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.tunnel_minor_casing,
         "line-dasharray": [3, 2],
@@ -377,7 +371,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "link", 1]],
+      filter: ["all", ["has", "is_tunnel"], ["has", "is_link"]],
       paint: {
         "line-color": t.tunnel_link_casing,
         "line-dasharray": [3, 2],
@@ -404,42 +398,16 @@ export function nolabels_layers(
       },
     },
     {
-      id: "roads_tunnels_medium_casing",
-      type: "line",
-      source: source,
-      "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "kind", "medium_road"]],
-      paint: {
-        "line-color": t.tunnel_medium_casing,
-        "line-dasharray": [3, 2],
-        "line-gap-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          7,
-          0,
-          7.5,
-          0.5,
-          18,
-          13,
-        ],
-        "line-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          10,
-          0,
-          10.5,
-          1,
-        ],
-      },
-    },
-    {
       id: "roads_tunnels_major_casing",
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "kind", "major_road"]],
+      filter: [
+        "all",
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
+        ["==", "kind", "major_road"],
+      ],
       paint: {
         "line-color": t.tunnel_major_casing,
         "line-dasharray": [3, 2],
@@ -472,9 +440,10 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["<", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "highway"],
-        ["!=", "link", 1],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": t.tunnel_highway_casing,
@@ -508,7 +477,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["in", "kind", "other", "path"]],
+      filter: ["all", ["has", "is_tunnel"], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.tunnel_other,
         "line-dasharray": [4.5, 0.5],
@@ -528,7 +497,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "kind", "minor_road"]],
+      filter: ["all", ["has", "is_tunnel"], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.tunnel_minor,
         "line-width": [
@@ -551,7 +520,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "link", 1]],
+      filter: ["all", ["has", "is_tunnel"], ["has", "is_link"]],
       paint: {
         "line-color": t.tunnel_minor,
         "line-width": [
@@ -568,34 +537,11 @@ export function nolabels_layers(
       },
     },
     {
-      id: "roads_tunnels_medium",
-      type: "line",
-      source: source,
-      "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "kind", "medium_road"]],
-      paint: {
-        "line-color": t.tunnel_medium,
-        "line-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          7,
-          0,
-          12,
-          1.2,
-          15,
-          3,
-          18,
-          13,
-        ],
-      },
-    },
-    {
       id: "roads_tunnels_major",
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["<", "level", 0], ["==", "kind", "major_road"]],
+      filter: ["all", ["has", "is_tunnel"], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.tunnel_major,
         "line-width": [
@@ -620,9 +566,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["<", "level", 0],
-        ["==", "kind", "highway"],
-        ["!=", "link", 1],
+        ["has", "is_tunnel"],
+        ["==", ["get", "kind"], "highway"],
+        ["!", ["has", "is_link"]],
       ],
       paint: {
         "line-color": t.tunnel_highway,
@@ -654,13 +600,13 @@ export function nolabels_layers(
       },
     },
     {
-      id: "transit_pier",
+      id: "roads_pier",
       type: "line",
       source: source,
-      "source-layer": "transit",
-      filter: ["any", ["==", "kind", "pier"]],
+      "source-layer": "roads",
+      filter: ["==", "kind_detail", "pier"],
       paint: {
-        "line-color": t.transit_pier,
+        "line-color": t.pier,
         "line-width": [
           "interpolate",
           ["exponential", 1.6],
@@ -682,7 +628,8 @@ export function nolabels_layers(
       minzoom: 13,
       filter: [
         "all",
-        ["==", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "minor_road"],
         ["==", "kind_detail", "service"],
       ],
@@ -715,7 +662,8 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "minor_road"],
         ["!=", "kind_detail", "service"],
       ],
@@ -751,7 +699,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 13,
-      filter: ["all", ["==", "link", 1]],
+      filter: ["has", "is_link"],
       paint: {
         "line-color": t.minor_casing,
         "line-gap-width": [
@@ -777,44 +725,17 @@ export function nolabels_layers(
       },
     },
     {
-      id: "roads_medium_casing",
-      type: "line",
-      source: source,
-      "source-layer": "roads",
-      filter: ["all", ["==", "level", 0], ["==", "kind", "medium_road"]],
-      paint: {
-        "line-color": t.medium_casing,
-        "line-gap-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          7,
-          0,
-          12,
-          1.2,
-          15,
-          3,
-          18,
-          13,
-        ],
-        "line-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          10,
-          0,
-          10.5,
-          1.5,
-        ],
-      },
-    },
-    {
       id: "roads_major_casing_late",
       type: "line",
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", ["==", "level", 0], ["==", "kind", "major_road"]],
+      filter: [
+        "all",
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
+        ["==", "kind", "major_road"],
+      ],
       paint: {
         "line-color": t.major_casing_late,
         "line-gap-width": [
@@ -849,9 +770,10 @@ export function nolabels_layers(
       minzoom: 12,
       filter: [
         "all",
-        ["==", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "highway"],
-        ["!=", "link", 1],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": t.highway_casing_late,
@@ -884,7 +806,12 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["==", "level", 0], ["in", "kind", "other", "path"]],
+      filter: [
+        "all",
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
+        ["in", "kind", "other", "path"],
+      ],
       paint: {
         "line-color": t.other,
         "line-dasharray": [3, 1],
@@ -904,7 +831,7 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["==", "link", 1]],
+      filter: ["has", "is_link"],
       paint: {
         "line-color": t.link,
         "line-width": [
@@ -927,7 +854,8 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "minor_road"],
         ["==", "kind_detail", "service"],
       ],
@@ -951,7 +879,8 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "minor_road"],
         ["!=", "kind_detail", "service"],
       ],
@@ -981,35 +910,17 @@ export function nolabels_layers(
       },
     },
     {
-      id: "roads_medium",
-      type: "line",
-      source: source,
-      "source-layer": "roads",
-      filter: ["all", ["==", "level", 0], ["==", "kind", "medium_road"]],
-      paint: {
-        "line-color": t.medium,
-        "line-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          7,
-          0,
-          12,
-          1.2,
-          15,
-          3,
-          18,
-          13,
-        ],
-      },
-    },
-    {
       id: "roads_major_casing_early",
       type: "line",
       source: source,
       "source-layer": "roads",
       maxzoom: 12,
-      filter: ["all", ["==", "level", 0], ["==", "kind", "major_road"]],
+      filter: [
+        "all",
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
+        ["==", "kind", "major_road"],
+      ],
       paint: {
         "line-color": t.major_casing_early,
         "line-gap-width": [
@@ -1039,7 +950,12 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["==", "level", 0], ["==", "kind", "major_road"]],
+      filter: [
+        "all",
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
+        ["==", "kind", "major_road"],
+      ],
       paint: {
         "line-color": t.major,
         "line-width": [
@@ -1065,9 +981,10 @@ export function nolabels_layers(
       maxzoom: 12,
       filter: [
         "all",
-        ["==", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "highway"],
-        ["!=", "link", 1],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": t.highway_casing_early,
@@ -1100,9 +1017,10 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["==", "level", 0],
+        ["!has", "is_tunnel"],
+        ["!has", "is_bridge"],
         ["==", "kind", "highway"],
-        ["!=", "link", 1],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": t.highway,
@@ -1124,11 +1042,11 @@ export function nolabels_layers(
       },
     },
     {
-      id: "transit_railway",
+      id: "roads_rail",
       type: "line",
       source: source,
-      "source-layer": "transit",
-      filter: ["all", ["==", "kind", "rail"]],
+      "source-layer": "roads",
+      filter: ["==", "kind", "rail"],
       paint: {
         "line-dasharray": [0.3, 0.75],
         "line-opacity": 0.5,
@@ -1146,18 +1064,6 @@ export function nolabels_layers(
         ],
       },
     },
-    // {
-    //   id: "transit_railway_tracks",
-    //   type: "line",
-    //   source: source,
-    //   "source-layer": "transit",
-    //   filter: ["all", ["==", "kind", "rail"]],
-    //   paint: {
-    //     "line-color": t.railway_tracks,
-    //     "line-width": 0.8,
-    //     "line-dasharray": [6, 10],
-    //   },
-    // },
     {
       id: "boundaries_country",
       type: "line",
@@ -1188,7 +1094,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["in", "kind", "other", "path"]],
+      filter: ["all", ["has", "is_bridge"], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.bridges_other_casing,
         "line-gap-width": [
@@ -1208,7 +1114,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "link", 1]],
+      filter: ["all", ["has", "is_bridge"], ["has", "is_link"]],
       paint: {
         "line-color": t.bridges_minor_casing,
         "line-gap-width": [
@@ -1239,7 +1145,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "kind", "minor_road"]],
+      filter: ["all", ["has", "is_bridge"], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.bridges_minor_casing,
         "line-gap-width": [
@@ -1267,45 +1173,12 @@ export function nolabels_layers(
       },
     },
     {
-      id: "roads_bridges_medium_casing",
-      type: "line",
-      source: source,
-      "source-layer": "roads",
-      minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "kind", "medium_road"]],
-      paint: {
-        "line-color": t.bridges_medium_casing,
-        "line-gap-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          7,
-          0,
-          12,
-          1.2,
-          15,
-          3,
-          18,
-          13,
-        ],
-        "line-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          10,
-          0,
-          10.5,
-          1.5,
-        ],
-      },
-    },
-    {
       id: "roads_bridges_major_casing",
       type: "line",
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "kind", "major_road"]],
+      filter: ["all", ["has", "is_bridge"], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.bridges_major_casing,
         "line-gap-width": [
@@ -1370,7 +1243,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["in", "kind", "other", "path"]],
+      filter: ["all", ["has", "is_bridge"], ["in", "kind", "other", "path"]],
       paint: {
         "line-color": t.bridges_other,
         "line-dasharray": [2, 1],
@@ -1391,7 +1264,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "kind", "minor_road"]],
+      filter: ["all", ["has", "is_bridge"], ["==", "kind", "minor_road"]],
       paint: {
         "line-color": t.bridges_minor,
         "line-width": [
@@ -1415,7 +1288,7 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "link", 1]],
+      filter: ["all", ["has", "is_bridge"], ["has", "is_link"]],
       paint: {
         "line-color": t.bridges_minor,
         "line-width": [
@@ -1432,36 +1305,12 @@ export function nolabels_layers(
       },
     },
     {
-      id: "roads_bridges_medium",
-      type: "line",
-      source: source,
-      "source-layer": "roads",
-      minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "kind", "medium_road"]],
-      paint: {
-        "line-color": t.bridges_medium,
-        "line-width": [
-          "interpolate",
-          ["exponential", 1.6],
-          ["zoom"],
-          7,
-          0,
-          12,
-          1.2,
-          15,
-          3,
-          18,
-          13,
-        ],
-      },
-    },
-    {
       id: "roads_bridges_major",
       type: "line",
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", [">", "level", 0], ["==", "kind", "major_road"]],
+      filter: ["all", ["has", "is_bridge"], ["==", "kind", "major_road"]],
       paint: {
         "line-color": t.bridges_major,
         "line-width": [
@@ -1487,9 +1336,9 @@ export function nolabels_layers(
       minzoom: 12,
       filter: [
         "all",
-        [">", "level", 0],
+        ["has", "is_bridge"],
         ["==", "kind", "highway"],
-        ["!=", "link", 1],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": t.bridges_highway_casing,
@@ -1524,9 +1373,9 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        [">", "level", 0],
+        ["has", "is_bridge"],
         ["==", "kind", "highway"],
-        ["!=", "link", 1],
+        ["!has", "is_link"],
       ],
       paint: {
         "line-color": t.bridges_highway,
@@ -1563,7 +1412,7 @@ export function labels_layers(
       source: source,
       "source-layer": "water",
       minzoom: 13,
-      filter: ["all", ["in", "kind", "river", "stream"]],
+      filter: ["in", "kind", "river", "stream"],
       layout: {
         "symbol-placement": "line",
         "text-font": ["Noto Sans Regular"],
@@ -1583,7 +1432,7 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "pois",
-      filter: ["any", ["==", "kind", "peak"]],
+      filter: ["==", "kind", "peak"],
       layout: {
         "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
@@ -1605,7 +1454,7 @@ export function labels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 15,
-      filter: ["any", ["in", "kind", "minor_road", "other", "path"]],
+      filter: ["in", "kind", "minor_road", "other", "path"],
       layout: {
         "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",
@@ -1628,18 +1477,15 @@ export function labels_layers(
       source: source,
       "source-layer": "water",
       filter: [
-        "any",
-        [
-          "in",
-          "kind",
-          "sea",
-          "ocean",
-          "lake",
-          "water",
-          "bay",
-          "strait",
-          "fjord",
-        ],
+        "in",
+        "kind",
+        "sea",
+        "ocean",
+        "lake",
+        "water",
+        "bay",
+        "strait",
+        "fjord",
       ],
       layout: {
         "text-font": ["Noto Sans Medium"],
@@ -1661,7 +1507,7 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "water",
-      filter: ["any", ["in", "kind", "lake", "water"]],
+      filter: ["in", "kind", "lake", "water"],
       layout: {
         "text-font": ["Noto Sans Medium"],
         "text-field": get_multiline_name(
@@ -1682,7 +1528,7 @@ export function labels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 11,
-      filter: ["any", ["in", "kind", "highway", "major_road", "medium_road"]],
+      filter: ["in", "kind", "highway", "major_road"],
       layout: {
         "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",

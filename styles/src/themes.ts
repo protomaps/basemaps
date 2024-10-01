@@ -24,23 +24,20 @@ export interface Theme {
   tunnel_other_casing: string;
   tunnel_minor_casing: string;
   tunnel_link_casing: string;
-  tunnel_medium_casing: string;
   tunnel_major_casing: string;
   tunnel_highway_casing: string;
   tunnel_other: string;
   tunnel_minor: string;
   tunnel_link: string;
-  tunnel_medium: string;
   tunnel_major: string;
   tunnel_highway: string;
 
-  transit_pier: string;
+  pier: string;
   buildings: string;
 
   minor_service_casing: string;
   minor_casing: string;
   link_casing: string;
-  medium_casing: string;
   major_casing_late: string;
   highway_casing_late: string;
   other: string;
@@ -48,7 +45,6 @@ export interface Theme {
   minor_a: string;
   minor_b: string;
   link: string;
-  medium: string;
   major_casing_early: string;
   major: string;
   highway_casing_early: string;
@@ -61,13 +57,11 @@ export interface Theme {
   bridges_other_casing: string;
   bridges_minor_casing: string;
   bridges_link_casing: string;
-  bridges_medium_casing: string;
   bridges_major_casing: string;
   bridges_highway_casing: string;
   bridges_other: string;
   bridges_minor: string;
   bridges_link: string;
-  bridges_medium: string;
   bridges_major: string;
   bridges_highway: string;
 
@@ -112,13 +106,11 @@ export const CONTRAST: Theme = {
   tunnel_other_casing: "#ffffff",
   tunnel_minor_casing: "#e2e2e2",
   tunnel_link_casing: "#e2e2e2",
-  tunnel_medium_casing: "#e1e1e1",
   tunnel_major_casing: "#e3cfd3",
   tunnel_highway_casing: "#ebcea2",
   tunnel_other: "#f7f7f7",
   tunnel_minor: "#ebebeb",
   tunnel_link: "#ebebeb",
-  tunnel_medium: "#ebebeb",
   tunnel_major: "#ebebeb",
   tunnel_highway: "#ebebeb",
 
@@ -128,7 +120,6 @@ export const CONTRAST: Theme = {
   minor_service_casing: "#e2e2e2",
   minor_casing: "#e2e2e2",
   link_casing: "#e2e2e2",
-  medium_casing: "#e1e1e1",
   major_casing_late: "#e3cfd3",
   highway_casing_late: "#ebcea2",
   other: "#ffffff",
@@ -136,7 +127,6 @@ export const CONTRAST: Theme = {
   minor_a: "#fff2bb",
   minor_b: "#fff2bb",
   link: "#fff2bb",
-  medium: "#ffea94",
   major_casing_early: "#e3cfd3",
   major: "#ffdf59",
   highway_casing_early: "#ebcea2",
@@ -149,13 +139,11 @@ export const CONTRAST: Theme = {
   bridges_other_casing: "#ffffff",
   bridges_minor_casing: "#e2e2e2",
   bridges_link_casing: "#e1e1e1",
-  bridges_medium_casing: "#e1e1e1",
   bridges_major_casing: "#e3cfd3",
   bridges_highway_casing: "#ebcea2",
   bridges_other: "#ffffff",
   bridges_minor: "#ffffff",
   bridges_link: "#e1e1e1",
-  bridges_medium: "#ffffff",
   bridges_major: "#ffffff",
   bridges_highway: "#fefffc",
 
@@ -200,13 +188,11 @@ export const LIGHT: Theme = {
   tunnel_other_casing: "#e0e0e0",
   tunnel_minor_casing: "#e0e0e0",
   tunnel_link_casing: "#e0e0e0",
-  tunnel_medium_casing: "#e0e0e0",
   tunnel_major_casing: "#e0e0e0",
   tunnel_highway_casing: "#e0e0e0",
   tunnel_other: "#d5d5d5",
   tunnel_minor: "#d5d5d5",
   tunnel_link: "#d5d5d5",
-  tunnel_medium: "#d5d5d5",
   tunnel_major: "#d5d5d5",
   tunnel_highway: "#d5d5d5",
 
@@ -216,7 +202,6 @@ export const LIGHT: Theme = {
   minor_service_casing: "#e0e0e0",
   minor_casing: "#e0e0e0",
   link_casing: "#e0e0e0",
-  medium_casing: "#e0e0e0",
   major_casing_late: "#e0e0e0",
   highway_casing_late: "#e0e0e0",
   other: "#ebebeb",
@@ -224,7 +209,6 @@ export const LIGHT: Theme = {
   minor_a: "#ebebeb",
   minor_b: "#ffffff",
   link: "#ffffff",
-  medium: "#f5f5f5",
   major_casing_early: "#e0e0e0",
   major: "#ffffff",
   highway_casing_early: "#e0e0e0",
@@ -237,13 +221,11 @@ export const LIGHT: Theme = {
   bridges_other_casing: "#e0e0e0",
   bridges_minor_casing: "#e0e0e0",
   bridges_link_casing: "#e0e0e0",
-  bridges_medium_casing: "#e0e0e0",
   bridges_major_casing: "#e0e0e0",
   bridges_highway_casing: "#e0e0e0",
   bridges_other: "#ebebeb",
   bridges_minor: "#ffffff",
   bridges_link: "#ffffff",
-  bridges_medium: "#f0eded",
   bridges_major: "#f5f5f5",
   bridges_highway: "#ffffff",
 
@@ -288,13 +270,11 @@ export const DARK: Theme = {
   tunnel_other_casing: "#141414",
   tunnel_minor_casing: "#141414",
   tunnel_link_casing: "#141414",
-  tunnel_medium_casing: "#141414",
   tunnel_major_casing: "#141414",
   tunnel_highway_casing: "#141414",
   tunnel_other: "#292929",
   tunnel_minor: "#292929",
   tunnel_link: "#292929",
-  tunnel_medium: "#292929",
   tunnel_major: "#292929",
   tunnel_highway: "#292929",
 
@@ -304,7 +284,6 @@ export const DARK: Theme = {
   minor_service_casing: "#1f1f1f",
   minor_casing: "#1f1f1f",
   link_casing: "#1f1f1f",
-  medium_casing: "#1f1f1f",
   major_casing_late: "#1f1f1f",
   highway_casing_late: "#1f1f1f",
   other: "#333333",
@@ -312,7 +291,6 @@ export const DARK: Theme = {
   minor_a: "#3d3d3d",
   minor_b: "#333333",
   link: "#3d3d3d",
-  medium: "#3d3d3d",
   major_casing_early: "#1f1f1f",
   major: "#3d3d3d",
   highway_casing_early: "#1f1f1f",
@@ -325,13 +303,11 @@ export const DARK: Theme = {
   bridges_other_casing: "#2b2b2b",
   bridges_minor_casing: "#1f1f1f",
   bridges_link_casing: "#1f1f1f",
-  bridges_medium_casing: "#1f1f1f",
   bridges_major_casing: "#1f1f1f",
   bridges_highway_casing: "#1f1f1f",
   bridges_other: "#333333",
   bridges_minor: "#333333",
   bridges_link: "#3d3d3d",
-  bridges_medium: "#3d3d3d",
   bridges_major: "#3d3d3d",
   bridges_highway: "#474747",
 
@@ -376,13 +352,11 @@ export const WHITE: Theme = {
   tunnel_other_casing: "#d6d6d6",
   tunnel_minor_casing: "#fcfcfc",
   tunnel_link_casing: "#fcfcfc",
-  tunnel_medium_casing: "#fcfcfc",
   tunnel_major_casing: "#fcfcfc",
   tunnel_highway_casing: "#fcfcfc",
   tunnel_other: "#d6d6d6",
   tunnel_minor: "#d6d6d6",
   tunnel_link: "#d6d6d6",
-  tunnel_medium: "#d6d6d6",
   tunnel_major: "#d6d6d6",
   tunnel_highway: "#d6d6d6",
 
@@ -392,7 +366,6 @@ export const WHITE: Theme = {
   minor_service_casing: "#ffffff",
   minor_casing: "#ffffff",
   link_casing: "#ffffff",
-  medium_casing: "#ffffff",
   major_casing_late: "#ffffff",
   highway_casing_late: "#ffffff",
   other: "#f5f5f5",
@@ -400,7 +373,6 @@ export const WHITE: Theme = {
   minor_a: "#ebebeb",
   minor_b: "#f5f5f5",
   link: "#ebebeb",
-  medium: "#ebebeb",
   major_casing_early: "#ffffff",
   major: "#ebebeb",
   highway_casing_early: "#ffffff",
@@ -413,13 +385,11 @@ export const WHITE: Theme = {
   bridges_other_casing: "#ffffff",
   bridges_minor_casing: "#ffffff",
   bridges_link_casing: "#ffffff",
-  bridges_medium_casing: "#ffffff",
   bridges_major_casing: "#ffffff",
   bridges_highway_casing: "#ffffff",
   bridges_other: "#f5f5f5",
   bridges_minor: "#f5f5f5",
   bridges_link: "#ebebeb",
-  bridges_medium: "#ebebeb",
   bridges_major: "#ebebeb",
   bridges_highway: "#ebebeb",
 
@@ -464,13 +434,11 @@ export const GRAYSCALE: Theme = {
   tunnel_other_casing: "#b8b8b8",
   tunnel_minor_casing: "#b8b8b8",
   tunnel_link_casing: "#b8b8b8",
-  tunnel_medium_casing: "#b8b8b8",
   tunnel_major_casing: "#b8b8b8",
   tunnel_highway_casing: "#b8b8b8",
   tunnel_other: "#d6d6d6",
   tunnel_minor: "#d6d6d6",
   tunnel_link: "#d6d6d6",
-  tunnel_medium: "#d6d6d6",
   tunnel_major: "#d6d6d6",
   tunnel_highway: "#d6d6d6",
 
@@ -480,7 +448,6 @@ export const GRAYSCALE: Theme = {
   minor_service_casing: "#cccccc",
   minor_casing: "#cccccc",
   link_casing: "#cccccc",
-  medium_casing: "#cccccc",
   major_casing_late: "#cccccc",
   highway_casing_late: "#cccccc",
   other: "#e0e0e0",
@@ -488,7 +455,6 @@ export const GRAYSCALE: Theme = {
   minor_a: "#ebebeb",
   minor_b: "#e0e0e0",
   link: "#ebebeb",
-  medium: "#ebebeb",
   major_casing_early: "#cccccc",
   major: "#ebebeb",
   highway_casing_early: "#cccccc",
@@ -501,13 +467,11 @@ export const GRAYSCALE: Theme = {
   bridges_other_casing: "#cccccc",
   bridges_minor_casing: "#cccccc",
   bridges_link_casing: "#cccccc",
-  bridges_medium_casing: "#cccccc",
   bridges_major_casing: "#cccccc",
   bridges_highway_casing: "#cccccc",
   bridges_other: "#e0e0e0",
   bridges_minor: "#e0e0e0",
   bridges_link: "#ebebeb",
-  bridges_medium: "#ebebeb",
   bridges_major: "#ebebeb",
   bridges_highway: "#ebebeb",
 
@@ -552,13 +516,11 @@ export const BLACK: Theme = {
   tunnel_other_casing: "#101010",
   tunnel_minor_casing: "#101010",
   tunnel_link_casing: "#101010",
-  tunnel_medium_casing: "#101010",
   tunnel_major_casing: "#101010",
   tunnel_highway_casing: "#101010",
   tunnel_other: "#292929",
   tunnel_minor: "#292929",
   tunnel_link: "#292929",
-  tunnel_medium: "#292929",
   tunnel_major: "#292929",
   tunnel_highway: "#292929",
 
@@ -568,7 +530,6 @@ export const BLACK: Theme = {
   minor_service_casing: "#141414",
   minor_casing: "#141414",
   link_casing: "#141414",
-  medium_casing: "#141414",
   major_casing_late: "#141414",
   highway_casing_late: "#141414",
   other: "#1f1f1f",
@@ -576,7 +537,6 @@ export const BLACK: Theme = {
   minor_a: "#292929",
   minor_b: "#1f1f1f",
   link: "#1f1f1f",
-  medium: "#292929",
   major_casing_early: "#141414",
   major: "#292929",
   highway_casing_early: "#141414",
@@ -589,13 +549,11 @@ export const BLACK: Theme = {
   bridges_other_casing: "#141414",
   bridges_minor_casing: "#141414",
   bridges_link_casing: "#141414",
-  bridges_medium_casing: "#141414",
   bridges_major_casing: "#141414",
   bridges_highway_casing: "#141414",
   bridges_other: "#1f1f1f",
   bridges_minor: "#1f1f1f",
   bridges_link: "#292929",
-  bridges_medium: "#292929",
   bridges_major: "#292929",
   bridges_highway: "#292929",
 
