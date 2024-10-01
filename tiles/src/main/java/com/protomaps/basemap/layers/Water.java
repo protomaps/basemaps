@@ -349,6 +349,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setZoomRange(nameMinZoom, 15)
+        .setAttr("sort_rank", 200)
         .setBufferPixels(128);
 
       // Add less common core Tilezen attributes only at higher zooms (will continue to v4)

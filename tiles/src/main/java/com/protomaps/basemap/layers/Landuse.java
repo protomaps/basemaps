@@ -1,7 +1,5 @@
 package com.protomaps.basemap.layers;
 
-import static com.protomaps.basemap.feature.Area.worldAreaToSquareMeters;
-
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
@@ -157,7 +155,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcesser {
         // Core Tilezen schema properties
         .setAttr("kind", kind)
         .setAttr("sort_rank", 189)
-        .setAttr("area", worldAreaToSquareMeters(sf))
         // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
         //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)

@@ -1,7 +1,6 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
-import static com.protomaps.basemap.feature.Area.worldAreaToSquareMeters;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
@@ -83,7 +82,6 @@ public class Buildings implements ForwardingProfile.LayerPostProcesser {
         // NOTE: Height is quantized by zoom in a post-process step
         .setAttr(HEIGHT_KEY, height.height())
         .setAttr("sort_rank", 400)
-        .setAttr("area", worldAreaToSquareMeters(sf))
         .setZoomRange(minZoom, 15);
 
       if (kind.equals("building_part")) {
