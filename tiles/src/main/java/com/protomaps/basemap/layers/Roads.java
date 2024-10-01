@@ -8,7 +8,6 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.locales.CartographicLocale;
 import com.protomaps.basemap.locales.US;
@@ -134,15 +133,12 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
 
       var feat = features.line("roads")
         .setId(FeatureId.create(sf))
-        // Core Tilezen schema properties
         .setAttr("kind", kind)
         // To power better client label collisions
         .setAttr("min_zoom", minZoom + 1)
         .setAttrWithMinzoom("ref", shield.text(), minZoomShieldText)
         .setAttrWithMinzoom("shield_text_length", shieldTextLength, minZoomShieldText)
         .setAttrWithMinzoom("network", shield.network(), minZoomShieldText)
-        // Core OSM tags for different kinds of places
-        //        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
         // `highway` is a temporary attribute that gets removed in the post-process step
         .setAttr("highway", highway)
@@ -151,7 +147,6 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         .setPixelTolerance(0)
         .setZoomRange(minZoom, maxZoom);
 
-      // Core Tilezen schema properties
       if (!kindDetail.isEmpty()) {
         feat.setAttr("kind_detail", kindDetail);
       } else {
@@ -170,13 +165,10 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
-      // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
       if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
         feat.setAttrWithMinzoom("is_bridge", true, 12);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
         feat.setAttrWithMinzoom("is_tunnel", true, 12);
-      } else {
-        //        feat.setAttrWithMinzoom("level", 0, 12);
       }
 
       // Server sort features so client label collisions are pre-sorted
@@ -246,12 +238,9 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
 
       var feature = features.line(this.name())
         .setId(FeatureId.create(sf))
-        // Core Tilezen schema properties
         .setAttr("kind", kind)
         // Used for client-side label collisions
         .setAttr("min_zoom", minZoom + 1)
-        // Core OSM tags for different kinds of places
-        .setAttr("layer", Parse.parseIntOrNull(sf.getString("layer")))
         .setAttr("network", sf.getString("network"))
         .setAttr("ref", sf.getString("ref"))
         .setAttr("route", sf.getString("route"))
@@ -259,7 +248,6 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         .setAttr("sort_rank", 400)
         .setZoomRange(minZoom, 15);
 
-      // Core Tilezen schema properties
       if (!kindDetail.isEmpty()) {
         feature.setAttr("kind_detail", kindDetail);
       }
@@ -268,11 +256,9 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
       // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
       if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
-        feature.setAttr("level", 1);
+        feature.setAttrWithMinzoom("is_bridge", true, 12);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
-        feature.setAttr("level", -1);
-      } else {
-        feature.setAttr("level", 0);
+        feature.setAttrWithMinzoom("is_tunnel", true, 12);
       }
 
       // Too many small pier lines otherwise
@@ -301,9 +287,6 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
 
     for (var item : items) {
       item.tags().remove("highway");
-      if (!item.tags().containsKey("level")) {
-        item.tags().put("level", 0);
-      }
     }
 
     items = FeatureMerge.mergeLineStrings(items,
