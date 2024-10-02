@@ -1,3 +1,14 @@
+Styles v4.0.0 + Tiles v4.0.0
+------
+- Remove `medium_road`
+- Move all current `transit` features into `roads`
+- `pier` is now `kind=path` `kind_detail=pier`
+- remove `level` and `layer` keys
+- change `link=1` to `is_link=true`
+- change `level=-1` and `level=1` to `is_bridge=true` and `is_tunnel=true`
+- Rename `transit_pier` theme property
+
+
 Styles v4.0.0-alpha.1
 ------
 - remove all `pmap:` prefixes from style (breaking change) (#282)

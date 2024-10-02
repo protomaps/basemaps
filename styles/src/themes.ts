@@ -114,7 +114,7 @@ export const CONTRAST: Theme = {
   tunnel_major: "#ebebeb",
   tunnel_highway: "#ebebeb",
 
-  transit_pier: "#ededed",
+  pier: "#ededed",
   buildings: "#cbcece",
 
   minor_service_casing: "#e2e2e2",
@@ -196,7 +196,7 @@ export const LIGHT: Theme = {
   tunnel_major: "#d5d5d5",
   tunnel_highway: "#d5d5d5",
 
-  transit_pier: "#e0e0e0",
+  pier: "#e0e0e0",
   buildings: "#cccccc",
 
   minor_service_casing: "#e0e0e0",
@@ -278,7 +278,7 @@ export const DARK: Theme = {
   tunnel_major: "#292929",
   tunnel_highway: "#292929",
 
-  transit_pier: "#333333",
+  pier: "#333333",
   buildings: "#111111",
 
   minor_service_casing: "#1f1f1f",
@@ -360,7 +360,7 @@ export const WHITE: Theme = {
   tunnel_major: "#d6d6d6",
   tunnel_highway: "#d6d6d6",
 
-  transit_pier: "#efefef",
+  pier: "#efefef",
   buildings: "#efefef",
 
   minor_service_casing: "#ffffff",
@@ -442,7 +442,7 @@ export const GRAYSCALE: Theme = {
   tunnel_major: "#d6d6d6",
   tunnel_highway: "#d6d6d6",
 
-  transit_pier: "#b8b8b8",
+  pier: "#b8b8b8",
   buildings: "#e0e0e0",
 
   minor_service_casing: "#cccccc",
@@ -524,7 +524,7 @@ export const BLACK: Theme = {
   tunnel_major: "#292929",
   tunnel_highway: "#292929",
 
-  transit_pier: "#0a0a0a",
+  pier: "#0a0a0a",
   buildings: "#0a0a0a",
 
   minor_service_casing: "#141414",
