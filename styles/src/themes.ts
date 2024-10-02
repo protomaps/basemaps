@@ -509,7 +509,6 @@ export const BLACK: Theme = {
   aerodrome: "#191919",
   runway: "#323232",
   water: "#333333",
-  pier: "#0a0a0a",
   zoo: "#191919",
   military: "#121212",
 
