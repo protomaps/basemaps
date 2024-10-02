@@ -183,7 +183,13 @@ function ExampleComponent(props: { result: ExampleResult }) {
         <img alt="diff" ref={diffRef} />
       </div>
       <a href={linkTo({ name: example.name })}>{example.name}</a>
-      <a href={`/map/#map=${example.zoom}/${example.center[1]}/${example.center[0]}`} target="_blank">(map)</a>
+      <a
+        href={`/map/#map=${example.zoom}/${example.center[1]}/${example.center[0]}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        (map)
+      </a>
       <span>{example.description}</span>
       {example.tags.map((tag: string) => (
         <a href={linkTo({ tag: tag })} key={tag}>
