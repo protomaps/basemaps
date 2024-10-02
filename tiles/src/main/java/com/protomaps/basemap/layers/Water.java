@@ -282,7 +282,9 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
       }
 
       // coalesce values across tags to single kind value
-      if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
+      if (sf.hasTag("amenity", "fountain")) {
+        kind = "fountain";
+      } else if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
           kindDetail = sf.getString("water");
@@ -296,6 +298,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
             kindDetail = "lake";
           }
+
           if (sf.hasTag("water", "reservoir")) {
             reservoir = true;
           }

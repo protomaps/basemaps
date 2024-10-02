@@ -811,6 +811,7 @@ export function nolabels_layers(
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
         ["in", "kind", "other", "path"],
+        ["!=", "kind_detail", "pier"]
       ],
       paint: {
         "line-color": t.other,

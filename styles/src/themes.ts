@@ -17,7 +17,6 @@ export interface Theme {
   aerodrome: string;
   runway: string;
   water: string;
-  pier: string;
   zoo: string;
   military: string;
 
@@ -99,7 +98,6 @@ export const CONTRAST: Theme = {
   aerodrome: "#dbe7e7",
   runway: "#d1d9d9",
   water: "#84b7cf",
-  pier: "#ededed",
   zoo: "#ebe6ed",
   military: "#ebe6ed",
 
@@ -181,7 +179,6 @@ export const LIGHT: Theme = {
   aerodrome: "#dadbdf",
   runway: "#e9e9ed",
   water: "#80deea",
-  pier: "#e0e0e0",
   zoo: "#c6dcdc",
   military: "#dcdcdc",
 
@@ -263,7 +260,6 @@ export const DARK: Theme = {
   aerodrome: "#1e1e1e",
   runway: "#333333",
   water: "#34373d",
-  pier: "#222222",
   zoo: "#222323",
   military: "#242323",
 
@@ -345,7 +341,6 @@ export const WHITE: Theme = {
   aerodrome: "#fdfdfd",
   runway: "#efefef",
   water: "#dcdcdc",
-  pier: "#f5f5f5",
   zoo: "#f7f7f7",
   military: "#fcfcfc",
 
@@ -427,7 +422,6 @@ export const GRAYSCALE: Theme = {
   aerodrome: "#c9c9c9",
   runway: "#f5f5f5",
   water: "#a3a3a3",
-  pier: "#b8b8b8",
   zoo: "#c7c7c7",
   military: "#bfbfbf",
 
