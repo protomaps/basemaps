@@ -30,7 +30,7 @@ for (const theme of ["light", "dark", "white", "grayscale", "black"]) {
         },
       },
       layers: layers,
-      sprite: "https://protomaps.github.io/basemaps-assets/sprites/v3/light",
+      sprite: `https://protomaps.github.io/basemaps-assets/sprites/v3/${theme}`,
       glyphs:
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
     };
