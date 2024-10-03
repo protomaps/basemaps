@@ -15,7 +15,7 @@ if (process.argv.length < 2) {
 const args = process.argv.slice(2);
 const tileJson = args[0];
 
-for (const theme of Object.keys(themes)) {
+for (const theme of ["light", "dark", "white", "grayscale", "black"]) {
   for (const { lang, full_name, script } of language_script_pairs) {
     const layers = i("protomaps", theme, lang, script);
 
