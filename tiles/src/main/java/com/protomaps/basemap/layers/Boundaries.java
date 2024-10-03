@@ -24,7 +24,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
     var kind = "";
-    var kindDetail = "";
     var adminLevel = 2;
     var disputed = false;
     var themeMinZoom = 0;
@@ -45,17 +44,14 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
       switch (sf.getString("featurecla")) {
         case "Disputed (please verify)" -> {
           kind = "country";
-          kindDetail = "disputed";
           disputed = true;
         }
         case "Indefinite (please verify)" -> {
           kind = "country";
-          kindDetail = "indefinite";
           disputed = true;
         }
         case "Indeterminant frontier" -> {
           kind = "country";
-          kindDetail = "indeterminant";
           disputed = true;
         }
         case "International boundary (verify)" -> kind = "country";
@@ -65,7 +61,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         }
         case "Line of control (please verify)" -> {
           kind = "country";
-          kindDetail = "line_of_control";
           disputed = true;
         }
         case "Overlay limit" -> {
@@ -79,22 +74,18 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         }
         case "Breakaway" -> {
           kind = "unrecognized_country";
-          kindDetail = "disputed_breakaway";
           adminLevel = 3;
         }
         case "Claim boundary" -> {
           kind = "unrecognized_country";
-          kindDetail = "disputed_claim";
           adminLevel = 3;
         }
         case "Elusive frontier" -> {
           kind = "unrecognized_country";
-          kindDetail = "disputed_elusive";
           adminLevel = 3;
         }
         case "Reference line" -> {
           kind = "unrecognized_country";
-          kindDetail = "disputed_reference_line";
           adminLevel = 3;
         }
         case "Admin-1 region boundary" -> {
@@ -137,7 +128,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
       }
     }
 
-
     if (sf.canBeLine() && sf.getString("min_zoom") != null && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
       var minZoom = Double.parseDouble(sf.getString("min_zoom")) - 1.0;
 
@@ -146,9 +136,9 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         .setAttr("kind", kind)
         // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
         //.setAttr("name", sf.getString("name"))
-        // Preview v4 schema (disabled)
         //.setAttr("min_zoom", sf.getLong("min_zoom"))
-        .setAttr("min_admin_level", adminLevel)
+        .setAttr("kind_detail", adminLevel)
+        .setAttr("sort_rank", 289)
         // Reduce file size at low zooms
         //.setAttr("ne_id", sf.getString("ne_id"))
         .setAttr("brk_a3", sf.getString("brk_a3"))
@@ -158,11 +148,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         // Don't filter out short line segments (affects zooms 4 and 5)
         .setMinPixelSize(0)
         .setBufferPixels(8);
-
-      // Core Tilezen schema properties
-      if (!kindDetail.isEmpty()) {
-        line.setAttr("kind_detail", kindDetail);
-      }
 
       if (disputed) {
         line.setAttr("disputed", disputed);
@@ -183,7 +168,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         OptionalInt disputed = recs.stream().mapToInt(r -> r.relation().disputed).max();
 
         var kind = "";
-        var kindDetail = "";
 
         var minZoom = 0;
         var themeMinZoom = 6;
@@ -192,7 +176,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         switch (minAdminLevel.getAsInt()) {
           case 2 -> {
             kind = "country";
-            kindDetail = "2";
             // While country boundary lines should show up very early
             minZoom = 0;
             // Natural Earth is used for low zooms (for compilation and tile size reasons)
@@ -201,13 +184,11 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
           // used in Colombia, Brazil, Kenya (historical)
           case 3 -> {
             kind = "region";
-            kindDetail = "3";
             minZoom = 6;
             themeMinZoom = 6;
           }
           case 4 -> {
             kind = "region";
-            kindDetail = "4";
             // While region boundary lines should show up early-zooms
             minZoom = 6;
             // Natural Earth is used for low zooms (for compilation and tile size reasons)
@@ -216,39 +197,32 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
           // used in Colombia, Brazil
           case 5 -> {
             kind = "county";
-            kindDetail = "5";
             minZoom = 8;
             themeMinZoom = 8;
           }
           case 6 -> {
             kind = "county";
-            kindDetail = "6";
             minZoom = 8;
             themeMinZoom = 8;
           }
           case 8 -> {
             kind = "locality";
-            kindDetail = "8";
             minZoom = 10;
             themeMinZoom = 10;
           }
         }
 
-        if (!kind.isEmpty() && !kindDetail.isEmpty()) {
+        if (!kind.isEmpty()) {
           var line = features.line(this.name())
             .setId(FeatureId.create(sf))
             // Core Tilezen schema properties
             .setAttr("kind", kind)
-            .setAttr("min_admin_level", minAdminLevel.getAsInt())
+            .setAttr("kind_detail", minAdminLevel.getAsInt())
+            .setAttr("sort_rank", 289)
             .setMinPixelSize(0)
             // Preview v4 schema (disabled)
             //.setAttr("min_zoom", min_zoom)
             .setMinZoom(themeMinZoom);
-
-          // Core Tilezen schema properties
-          if (!kindDetail.isEmpty()) {
-            line.setAttr("kind_detail", kindDetail);
-          }
 
           // Core Tilezen schema properties
           if (disputed.getAsInt() == 1) {

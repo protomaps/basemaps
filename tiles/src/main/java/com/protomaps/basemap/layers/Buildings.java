@@ -81,6 +81,7 @@ public class Buildings implements ForwardingProfile.LayerPostProcesser {
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 13)
         // NOTE: Height is quantized by zoom in a post-process step
         .setAttr(HEIGHT_KEY, height.height())
+        .setAttr("sort_rank", 400)
         .setZoomRange(minZoom, 15);
 
       if (kind.equals("building_part")) {

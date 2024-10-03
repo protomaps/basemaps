@@ -26,6 +26,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
     features.polygon(this.name())
       .setAttr("kind", "water")
+      .setAttr("sort_rank", 200)
       .setZoomRange(6, 15).setBufferPixels(8);
   }
 
@@ -74,6 +75,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
         features.polygon(this.name())
           // Core Tilezen schema properties
           .setAttr("kind", kind)
+          .setAttr("sort_rank", 200)
           //.setAttr("min_zoom", sf.getLong("min_zoom"))
           .setZoomRange(
             sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")) - 1,
@@ -157,6 +159,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
       var feature = features.polygon(this.name())
         // Core Tilezen schema properties
         .setAttr("kind", kind)
+        .setAttr("sort_rank", 200)
         // Core OSM tags for different kinds of places
         // Add less common attributes only at higher zooms
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
@@ -204,6 +207,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
         //.setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         //.setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
+        .setAttr("sort_rank", 200)
         .setZoomRange(minZoom, 15);
 
       // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
@@ -278,7 +282,9 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
       }
 
       // coalesce values across tags to single kind value
-      if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
+      if (sf.hasTag("amenity", "fountain")) {
+        kind = "fountain";
+      } else if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
         kind = sf.getString("natural");
         if (sf.hasTag("water", "basin", "canal", "ditch", "drain", "lake", "river", "stream")) {
           kindDetail = sf.getString("water");
@@ -292,6 +298,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
             kindDetail = "lake";
           }
+
           if (sf.hasTag("water", "reservoir")) {
             reservoir = true;
           }
@@ -345,6 +352,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setZoomRange(nameMinZoom, 15)
+        .setAttr("sort_rank", 200)
         .setBufferPixels(128);
 
       // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
