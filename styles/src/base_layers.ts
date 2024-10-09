@@ -1697,6 +1697,7 @@ export function labels_layers(
           22,
           2,
         ],
+        "text-justify": "auto",
         "text-anchor": ["step", ["zoom"], "left", 8, "center"],
         "text-radial-offset": 0.4,
       },
