@@ -1,8 +1,15 @@
 {
   "themes": {
-    "base":["#aaaaaa","#000000"]
+    "base":["#aaaaaa","#000000"],
+    "green":["#30C573", "#1F1F1F"]
   },
   "icons": {
-    "townspot":"base"
+    "townspot":"base",
+    "beach":"green",
+    "forest":"green",
+    "marina":"green",
+    "park":"green",
+    "peak":"green",
+    "zoo":"green"
   }
 }
