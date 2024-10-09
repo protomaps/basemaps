@@ -18,7 +18,7 @@ import { language_script_pairs } from "../../styles/src/language.ts";
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 import { FileSource, PMTiles, Protocol } from "pmtiles";
-import { createHash, parseHash } from "./hash";
+import { createHash, parseHash, layersForVersion } from "./utils";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
@@ -379,15 +379,7 @@ export default function MapViewComponent() {
       if (publishedStyleVersion === undefined) {
         setNpmLayers([]);
       } else {
-        fetch(
-          `https://unpkg.com/protomaps-themes-base@${publishedStyleVersion}/dist/layers/${theme}.json`,
-        )
-          .then((resp) => {
-            return resp.json();
-          })
-          .then((j) => {
-            setNpmLayers(j);
-          });
+        setNpmLayers(await layersForVersion(publishedStyleVersion, theme));
       }
     })();
   }, [publishedStyleVersion, theme]);
