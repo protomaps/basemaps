@@ -1,8 +1,8 @@
+import MaplibreInspect from "@maplibre/maplibre-gl-inspect";
+import "@maplibre/maplibre-gl-inspect/dist/maplibre-gl-inspect.css";
 import maplibregl from "maplibre-gl";
 import { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
-import MaplibreInspect from "@maplibre/maplibre-gl-inspect";
 import "maplibre-gl/dist/maplibre-gl.css";
-import "@maplibre/maplibre-gl-inspect/dist/maplibre-gl-inspect.css";
 import * as pmtiles from "pmtiles";
 import {
   FormEvent,
