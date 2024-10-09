@@ -1,3 +1,5 @@
+import MaplibreInspect from "@maplibre/maplibre-gl-inspect";
+import "@maplibre/maplibre-gl-inspect/dist/maplibre-gl-inspect.css";
 import maplibregl from "maplibre-gl";
 import { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -175,7 +177,7 @@ function MapLibreView(props: {
       );
     }
 
-    const protocol = new pmtiles.Protocol();
+    const protocol = new pmtiles.Protocol({ metadata: true });
     protocolRef.current = protocol;
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
@@ -196,6 +198,15 @@ function MapLibreView(props: {
         fitBoundsOptions: {
           animate: false,
         },
+      }),
+    );
+
+    map.addControl(
+      new MaplibreInspect({
+        popup: new maplibregl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        }),
       }),
     );
 
