@@ -24,3 +24,20 @@ export function createHash(
     })
     .join("&")}`;
 }
+
+export async function layersForVersion(version: string, theme?: string) {
+  if (version >= "4.0.0") {
+    const resp = await fetch(
+      `https://unpkg.com/protomaps-themes-base@${version}/dist/styles/${
+        theme || "light"
+      }/en.json`,
+    );
+    return (await resp.json()).layers;
+  }
+  const resp = await fetch(
+    `https://unpkg.com/protomaps-themes-base@${version}/dist/layers/${
+      theme || "light"
+    }.json`,
+  );
+  return await resp.json();
+}

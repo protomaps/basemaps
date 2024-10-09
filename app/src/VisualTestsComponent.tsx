@@ -4,6 +4,7 @@ import * as pmtiles from "pmtiles";
 import { useEffect, useRef, useState } from "react";
 import layers from "../../styles/src/index.ts";
 import rawExamples from "./examples.json";
+import { layersForVersion } from "./utils";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 // @ts-ignore
@@ -54,6 +55,7 @@ const createMap = (
       zoom: zoom,
       glyphs:
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+      sprite: "https://protomaps.github.io/basemaps-assets/sprites/v3/light",
       sources: {
         protomaps: {
           type: "vector",
@@ -141,13 +143,6 @@ const linkTo = (props: { name?: string; tag?: string }) => {
     q.set("tag", props.tag);
   }
   return `/visualtests/?${q.toString()}`;
-};
-
-const layersForVersion = async (version: string) => {
-  const resp = await fetch(
-    `https://unpkg.com/protomaps-themes-base@${version}/dist/layers/light.json`,
-  );
-  return await resp.json();
 };
 
 const latestVersion = async () => {
