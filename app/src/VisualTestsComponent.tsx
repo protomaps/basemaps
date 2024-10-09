@@ -55,7 +55,7 @@ const createMap = (
       zoom: zoom,
       glyphs:
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-      sprite: `https://protomaps.github.io/basemaps-assets/sprites/v3/light`,
+      sprite: "https://protomaps.github.io/basemaps-assets/sprites/v3/light",
       sources: {
         protomaps: {
           type: "vector",
@@ -144,7 +144,6 @@ const linkTo = (props: { name?: string; tag?: string }) => {
   }
   return `/visualtests/?${q.toString()}`;
 };
-
 
 const latestVersion = async () => {
   const resp = await fetch("https://registry.npmjs.org/protomaps-themes-base", {

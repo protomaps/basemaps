@@ -18,7 +18,7 @@ import { language_script_pairs } from "../../styles/src/language.ts";
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 import { FileSource, PMTiles, Protocol } from "pmtiles";
-import { createHash, parseHash, layersForVersion } from "./utils";
+import { createHash, layersForVersion, parseHash } from "./utils";
 
 const GIT_SHA = (import.meta.env.VITE_GIT_SHA || "main").substr(0, 8);
 
