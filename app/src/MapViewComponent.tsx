@@ -177,7 +177,7 @@ function MapLibreView(props: {
       );
     }
 
-    const protocol = new pmtiles.Protocol({metadata:true});
+    const protocol = new pmtiles.Protocol({ metadata: true });
     protocolRef.current = protocol;
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
