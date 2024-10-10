@@ -1501,7 +1501,10 @@ export function labels_layers(
               [
                 "in",
                 ["get", "kind"],
-                ["literal", ["forest", "park", "peak", "marina"]],
+                [
+                  "literal",
+                  ["beach", "forest", "marina", "park", "peak", "zoo"],
+                ],
               ],
               [">=", ["zoom"], ["get", "min_zoom"]],
             ],
@@ -1524,7 +1527,10 @@ export function labels_layers(
                 [
                   "in",
                   ["get", "kind"],
-                  ["literal", ["park", "peak", "forest", "marina"]],
+                  [
+                    "literal",
+                    ["beach", "forest", "marina", "park", "peak", "zoo"],
+                  ],
                 ],
                 t.pois.green,
                 t.earth,
