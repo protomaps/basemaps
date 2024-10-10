@@ -1431,7 +1431,8 @@ export function labels_layers(
       paint: {
         "text-color": t.roads_label_minor,
         "text-halo-color": t.roads_label_minor_halo,
-        "text-halo-width": 2,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {
@@ -1552,7 +1553,8 @@ export function labels_layers(
       paint: {
         "text-color": t.subplace_label,
         "text-halo-color": t.subplace_label_halo,
-        "text-halo-width": 1.5,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {
@@ -1667,6 +1669,7 @@ export function labels_layers(
         "text-color": t.city_label,
         "text-halo-color": t.city_label_halo,
         "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {
@@ -1693,7 +1696,8 @@ export function labels_layers(
       paint: {
         "text-color": t.state_label,
         "text-halo-color": t.state_label_halo,
-        "text-halo-width": 2,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {
