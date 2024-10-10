@@ -1485,9 +1485,54 @@ export function labels_layers(
       paint: {
         "text-color": t.roads_label_major,
         "text-halo-color": t.roads_label_major_halo,
-        "text-halo-width": 2,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
+    ...(t.pois
+      ? [
+          {
+            id: "pois",
+            type: "symbol",
+            source: source,
+            "source-layer": "pois",
+            filter: [
+              "all",
+              [
+                "in",
+                ["get", "kind"],
+                ["literal", ["forest", "park", "peak", "marina"]],
+              ],
+              [">=", ["zoom"], ["get", "min_zoom"]],
+            ],
+            layout: {
+              "icon-image": ["get", "kind"],
+              "text-font": ["Noto Sans Regular"],
+              "text-justify": "auto",
+              "text-field": get_multiline_name(
+                lang,
+                script,
+              ) as DataDrivenPropertyValueSpecification<string>,
+              "text-size": 10,
+              "text-max-width": 8,
+              "text-offset": [1, 0],
+              "text-variable-anchor": ["left", "right"],
+            },
+            paint: {
+              "text-color": [
+                "case",
+                [
+                  "in",
+                  ["get", "kind"],
+                  ["literal", ["park", "peak", "forest", "marina"]],
+                ],
+                t.pois.green,
+                t.earth,
+              ],
+            },
+          },
+        ]
+      : []),
     {
       id: "places_subplace",
       type: "symbol",
