@@ -249,8 +249,8 @@ export const LIGHT: Theme = {
   country_label: "#a3a3a3",
 
   pois: {
-    green: "#20834D"
-  }
+    green: "#20834D",
+  },
 };
 
 export const DARK: Theme = {
@@ -334,8 +334,8 @@ export const DARK: Theme = {
   country_label: "#5c5c5c",
 
   pois: {
-    green: "#30C573"
-  }
+    green: "#30C573",
+  },
 };
 
 export const WHITE: Theme = {
