@@ -1538,7 +1538,7 @@ export function labels_layers(
             },
           },
         ]
-      : []),
+      : []) as LayerSpecification[],
     {
       id: "places_subplace",
       type: "symbol",
