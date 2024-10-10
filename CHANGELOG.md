@@ -1,3 +1,7 @@
+Tiles v4.0.1
+------
+- fix `roads` `kind=ferry`, remove ferry `kind_detail` [#312]
+
 Styles v4.0.0 + Tiles v4.0.0
 ------
 - Remove `medium_road`
