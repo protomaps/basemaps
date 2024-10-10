@@ -1378,37 +1378,16 @@ export function labels_layers(
       filter: ["in", "kind", "river", "stream"],
       layout: {
         "symbol-placement": "line",
-        "text-font": ["Noto Sans Regular"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
-        "text-size": 12,
-        "text-letter-spacing": 0.3,
-      },
-      paint: {
-        "text-color": t.waterway_label,
-      },
-    },
-    {
-      id: "pois_peak",
-      type: "symbol",
-      source: source,
-      "source-layer": "pois",
-      filter: ["==", "kind", "peak"],
-      layout: {
         "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
         ) as DataDrivenPropertyValueSpecification<string>,
-        "text-size": ["interpolate", ["linear"], ["zoom"], 10, 8, 16, 12],
-        "text-letter-spacing": 0.1,
-        "text-max-width": 9,
+        "text-size": 12,
+        "text-letter-spacing": 0.2,
       },
       paint: {
-        "text-color": t.peak_label,
-        "text-halo-width": 1.5,
+        "text-color": t.ocean_label,
       },
     },
     {
@@ -1452,7 +1431,7 @@ export function labels_layers(
         "fjord",
       ],
       layout: {
-        "text-font": ["Noto Sans Medium"],
+        "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
@@ -1473,7 +1452,7 @@ export function labels_layers(
       "source-layer": "water",
       filter: ["in", "kind", "lake", "water"],
       layout: {
-        "text-font": ["Noto Sans Medium"],
+        "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
