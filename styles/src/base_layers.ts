@@ -1489,7 +1489,7 @@ export function labels_layers(
         "text-halo-blur": 1,
       },
     },
-    ...(t.pois
+    ...((t.pois
       ? [
           {
             id: "pois",
@@ -1538,7 +1538,7 @@ export function labels_layers(
             },
           },
         ]
-      : []) as LayerSpecification[],
+      : []) as LayerSpecification[]),
     {
       id: "places_subplace",
       type: "symbol",
