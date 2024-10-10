@@ -51,7 +51,6 @@ export interface Theme {
 
   railway: string;
   boundaries: string;
-  waterway_label: string;
 
   bridges_other_casing: string;
   bridges_minor_casing: string;
@@ -69,7 +68,6 @@ export interface Theme {
   roads_label_major: string;
   roads_label_major_halo: string;
   ocean_label: string;
-  peak_label: string;
   subplace_label: string;
   subplace_label_halo: string;
   city_label: string;
@@ -77,6 +75,16 @@ export interface Theme {
   state_label: string;
   state_label_halo: string;
   country_label: string;
+
+  pois?: Pois;
+
+  // deprecated
+  peak_label: string;
+  waterway_label: string;
+}
+
+export interface Pois {
+  green: string;
 }
 
 export const CONTRAST: Theme = {
@@ -230,7 +238,7 @@ export const LIGHT: Theme = {
   roads_label_minor_halo: "#ffffff",
   roads_label_major: "#938a8d",
   roads_label_major_halo: "#ffffff",
-  ocean_label: "#ffffff",
+  ocean_label: "#728dd4",
   peak_label: "#7e9aa0",
   subplace_label: "#8f8f8f",
   subplace_label_halo: "#e0e0e0",
@@ -239,6 +247,10 @@ export const LIGHT: Theme = {
   state_label: "#b3b3b3",
   state_label_halo: "#e0e0e0",
   country_label: "#a3a3a3",
+
+  pois: {
+    green: "#20834D",
+  },
 };
 
 export const DARK: Theme = {
@@ -320,6 +332,10 @@ export const DARK: Theme = {
   state_label: "#3d3d3d",
   state_label_halo: "#1f1f1f",
   country_label: "#5c5c5c",
+
+  pois: {
+    green: "#30C573",
+  },
 };
 
 export const WHITE: Theme = {

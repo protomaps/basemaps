@@ -236,20 +236,16 @@ export function nolabels_layers(
         ],
       },
     },
-    // {
-    //   id: "landuse_runway",
-    //   type: "fill",
-    //   source: source,
-    //   "source-layer": "landuse",
-    //   minzoom: 14,
-    //   filter: [
-    //     "any",
-    //     ["in", "kind_detail", "runway", "taxiway"],
-    //   ],
-    //   paint: {
-    //     "fill-color": t.runway,
-    //   },
-    // },
+    {
+      id: "landuse_runway",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: ["any", ["in", "kind", "runway", "taxiway"]],
+      paint: {
+        "fill-color": t.runway,
+      },
+    },
     {
       id: "water",
       type: "fill",
@@ -1204,40 +1200,6 @@ export function nolabels_layers(
         ],
       },
     },
-    // {
-    //   id: "roads_bridges_highway_casing",
-    //   type: "line",
-    //   source: source,
-    //   "source-layer": "roads",
-    //   minzoom: 12,
-    //   filter: ["all", [">", "level", 0], ["==", "kind", "highway"], ["!=", "link", 1]],
-    //   paint: {
-    //     "line-color": t.bridges_highway_casing,
-    //     "line-gap-width": [
-    //       "interpolate",
-    //       ["exponential", 1.6],
-    //       ["zoom"],
-    //       3,
-    //       0,
-    //       3.5,
-    //       0.5,
-    //       18,
-    //       32,
-    //     ],
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.6],
-    //       ["zoom"],
-    //       7,
-    //       0,
-    //       7.5,
-    //       1,
-    //     ],
-    //   },
-    //   layout: {
-    //     visibility: casingVisibility,
-    //   },
-    // },
     {
       id: "roads_bridges_other",
       type: "line",
@@ -1416,37 +1378,16 @@ export function labels_layers(
       filter: ["in", "kind", "river", "stream"],
       layout: {
         "symbol-placement": "line",
-        "text-font": ["Noto Sans Regular"],
-        "text-field": get_multiline_name(
-          lang,
-          script,
-        ) as DataDrivenPropertyValueSpecification<string>,
-        "text-size": 12,
-        "text-letter-spacing": 0.3,
-      },
-      paint: {
-        "text-color": t.waterway_label,
-      },
-    },
-    {
-      id: "pois_peak",
-      type: "symbol",
-      source: source,
-      "source-layer": "pois",
-      filter: ["==", "kind", "peak"],
-      layout: {
         "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
         ) as DataDrivenPropertyValueSpecification<string>,
-        "text-size": ["interpolate", ["linear"], ["zoom"], 10, 8, 16, 12],
-        "text-letter-spacing": 0.1,
-        "text-max-width": 9,
+        "text-size": 12,
+        "text-letter-spacing": 0.2,
       },
       paint: {
-        "text-color": t.peak_label,
-        "text-halo-width": 1.5,
+        "text-color": t.ocean_label,
       },
     },
     {
@@ -1469,7 +1410,8 @@ export function labels_layers(
       paint: {
         "text-color": t.roads_label_minor,
         "text-halo-color": t.roads_label_minor_halo,
-        "text-halo-width": 2,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {
@@ -1489,7 +1431,7 @@ export function labels_layers(
         "fjord",
       ],
       layout: {
-        "text-font": ["Noto Sans Medium"],
+        "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
@@ -1510,7 +1452,7 @@ export function labels_layers(
       "source-layer": "water",
       filter: ["in", "kind", "lake", "water"],
       layout: {
-        "text-font": ["Noto Sans Medium"],
+        "text-font": ["Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
@@ -1543,9 +1485,60 @@ export function labels_layers(
       paint: {
         "text-color": t.roads_label_major,
         "text-halo-color": t.roads_label_major_halo,
-        "text-halo-width": 2,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
+    ...((t.pois
+      ? [
+          {
+            id: "pois",
+            type: "symbol",
+            source: source,
+            "source-layer": "pois",
+            filter: [
+              "all",
+              [
+                "in",
+                ["get", "kind"],
+                [
+                  "literal",
+                  ["beach", "forest", "marina", "park", "peak", "zoo"],
+                ],
+              ],
+              [">=", ["zoom"], ["get", "min_zoom"]],
+            ],
+            layout: {
+              "icon-image": ["get", "kind"],
+              "text-font": ["Noto Sans Regular"],
+              "text-justify": "auto",
+              "text-field": get_multiline_name(
+                lang,
+                script,
+              ) as DataDrivenPropertyValueSpecification<string>,
+              "text-size": 10,
+              "text-max-width": 8,
+              "text-offset": [1, 0],
+              "text-variable-anchor": ["left", "right"],
+            },
+            paint: {
+              "text-color": [
+                "case",
+                [
+                  "in",
+                  ["get", "kind"],
+                  [
+                    "literal",
+                    ["beach", "forest", "marina", "park", "peak", "zoo"],
+                  ],
+                ],
+                t.pois.green,
+                t.earth,
+              ],
+            },
+          },
+        ]
+      : []) as LayerSpecification[]),
     {
       id: "places_subplace",
       type: "symbol",
@@ -1590,7 +1583,8 @@ export function labels_layers(
       paint: {
         "text-color": t.subplace_label,
         "text-halo-color": t.subplace_label_halo,
-        "text-halo-width": 1.5,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {
@@ -1705,6 +1699,7 @@ export function labels_layers(
         "text-color": t.city_label,
         "text-halo-color": t.city_label_halo,
         "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {
@@ -1731,7 +1726,8 @@ export function labels_layers(
       paint: {
         "text-color": t.state_label,
         "text-halo-color": t.state_label_halo,
-        "text-halo-width": 2,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       },
     },
     {

@@ -1,3 +1,11 @@
+Styles v4.1.0
+------
+- add icon sprites for six green kinds [#238]
+- point v4 styles at v4 sprites assets URL
+- change light theme water color to blue instead of white for contrast
+- consistent halo size across layers
+- add landuse `kind=runway`
+
 Tiles v4.0.1
 ------
 - fix `roads` `kind=ferry`, remove ferry `kind_detail` [#312]

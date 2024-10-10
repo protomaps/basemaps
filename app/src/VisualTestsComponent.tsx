@@ -55,7 +55,7 @@ const createMap = (
       zoom: zoom,
       glyphs:
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
-      sprite: "https://protomaps.github.io/basemaps-assets/sprites/v3/light",
+      sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
       sources: {
         protomaps: {
           type: "vector",
