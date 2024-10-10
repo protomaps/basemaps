@@ -225,9 +225,8 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
             minZoom = 14;
           }
         }
-      } else if (sf.hasTag("ferry")) {
+      } else if (sf.hasTag("route", "ferry")) {
         kind = "ferry";
-        kindDetail = sf.getString("ferry");
       } else if (sf.hasTag("man_made", "pier")) {
         kind = "path";
         kindDetail = "pier";
