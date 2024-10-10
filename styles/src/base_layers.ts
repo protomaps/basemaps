@@ -236,20 +236,16 @@ export function nolabels_layers(
         ],
       },
     },
-    // {
-    //   id: "landuse_runway",
-    //   type: "fill",
-    //   source: source,
-    //   "source-layer": "landuse",
-    //   minzoom: 14,
-    //   filter: [
-    //     "any",
-    //     ["in", "kind_detail", "runway", "taxiway"],
-    //   ],
-    //   paint: {
-    //     "fill-color": t.runway,
-    //   },
-    // },
+    {
+      id: "landuse_runway",
+      type: "fill",
+      source: source,
+      "source-layer": "landuse",
+      filter: ["any", ["in", "kind", "runway", "taxiway"]],
+      paint: {
+        "fill-color": t.runway,
+      },
+    },
     {
       id: "water",
       type: "fill",
@@ -1204,40 +1200,6 @@ export function nolabels_layers(
         ],
       },
     },
-    // {
-    //   id: "roads_bridges_highway_casing",
-    //   type: "line",
-    //   source: source,
-    //   "source-layer": "roads",
-    //   minzoom: 12,
-    //   filter: ["all", [">", "level", 0], ["==", "kind", "highway"], ["!=", "link", 1]],
-    //   paint: {
-    //     "line-color": t.bridges_highway_casing,
-    //     "line-gap-width": [
-    //       "interpolate",
-    //       ["exponential", 1.6],
-    //       ["zoom"],
-    //       3,
-    //       0,
-    //       3.5,
-    //       0.5,
-    //       18,
-    //       32,
-    //     ],
-    //     "line-width": [
-    //       "interpolate",
-    //       ["exponential", 1.6],
-    //       ["zoom"],
-    //       7,
-    //       0,
-    //       7.5,
-    //       1,
-    //     ],
-    //   },
-    //   layout: {
-    //     visibility: casingVisibility,
-    //   },
-    // },
     {
       id: "roads_bridges_other",
       type: "line",

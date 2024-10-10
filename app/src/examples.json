@@ -75,5 +75,12 @@
     "tags": ["roads"],
     "center": [-122.440512, 37.807891],
     "zoom": 16
+  },
+  {
+    "name": "edwards-afb",
+    "description": "edwards air force base runways",
+    "tags": ["landuse"],
+    "center": [-118.0726,34.8328],
+    "zoom": 10
   }
 ]
