@@ -1,7 +1,7 @@
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { labels_layers, nolabels_layers } from "./base_layers";
-import themes, { Theme } from "./themes";
 import { language_script_pairs } from "./language";
+import themes, { Theme } from "./themes";
 
 export { language_script_pairs };
 
