@@ -1,9 +1,10 @@
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { labels_layers, nolabels_layers } from "./base_layers";
 import { language_script_pairs } from "./language";
-import themes, { Theme } from "./themes";
+import themes, { Theme, Pois } from "./themes";
 
 export { language_script_pairs };
+export type { Theme, Pois };
 
 export default function (
   source: string,
