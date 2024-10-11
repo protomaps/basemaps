@@ -3,7 +3,8 @@ import { labels_layers, nolabels_layers } from "./base_layers";
 import { language_script_pairs } from "./language";
 import themes, { Theme, Pois } from "./themes";
 
-export { language_script_pairs, Theme, Pois };
+export { language_script_pairs };
+export type { Theme, Pois };
 
 export default function (
   source: string,
