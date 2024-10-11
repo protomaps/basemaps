@@ -69,6 +69,8 @@ Example web map corner attribution:
 
 Tilesets also include data from [Natural Earth](https://www.naturalearthdata.com), which does not require corner attribution. Other data sources your map uses may require additional attribution.
 
+Depending on map style, MIT-licensed icons may also be included from the [Tangram Icons repository](https://github.com/tangrams/icons/issues).
+
 The software in this repository is made available under a [BSD 3-Clause License](/LICENSE.md), and includes license notices related to Protomaps LLC, Mapzen, and the Linux Foundation. You must retain these license notices in software source code derived from this repository.
 
 If you distribute a modified “fork” of these basemap styles or tilesets, or provide a tiles API based on them, you must name your product or service something different from Protomaps. Free and unmodified redistributions of tiles and styles are permitted to use the name. No restrictions apply to the underlying technology `.pmtiles` which is an [open specification in the public domain.](https://github.com/protomaps/PMTiles#license)
