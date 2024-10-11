@@ -301,12 +301,13 @@ function MapLibreView(props: {
   return <div id="map" />;
 }
 
-// if no tiles are passed, loads the latest daily build.
 export default function MapViewComponent() {
   const hash = parseHash(location.hash);
   const [theme, setTheme] = useState<string>(hash.theme || "light");
   const [lang, setLang] = useState<string>(hash.lang || "en");
-  const [tiles, setTiles] = useState<string | undefined>(hash.tiles);
+  const [tiles, setTiles] = useState<string>(
+    hash.tiles || "https://demo-bucket.protomaps.com/v4.pmtiles",
+  );
   const [localSprites, setLocalSprites] = useState<boolean>(
     hash.local_sprites === "true",
   );
@@ -338,20 +339,6 @@ export default function MapViewComponent() {
   }, []);
 
   const { getRootProps } = useDropzone({ onDrop });
-
-  // TODO: language tag selector
-
-  useEffect(() => {
-    if (!tiles) {
-      fetch("https://build-metadata.protomaps.dev/builds.json")
-        .then((r) => {
-          return r.json();
-        })
-        .then((j) => {
-          setTiles(`https://build.protomaps.com/${j[j.length - 1].key}`);
-        });
-    }
-  }, [tiles]);
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
     const c = event.charCode;
