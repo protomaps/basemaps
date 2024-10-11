@@ -1,3 +1,5 @@
+[TypeScript docs](https://maps.protomaps.com/typedoc/)
+
 ## Usage
 
 Prepare your environment with:
@@ -15,18 +17,18 @@ To generate style.json files in all themes and supported languages, run:
 npm run generate-styles https://example.com/your-tilejson-url.json
 ```
 
-Note that you have to replace the tilejson url with your own.
+Note that you have to replace the TileJSON URL with your own.
 
 This will create files in the `dist/styles/` folder like this:
 
 ```
 dist/
   styles/
-    black/
+    light/
       ar.json
       bg.json
       ...
-    contrast/
+    dark/
       ar.json
       bg.json
       ...
