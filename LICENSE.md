@@ -20,6 +20,10 @@ The visual design of the Protomaps basemap styles was created by Geraldine Sarmi
 
 https://creativecommons.org/publicdomain/zero/1.0/
 
+Certain map styles may also include derivatives of icons designed for Mapzen and released under an MIT license.
+
+https://github.com/tangrams/icons/blob/master/LICENSE.md
+
 # Tile Schema
 
 The organization of layers and tags is adapted from the Tilezen project.
