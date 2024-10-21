@@ -1,3 +1,7 @@
+Tiles v4.0.2
+------
+- fix buildings `min_height` via @JfrAziz [#323]
+
 Styles v4.1.0
 ------
 - add icon sprites for six green kinds [#238]
