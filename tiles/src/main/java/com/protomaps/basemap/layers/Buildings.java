@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class Buildings implements ForwardingProfile.LayerPostProcesser {
 
   static final String HEIGHT_KEY = "height";
-  static final String MIN_HEIGHT_KEY = "height";
+  static final String MIN_HEIGHT_KEY = "min_height";
 
   @Override
   public String name() {
