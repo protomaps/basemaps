@@ -89,22 +89,24 @@ export interface Theme {
 }
 
 export interface Pois {
+  blue: string;
   green: string;
   lapis: string;
-  slategray: string;
-  blue: string;
-  tangerine: string;
   pink: string;
+  red: string;
+  slategray: string;
+  tangerine: string;
+  turquoise: string;
 }
 
 export interface Landcover {
-  grassland: string;
   barren: string;
-  urban_area: string;
   farmland: string;
-  glacier: string;
-  scrub: string;
   forest: string;
+  glacier: string;
+  grassland: string;
+  scrub: string;
+  urban_area: string;
 }
 
 export const CONTRAST: Theme = {
