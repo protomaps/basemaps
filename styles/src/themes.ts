@@ -77,6 +77,9 @@ export interface Theme {
   country_label: string;
 
   pois?: Pois;
+  landcover?: Landcover;
+
+  italic?: String;
 
   // deprecated
   peak_label: string;
@@ -85,6 +88,21 @@ export interface Theme {
 
 export interface Pois {
   green: string;
+  lapis: string;
+  slategray: string;
+  blue: string;
+  tangerine: string;
+  pink: string;
+}
+
+export interface Landcover {
+  grassland: string;
+  barren: string;
+  urban_area: string;
+  farmland: string;
+  glacier: string;
+  scrub: string;
+  forest: string;
 }
 
 export const CONTRAST: Theme = {

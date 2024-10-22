@@ -1378,7 +1378,7 @@ export function labels_layers(
       filter: ["in", "kind", "river", "stream"],
       layout: {
         "symbol-placement": "line",
-        "text-font": ["Noto Sans Italic"],
+        "text-font": [t.italic || "Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
@@ -1400,7 +1400,7 @@ export function labels_layers(
       layout: {
         "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": [t.regular || "Noto Sans Regular"],
         "text-field": get_multiline_name(
           lang,
           script,
@@ -1431,10 +1431,11 @@ export function labels_layers(
         "fjord",
       ],
       layout: {
-        "text-font": ["Noto Sans Italic"],
+        "text-font": [t.italic || "Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
+          t.regular
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 10, 10, 12],
         "text-letter-spacing": 0.1,
@@ -1452,10 +1453,11 @@ export function labels_layers(
       "source-layer": "water",
       filter: ["in", "kind", "lake", "water"],
       layout: {
-        "text-font": ["Noto Sans Italic"],
+        "text-font": [t.italic || "Noto Sans Italic"],
         "text-field": get_multiline_name(
           lang,
           script,
+          t.regular
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 0, 6, 12, 10, 12],
         "text-letter-spacing": 0.1,
@@ -1475,10 +1477,11 @@ export function labels_layers(
       layout: {
         "symbol-sort-key": ["get", "min_zoom"],
         "symbol-placement": "line",
-        "text-font": ["Noto Sans Regular"],
+        "text-font": [t.regular || "Noto Sans Regular"],
         "text-field": get_multiline_name(
           lang,
           script,
+          t.regular
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": 12,
       },
@@ -1550,8 +1553,9 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
+          t.regular
         ) as DataDrivenPropertyValueSpecification<string>,
-        "text-font": ["Noto Sans Regular"],
+        "text-font": [t.regular || "Noto Sans Regular"],
         "text-max-width": 7,
         "text-letter-spacing": 0.1,
         "text-padding": [
@@ -1599,12 +1603,13 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
+          t.regular
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-font": [
           "case",
           ["<=", ["get", "min_zoom"], 5],
-          ["literal", ["Noto Sans Medium"]],
-          ["literal", ["Noto Sans Regular"]],
+          ["literal", [t.bold || "Noto Sans Medium"]],
+          ["literal", [t.regular || "Noto Sans Regular"]],
         ],
         "text-padding": [
           "interpolate",
@@ -1715,9 +1720,9 @@ export function labels_layers(
           ["zoom"],
           ["get", "name:short"],
           6,
-          get_multiline_name(lang, script) as ExpressionSpecification,
+          get_multiline_name(lang, script, t.regular) as ExpressionSpecification,
         ],
-        "text-font": ["Noto Sans Regular"],
+        "text-font": [t.regular || "Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 7, 16],
         "text-radial-offset": 0.2,
         "text-anchor": "center",
@@ -1742,7 +1747,7 @@ export function labels_layers(
           lang,
           script,
         ) as DataDrivenPropertyValueSpecification<string>,
-        "text-font": ["Noto Sans Medium"],
+        "text-font": [t.bold || "Noto Sans Medium"],
         "text-size": [
           "interpolate",
           ["linear"],
