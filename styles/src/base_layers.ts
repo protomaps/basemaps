@@ -1513,7 +1513,7 @@ export function labels_layers(
             ],
             layout: {
               "icon-image": ["get", "kind"],
-              "text-font": ["Noto Sans Regular"],
+              "text-font": [t.regular || "Noto Sans Regular"],
               "text-justify": "auto",
               "text-field": get_multiline_name(
                 lang,
