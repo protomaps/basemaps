@@ -76,10 +76,12 @@ export interface Theme {
   state_label_halo: string;
   country_label: string;
 
+  regular?: string;
+  bold?:  string;
+  italic?: string;
+
   pois?: Pois;
   landcover?: Landcover;
-
-  italic?: String;
 
   // deprecated
   peak_label: string;
