@@ -271,7 +271,14 @@ export const LIGHT: Theme = {
   country_label: "#a3a3a3",
 
   pois: {
+    blue: "#1A8CBD",
     green: "#20834D",
+    lapis: "#315BCF",
+    pink: "#EF56BA",
+    red: "#F2567A",
+    slategray: "#6A5B8F",
+    tangerine: "#CB6704",
+    turquoise: "#00C3D4"
   },
 };
 
@@ -356,7 +363,14 @@ export const DARK: Theme = {
   country_label: "#5c5c5c",
 
   pois: {
+    blue: "#4299BB",
     green: "#30C573",
+    lapis: "#2B5CEA",
+    pink: "#EF56BA",
+    red: "#F2567A",
+    slategray: "#93939F",
+    tangerine: "#F19B6E",
+    turquoise: "#00C3D4"
   },
 };
 
