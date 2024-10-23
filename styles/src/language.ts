@@ -1,4 +1,7 @@
-function get_name_block(script_segment: "name" | "name2" | "name3", regular?: string) {
+function get_name_block(
+  script_segment: "name" | "name2" | "name3",
+  regular?: string,
+) {
   let script = "script";
 
   if (script_segment === "name") {
@@ -82,7 +85,11 @@ export function get_country_name(lang: string, script?: string) {
   ];
 }
 
-export function get_multiline_name(lang: string, script?: string, regular?: string) {
+export function get_multiline_name(
+  lang: string,
+  script?: string,
+  regular?: string,
+) {
   const _script = script || get_default_script(lang);
   let name_prefix: string;
   if (_script === "Devanagari") {

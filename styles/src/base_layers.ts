@@ -1435,7 +1435,7 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
-          t.regular
+          t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 10, 10, 12],
         "text-letter-spacing": 0.1,
@@ -1457,7 +1457,7 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
-          t.regular
+          t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 0, 6, 12, 10, 12],
         "text-letter-spacing": 0.1,
@@ -1481,7 +1481,7 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
-          t.regular
+          t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": 12,
       },
@@ -1553,7 +1553,7 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
-          t.regular
+          t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-font": [t.regular || "Noto Sans Regular"],
         "text-max-width": 7,
@@ -1603,7 +1603,7 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
-          t.regular
+          t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-font": [
           "case",
@@ -1720,7 +1720,11 @@ export function labels_layers(
           ["zoom"],
           ["get", "name:short"],
           6,
-          get_multiline_name(lang, script, t.regular) as ExpressionSpecification,
+          get_multiline_name(
+            lang,
+            script,
+            t.regular,
+          ) as ExpressionSpecification,
         ],
         "text-font": [t.regular || "Noto Sans Regular"],
         "text-size": ["interpolate", ["linear"], ["zoom"], 3, 11, 7, 16],

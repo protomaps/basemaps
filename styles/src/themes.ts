@@ -77,7 +77,7 @@ export interface Theme {
   country_label: string;
 
   regular?: string;
-  bold?:  string;
+  bold?: string;
   italic?: string;
 
   pois?: Pois;
@@ -278,7 +278,7 @@ export const LIGHT: Theme = {
     red: "#F2567A",
     slategray: "#6A5B8F",
     tangerine: "#CB6704",
-    turquoise: "#00C3D4"
+    turquoise: "#00C3D4",
   },
 };
 
@@ -370,7 +370,7 @@ export const DARK: Theme = {
     red: "#F2567A",
     slategray: "#93939F",
     tangerine: "#F19B6E",
-    turquoise: "#00C3D4"
+    turquoise: "#00C3D4",
   },
 };
 
