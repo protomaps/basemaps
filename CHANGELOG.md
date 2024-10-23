@@ -1,3 +1,9 @@
+Styles v4.2.0
+------
+* add icons for a few lapis and slategray POIs [#238, #163]
+* adjust light theme earth color
+* add fonts and landcover as optional properties of `Theme` interface
+
 Tiles v4.0.2
 ------
 - fix buildings `min_height` via @JfrAziz [#323]

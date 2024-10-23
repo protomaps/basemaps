@@ -1506,10 +1506,30 @@ export function labels_layers(
                 ["get", "kind"],
                 [
                   "literal",
-                  ["beach", "forest", "marina", "park", "peak", "zoo", "garden", "bench", "aerodrome", "station", "bus_stop", "ferry_terminal", "stadium", "university", "library", "school", "animal", "toilets", "drinking_water"]
+                  [
+                    "beach",
+                    "forest",
+                    "marina",
+                    "park",
+                    "peak",
+                    "zoo",
+                    "garden",
+                    "bench",
+                    "aerodrome",
+                    "station",
+                    "bus_stop",
+                    "ferry_terminal",
+                    "stadium",
+                    "university",
+                    "library",
+                    "school",
+                    "animal",
+                    "toilets",
+                    "drinking_water",
+                  ],
                 ],
               ],
-              [">=", ["zoom"], ["+",["get", "min_zoom"],0]],
+              [">=", ["zoom"], ["+", ["get", "min_zoom"], 0]],
             ],
             layout: {
               "icon-image": [
@@ -1517,14 +1537,14 @@ export function labels_layers(
                 ["get", "kind"],
                 "station",
                 "train_station",
-                ["get", "kind"]
+                ["get", "kind"],
               ],
               "text-font": [t.regular || "Noto Sans Regular"],
               "text-justify": "auto",
               "text-field": get_multiline_name(
                 lang,
                 script,
-                t.regular
+                t.regular,
               ) as DataDrivenPropertyValueSpecification<string>,
               "text-size": [
                 "interpolate",
@@ -1547,7 +1567,16 @@ export function labels_layers(
                   ["get", "kind"],
                   [
                     "literal",
-                    ["beach", "forest", "marina", "park", "peak", "zoo", "garden", "bench"],
+                    [
+                      "beach",
+                      "forest",
+                      "marina",
+                      "park",
+                      "peak",
+                      "zoo",
+                      "garden",
+                      "bench",
+                    ],
                   ],
                 ],
                 t.pois.green,
@@ -1565,7 +1594,15 @@ export function labels_layers(
                   ["get", "kind"],
                   [
                     "literal",
-                    ["stadium", "university", "library", "school", "animal", "toilets", "drinking_water"],
+                    [
+                      "stadium",
+                      "university",
+                      "library",
+                      "school",
+                      "animal",
+                      "toilets",
+                      "drinking_water",
+                    ],
                   ],
                 ],
                 t.pois.slategray,
