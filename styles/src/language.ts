@@ -1,4 +1,7 @@
-function get_name_block(script_segment: "name" | "name2" | "name3") {
+function get_name_block(
+  script_segment: "name" | "name2" | "name3",
+  regular?: string,
+) {
   let script = "script";
 
   if (script_segment === "name") {
@@ -16,7 +19,7 @@ function get_name_block(script_segment: "name" | "name2" | "name3") {
         "case",
         ["==", ["get", script], "Devanagari"],
         ["literal", ["Noto Sans Devanagari Regular v1"]],
-        ["literal", ["Noto Sans Regular"]],
+        ["literal", [regular || "Noto Sans Regular"]],
       ],
     },
   ];
@@ -82,7 +85,11 @@ export function get_country_name(lang: string, script?: string) {
   ];
 }
 
-export function get_multiline_name(lang: string, script?: string) {
+export function get_multiline_name(
+  lang: string,
+  script?: string,
+  regular?: string,
+) {
   const _script = script || get_default_script(lang);
   let name_prefix: string;
   if (_script === "Devanagari") {
@@ -135,7 +142,7 @@ export function get_multiline_name(lang: string, script?: string) {
               "case",
               ["==", ["get", "script"], "Devanagari"],
               ["literal", ["Noto Sans Devanagari Regular v1"]],
-              ["literal", ["Noto Sans Regular"]],
+              ["literal", [regular || "Noto Sans Regular"]],
             ],
           },
         ],

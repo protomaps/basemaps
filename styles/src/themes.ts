@@ -76,7 +76,12 @@ export interface Theme {
   state_label_halo: string;
   country_label: string;
 
+  regular?: string;
+  bold?: string;
+  italic?: string;
+
   pois?: Pois;
+  landcover?: Landcover;
 
   // deprecated
   peak_label: string;
@@ -84,7 +89,24 @@ export interface Theme {
 }
 
 export interface Pois {
+  blue: string;
   green: string;
+  lapis: string;
+  pink: string;
+  red: string;
+  slategray: string;
+  tangerine: string;
+  turquoise: string;
+}
+
+export interface Landcover {
+  barren: string;
+  farmland: string;
+  forest: string;
+  glacier: string;
+  grassland: string;
+  scrub: string;
+  urban_area: string;
 }
 
 export const CONTRAST: Theme = {
@@ -249,7 +271,14 @@ export const LIGHT: Theme = {
   country_label: "#a3a3a3",
 
   pois: {
+    blue: "#1A8CBD",
     green: "#20834D",
+    lapis: "#315BCF",
+    pink: "#EF56BA",
+    red: "#F2567A",
+    slategray: "#6A5B8F",
+    tangerine: "#CB6704",
+    turquoise: "#00C3D4",
   },
 };
 
@@ -334,7 +363,14 @@ export const DARK: Theme = {
   country_label: "#5c5c5c",
 
   pois: {
+    blue: "#4299BB",
     green: "#30C573",
+    lapis: "#2B5CEA",
+    pink: "#EF56BA",
+    red: "#F2567A",
+    slategray: "#93939F",
+    tangerine: "#F19B6E",
+    turquoise: "#00C3D4",
   },
 };
 
