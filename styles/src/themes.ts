@@ -192,7 +192,7 @@ export const CONTRAST: Theme = {
 
 export const LIGHT: Theme = {
   background: "#cccccc",
-  earth: "#e0e0e0",
+  earth: "#e2dfda",
   park_a: "#cfddd5",
   park_b: "#9cd3b4",
   hospital: "#e4dad9",
