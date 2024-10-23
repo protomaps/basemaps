@@ -1,7 +1,9 @@
 {
   "themes": {
     "base":["#555555","#ffffff"],
-    "green":["#20834D", "#DEF7EA"]
+    "green":["#20834D", "#DEF7EA"],
+    "lapis": ["#315BCF", "#DFEAF4"],
+    "slategray": ["#6A5B8F", "#E1F2FF"]
   },
   "icons": {
     "townspot":"base",
@@ -10,6 +12,19 @@
     "marina":"green",
     "park":"green",
     "peak":"green",
-    "zoo":"green"
+    "zoo":"green",
+    "garden": "green",
+    "bench": "green",
+    "aerodrome": "lapis",
+    "train_station": "lapis",
+    "bus_stop": "lapis",
+    "ferry_terminal": "lapis",
+    "stadium": "slategray",
+    "university": "slategray",
+    "library": "slategray",
+    "school": "slategray",
+    "animal": "slategray",
+    "toilets": "slategray",
+    "drinking_water": "slategray"
   }
 }
