@@ -38,8 +38,10 @@ public class CountryCoder {
     for (var feature : features) {
       JsonNode properties = feature.get("properties");
 
+      if (!feature.has("geometry") || feature.get("geometry").isNull() || !properties.has("country")) {
+        continue;
+      }
       List<Polygon> polygons = new ArrayList<>();
-
       for (var polygon : feature.get("geometry").get("coordinates")) {
         ArrayNode outerRingNode = (ArrayNode) polygon.get(0);
         Coordinate[] outerRingCoordinates = parseCoordinates(outerRingNode);
