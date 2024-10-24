@@ -4,6 +4,7 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
 import com.onthegomap.planetiler.util.Downloader;
+import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.layers.Boundaries;
@@ -18,6 +19,7 @@ import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
 import com.protomaps.basemap.postprocess.Clip;
 import com.protomaps.basemap.text.FontRegistry;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -27,7 +29,7 @@ import java.util.Map;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, Clip clip) {
+  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip) {
 
     var admin = new Boundaries();
     registerHandler(admin);
@@ -54,7 +56,7 @@ public class Basemap extends ForwardingProfile {
     registerHandler(poi);
     registerSourceHandler("osm", poi::processOsm);
 
-    var roads = new Roads();
+    var roads = new Roads(countryCoder);
     registerHandler(roads);
     registerSourceHandler("osm", roads::processOsm);
 
@@ -122,11 +124,11 @@ public class Basemap extends ForwardingProfile {
     return result;
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     run(Arguments.fromArgsOrConfigFile(args));
   }
 
-  static void run(Arguments args) {
+  static void run(Arguments args) throws IOException {
     args = args.orElse(Arguments.of("maxzoom", 15));
 
     Path dataDir = Path.of("data");
@@ -134,6 +136,8 @@ public class Basemap extends ForwardingProfile {
 
     Path nePath = sourcesDir.resolve("natural_earth_vector.sqlite.zip");
     String neUrl = "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip";
+
+    var countryCoder = CountryCoder.fromJarResource();
 
     String area = args.getString("area", "geofabrik area to download", "monaco");
 
@@ -171,7 +175,7 @@ public class Basemap extends ForwardingProfile {
 
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
-    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, clip)).setOutput(Path.of(area + ".pmtiles"))
+    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, countryCoder, clip)).setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
 }
