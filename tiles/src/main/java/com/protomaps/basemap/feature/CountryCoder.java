@@ -38,9 +38,19 @@ public class CountryCoder {
     for (var feature : features) {
       JsonNode properties = feature.get("properties");
 
-      if (!feature.has("geometry") || feature.get("geometry").isNull() || !properties.has("country")) {
+      if (!feature.has("geometry") || feature.get("geometry").isNull()) {
         continue;
       }
+
+      String country;
+      if (properties.has("iso1A2")) {
+        country = properties.get("iso1A2").asText();
+      } else if (properties.has("country")) {
+        country = properties.get("country").asText();
+      } else {
+        continue;
+      }
+
       List<Polygon> polygons = new ArrayList<>();
       for (var polygon : feature.get("geometry").get("coordinates")) {
         ArrayNode outerRingNode = (ArrayNode) polygon.get(0);
@@ -59,7 +69,7 @@ public class CountryCoder {
       MultiPolygon multiPolygon = GeoUtils.createMultiPolygon(polygons);
       multiPolygon.getEnvelopeInternal();
       tree.insert(multiPolygon.getEnvelopeInternal(),
-        new Record(properties.get("country").asText(), properties.get("nameEn").asText(), multiPolygon));
+        new Record(country, properties.get("nameEn").asText(), multiPolygon));
     }
     return new CountryCoder(tree);
   }
@@ -75,10 +85,15 @@ public class CountryCoder {
     return coordinates;
   }
 
-  public Optional<String> getCountryCode(Point point) {
-    List<Record> results = tree.query(point.getEnvelopeInternal());
+  public Optional<String> getCountryCode(Geometry geom) {
+    List<Record> results = tree.query(geom.getEnvelopeInternal());
     if (results.isEmpty())
       return Optional.empty();
-    return Optional.of(results.getFirst().country);
+    var filtered = results.stream().filter(record -> record.multiPolygon.contains(geom)
+    ).toList();
+    if (filtered.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(filtered.getFirst().country);
   }
 }

@@ -6,7 +6,6 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
-import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.CountryCoder;
@@ -43,12 +42,6 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
       int maxZoom = 15;
       int minZoomShieldText = 10;
       int minZoomNames = 14;
-
-      try {
-        var code = countryCoder.getCountryCode(GeoUtils.JTS_FACTORY.createPoint(sf.latLonGeometry().getCoordinate()));
-      } catch (Exception e) {
-
-      }
 
       String highway = sf.getString("highway");
       String service = "";
@@ -160,6 +153,13 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         .setMinPixelSize(0)
         .setPixelTolerance(0)
         .setZoomRange(minZoom, maxZoom);
+
+      try {
+        var code = countryCoder.getCountryCode(sf.latLonGeometry());
+        feat.setAttr("country_code", code);
+      } catch (Exception e) {
+
+      }
 
       if (!kindDetail.isEmpty()) {
         feat.setAttr("kind_detail", kindDetail);
