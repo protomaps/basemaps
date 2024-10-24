@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-public class CountryCoderTest {
+class CountryCoderTest {
 
   @Test
   void testLookupByPoint() throws IOException {
