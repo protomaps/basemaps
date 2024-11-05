@@ -1,3 +1,8 @@
+Styles v4.3.0
+------
+* Add landcover styling [#154]
+* Adjust appearance of landuse layers to fade in after landcover
+
 Styles v4.2.0
 ------
 * add icons for a few lapis and slategray POIs [#238, #163]
