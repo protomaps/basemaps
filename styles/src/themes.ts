@@ -280,13 +280,23 @@ export const LIGHT: Theme = {
     tangerine: "#CB6704",
     turquoise: "#00C3D4",
   },
+
+  landcover: {
+    grassland: "rgba(210, 239, 207, 1)",
+    barren: "rgba(255, 243, 215, 1)",
+    urban_area: "rgba(230, 230, 230, 1)",
+    farmland: "rgba(216, 239, 210, 1)",
+    glacier: "rgba(255, 255, 255, 1)",
+    scrub: "rgba(234, 239, 210, 1)",
+    forest: "rgba(196, 231, 210, 1)",
+  },
 };
 
 export const DARK: Theme = {
   background: "#34373d",
   earth: "#1f1f1f",
-  park_a: "#232325",
-  park_b: "#232325",
+  park_a: "#1c2421",
+  park_b: "#192a24",
   hospital: "#252424",
   industrial: "#222222",
   school: "#262323",
@@ -300,7 +310,7 @@ export const DARK: Theme = {
   beach: "#28282a",
   aerodrome: "#1e1e1e",
   runway: "#333333",
-  water: "#34373d",
+  water: "#31353f",
   zoo: "#222323",
   military: "#242323",
 
@@ -371,6 +381,16 @@ export const DARK: Theme = {
     slategray: "#93939F",
     tangerine: "#F19B6E",
     turquoise: "#00C3D4",
+  },
+
+  landcover: {
+    grassland: "rgba(30, 41, 31, 1)",
+    barren: "rgba(38, 38, 36, 1)",
+    urban_area: "rgba(28, 28, 28, 1)",
+    farmland: "rgba(31, 36, 32, 1)",
+    glacier: "rgba(43, 43, 43, 1)",
+    scrub: "rgba(34, 36, 30, 1)",
+    forest: "rgba(28, 41, 37, 1)",
   },
 };
 
