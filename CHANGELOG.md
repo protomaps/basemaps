@@ -1,3 +1,7 @@
+Tiles v4.0.3
+------
+- fix water `kind=ocean` via @dericke [#329]
+
 Styles v4.3.0
 ------
 * Add landcover styling [#154]
