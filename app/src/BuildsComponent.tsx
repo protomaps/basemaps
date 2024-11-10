@@ -162,11 +162,13 @@ export default function BuildsComponent() {
         return r.json();
       })
       .then((j) => {
-        setBuilds(j.sort((a: Build, b: Build) => {
-          if (a.key < b.key) return 1;
-          if (a.key > b.key) return -1;
-          return 0;
-        }));
+        setBuilds(
+          j.sort((a: Build, b: Build) => {
+            if (a.key < b.key) return 1;
+            if (a.key > b.key) return -1;
+            return 0;
+          }),
+        );
       });
   }, []);
 
