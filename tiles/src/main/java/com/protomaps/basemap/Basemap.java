@@ -40,6 +40,10 @@ public class Basemap extends ForwardingProfile {
     registerHandler(buildings);
     registerSourceHandler("osm", buildings::processOsm);
 
+    var housenumbers = new Housenumbers();
+    registerHandler(housenumbers);
+    registerSourceHandler("osm", housenumbers::processOsm);
+
     var landuse = new Landuse();
     registerHandler(landuse);
     registerSourceHandler("osm", landuse::processOsm);
