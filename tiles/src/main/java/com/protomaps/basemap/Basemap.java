@@ -10,6 +10,7 @@ import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.layers.Boundaries;
 import com.protomaps.basemap.layers.Buildings;
 import com.protomaps.basemap.layers.Earth;
+import com.protomaps.basemap.layers.Housenumbers;
 import com.protomaps.basemap.layers.Landcover;
 import com.protomaps.basemap.layers.Landuse;
 import com.protomaps.basemap.layers.Places;
@@ -39,6 +40,10 @@ public class Basemap extends ForwardingProfile {
     var buildings = new Buildings();
     registerHandler(buildings);
     registerSourceHandler("osm", buildings::processOsm);
+
+    var housenumbers = new Housenumbers();
+    registerHandler(housenumbers);
+    registerSourceHandler("osm", housenumbers::processOsm);
 
     var landuse = new Landuse();
     registerHandler(landuse);
