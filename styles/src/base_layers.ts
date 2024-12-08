@@ -1374,6 +1374,24 @@ export function labels_layers(
 ): LayerSpecification[] {
   return [
     {
+      id: "housenumbers_label",
+      type: "symbol",
+      source: source,
+      "source-layer": "housenumbers",
+      minzoom: 13,
+      layout: {
+        "symbol-placement": "point", // Places the text at a point location
+        "text-font": [t.italic || "Noto Sans Italic"],
+        "text-field": ["get", "housenumber"], // Retrieves the text from the 'housenumber' property in the source
+        "text-size": 12 // Adjust text size as needed
+      },
+      paint: {
+        "text-color": "red", // Set text color to red
+        "text-halo-color": "white", // Optional: adds a halo around the text for better visibility
+        "text-halo-width": 1 // Optional: defines the width of the halo
+      }
+    },
+    {
       id: "water_waterway_label",
       type: "symbol",
       source: source,
