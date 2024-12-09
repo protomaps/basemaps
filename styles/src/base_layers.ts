@@ -1378,17 +1378,18 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "housenumbers",
-      minzoom: 13,
+      minzoom: 17,
       layout: {
-        "symbol-placement": "point", // Places the text at a point location
+        "symbol-placement": "point",
         "text-font": [t.italic || "Noto Sans Italic"],
-        "text-field": ["get", "housenumber"], // Retrieves the text from the 'housenumber' property in the source
-        "text-size": 12 // Adjust text size as needed
+        "text-field": ["get", "housenumber"],
+        "text-size": 12
       },
       paint: {
-        "text-color": "red", // Set text color to red
-        "text-halo-color": "white", // Optional: adds a halo around the text for better visibility
-        "text-halo-width": 1 // Optional: defines the width of the halo
+        "text-color": t.housenumbers_label, 
+        "text-halo-color": t.house_numbers_label_halo, 
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
       }
     },
     {

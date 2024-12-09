@@ -151,7 +151,6 @@ public class Buildings implements ForwardingProfile.LayerPostProcesser {
         }
       }
     }
-
     return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
   }
 }
