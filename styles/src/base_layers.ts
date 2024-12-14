@@ -594,6 +594,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "buildings",
+      filter: ["!=", "kind", "address"],
       paint: {
         "fill-color": t.buildings,
         "fill-opacity": 0.5,
@@ -1377,12 +1378,13 @@ export function labels_layers(
       id: "housenumbers_label",
       type: "symbol",
       source: source,
-      "source-layer": "housenumbers",
-      minzoom: 17,
+      "source-layer": "buildings",
+      minzoom: 18,
+      filter: ["==", "kind", "address"],
       layout: {
         "symbol-placement": "point",
         "text-font": [t.italic || "Noto Sans Italic"],
-        "text-field": ["get", "housenumber"],
+        "text-field": ["get", "addr_housenumber"],
         "text-size": 12
       },
       paint: {

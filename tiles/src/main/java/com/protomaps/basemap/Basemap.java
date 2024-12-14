@@ -16,7 +16,6 @@ import com.protomaps.basemap.layers.Pois;
 import com.protomaps.basemap.layers.Roads;
 import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
-import com.protomaps.basemap.layers.Housenumbers;
 import com.protomaps.basemap.text.FontRegistry;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -36,10 +35,6 @@ public class Basemap extends ForwardingProfile {
     var buildings = new Buildings();
     registerHandler(buildings);
     registerSourceHandler("osm", buildings::processOsm);
-
-    var housenumbers = new Housenumbers();
-    registerHandler(housenumbers);
-    registerSourceHandler("osm", housenumbers::processOsm);
 
     var landuse = new Landuse();
     registerHandler(landuse);
