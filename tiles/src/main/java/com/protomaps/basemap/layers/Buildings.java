@@ -11,6 +11,7 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -93,13 +94,46 @@ public class Buildings implements ForwardingProfile.LayerPostProcesser {
       // Names should mostly just be for POIs
       // Sometimes building name and address are useful items, but only at zoom 17+
       //OsmNames.setOsmNames(feature, sf, 13);
+    } else if (sf.hasTag("addr:housenumber")) {
+      FeatureCollector.Feature feature = null;
+      if (sf.isPoint()) {
+        feature = features.point(this.name());
+      } else if (sf.canBePolygon()) {
+        feature = features.centroid(this.name());
+      }
+      if (feature != null) {
+        feature
+          .setId(FeatureId.create(sf))
+          .setAttr("addr_housenumber", sf.getString("addr:housenumber"))
+          .setAttr("addr_street", sf.getString("addr:street"))
+          .setAttr("kind", "address")
+          .setMinZoom(15);
+      }
     }
   }
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     if (zoom == 15) {
-      return items;
+      List<VectorTile.Feature> buildings = new ArrayList<>();
+
+      // deduplicate addresses
+      HashMap<Map<String, Object>, List<VectorTile.Feature>> groupedAddresses = new LinkedHashMap<>();
+      for (VectorTile.Feature item : items) {
+        if (item.tags().containsKey("addr_housenumber")) {
+          groupedAddresses.computeIfAbsent(item.tags(), k -> new ArrayList<>()).add(item);
+        } else {
+          buildings.add(item);
+        }
+      }
+
+      for (var address : groupedAddresses.values()) {
+        var feature = address.get(0);
+        feature.tags().remove("addr_street");
+        buildings.add(feature);
+      }
+
+      return buildings;
     }
     items = Area.filterArea(items, 0);
 
