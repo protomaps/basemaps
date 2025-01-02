@@ -41,3 +41,11 @@ export async function layersForVersion(version: string, theme?: string) {
   );
   return await resp.json();
 }
+
+export const isValidPMTiles = (tiles?: string): boolean => {
+  if (!tiles) return false;
+  if (!tiles.startsWith("http") && tiles.endsWith(".pmtiles")) return true;
+  if (tiles.startsWith("http") && new URL(tiles).pathname.endsWith(".pmtiles"))
+    return true;
+  return false;
+};
