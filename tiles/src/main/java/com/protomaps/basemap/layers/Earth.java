@@ -8,8 +8,8 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
-import org.locationtech.jts.geom.Point;
 import java.util.List;
+import org.locationtech.jts.geom.Point;
 
 public class Earth implements ForwardingProfile.LayerPostProcesser {
   @Override
