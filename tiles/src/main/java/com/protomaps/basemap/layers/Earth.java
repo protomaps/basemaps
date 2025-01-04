@@ -8,6 +8,7 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import org.locationtech.jts.geom.Point;
 import java.util.List;
 
 public class Earth implements ForwardingProfile.LayerPostProcesser {
@@ -28,6 +29,19 @@ public class Earth implements ForwardingProfile.LayerPostProcesser {
       features.polygon(this.name()).setZoomRange(0, 4).setBufferPixels(8).setAttr("kind", "earth");
     } else if (sourceLayer.equals("ne_10m_land")) {
       features.polygon(this.name()).setZoomRange(5, 5).setBufferPixels(8).setAttr("kind", "earth");
+    }
+    if (sourceLayer.equals("ne_10m_glaciated_areas")) {
+      try {
+        Point centroid = (Point) sf.centroid();
+        if (centroid.getY() > 0.7) {
+          features.polygon("landcover")
+            .setAttr("kind", "glacier")
+            .setZoomRange(0, 7)
+            .setMinPixelSize(0.0);
+        }
+      } catch (GeometryException e) {
+        System.out.println("Error: " + e);
+      }
     }
   }
 
