@@ -21,7 +21,7 @@ export function nolabels_layers(
     {
       id: "earth",
       type: "fill",
-      filter: ["==", ["geometry-type"], "Polygon"],
+      filter: ["==", "$type", "Polygon"],
       source: source,
       "source-layer": "earth",
       paint: {
@@ -253,7 +253,7 @@ export function nolabels_layers(
     {
       id: "water",
       type: "fill",
-      filter: ["==", ["geometry-type"], "Polygon"],
+      filter: ["==", "$type", "Polygon"],
       source: source,
       "source-layer": "water",
       paint: {
