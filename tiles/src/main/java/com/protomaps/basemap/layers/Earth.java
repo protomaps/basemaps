@@ -30,9 +30,13 @@ public class Earth implements ForwardingProfile.LayerPostProcesser {
     } else if (sourceLayer.equals("ne_10m_land")) {
       features.polygon(this.name()).setZoomRange(5, 5).setBufferPixels(8).setAttr("kind", "earth");
     }
+    // Daylight landcover uses ESA WorldCover which only goes to a latitude of roughly 80 deg S.
+    // Parts of Antarctica therefore get no landcover = glacier from Daylight.
+    // To fix this, we add glaciated areas from Natural Earth in Antarctica.
     if (sourceLayer.equals("ne_10m_glaciated_areas")) {
       try {
         Point centroid = (Point) sf.centroid();
+        // Web Mercator Y = 0.7 is roughly 60 deg South, i.e., Antarctica.
         if (centroid.getY() > 0.7) {
           features.polygon("landcover")
             .setAttr("kind", "glacier")
