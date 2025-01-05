@@ -12,7 +12,7 @@ interface Build {
   version: string;
 }
 
-function toDate(dateStr: string): boolean {
+function toDate(dateStr: string): Date {
   const year = Number.parseInt(dateStr.substring(0, 4), 10);
   const month = Number.parseInt(dateStr.substring(4, 6), 10) - 1; // Subtract 1 because months are 0-indexed in JavaScript dates
   const day = Number.parseInt(dateStr.substring(6, 8), 10);
@@ -103,7 +103,7 @@ function BuildComponent(props: {
         </a>
       </td>
       <td class="hidden lg:table-cell">
-        {date >= "20231228" ? (
+        {dateStr >= "20231228" ? (
           <a class="underline" href={statsLink}>
             stats
           </a>
