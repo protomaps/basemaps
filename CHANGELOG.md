@@ -1,3 +1,7 @@
+Styles v4.3.1
+------
+* Fix `$type` in water filters to be MapLibre v5.0 compatible.
+
 Tiles v4.0.3
 ------
 - fix water `kind=ocean` via @dericke [#329]
