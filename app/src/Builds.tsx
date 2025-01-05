@@ -12,12 +12,11 @@ interface Build {
   version: string;
 }
 
-function isMonday(dateStr: string): boolean {
+function toDate(dateStr: string): boolean {
   const year = Number.parseInt(dateStr.substring(0, 4), 10);
   const month = Number.parseInt(dateStr.substring(4, 6), 10) - 1; // Subtract 1 because months are 0-indexed in JavaScript dates
   const day = Number.parseInt(dateStr.substring(6, 8), 10);
-  const date = new Date(year, month, day);
-  return date.getDay() === 1;
+  return new Date(year, month, day);
 }
 
 function formatBytes(bytes: number, decimals = 2) {
@@ -48,9 +47,10 @@ function BuildComponent(props: {
   setCmpB: (i: number) => void;
 }) {
   const build = props.build;
+  const dateStr = build.key.substr(0, 8);
+  const date = toDate(dateStr);
   const link = `https://build.protomaps.com/${build.key}`;
-  const date = build.key.substr(0, 8);
-  const statsLink = `https://build.protomaps.com/${date}.layerstats.parquet`;
+  const statsLink = `https://build.protomaps.com/${dateStr}.layerstats.parquet`;
   const idx = props.idx;
 
   const onChangeA = () => {
@@ -62,31 +62,28 @@ function BuildComponent(props: {
   };
 
   return (
-    <tr style={{ color: isMonday(date) ? "black" : "#aaa" }}>
+    <tr style={{ color: date.getDay() === 1 ? "black" : "#aaa" }}>
       <td>
-        <span style={{ display: "inline-block", width: "20px" }}>
-          {idx > props.cmpB && (
-            <input
-              type="radio"
-              onChange={onChangeA}
-              checked={idx === props.cmpA}
-            />
-          )}
-        </span>
-        <span style={{ display: "inline-block", width: "20px" }}>
-          {idx < props.cmpA && (
-            <input
-              type="radio"
-              onChange={onChangeB}
-              checked={idx === props.cmpB}
-            />
-          )}
-        </span>
+        <input
+          disabled={idx <= props.cmpB}
+          type="radio"
+          onChange={onChangeA}
+          checked={idx === props.cmpA}
+          aria-label={`compare earlier build ${date.toDateString()}`}
+        />
+        <input
+          class="ml-2"
+          disabled={idx >= props.cmpA}
+          type="radio"
+          onChange={onChangeB}
+          checked={idx === props.cmpB}
+          aria-label={`compare later build ${date.toDateString()}`}
+        />
       </td>
       <td>{build.key}</td>
       <td>{build.version}</td>
-      <td>{formatBytes(build.size)}</td>
-      <td>{build.uploaded}</td>
+      <td class="hidden lg:table-cell">{formatBytes(build.size)}</td>
+      <td class="hidden lg:table-cell">{build.uploaded}</td>
       <td>
         <a class="underline" href={`/#tiles=${link}`}>
           map
@@ -100,12 +97,12 @@ function BuildComponent(props: {
           xray
         </a>
       </td>
-      <td>
+      <td class="hidden lg:table-cell">
         <a class="underline" href={link}>
           download
         </a>
       </td>
-      <td>
+      <td class="hidden lg:table-cell">
         {date >= "20231228" ? (
           <a class="underline" href={statsLink}>
             stats
@@ -193,15 +190,15 @@ function Builds() {
         <p>Only Monday builds (black) are kept indefinitely.</p>
         <div class="space-x-2 my-2">
           <button class="btn-primary" type="button" onClick={openVisualTests}>
-            Compare visual tests
+            Compare selected versions
           </button>
           {latestStyle() ? (
             <button class="btn-primary" type="button" onClick={openMaperture}>
-              Compare in Maperture (style {latestStyle()})
+              Compare in Maperture
             </button>
           ) : null}
         </div>
-        <table class="table-auto border-separate border-spacing-4 font-mono">
+        <table class="table-auto border-separate text-xs lg:text-base border-spacing-2 lg:border-spacing-4 font-mono">
           <tbody>
             <For each={builds()}>
               {(build, idx) => (

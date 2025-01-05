@@ -6,7 +6,8 @@ export default {
       purple: "#3131DC",
       white: "#FFFFFF",
       black: "#000000",
-      gray: "#E7E7F9"
+      gray: "#E7E7F9",
+      red: "#FF0000"
     },
 	},
 	plugins: [],

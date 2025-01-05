@@ -188,6 +188,8 @@ function MapLibreView(props: {
   let protocolRef: Protocol | undefined;
   let hiddenRef: HTMLDivElement | undefined;
 
+  const [error, setError] = createSignal<string | undefined>();
+
   onMount(() => {
     if (getRTLTextPluginStatus() === "unavailable") {
       setRTLTextPlugin(
@@ -239,6 +241,14 @@ function MapLibreView(props: {
       closeButton: true,
       closeOnClick: false,
       maxWidth: "none",
+    });
+
+    map.on("error", (e) => {
+      setError(e.error.message);
+    });
+
+    map.on("idle", () => {
+      setError(undefined);
     });
 
     map.on("contextmenu", (e) => {
@@ -318,6 +328,11 @@ function MapLibreView(props: {
     <>
       <div class="hidden" ref={hiddenRef} />
       <div ref={mapContainer} class="h-100 w-full flex" />
+      <Show when={error()}>
+        <div class="absolute h-20 w-full flex justify-center items-center bg-white bg-opacity-50 font-mono text-red">
+          {error()}
+        </div>
+      </Show>
     </>
   );
 }
@@ -421,33 +436,54 @@ function MapView() {
       <div class="max-w-[1500px] mx-auto">
         <form onSubmit={loadTiles} class="flex">
           <input
-            class="border-2 border-gray p-1 flex-1 mr-2"
+            class="border-2 border-gray p-1 flex-1 mr-2 text-xs lg:text-base"
             type="text"
             name="tiles"
             value={tiles()}
             style={{ width: "50%" }}
+            autocomplete="off"
           />
           <button class="btn-primary" type="submit">
             load
           </button>
         </form>
-        <div class="my-2 space-x-2">
-          <select onChange={(e) => setTheme(e.target.value)} value={theme()}>
-            <option value="light">light</option>
-            <option value="dark">dark</option>
-            <option value="white">data viz (white)</option>
-            <option value="grayscale">data viz (grayscale)</option>
-            <option value="black">data viz (black)</option>
-          </select>
-          <select onChange={(e) => setLang(e.target.value)} value={lang()}>
-            <For each={language_script_pairs}>
-              {(pair) => (
-                <option value={pair.lang}>
-                  {pair.lang} ({pair.full_name})
-                </option>
-              )}
-            </For>
-          </select>
+        <div class="flex my-2 space-y-2 lg:space-y-0 space-x-2 flex-col lg:flex-row items-center">
+          <div class="flex items-center">
+            <label for="theme" class="text-xs mr-1">
+              theme
+            </label>
+            <select
+              id="theme"
+              onChange={(e) => setTheme(e.target.value)}
+              value={theme()}
+              autocomplete="on"
+            >
+              <option value="light">light</option>
+              <option value="dark">dark</option>
+              <option value="white">data viz (white)</option>
+              <option value="grayscale">data viz (grayscale)</option>
+              <option value="black">data viz (black)</option>
+            </select>
+          </div>
+          <div class="flex items-center">
+            <label for="lang" class="text-xs mr-1">
+              language
+            </label>
+            <select
+              id="lang"
+              onChange={(e) => setLang(e.target.value)}
+              value={lang()}
+              autocomplete="on"
+            >
+              <For each={language_script_pairs}>
+                {(pair) => (
+                  <option value={pair.lang}>
+                    {pair.lang} ({pair.full_name})
+                  </option>
+                )}
+              </For>
+            </select>
+          </div>
           <div class="hidden lg:inline">
             <input
               id="localSprites"
@@ -497,7 +533,7 @@ function MapView() {
             class="btn-primary hidden lg:inline"
             onClick={() => setShowStyleJson(!showStyleJson())}
           >
-            get style JSON
+            {showStyleJson() ? "Close style JSON" : "Get style JSON"}
           </button>
         </div>
       </div>
