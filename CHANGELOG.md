@@ -1,3 +1,7 @@
+Tiles v4.0.4
+------
+- fix antarctica landcover not extending to bottom with Natural Earth, via @wipfli [#337]
+
 Styles v4.3.1
 ------
 * Fix `$type` in water filters to be MapLibre v5.0 compatible.
