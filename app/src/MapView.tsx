@@ -3,7 +3,18 @@ import { render } from "solid-js/web";
 import "./index.css";
 import MaplibreInspect from "@maplibre/maplibre-gl-inspect";
 import "@maplibre/maplibre-gl-inspect/dist/maplibre-gl-inspect.css";
-import maplibregl from "maplibre-gl";
+import {
+  Map,
+  addProtocol,
+  getRTLTextPluginStatus,
+  setRTLTextPlugin,
+  NavigationControl,
+  GeolocateControl,
+  GlobeControl,
+  Popup,
+  ScaleControl,
+  removeProtocol,
+} from "maplibre-gl";
 import type { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
@@ -173,13 +184,13 @@ function MapLibreView(props: {
   droppedArchive?: PMTiles;
 }) {
   let mapContainer: HTMLDivElement | undefined;
-  let mapRef: maplibregl.Map | undefined;
+  let mapRef: Map | undefined;
   let protocolRef: Protocol | undefined;
   let hiddenRef: HTMLDivElement | undefined;
 
   onMount(() => {
-    if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
-      maplibregl.setRTLTextPlugin(
+    if (getRTLTextPluginStatus() === "unavailable") {
+      setRTLTextPlugin(
         "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
         true,
       );
@@ -192,18 +203,19 @@ function MapLibreView(props: {
 
     const protocol = new Protocol({ metadata: true });
     protocolRef = protocol;
-    maplibregl.addProtocol("pmtiles", protocol.tile);
+    addProtocol("pmtiles", protocol.tile);
 
-    const map = new maplibregl.Map({
+    const map = new Map({
       hash: "map",
       container: mapContainer,
       style: getMaplibreStyle("", "en", false),
     });
 
-    map.addControl(new maplibregl.NavigationControl());
-    map.addControl(new maplibregl.ScaleControl({}));
+    map.addControl(new NavigationControl());
+    map.addControl(new ScaleControl());
+    map.addControl(new GlobeControl());
     map.addControl(
-      new maplibregl.GeolocateControl({
+      new GeolocateControl({
         positionOptions: {
           enableHighAccuracy: true,
         },
@@ -216,14 +228,14 @@ function MapLibreView(props: {
 
     map.addControl(
       new MaplibreInspect({
-        popup: new maplibregl.Popup({
+        popup: new Popup({
           closeButton: false,
           closeOnClick: false,
         }),
       }),
     );
 
-    const popup = new maplibregl.Popup({
+    const popup = new Popup({
       closeButton: true,
       closeOnClick: false,
       maxWidth: "none",
@@ -245,7 +257,7 @@ function MapLibreView(props: {
 
     return () => {
       protocolRef = undefined;
-      maplibregl.removeProtocol("pmtiles");
+      removeProtocol("pmtiles");
       map.remove();
     };
   });
