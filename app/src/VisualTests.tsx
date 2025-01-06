@@ -383,7 +383,7 @@ function VisualTests() {
   return (
     <div class="flex flex-col h-screen w-full">
       <Nav page={2} />
-      <div class="w-[1500px] mx-auto p-2">
+      <div class="w-[1500px] mx-auto">
         <h1 class="my-8 text-4xl">Visual Tests</h1>
         <div class="inline-block w-[500px] font-mono text-xs">
           leftTiles={displayInfo().leftTiles}

@@ -187,7 +187,7 @@ function Builds() {
       <Nav page={1} />
       <div class="max-w-[1500px] mx-auto">
         <h1 class="my-8 text-4xl">Builds</h1>
-        <p>Only Monday builds (black) are kept indefinitely.</p>
+        <p>See the <a class="underline" href="https://docs.protomaps.com/basemaps/downloads" target="_blank">Documentation</a> for how to use.</p>
         <div class="space-x-2 my-2">
           <button class="btn-primary" type="button" onClick={openVisualTests}>
             Compare selected versions
