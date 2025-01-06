@@ -12,7 +12,7 @@
 		"format": "biome format --write src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space"
 	},
 	"dependencies": {
-		"@maplibre/maplibre-gl-inspect": "^1.7.0",
+		"@maplibre/maplibre-gl-inspect": "^1.7.1",
 		"maplibre-gl": "5.0.0",
 		"pixelmatch": "^5.3.0",
 		"pmtiles": "^4.1.0",
