@@ -4,16 +4,16 @@ import "./index.css";
 import MaplibreInspect from "@maplibre/maplibre-gl-inspect";
 import "@maplibre/maplibre-gl-inspect/dist/maplibre-gl-inspect.css";
 import {
-  Map,
-  addProtocol,
-  getRTLTextPluginStatus,
-  setRTLTextPlugin,
-  NavigationControl,
+  AttributionControl,
   GeolocateControl,
   GlobeControl,
+  Map as MaplibreMap,
+  NavigationControl,
   Popup,
-  ScaleControl,
+  addProtocol,
+  getRTLTextPluginStatus,
   removeProtocol,
+  setRTLTextPlugin,
 } from "maplibre-gl";
 import type { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -184,11 +184,12 @@ function MapLibreView(props: {
   droppedArchive?: PMTiles;
 }) {
   let mapContainer: HTMLDivElement | undefined;
-  let mapRef: Map | undefined;
+  let mapRef: MaplibreMap | undefined;
   let protocolRef: Protocol | undefined;
   let hiddenRef: HTMLDivElement | undefined;
 
   const [error, setError] = createSignal<string | undefined>();
+  const [timelinessInfo, setTimelinessInfo] = createSignal<string>();
 
   onMount(() => {
     if (getRTLTextPluginStatus() === "unavailable") {
@@ -207,14 +208,14 @@ function MapLibreView(props: {
     protocolRef = protocol;
     addProtocol("pmtiles", protocol.tile);
 
-    const map = new Map({
+    const map = new MaplibreMap({
       hash: "map",
       container: mapContainer,
       style: getMaplibreStyle("", "en", false),
+      attributionControl: false,
     });
 
     map.addControl(new NavigationControl());
-    map.addControl(new ScaleControl());
     map.addControl(new GlobeControl());
     map.addControl(
       new GeolocateControl({
@@ -225,6 +226,12 @@ function MapLibreView(props: {
         fitBoundsOptions: {
           animate: false,
         },
+      }),
+    );
+
+    map.addControl(
+      new AttributionControl({
+        compact: false,
       }),
     );
 
@@ -249,6 +256,20 @@ function MapLibreView(props: {
 
     map.on("idle", () => {
       setError(undefined);
+      if (protocolRef && props.tiles) {
+        const p = protocolRef.tiles.get(props.tiles);
+        p?.getMetadata().then((metadata) => {
+          if (metadata) {
+            const m = metadata as {
+              version?: string;
+              "planetiler:osm:osmosisreplicationtime"?: string;
+            };
+            setTimelinessInfo(
+              `tiles@${m.version} ${m["planetiler:osm:osmosisreplicationtime"]?.substr(0, 10)}`,
+            );
+          }
+        });
+      }
     });
 
     map.on("contextmenu", (e) => {
@@ -327,7 +348,10 @@ function MapLibreView(props: {
   return (
     <>
       <div class="hidden" ref={hiddenRef} />
-      <div ref={mapContainer} class="h-100 w-full flex" />
+      <div ref={mapContainer} class="h-full w-full flex" />
+      <div class="absolute bottom-0 p-1 text-xs bg-white bg-opacity-50">
+        {timelinessInfo()}
+      </div>
       <Show when={error()}>
         <div class="absolute h-20 w-full flex justify-center items-center bg-white bg-opacity-50 font-mono text-red">
           {error()}
@@ -431,7 +455,7 @@ function MapView() {
   language_script_pairs.sort((a, b) => a.full_name.localeCompare(b.full_name));
 
   return (
-    <div class="flex flex-col h-screen w-full">
+    <div class="flex flex-col h-dvh w-full">
       <Nav page={0} />
       <div class="max-w-[1500px] mx-auto">
         <form onSubmit={loadTiles} class="flex">
