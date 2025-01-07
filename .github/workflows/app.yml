@@ -22,7 +22,7 @@ jobs:
       - name: Check styles
         run: npm ci && npm run tsc && npm run check
         working-directory: styles
-      - run: npm ci && npm run test && npm run build
+      - run: npm ci && npm run test && npm run check && npm run build
         working-directory: app
       - name: Generate styles typedoc
         run: npx typedoc src/index.ts --out ../app/dist/typedoc
