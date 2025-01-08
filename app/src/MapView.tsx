@@ -15,7 +15,11 @@ import {
   removeProtocol,
   setRTLTextPlugin,
 } from "maplibre-gl";
-import type { MapGeoJSONFeature, StyleSpecification } from "maplibre-gl";
+import type {
+  MapGeoJSONFeature,
+  MapTouchEvent,
+  StyleSpecification,
+} from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { FileSource, PMTiles, Protocol } from "pmtiles";
@@ -48,6 +52,38 @@ function getSourceLayer(l: LayerSpecification): string {
   return "";
 }
 
+const featureIdToOsmId = (raw: string | number) => {
+  return Number(BigInt(raw) & ((BigInt(1) << BigInt(44)) - BigInt(1)));
+};
+
+const featureIdToOsmType = (i: string | number) => {
+  const t = (BigInt(i) >> BigInt(44)) & BigInt(3);
+  if (t === BigInt(1)) return "node";
+  if (t === BigInt(2)) return "way";
+  if (t === BigInt(3)) return "relation";
+  return "not_osm";
+};
+
+const displayId = (featureId?: string | number) => {
+  if (featureId) {
+    const osmType = featureIdToOsmType(featureId);
+    if (osmType !== "not_osm") {
+      const osmId = featureIdToOsmId(featureId);
+      return (
+        <a
+          class="underline text-purple"
+          target="_blank"
+          rel="noreferrer"
+          href={`https://openstreetmap.org/${osmType}/${osmId}`}
+        >
+          {osmType} {osmId}
+        </a>
+      );
+    }
+  }
+  return featureId;
+};
+
 const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
   return (
     <div class="features-properties">
@@ -62,7 +98,7 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
               <tbody>
                 <tr>
                   <td>id</td>
-                  <td>{f.id}</td>
+                  <td>{displayId(f.id)}</td>
                 </tr>
                 <For each={Object.entries(f.properties)}>
                   {([key, value]) => (
@@ -174,6 +210,8 @@ function StyleJsonPane(props: { theme: string; lang: string }) {
   );
 }
 
+type MapLibreViewRef = { fit: () => void };
+
 function MapLibreView(props: {
   theme: string;
   lang: string;
@@ -182,16 +220,20 @@ function MapLibreView(props: {
   tiles?: string;
   npmLayers: LayerSpecification[];
   droppedArchive?: PMTiles;
+  ref?: (ref: MapLibreViewRef) => void;
 }) {
   let mapContainer: HTMLDivElement | undefined;
   let mapRef: MaplibreMap | undefined;
   let protocolRef: Protocol | undefined;
   let hiddenRef: HTMLDivElement | undefined;
+  let longPressTimeout: ReturnType<typeof setTimeout>;
 
   const [error, setError] = createSignal<string | undefined>();
   const [timelinessInfo, setTimelinessInfo] = createSignal<string>();
 
   onMount(() => {
+    props.ref?.({ fit });
+
     if (getRTLTextPluginStatus() === "unavailable") {
       setRTLTextPlugin(
         "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
@@ -272,9 +314,10 @@ function MapLibreView(props: {
       }
     });
 
-    map.on("contextmenu", (e) => {
+    const showContextMenu = (e: MapTouchEvent) => {
       const features = map.queryRenderedFeatures(e.point);
       if (hiddenRef && features.length) {
+        hiddenRef.innerHTML = "";
         render(() => <FeaturesProperties features={features} />, hiddenRef);
         popup.setHTML(hiddenRef.innerHTML);
         popup.setLngLat(e.lngLat);
@@ -282,7 +325,31 @@ function MapLibreView(props: {
       } else {
         popup.remove();
       }
+    };
+
+    map.on("contextmenu", (e: MapTouchEvent) => {
+      showContextMenu(e);
     });
+
+    map.on("touchstart", (e: MapTouchEvent) => {
+      longPressTimeout = setTimeout(() => {
+        showContextMenu(e);
+      }, 500);
+    });
+
+    const clearLongPress = () => {
+      clearTimeout(longPressTimeout);
+    };
+
+    map.on("touchend", clearLongPress);
+    map.on("touchcancel", clearLongPress);
+    map.on("touchmove", clearLongPress);
+    map.on("pointerdrag", clearLongPress);
+    map.on("pointermove", clearLongPress);
+    map.on("moveend", clearLongPress);
+    map.on("gesturestart", clearLongPress);
+    map.on("gesturechange", clearLongPress);
+    map.on("gestureend", clearLongPress);
 
     mapRef = map;
 
@@ -293,24 +360,25 @@ function MapLibreView(props: {
     };
   });
 
-  createEffect(() => {
+  const fit = async () => {
     if (protocolRef) {
-      const archive = props.droppedArchive;
-      if (archive) {
+      let archive = props.droppedArchive;
+      if (!archive && props.tiles) {
+        archive = new PMTiles(props.tiles);
         protocolRef.add(archive);
-        (async () => {
-          const header = await archive.getHeader();
-          mapRef?.fitBounds(
-            [
-              [header.minLon, header.minLat],
-              [header.maxLon, header.maxLat],
-            ],
-            { animate: false },
-          );
-        })();
+      }
+      if (archive) {
+        const header = await archive.getHeader();
+        mapRef?.fitBounds(
+          [
+            [header.minLon, header.minLat],
+            [header.maxLon, header.maxLat],
+          ],
+          { animate: false },
+        );
       }
     }
-  });
+  };
 
   createEffect(() => {
     if (mapRef) {
@@ -319,30 +387,31 @@ function MapLibreView(props: {
     }
   });
 
-  createEffect(() => {
-    (async () => {
-      if (mapRef) {
-        let minZoom: number | undefined;
-        let maxZoom: number | undefined;
-        if (props.droppedArchive) {
-          const header = await props.droppedArchive.getHeader();
-          minZoom = header.minZoom;
-          maxZoom = header.maxZoom;
-        }
-        mapRef.setStyle(
-          getMaplibreStyle(
-            props.theme,
-            props.lang,
-            props.localSprites,
-            props.tiles,
-            props.npmLayers,
-            props.droppedArchive,
-            minZoom,
-            maxZoom,
-          ),
-        );
+  createEffect(async () => {
+    // HACK: do this to ensure a tracking scope is created
+    // because async effects are not correct
+    [props.theme, props.lang, props.localSprites, props.tiles, props.npmLayers];
+    if (mapRef) {
+      let minZoom: number | undefined;
+      let maxZoom: number | undefined;
+      if (props.droppedArchive) {
+        const header = await props.droppedArchive.getHeader();
+        minZoom = header.minZoom;
+        maxZoom = header.maxZoom;
       }
-    })();
+      mapRef.setStyle(
+        getMaplibreStyle(
+          props.theme,
+          props.lang,
+          props.localSprites,
+          props.tiles,
+          props.npmLayers,
+          props.droppedArchive,
+          minZoom,
+          maxZoom,
+        ),
+      );
+    }
   });
 
   return (
@@ -381,6 +450,7 @@ function MapView() {
   const [knownNpmVersions, setKnownNpmVersions] = createSignal<string[]>([]);
   const [npmLayers, setNpmLayers] = createSignal<LayerSpecification[]>([]);
   const [droppedArchive, setDroppedArchive] = createSignal<PMTiles>();
+  const [maplibreView, setMaplibreView] = createSignal<MapLibreViewRef>();
 
   createEffect(() => {
     const record = {
@@ -454,13 +524,17 @@ function MapView() {
 
   language_script_pairs.sort((a, b) => a.full_name.localeCompare(b.full_name));
 
+  const fit = () => {
+    maplibreView()?.fit();
+  };
+
   return (
     <div class="flex flex-col h-dvh w-full">
       <Nav page={0} />
       <div class="max-w-[1500px] mx-auto">
-        <form onSubmit={loadTiles} class="flex">
+        <form onSubmit={loadTiles} class="flex space-x-2">
           <input
-            class="border-2 border-gray p-1 flex-1 mr-2 text-xs lg:text-base"
+            class="border-2 border-gray p-1 flex-1 text-xs lg:text-base"
             type="text"
             name="tiles"
             value={tiles()}
@@ -469,6 +543,9 @@ function MapView() {
           />
           <button class="btn-primary" type="submit">
             load
+          </button>
+          <button class="btn-primary" type="submit" onClick={fit}>
+            fit bounds
           </button>
         </form>
         <div class="flex my-2 space-y-2 lg:space-y-0 space-x-2 flex-col lg:flex-row items-center">
@@ -568,6 +645,7 @@ function MapView() {
         ondrop={drop}
       >
         <MapLibreView
+          ref={setMaplibreView}
           tiles={tiles()}
           localSprites={localSprites()}
           showBoxes={showBoxes()}

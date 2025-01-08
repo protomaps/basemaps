@@ -2,16 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.maplibregl-popup,
-.maplibregl-popup-close-button {
-	color: black;
-}
-
-.features-properties {
-	max-height: 45vh;
-	overflow-y: scroll;
-}
-
 @layer components {
 	.btn-primary {
 		@apply rounded bg-purple px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple;
