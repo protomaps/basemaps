@@ -21,7 +21,10 @@ import type {
   StyleSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
+import type {
+  LayerSpecification,
+  VectorSourceSpecification,
+} from "@maplibre/maplibre-gl-style-spec";
 import { FileSource, PMTiles, Protocol } from "pmtiles";
 import {
   For,
@@ -124,8 +127,6 @@ function getMaplibreStyle(
   tiles?: string,
   npmLayers?: LayerSpecification[],
   droppedArchive?: PMTiles,
-  minZoom?: number,
-  maxZoom?: number,
 ): StyleSpecification {
   const style = {
     version: 8 as unknown,
@@ -156,8 +157,6 @@ function getMaplibreStyle(
         type: "vector",
         attribution: ATTRIBUTION,
         tiles: [`pmtiles://${droppedArchive.source.getKey()}/{z}/{x}/{y}`],
-        minzoom: minZoom,
-        maxzoom: maxZoom,
       },
     };
   } else {
@@ -230,6 +229,7 @@ function MapLibreView(props: {
 
   const [error, setError] = createSignal<string | undefined>();
   const [timelinessInfo, setTimelinessInfo] = createSignal<string>();
+  const [zoom, setZoom] = createSignal<number>(0);
 
   onMount(() => {
     props.ref?.({ fit });
@@ -297,6 +297,7 @@ function MapLibreView(props: {
     });
 
     map.on("idle", () => {
+      setZoom(map.getZoom());
       setError(undefined);
       if (protocolRef && props.tiles) {
         const p = protocolRef.tiles.get(props.tiles);
@@ -340,6 +341,10 @@ function MapLibreView(props: {
     const clearLongPress = () => {
       clearTimeout(longPressTimeout);
     };
+
+    map.on("zoom", (e) => {
+      setZoom(e.target.getZoom());
+    });
 
     map.on("touchend", clearLongPress);
     map.on("touchcancel", clearLongPress);
@@ -387,30 +392,30 @@ function MapLibreView(props: {
     }
   });
 
+  createEffect(() => {
+    // ensure the dropped archive is first added to the protocol
+    if (protocolRef && props.droppedArchive) {
+      protocolRef.add(props.droppedArchive);
+    }
+  });
+
   createEffect(async () => {
-    // HACK: do this to ensure a tracking scope is created
-    // because async effects are not correct
-    [props.theme, props.lang, props.localSprites, props.tiles, props.npmLayers];
+    const style = getMaplibreStyle(
+      props.theme,
+      props.lang,
+      props.localSprites,
+      props.tiles,
+      props.npmLayers,
+      props.droppedArchive,
+    );
     if (mapRef) {
-      let minZoom: number | undefined;
-      let maxZoom: number | undefined;
       if (props.droppedArchive) {
         const header = await props.droppedArchive.getHeader();
-        minZoom = header.minZoom;
-        maxZoom = header.maxZoom;
+        const source = style.sources.protomaps as VectorSourceSpecification;
+        source.minzoom = header.minZoom;
+        source.maxzoom = header.maxZoom;
       }
-      mapRef.setStyle(
-        getMaplibreStyle(
-          props.theme,
-          props.lang,
-          props.localSprites,
-          props.tiles,
-          props.npmLayers,
-          props.droppedArchive,
-          minZoom,
-          maxZoom,
-        ),
-      );
+      mapRef.setStyle(style);
     }
   });
 
@@ -419,7 +424,7 @@ function MapLibreView(props: {
       <div class="hidden" ref={hiddenRef} />
       <div ref={mapContainer} class="h-full w-full flex" />
       <div class="absolute bottom-0 p-1 text-xs bg-white bg-opacity-50">
-        {timelinessInfo()}
+        {timelinessInfo()} z@{zoom().toFixed(2)}
       </div>
       <Show when={error()}>
         <div class="absolute h-20 w-full flex justify-center items-center bg-white bg-opacity-50 font-mono text-red">
