@@ -440,7 +440,7 @@ function MapView() {
   const [theme, setTheme] = createSignal<string>(hash.theme || "light");
   const [lang, setLang] = createSignal<string>(hash.lang || "en");
   const [tiles, setTiles] = createSignal<string>(
-    hash.tiles || "https://data.source.coop/protomaps/openstreetmap/v4.pmtiles",
+    hash.tiles || "https://demo-bucket.protomaps.com/v4.pmtiles",
   );
   const [localSprites, setLocalSprites] = createSignal<boolean>(
     hash.local_sprites === "true",

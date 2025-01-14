@@ -3,13 +3,26 @@ import { render } from "solid-js/web";
 import "./index.css";
 import Nav from "./Nav";
 
-import { For, createResource, createSignal } from "solid-js";
+import { For, Show, createResource, createSignal } from "solid-js";
 
 interface Build {
   uploaded: string;
   key: string;
   size: number;
   version: string;
+  md5sum?: string;
+  b3sum?: string;
+}
+
+function b64ToHex(b64?: string): string {
+  if (!b64) return "";
+  const b = atob(b64);
+  let hex = "";
+  for (let i = 0; i < b.length; i++) {
+    const hexByte = b.charCodeAt(i).toString(16).padStart(2, "0");
+    hex += hexByte;
+  }
+  return hex;
 }
 
 function toDate(dateStr: string): Date {
@@ -36,6 +49,21 @@ function formatBytes(bytes: number, decimals = 2) {
   ];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
+}
+
+function Hashes(build: Build) {
+  return (
+    <span>
+      <Show when={build.md5sum}>
+        <span title={b64ToHex(build.md5sum)}>
+          md5:{b64ToHex(build.md5sum).substr(0, 8)}
+        </span>
+      </Show>
+      <Show when={build.b3sum}>
+        <span title={build.b3sum}> b3:{build.b3sum?.substr(0, 8)}</span>
+      </Show>
+    </span>
+  );
 }
 
 function BuildComponent(props: {
@@ -80,10 +108,10 @@ function BuildComponent(props: {
           aria-label={`compare later build ${date.toDateString()}`}
         />
       </td>
-      <td>{build.key}</td>
+      <td title={build.uploaded}>{build.key}</td>
       <td>{build.version}</td>
       <td class="hidden lg:table-cell">{formatBytes(build.size)}</td>
-      <td class="hidden lg:table-cell">{build.uploaded}</td>
+      <td class="hidden lg:table-cell">{Hashes(build)}</td>
       <td>
         <a class="underline" href={`/#tiles=${link}`}>
           map
