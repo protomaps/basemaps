@@ -28,6 +28,7 @@ jobs:
         run: npx typedoc src/index.ts --out ../app/dist/typedoc
         working-directory: styles
       - run: python .github/check_examples.py
+      - run: mkdir app/dist/examples && cp examples/*.html app/dist/examples/
       - uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
