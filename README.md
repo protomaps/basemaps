@@ -1,7 +1,16 @@
 # Protomaps Basemaps
 
-This repository has two core parts:
+Build a cartographic "basemap" PMTiles from OpenStreetMap + other datasources, plus MapLibre styles for displaying them in a browser.
 
+To get started, check out some basic examples:
+
+* [display markers on a map](https://maps.protomaps.com/examples/basic.html)
+* [change the map theme and language](https://maps.protomaps.com/examples/theme_language.html)
+* [sandwich data between map layers](https://maps.protomaps.com/examples/data_sandwich.html)
+
+This repository is organized into parts:
+
+* `app`: A single-page app, [maps.protomaps.com](maps.protomaps.com) for viewing and downloading basemap builds.
 * `tiles/`: A [Planetiler](https://github.com/onthegomap/planetiler) build profile that generates `planet.pmtiles` from OpenStreetMap and Natural Earth in 2-3 hours on a modest computer.
 * `styles/`: A TypeScript package that generates [MapLibre GL](http://github.com/maplibre) styles, in multiple color themes, that can be used via `npm` or exported as JSON.
 
