@@ -27,7 +27,7 @@ export function createHash(
 
 export async function layersForVersion(version: string, theme?: string) {
   const resp = await fetch(
-    `https://npm-style.protomaps.dev/layers.json?version=${version}&theme=${theme || "light"}&lang=en`
+    `https://npm-style.protomaps.dev/layers.json?version=${version}&theme=${theme || "light"}&lang=en`,
   );
   return await resp.json();
 }
