@@ -195,14 +195,14 @@ function Builds() {
       type: "maplibre-gl",
       renderer: "maplibre-gl",
       index: 0,
-      url: `https://build-metadata.protomaps.dev/style@${latestStyle()}+theme@${theme}+tiles@${leftKey}.json`,
+      url: `https://npm-style.protomaps.dev/style.json?version=${latestStyle()}&theme=${theme}&tiles=${leftKey}`,
     };
     const right: MaperturePayload = {
       name: `${rightKey} ${latestStyle()} ${theme}`,
       type: "maplibre-gl",
       renderer: "maplibre-gl",
       index: 0,
-      url: `https://build-metadata.protomaps.dev/style@${latestStyle()}+theme@${theme}+tiles@${rightKey}.json`,
+      url: `https://npm-style.protomaps.dev/style.json?version=${latestStyle()}&theme=${theme}&tiles=${rightKey}`,
     };
     const payload = JSON.stringify([left, right]);
     open(
