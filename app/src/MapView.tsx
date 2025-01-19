@@ -408,7 +408,8 @@ function MapLibreView(props: {
       <div class="hidden" ref={hiddenRef} />
       <div ref={mapContainer} class="h-full w-full flex" />
       <div class="absolute bottom-0 p-1 text-xs bg-white bg-opacity-50">
-        {timelinessInfo()} z@{zoom().toFixed(2)} (drag a local .pmtiles here to view)
+        {timelinessInfo()} z@{zoom().toFixed(2)} (drag a local .pmtiles here to
+        view)
       </div>
       <Show when={error()}>
         <div class="absolute h-20 w-full flex justify-center items-center bg-white bg-opacity-50 font-mono text-red">
@@ -524,7 +525,9 @@ function MapView() {
       <div class="max-w-[1500px] mx-auto">
         <form onSubmit={loadTiles} class="flex space-x-2">
           <Show when={droppedArchive()}>
-            <div class="flex-1 font-mono">Dropped file {droppedArchive().source.getKey()}</div>
+            <div class="flex-1 font-mono">
+              Dropped file {droppedArchive()?.source.getKey()}
+            </div>
           </Show>
           <Show when={!droppedArchive()}>
             <input
