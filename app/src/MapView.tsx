@@ -408,7 +408,8 @@ function MapLibreView(props: {
       <div class="hidden" ref={hiddenRef} />
       <div ref={mapContainer} class="h-full w-full flex" />
       <div class="absolute bottom-0 p-1 text-xs bg-white bg-opacity-50">
-        {timelinessInfo()} z@{zoom().toFixed(2)}
+        {timelinessInfo()} z@{zoom().toFixed(2)} (drag a local .pmtiles here to
+        view)
       </div>
       <Show when={error()}>
         <div class="absolute h-20 w-full flex justify-center items-center bg-white bg-opacity-50 font-mono text-red">
@@ -445,7 +446,7 @@ function MapView() {
     const record = {
       theme: theme(),
       lang: lang(),
-      tiles: tiles(),
+      tiles: droppedArchive() ? undefined : tiles(),
       local_sprites: localSprites() ? "true" : undefined,
       show_boxes: showBoxes() ? "true" : undefined,
       npm_version: publishedStyleVersion(),
@@ -523,17 +524,24 @@ function MapView() {
       <Nav page={0} />
       <div class="max-w-[1500px] mx-auto">
         <form onSubmit={loadTiles} class="flex space-x-2">
-          <input
-            class="border-2 border-gray p-1 flex-1 text-xs lg:text-base"
-            type="text"
-            name="tiles"
-            value={tiles()}
-            style={{ width: "50%" }}
-            autocomplete="off"
-          />
-          <button class="btn-primary" type="submit">
-            load
-          </button>
+          <Show when={droppedArchive()}>
+            <div class="flex-1 font-mono">
+              Dropped file {droppedArchive()?.source.getKey()}
+            </div>
+          </Show>
+          <Show when={!droppedArchive()}>
+            <input
+              class="border-2 border-gray p-1 flex-1 text-xs lg:text-base"
+              type="text"
+              name="tiles"
+              value={tiles()}
+              style={{ width: "50%" }}
+              autocomplete="off"
+            />
+            <button class="btn-primary" type="submit">
+              load
+            </button>
+          </Show>
           <button class="btn-primary" type="submit" onClick={fit}>
             fit bounds
           </button>
