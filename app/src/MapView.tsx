@@ -483,7 +483,7 @@ function MapView() {
   const [showBoxes, setShowBoxes] = createSignal<boolean>(
     hash.show_boxes === "true",
   );
-  const [showStyleJson, setShowStyleJson] = createSignal<boolean>(true);
+  const [showStyleJson, setShowStyleJson] = createSignal<boolean>(false);
   const [publishedStyleVersion, setPublishedStyleVersion] = createSignal<
     string | undefined
   >(hash.npm_version);
