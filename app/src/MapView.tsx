@@ -21,10 +21,7 @@ import type {
   StyleSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type {
-  LayerSpecification,
-  VectorSourceSpecification,
-} from "@maplibre/maplibre-gl-style-spec";
+import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { FileSource, PMTiles, Protocol } from "pmtiles";
 import {
   For,
@@ -135,7 +132,9 @@ function getMaplibreStyle(
   } as StyleSpecification;
   if (!tiles) return style;
   let tilesWithProtocol: string;
-  if (isValidPMTiles(tiles)) {
+  if (droppedArchive) {
+    tilesWithProtocol = `pmtiles://${droppedArchive.source.getKey()}`;
+  } else if (isValidPMTiles(tiles)) {
     tilesWithProtocol = `pmtiles://${tiles}`;
   } else {
     tilesWithProtocol = tiles;
@@ -151,23 +150,13 @@ function getMaplibreStyle(
   style.glyphs =
     "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
 
-  if (droppedArchive) {
-    style.sources = {
-      protomaps: {
-        type: "vector",
-        attribution: ATTRIBUTION,
-        tiles: [`pmtiles://${droppedArchive.source.getKey()}/{z}/{x}/{y}`],
-      },
-    };
-  } else {
-    style.sources = {
-      protomaps: {
-        type: "vector",
-        attribution: ATTRIBUTION,
-        url: tilesWithProtocol,
-      },
-    };
-  }
+  style.sources = {
+    protomaps: {
+      type: "vector",
+      attribution: ATTRIBUTION,
+      url: tilesWithProtocol,
+    },
+  };
 
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
@@ -399,23 +388,18 @@ function MapLibreView(props: {
     }
   });
 
-  createEffect(async () => {
-    const style = getMaplibreStyle(
-      props.theme,
-      props.lang,
-      props.localSprites,
-      props.tiles,
-      props.npmLayers,
-      props.droppedArchive,
-    );
+  createEffect(() => {
     if (mapRef) {
-      if (props.droppedArchive) {
-        const header = await props.droppedArchive.getHeader();
-        const source = style.sources.protomaps as VectorSourceSpecification;
-        source.minzoom = header.minZoom;
-        source.maxzoom = header.maxZoom;
-      }
-      mapRef.setStyle(style);
+      mapRef.setStyle(
+        getMaplibreStyle(
+          props.theme,
+          props.lang,
+          props.localSprites,
+          props.tiles,
+          props.npmLayers,
+          props.droppedArchive,
+        ),
+      );
     }
   });
 
@@ -470,6 +454,7 @@ function MapView() {
   });
 
   const drop: JSX.EventHandler<HTMLDivElement, DragEvent> = (event) => {
+    event.preventDefault();
     if (event.dataTransfer) {
       setDroppedArchive(
         new PMTiles(new FileSource(event.dataTransfer.files[0])),
