@@ -416,13 +416,11 @@ function MapLibreView(props: {
     const styleMajorVersion = props.npmVersion
       ? +props.npmVersion.split(".")[0]
       : STYLE_MAJOR_VERSION;
-    console.log(styleMajorVersion);
     memoizedArchive()
       ?.getMetadata()
       .then((m) => {
         if (m instanceof Object && "version" in m) {
           const tilesetVersion = +(m.version as string).split(".")[0];
-          console.log(tilesetVersion);
           if (
             VERSION_COMPATIBILITY[tilesetVersion].indexOf(styleMajorVersion) < 0
           ) {
