@@ -19,6 +19,7 @@ import type {
   MapGeoJSONFeature,
   MapTouchEvent,
   StyleSpecification,
+  LngLatBoundsLike,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
@@ -299,19 +300,17 @@ function MapLibreView(props: {
     map.on("idle", () => {
       setZoom(map.getZoom());
       setError(undefined);
-      memoizedArchive()
-        ?.getMetadata()
-        .then((metadata) => {
-          if (metadata) {
-            const m = metadata as {
-              version?: string;
-              "planetiler:osm:osmosisreplicationtime"?: string;
-            };
-            setTimelinessInfo(
-              `tiles@${m.version} ${m["planetiler:osm:osmosisreplicationtime"]?.substr(0, 10)}`,
-            );
-          }
-        });
+      archiveInfo().then((i) => {
+        if (i && i.metadata) {
+          const m = i.metadata as {
+            version?: string;
+            "planetiler:osm:osmosisreplicationtime"?: string;
+          };
+          setTimelinessInfo(
+            `tiles@${m.version} ${m["planetiler:osm:osmosisreplicationtime"]?.substr(0, 10)}`,
+          );
+        }
+      });
     });
 
     const showContextMenu = (e: MapTouchEvent) => {
@@ -365,34 +364,39 @@ function MapLibreView(props: {
   });
 
   // ensure the dropped archive is first added to the protocol
-  const memoizedArchive = () => {
+  const archiveInfo = async (): Promise<
+    { metadata: unknown; bounds: LngLatBoundsLike } | undefined
+  > => {
     const p = protocolRef();
     if (p) {
-      if (props.droppedArchive) {
-        p.add(props.droppedArchive);
-        return props.droppedArchive;
-      }
-      if (props.tiles) {
-        let archive = p.tiles.get(props.tiles);
+      let archive = props.droppedArchive;
+      if (archive) {
+        p.add(archive);
+      } else if (props.tiles) {
+        archive = p.tiles.get(props.tiles);
         if (!archive) {
           archive = new PMTiles(props.tiles);
           p.add(archive);
         }
-        return archive;
+      }
+      if (archive) {
+        const metadata = await archive.getMetadata();
+        const header = await archive.getHeader();
+        return {
+          metadata: metadata,
+          bounds: [
+            [header.minLon, header.minLat],
+            [header.maxLon, header.maxLat],
+          ],
+        };
       }
     }
   };
 
   const fit = async () => {
-    const header = await memoizedArchive()?.getHeader();
-    if (header) {
-      mapRef?.fitBounds(
-        [
-          [header.minLon, header.minLat],
-          [header.maxLon, header.maxLat],
-        ],
-        { animate: false },
-      );
+    const bounds = (await archiveInfo())?.bounds;
+    if (bounds) {
+      mapRef?.fitBounds(bounds, { animate: false });
     }
   };
 
@@ -411,22 +415,20 @@ function MapLibreView(props: {
     const styleMajorVersion = props.npmVersion
       ? +props.npmVersion.split(".")[0]
       : STYLE_MAJOR_VERSION;
-    memoizedArchive()
-      ?.getMetadata()
-      .then((m) => {
-        if (m instanceof Object && "version" in m) {
-          const tilesetVersion = +(m.version as string).split(".")[0];
-          if (
-            VERSION_COMPATIBILITY[tilesetVersion].indexOf(styleMajorVersion) < 0
-          ) {
-            setMismatch(
-              `style v${styleMajorVersion} may not be compatible with tileset v${tilesetVersion}. `,
-            );
-          } else {
-            setMismatch("");
-          }
+    archiveInfo().then((i) => {
+      if (i && i.metadata instanceof Object && "version" in i.metadata) {
+        const tilesetVersion = +(i.metadata.version as string).split(".")[0];
+        if (
+          VERSION_COMPATIBILITY[tilesetVersion].indexOf(styleMajorVersion) < 0
+        ) {
+          setMismatch(
+            `style v${styleMajorVersion} may not be compatible with tileset v${tilesetVersion}. `,
+          );
+        } else {
+          setMismatch("");
         }
-      });
+      }
+    });
   });
 
   createEffect(() => {
