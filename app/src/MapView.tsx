@@ -376,7 +376,8 @@ function MapLibreView(props: {
       if (props.droppedArchive) {
         p.add(props.droppedArchive);
         return props.droppedArchive;
-      } else if (props.tiles) {
+      }
+      if (props.tiles) {
         let archive = p.tiles.get(props.tiles);
         if (!archive) {
           archive = new PMTiles(props.tiles);
@@ -595,6 +596,7 @@ function MapView() {
             <button
               class="btn-primary bg-gray text-black"
               onClick={clearDroppedArchive}
+              type="button"
             >
               close
             </button>
