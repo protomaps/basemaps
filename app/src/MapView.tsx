@@ -42,6 +42,17 @@ import {
   parseHash,
 } from "./utils";
 
+const STYLE_MAJOR_VERSION = 4;
+
+const DEFAULT_TILES = "https://demo-bucket.protomaps.com/v4.pmtiles";
+
+const VERSION_COMPATIBILITY: Record<number, number[]> = {
+  4: [4],
+  3: [3],
+  2: [2],
+  1: [1],
+};
+
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
 
@@ -51,9 +62,6 @@ function getSourceLayer(l: LayerSpecification): string {
   }
   return "";
 }
-
-const areSetsEqual = (a: Set<string>, b: Set<string>) =>
-  a.size === b.size && [...a].every((value) => b.has(value));
 
 const featureIdToOsmId = (raw: string | number) => {
   return Number(BigInt(raw) & ((BigInt(1) << BigInt(44)) - BigInt(1)));
@@ -213,6 +221,7 @@ function MapLibreView(props: {
   showBoxes: boolean;
   tiles?: string;
   npmLayers: LayerSpecification[];
+  npmVersion?: string;
   droppedArchive?: PMTiles;
   ref?: (ref: MapLibreViewRef) => void;
 }) {
@@ -225,8 +234,7 @@ function MapLibreView(props: {
   const [timelinessInfo, setTimelinessInfo] = createSignal<string>();
   const [protocolRef, setProtocolRef] = createSignal<Protocol | undefined>();
   const [zoom, setZoom] = createSignal<number>(0);
-  const [mismatchedTilesetVersion, setMismatchedTilesetVersion] =
-    createSignal<boolean>(false);
+  const [mismatch, setMismatch] = createSignal<string>("");
 
   onMount(() => {
     props.ref?.({ fit });
@@ -404,26 +412,24 @@ function MapLibreView(props: {
   });
 
   createEffect(() => {
-    const layersInStyle = new Set(
-      memoizedStyle()
-        .layers.map((l) => {
-          if ("source-layer" in l) {
-            return l["source-layer"];
-          }
-        })
-        .filter((v) => v !== undefined),
-    );
+    const styleMajorVersion = props.npmVersion
+      ? +props.npmVersion.split(".")[0]
+      : STYLE_MAJOR_VERSION;
+    console.log(styleMajorVersion);
     memoizedArchive()
       ?.getMetadata()
       .then((m) => {
-        if (
-          m instanceof Object &&
-          "vector_layers" in m &&
-          m.vector_layers instanceof Array
-        ) {
-          const layersInTiles = new Set(m.vector_layers.map((v) => v.id));
-          if (!areSetsEqual(layersInTiles, layersInStyle)) {
-            setMismatchedTilesetVersion(true);
+        if (m instanceof Object && "version" in m) {
+          const tilesetVersion = +(m.version as string).split(".")[0];
+          console.log(tilesetVersion);
+          if (
+            VERSION_COMPATIBILITY[tilesetVersion].indexOf(styleMajorVersion) < 0
+          ) {
+            setMismatch(
+              `style v${styleMajorVersion} may not be compatible with tileset v${tilesetVersion}. `,
+            );
+          } else {
+            setMismatch("");
           }
         }
       });
@@ -449,9 +455,9 @@ function MapLibreView(props: {
       <div class="absolute bottom-0 p-1 text-xs bg-white bg-opacity-50">
         {timelinessInfo()} z@{zoom().toFixed(2)}
         <div class="hidden lg:block font-bold">Drag .pmtiles here to view</div>
-        <Show when={mismatchedTilesetVersion()}>
-          <div class="font-bold">
-            This style version may not be compatible with the tileset.{" "}
+        <Show when={mismatch()}>
+          <div class="font-bold text-red">
+            {mismatch()}
             <a
               class="underline"
               href="https://docs.protomaps.com/basemaps/downloads#current-version"
@@ -474,9 +480,7 @@ function MapView() {
   const hash = parseHash(location.hash);
   const [theme, setTheme] = createSignal<string>(hash.theme || "light");
   const [lang, setLang] = createSignal<string>(hash.lang || "en");
-  const [tiles, setTiles] = createSignal<string>(
-    hash.tiles || "https://demo-bucket.protomaps.com/v4.pmtiles",
-  );
+  const [tiles, setTiles] = createSignal<string>(hash.tiles || DEFAULT_TILES);
   const [localSprites, setLocalSprites] = createSignal<boolean>(
     hash.local_sprites === "true",
   );
@@ -496,10 +500,16 @@ function MapView() {
     const record = {
       theme: theme(),
       lang: lang(),
-      tiles: droppedArchive() ? undefined : tiles(),
+      tiles: droppedArchive()
+        ? undefined
+        : tiles() === DEFAULT_TILES
+          ? undefined
+          : tiles(),
       local_sprites: localSprites() ? "true" : undefined,
       show_boxes: showBoxes() ? "true" : undefined,
-      npm_version: publishedStyleVersion(),
+      npm_version: publishedStyleVersion()
+        ? publishedStyleVersion()
+        : undefined,
     };
     location.hash = createHash(location.hash, record);
   });
@@ -555,7 +565,7 @@ function MapView() {
   createEffect(() => {
     (async () => {
       const psv = publishedStyleVersion();
-      if (psv === undefined) {
+      if (psv === undefined || psv === "") {
         setNpmLayers([]);
       } else {
         setNpmLayers(await layersForVersion(psv, theme()));
@@ -709,6 +719,7 @@ function MapView() {
           theme={theme()}
           lang={lang()}
           npmLayers={npmLayers()}
+          npmVersion={publishedStyleVersion()}
           droppedArchive={droppedArchive()}
         />
         <Show when={showStyleJson()}>
