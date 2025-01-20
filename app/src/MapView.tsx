@@ -42,6 +42,17 @@ import {
   parseHash,
 } from "./utils";
 
+const STYLE_MAJOR_VERSION = 4;
+
+const DEFAULT_TILES = "https://demo-bucket.protomaps.com/v4.pmtiles";
+
+const VERSION_COMPATIBILITY: Record<number, number[]> = {
+  4: [4],
+  3: [3],
+  2: [2],
+  1: [1],
+};
+
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
 
@@ -181,7 +192,7 @@ function StyleJsonPane(props: { theme: string; lang: string }) {
   });
 
   return (
-    <div class="w-1/2 overflow-x-scroll overflow-y-scroll p-2">
+    <div class="w-1/2 h-full w-full p-2 flex flex-col">
       <button
         type="button"
         class="btn-primary"
@@ -191,7 +202,10 @@ function StyleJsonPane(props: { theme: string; lang: string }) {
       >
         Copy to clipboard
       </button>
-      <textarea readonly class="text-xs mt-4 h-full w-full">
+      <textarea
+        readonly
+        class="text-xs font-mono p-2 border mt-4 w-full overflow-x-scroll overflow-y-scroll flex-1"
+      >
         {stringified()}
       </textarea>
     </div>
@@ -207,18 +221,20 @@ function MapLibreView(props: {
   showBoxes: boolean;
   tiles?: string;
   npmLayers: LayerSpecification[];
+  npmVersion?: string;
   droppedArchive?: PMTiles;
   ref?: (ref: MapLibreViewRef) => void;
 }) {
   let mapContainer: HTMLDivElement | undefined;
   let mapRef: MaplibreMap | undefined;
-  let protocolRef: Protocol | undefined;
   let hiddenRef: HTMLDivElement | undefined;
   let longPressTimeout: ReturnType<typeof setTimeout>;
 
   const [error, setError] = createSignal<string | undefined>();
   const [timelinessInfo, setTimelinessInfo] = createSignal<string>();
+  const [protocolRef, setProtocolRef] = createSignal<Protocol | undefined>();
   const [zoom, setZoom] = createSignal<number>(0);
+  const [mismatch, setMismatch] = createSignal<string>("");
 
   onMount(() => {
     props.ref?.({ fit });
@@ -236,7 +252,7 @@ function MapLibreView(props: {
     }
 
     const protocol = new Protocol({ metadata: true });
-    protocolRef = protocol;
+    setProtocolRef(protocol);
     addProtocol("pmtiles", protocol.tile);
 
     const map = new MaplibreMap({
@@ -288,9 +304,9 @@ function MapLibreView(props: {
     map.on("idle", () => {
       setZoom(map.getZoom());
       setError(undefined);
-      if (protocolRef && props.tiles) {
-        const p = protocolRef.tiles.get(props.tiles);
-        p?.getMetadata().then((metadata) => {
+      memoizedArchive()
+        ?.getMetadata()
+        .then((metadata) => {
           if (metadata) {
             const m = metadata as {
               version?: string;
@@ -301,7 +317,6 @@ function MapLibreView(props: {
             );
           }
         });
-      }
     });
 
     const showContextMenu = (e: MapTouchEvent) => {
@@ -348,31 +363,76 @@ function MapLibreView(props: {
     mapRef = map;
 
     return () => {
-      protocolRef = undefined;
+      setProtocolRef(undefined);
       removeProtocol("pmtiles");
       map.remove();
     };
   });
 
-  const fit = async () => {
-    if (protocolRef) {
-      let archive = props.droppedArchive;
-      if (!archive && props.tiles) {
-        archive = new PMTiles(props.tiles);
-        protocolRef.add(archive);
+  // ensure the dropped archive is first added to the protocol
+  const memoizedArchive = () => {
+    const p = protocolRef();
+    if (p) {
+      if (props.droppedArchive) {
+        p.add(props.droppedArchive);
+        return props.droppedArchive;
       }
-      if (archive) {
-        const header = await archive.getHeader();
-        mapRef?.fitBounds(
-          [
-            [header.minLon, header.minLat],
-            [header.maxLon, header.maxLat],
-          ],
-          { animate: false },
-        );
+      if (props.tiles) {
+        let archive = p.tiles.get(props.tiles);
+        if (!archive) {
+          archive = new PMTiles(props.tiles);
+          p.add(archive);
+        }
+        return archive;
       }
     }
   };
+
+  const fit = async () => {
+    const header = await memoizedArchive()?.getHeader();
+    if (header) {
+      mapRef?.fitBounds(
+        [
+          [header.minLon, header.minLat],
+          [header.maxLon, header.maxLat],
+        ],
+        { animate: false },
+      );
+    }
+  };
+
+  const memoizedStyle = createMemo(() => {
+    return getMaplibreStyle(
+      props.theme,
+      props.lang,
+      props.localSprites,
+      props.tiles,
+      props.npmLayers,
+      props.droppedArchive,
+    );
+  });
+
+  createEffect(() => {
+    const styleMajorVersion = props.npmVersion
+      ? +props.npmVersion.split(".")[0]
+      : STYLE_MAJOR_VERSION;
+    memoizedArchive()
+      ?.getMetadata()
+      .then((m) => {
+        if (m instanceof Object && "version" in m) {
+          const tilesetVersion = +(m.version as string).split(".")[0];
+          if (
+            VERSION_COMPATIBILITY[tilesetVersion].indexOf(styleMajorVersion) < 0
+          ) {
+            setMismatch(
+              `style v${styleMajorVersion} may not be compatible with tileset v${tilesetVersion}. `,
+            );
+          } else {
+            setMismatch("");
+          }
+        }
+      });
+  });
 
   createEffect(() => {
     if (mapRef) {
@@ -382,24 +442,8 @@ function MapLibreView(props: {
   });
 
   createEffect(() => {
-    // ensure the dropped archive is first added to the protocol
-    if (protocolRef && props.droppedArchive) {
-      protocolRef.add(props.droppedArchive);
-    }
-  });
-
-  createEffect(() => {
     if (mapRef) {
-      mapRef.setStyle(
-        getMaplibreStyle(
-          props.theme,
-          props.lang,
-          props.localSprites,
-          props.tiles,
-          props.npmLayers,
-          props.droppedArchive,
-        ),
-      );
+      mapRef.setStyle(memoizedStyle());
     }
   });
 
@@ -408,11 +452,22 @@ function MapLibreView(props: {
       <div class="hidden" ref={hiddenRef} />
       <div ref={mapContainer} class="h-full w-full flex" />
       <div class="absolute bottom-0 p-1 text-xs bg-white bg-opacity-50">
-        {timelinessInfo()} z@{zoom().toFixed(2)} (drag a local .pmtiles here to
-        view)
+        {timelinessInfo()} z@{zoom().toFixed(2)}
+        <div class="hidden lg:block font-bold">Drag .pmtiles here to view</div>
+        <Show when={mismatch()}>
+          <div class="font-bold text-red">
+            {mismatch()}
+            <a
+              class="underline"
+              href="https://docs.protomaps.com/basemaps/downloads#current-version"
+            >
+              See Docs.
+            </a>
+          </div>
+        </Show>
       </div>
       <Show when={error()}>
-        <div class="absolute h-20 w-full flex justify-center items-center bg-white bg-opacity-50 font-mono text-red">
+        <div class="absolute p-8 flex justify-center items-center bg-white bg-opacity-50 font-mono text-red">
           {error()}
         </div>
       </Show>
@@ -424,9 +479,7 @@ function MapView() {
   const hash = parseHash(location.hash);
   const [theme, setTheme] = createSignal<string>(hash.theme || "light");
   const [lang, setLang] = createSignal<string>(hash.lang || "en");
-  const [tiles, setTiles] = createSignal<string>(
-    hash.tiles || "https://demo-bucket.protomaps.com/v4.pmtiles",
-  );
+  const [tiles, setTiles] = createSignal<string>(hash.tiles || DEFAULT_TILES);
   const [localSprites, setLocalSprites] = createSignal<boolean>(
     hash.local_sprites === "true",
   );
@@ -446,10 +499,16 @@ function MapView() {
     const record = {
       theme: theme(),
       lang: lang(),
-      tiles: droppedArchive() ? undefined : tiles(),
+      tiles: droppedArchive()
+        ? undefined
+        : tiles() === DEFAULT_TILES
+          ? undefined
+          : tiles(),
       local_sprites: localSprites() ? "true" : undefined,
       show_boxes: showBoxes() ? "true" : undefined,
-      npm_version: publishedStyleVersion(),
+      npm_version: publishedStyleVersion()
+        ? publishedStyleVersion()
+        : undefined,
     };
     location.hash = createHash(location.hash, record);
   });
@@ -505,7 +564,7 @@ function MapView() {
   createEffect(() => {
     (async () => {
       const psv = publishedStyleVersion();
-      if (psv === undefined) {
+      if (psv === undefined || psv === "") {
         setNpmLayers([]);
       } else {
         setNpmLayers(await layersForVersion(psv, theme()));
@@ -519,6 +578,10 @@ function MapView() {
     maplibreView()?.fit();
   };
 
+  const clearDroppedArchive = () => {
+    setDroppedArchive(undefined);
+  };
+
   return (
     <div class="flex flex-col h-dvh w-full">
       <Nav page={0} />
@@ -528,6 +591,13 @@ function MapView() {
             <div class="flex-1 font-mono">
               Dropped file {droppedArchive()?.source.getKey()}
             </div>
+            <button
+              class="btn-primary bg-gray text-black"
+              onClick={clearDroppedArchive}
+              type="button"
+            >
+              close
+            </button>
           </Show>
           <Show when={!droppedArchive()}>
             <input
@@ -535,7 +605,6 @@ function MapView() {
               type="text"
               name="tiles"
               value={tiles()}
-              style={{ width: "50%" }}
               autocomplete="off"
             />
             <button class="btn-primary" type="submit">
@@ -650,6 +719,7 @@ function MapView() {
           theme={theme()}
           lang={lang()}
           npmLayers={npmLayers()}
+          npmVersion={publishedStyleVersion()}
           droppedArchive={droppedArchive()}
         />
         <Show when={showStyleJson()}>
