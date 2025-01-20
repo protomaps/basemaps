@@ -177,15 +177,10 @@ function getMaplibreStyle(
   return style;
 }
 
-function StyleJsonPane(props: { theme: string; lang: string }) {
+function StyleJsonPane(props: { theme: string; lang: string; tiles: string }) {
   const stringified = createMemo(() => {
     return JSON.stringify(
-      getMaplibreStyle(
-        props.theme,
-        props.lang,
-        false,
-        "https://example.com/tiles.json",
-      ),
+      getMaplibreStyle(props.theme, props.lang, false, props.tiles),
       null,
       4,
     );
@@ -723,7 +718,11 @@ function MapView() {
           droppedArchive={droppedArchive()}
         />
         <Show when={showStyleJson()}>
-          <StyleJsonPane theme={theme()} lang={lang()} />
+          <StyleJsonPane
+            theme={theme()}
+            lang={lang()}
+            tiles={droppedArchive() ? "example.pmtiles" : tiles()}
+          />
         </Show>
       </div>
     </div>
