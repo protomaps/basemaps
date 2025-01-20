@@ -16,10 +16,10 @@ import {
   setRTLTextPlugin,
 } from "maplibre-gl";
 import type {
+  LngLatBoundsLike,
   MapGeoJSONFeature,
   MapTouchEvent,
   StyleSpecification,
-  LngLatBoundsLike,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
@@ -301,7 +301,7 @@ function MapLibreView(props: {
       setZoom(map.getZoom());
       setError(undefined);
       archiveInfo().then((i) => {
-        if (i && i.metadata) {
+        if (i?.metadata) {
           const m = i.metadata as {
             version?: string;
             "planetiler:osm:osmosisreplicationtime"?: string;
@@ -367,6 +367,18 @@ function MapLibreView(props: {
   const archiveInfo = async (): Promise<
     { metadata: unknown; bounds: LngLatBoundsLike } | undefined
   > => {
+    if (!props.droppedArchive && props.tiles?.endsWith(".json")) {
+      const resp = await fetch(props.tiles);
+      const tileJson = await resp.json();
+      return {
+        metadata: tileJson,
+        bounds: [
+          [tileJson.bounds[0], tileJson.bounds[1]],
+          [tileJson.bounds[2], tileJson.bounds[3]],
+        ],
+      };
+    }
+
     const p = protocolRef();
     if (p) {
       let archive = props.droppedArchive;
