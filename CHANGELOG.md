@@ -1,3 +1,7 @@
+Tiles v4.1.0
+------
+- bump planetiler to 0.8.4-SNAPSHOT, via @wipfli [#365]
+
 Tiles v4.0.4
 ------
 - fix antarctica landcover not extending to bottom with Natural Earth, via @wipfli [#337]
