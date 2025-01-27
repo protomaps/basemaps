@@ -76,7 +76,7 @@ Example web map corner attribution:
 <a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>
 ```
 
-Tilesets also include data from [Natural Earth](https://www.naturalearthdata.com), which does not require corner attribution. Other data sources your map uses may require additional attribution.
+Tilesets also include data from [Natural Earth](https://www.naturalearthdata.com) and other sources, which does not require corner attribution. Other data sources your map uses may require additional attribution: See [LICENSE_DATA.md](/LICENSE_DATA.md).
 
 Depending on map style, MIT-licensed icons may also be included from the [Tangram Icons repository](https://github.com/tangrams/icons/issues).
 
