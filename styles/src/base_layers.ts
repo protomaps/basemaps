@@ -1386,6 +1386,7 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
+          t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": 12,
         "text-letter-spacing": 0.2,
@@ -1408,6 +1409,7 @@ export function labels_layers(
         "text-field": get_multiline_name(
           lang,
           script,
+          t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": 12,
       },
