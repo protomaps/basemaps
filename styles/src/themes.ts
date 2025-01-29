@@ -85,6 +85,7 @@ export interface Theme {
 
   // deprecated
   peak_label: string;
+  background: string;
   waterway_label: string;
 }
 

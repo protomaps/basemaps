@@ -1393,6 +1393,8 @@ export function labels_layers(
       },
       paint: {
         "text-color": t.ocean_label,
+        "text-halo-color": t.water,
+        "text-halo-width": 1,
       },
     },
     {
@@ -1417,7 +1419,6 @@ export function labels_layers(
         "text-color": t.roads_label_minor,
         "text-halo-color": t.roads_label_minor_halo,
         "text-halo-width": 1,
-        "text-halo-blur": 1,
       },
     },
     {
@@ -1430,8 +1431,6 @@ export function labels_layers(
         "kind",
         "sea",
         "ocean",
-        "lake",
-        "water",
         "bay",
         "strait",
         "fjord",
@@ -1450,6 +1449,8 @@ export function labels_layers(
       },
       paint: {
         "text-color": t.ocean_label,
+        "text-halo-width": 1,
+        "text-halo-color": t.water
       },
     },
     {
@@ -1465,12 +1466,14 @@ export function labels_layers(
           script,
           t.regular,
         ) as DataDrivenPropertyValueSpecification<string>,
-        "text-size": ["interpolate", ["linear"], ["zoom"], 3, 0, 6, 12, 10, 12],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 3, 10, 6, 12, 10, 12],
         "text-letter-spacing": 0.1,
         "text-max-width": 9,
       },
       paint: {
         "text-color": t.ocean_label,
+        "text-halo-color": t.water,
+        "text-halo-width": 1
       },
     },
     {
@@ -1495,7 +1498,6 @@ export function labels_layers(
         "text-color": t.roads_label_major,
         "text-halo-color": t.roads_label_major_halo,
         "text-halo-width": 1,
-        "text-halo-blur": 1,
       },
     },
     ...((t.pois
@@ -1614,6 +1616,8 @@ export function labels_layers(
                 t.pois.slategray,
                 t.earth,
               ],
+              "text-halo-color": t.earth,
+              "text-halo-width": 1,
             },
           },
         ]
@@ -1664,7 +1668,6 @@ export function labels_layers(
         "text-color": t.subplace_label,
         "text-halo-color": t.subplace_label_halo,
         "text-halo-width": 1,
-        "text-halo-blur": 1,
       },
     },
     {
@@ -1780,7 +1783,6 @@ export function labels_layers(
         "text-color": t.city_label,
         "text-halo-color": t.city_label_halo,
         "text-halo-width": 1,
-        "text-halo-blur": 1,
       },
     },
     {
@@ -1812,7 +1814,6 @@ export function labels_layers(
         "text-color": t.state_label,
         "text-halo-color": t.state_label_halo,
         "text-halo-width": 1,
-        "text-halo-blur": 1,
       },
     },
     {
@@ -1879,6 +1880,8 @@ export function labels_layers(
       },
       paint: {
         "text-color": t.country_label,
+        "text-halo-color": t.earth,
+        "text-halo-width": 1,
       },
     },
   ];
