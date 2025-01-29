@@ -1073,8 +1073,8 @@ export function nolabels_layers(
       filter: ["<=", "kind_detail", 2],
       paint: {
         "line-color": t.boundaries,
-        "line-width": 1,
-        "line-dasharray": [3, 2],
+        "line-width": 0.7,
+        "line-dasharray": ["step", ["zoom"], ["literal",[2]], 4, ["literal",[2,1]]],
       },
     },
     {
@@ -1085,8 +1085,8 @@ export function nolabels_layers(
       filter: [">", "kind_detail", 2],
       paint: {
         "line-color": t.boundaries,
-        "line-width": 0.5,
-        "line-dasharray": [3, 2],
+        "line-width": 0.4,
+        "line-dasharray": ["step", ["zoom"], ["literal",[2]], 4, ["literal",[2,1]]],
       },
     },
     {
