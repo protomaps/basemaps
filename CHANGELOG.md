@@ -1,3 +1,9 @@
+Styles v4.4.0
+------
+- Improve boundary appearances at low zooms
+- give all text halos for contrast improvements, remove halo-blur
+- fix lake small font sizes
+
 Tiles v4.1.0
 ------
 - bump planetiler to 0.8.4-SNAPSHOT, via @wipfli [#365]
