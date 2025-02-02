@@ -1,11 +1,56 @@
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { labels_layers, nolabels_layers } from "./base_layers";
 import { language_script_pairs } from "./language";
-import themes, { Theme, Pois } from "./themes";
+import themes, {
+  Theme,
+  Pois,
+  LIGHT,
+  DARK,
+  WHITE,
+  GRAYSCALE,
+  BLACK,
+  chromatic,
+} from "./themes";
 
 export { language_script_pairs };
 export type { Theme, Pois };
 
+export function namedTheme(name: string) {
+  switch (name) {
+    case "light":
+      return LIGHT;
+      break;
+    case "dark":
+      return DARK;
+      break;
+    case "white":
+      return WHITE;
+      break;
+    case "grayscale":
+      return GRAYSCALE;
+      break;
+    case "black":
+      return BLACK;
+      break;
+  }
+}
+
+export function layers(
+  source: string,
+  theme: Theme,
+  options?: { labelsOnly?: boolean; lang?: string },
+): LayerSpecification[] {
+  var layers: LayerSpecification[] = [];
+  if (!options?.labelsOnly) {
+    layers = nolabels_layers(source, theme);
+  }
+  if (options?.lang) {
+    layers = layers.concat(labels_layers(source, theme, options.lang));
+  }
+  return layers;
+}
+
+// TODO: deprecate me
 export default function (
   source: string,
   key: string,
@@ -18,11 +63,13 @@ export default function (
   );
 }
 
+// TODO: deprecate me
 export function noLabels(source: string, key: string): LayerSpecification[] {
   const theme = themes[key];
   return nolabels_layers(source, theme);
 }
 
+// TODO: deprecate me
 export function labels(
   source: string,
   key: string,
@@ -33,6 +80,7 @@ export function labels(
   return labels_layers(source, theme, lang, script);
 }
 
+// TODO: deprecate me
 export function layersWithCustomTheme(
   source: string,
   theme: Theme,
@@ -44,6 +92,7 @@ export function layersWithCustomTheme(
   );
 }
 
+// TODO: deprecate me
 export function layersWithPartialCustomTheme(
   source: string,
   key: string,
@@ -57,6 +106,7 @@ export function layersWithPartialCustomTheme(
   );
 }
 
+// TODO: deprecate me
 export function noLabelsWithCustomTheme(
   source: string,
   theme: Theme,
@@ -64,6 +114,7 @@ export function noLabelsWithCustomTheme(
   return nolabels_layers(source, theme);
 }
 
+// TODO: deprecate me
 export function labelsWithCustomTheme(
   source: string,
   theme: Theme,
