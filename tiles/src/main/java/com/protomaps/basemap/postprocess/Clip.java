@@ -25,13 +25,18 @@ public class Clip implements ForwardingProfile.TilePostProcessor {
   private final Map<Integer, TiledGeometry.CoveredTiles> coveredTilesByZoom;
   private final Stats stats;
 
-  static final double DEFAULT_TILE_BUFFER = 4.0 / 256.0;
-  static final double DEFAULT_CLIPPING_BUFFER = 0.00001;
+  static final double DEFAULT_BUFFER = 4.0 / 256.0;
 
+  // A TilePostProcessor that clips all layers to a given geometry.
   // the geometry must be in world coordinates ( world from 0 to 1 )
-  public Clip(Stats stats, int minzoom, int maxzoom, Geometry input) {
+  public Clip(Stats stats, int minzoom, int maxzoom, boolean doBuffer, Geometry input) {
     this.stats = stats;
-    var clipGeometry = input.buffer(DEFAULT_CLIPPING_BUFFER);
+    double bufferAmount = 0;
+    if (doBuffer) {
+      var envelope = input.getEnvelope().getEnvelopeInternal();
+      bufferAmount = Math.max(envelope.getWidth(), envelope.getHeight()) * DEFAULT_BUFFER;
+    }
+    var clipGeometry = input.buffer(bufferAmount);
     boundaryTilesByZoom = new HashMap<>();
     coveredTilesByZoom = new HashMap<>();
     try {
@@ -40,7 +45,7 @@ public class Clip implements ForwardingProfile.TilePostProcessor {
         double scale = 1 << i;
         Geometry scaled = AffineTransformation.scaleInstance(scale, scale).transform(clipGeometry);
         this.boundaryTilesByZoom.put(i,
-          sliceIntoTiles(scaled, 0, DEFAULT_TILE_BUFFER, i, extents.getForZoom(i)).getTileData());
+          sliceIntoTiles(scaled, 0, DEFAULT_BUFFER, i, extents.getForZoom(i)).getTileData());
         this.coveredTilesByZoom.put(i, getCoveredTiles(scaled, i, extents.getForZoom(i)));
       }
     } catch (GeometryException e) {
@@ -48,13 +53,13 @@ public class Clip implements ForwardingProfile.TilePostProcessor {
     }
   }
 
-  public static Clip fromGeoJSONFile(Stats stats, int minzoom, int maxzoom, Path path) {
+  public static Clip fromGeoJSONFile(Stats stats, int minzoom, int maxzoom, boolean doBuffer, Path path) {
     var g = GeoJson.from(path);
     if (g.count() == 0) {
       throw new FileFormatException("Empty clipping geometry");
     }
     var feature = g.iterator().next();
-    return new Clip(stats, minzoom, maxzoom, latLonToWorldCoords(feature.geometry()));
+    return new Clip(stats, minzoom, maxzoom, doBuffer, latLonToWorldCoords(feature.geometry()));
   }
 
   // Copied from elsewhere in planetiler

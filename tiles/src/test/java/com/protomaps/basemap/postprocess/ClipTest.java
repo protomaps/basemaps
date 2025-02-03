@@ -22,7 +22,7 @@ class ClipTest {
   void testLoadGeoJSON() {
     Path cwd = Path.of("").toAbsolutePath();
     Path pathFromRoot = Path.of("tiles", "src", "test", "resources", "clip.geojson");
-    var clip = Clip.fromGeoJSONFile(stats, 0, 0, cwd.resolveSibling(pathFromRoot));
+    var clip = Clip.fromGeoJSONFile(stats, 0, 0, false, cwd.resolveSibling(pathFromRoot));
     assertNotNull(clip);
   }
 
@@ -31,7 +31,7 @@ class ClipTest {
     Path cwd = Path.of("").toAbsolutePath();
     Path pathFromRoot = Path.of("tiles", "src", "test", "resources", "empty.geojson");
     assertThrows(FileFormatException.class, () -> {
-      Clip.fromGeoJSONFile(stats, 0, 0, cwd.resolveSibling(pathFromRoot));
+      Clip.fromGeoJSONFile(stats, 0, 0, false, cwd.resolveSibling(pathFromRoot));
     });
   }
 
@@ -45,7 +45,7 @@ class ClipTest {
     ));
 
     // a rectangle that is 50% of the earths width, centered at null island.
-    var n = new Clip(stats, 0, 0, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
+    var n = new Clip(stats, 0, 0, false, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
     var clipped = n.postProcessTile(TileCoord.ofXYZ(0, 0, 0), Map.of("layer", unclipped));
 
     assertEquals(1, clipped.size());
@@ -63,7 +63,7 @@ class ClipTest {
     ));
 
     // a rectangle that is 50% of the earths width, centered at null island.
-    var n = new Clip(stats, 0, 0, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
+    var n = new Clip(stats, 0, 0, false, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
     var clipped = n.postProcessTile(TileCoord.ofXYZ(0, 0, 0), Map.of("layer", unclipped));
 
     assertEquals(1, clipped.size());
@@ -81,7 +81,7 @@ class ClipTest {
     ));
 
     // a rectangle that is 50% of the earths width, centered at null island.
-    var n = new Clip(stats, 0, 0, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
+    var n = new Clip(stats, 0, 0, false, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
     var clipped = n.postProcessTile(TileCoord.ofXYZ(0, 0, 0), Map.of("layer", unclipped));
 
     assertEquals(1, clipped.size());
@@ -98,7 +98,7 @@ class ClipTest {
       Map.of("foo", "bar")
     ));
 
-    var n = new Clip(stats, 1, 1, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
+    var n = new Clip(stats, 1, 1, false, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
     var clipped = n.postProcessTile(TileCoord.ofXYZ(0, 0, 0), Map.of("layer", unclipped));
     assertEquals(0, clipped.size());
   }
@@ -111,7 +111,7 @@ class ClipTest {
       Map.of("foo", "bar")
     ));
 
-    var n = new Clip(stats, 0, 0, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
+    var n = new Clip(stats, 0, 0, false, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
     var clipped = n.postProcessTile(TileCoord.ofXYZ(0, 0, 0), Map.of("layer", unclipped));
     assertEquals(0, clipped.size());
   }
@@ -124,9 +124,26 @@ class ClipTest {
       Map.of("foo", "bar")
     ));
 
-    var n = new Clip(stats, 0, 3, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
+    var n = new Clip(stats, 0, 3, false, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
     var clipped = n.postProcessTile(TileCoord.ofXYZ(3, 3, 3), Map.of("layer", unclipped));
     assertEquals(1, clipped.size());
     assertEquals(1, clipped.get("layer").size());
+  }
+
+  @Test
+  void testClipLineBuffer() throws GeometryException {
+    List<VectorTile.Feature> unclipped = new ArrayList<>();
+    unclipped.add(new VectorTile.Feature("layer", 1,
+      VectorTile.encodeGeometry(newLineString(0, 128, 256, 128)),
+      Map.of("foo", "bar")
+    ));
+
+    // a rectangle that is 50% of the earths width, centered at null island.
+    var n = new Clip(stats, 0, 0, true, newPolygon(0.25, 0.25, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25, 0.25));
+    var clipped = n.postProcessTile(TileCoord.ofXYZ(0, 0, 0), Map.of("layer", unclipped));
+
+    assertEquals(1, clipped.size());
+    assertEquals(1, clipped.get("layer").size());
+    assertEquals(newLineString(62, 128, 194, 128), clipped.get("layer").getFirst().geometry().decode());
   }
 }

@@ -165,7 +165,7 @@ public class Basemap extends ForwardingProfile {
     var clipArg = args.getString("clip", "File path to GeoJSON Polygon or MultiPolygon geometry to clip tileset.", "");
     if (!clipArg.isEmpty()) {
       clip =
-        Clip.fromGeoJSONFile(args.getStats(), planetiler.config().minzoom(), planetiler.config().maxzoom(),
+        Clip.fromGeoJSONFile(args.getStats(), planetiler.config().minzoom(), planetiler.config().maxzoom(), true,
           Paths.get(clipArg));
     }
 
