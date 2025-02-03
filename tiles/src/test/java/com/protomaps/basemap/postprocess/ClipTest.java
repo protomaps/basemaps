@@ -30,8 +30,9 @@ class ClipTest {
   void testLoadNonJSON() {
     Path cwd = Path.of("").toAbsolutePath();
     Path pathFromRoot = Path.of("tiles", "src", "test", "resources", "empty.geojson");
+    Path path = cwd.resolveSibling(pathFromRoot);
     assertThrows(FileFormatException.class, () -> {
-      Clip.fromGeoJSONFile(stats, 0, 0, false, cwd.resolveSibling(pathFromRoot));
+      Clip.fromGeoJSONFile(stats, 0, 0, false, path);
     });
   }
 
