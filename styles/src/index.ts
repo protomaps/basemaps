@@ -18,19 +18,14 @@ export function namedTheme(name: string): Theme {
   switch (name) {
     case "light":
       return LIGHT;
-      break;
     case "dark":
       return DARK;
-      break;
     case "white":
       return WHITE;
-      break;
     case "grayscale":
       return GRAYSCALE;
-      break;
     case "black":
       return BLACK;
-      break;
   }
   throw new Error("Theme not found");
 }
