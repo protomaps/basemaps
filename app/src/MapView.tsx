@@ -33,7 +33,7 @@ import {
   createSignal,
   onMount,
 } from "solid-js";
-import { layers, Theme, namedTheme } from "../../styles/src/index.ts";
+import { type Theme, layers, namedTheme } from "../../styles/src/index.ts";
 import { language_script_pairs } from "../../styles/src/language.ts";
 import Nav from "./Nav";
 import {
