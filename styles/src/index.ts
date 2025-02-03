@@ -8,13 +8,13 @@ import themes, {
   DARK,
   WHITE,
   GRAYSCALE,
-  BLACK
+  BLACK,
 } from "./themes";
 
 export { language_script_pairs };
 export type { Theme, Pois };
 
-export function namedTheme(name: string):Theme {
+export function namedTheme(name: string): Theme {
   switch (name) {
     case "light":
       return LIGHT;
@@ -40,7 +40,7 @@ export function layers(
   theme: Theme,
   options?: { labelsOnly?: boolean; lang?: string },
 ): LayerSpecification[] {
-  var layers: LayerSpecification[] = [];
+  let layers: LayerSpecification[] = [];
   if (!options?.labelsOnly) {
     layers = nolabels_layers(source, theme);
   }
