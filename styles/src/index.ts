@@ -8,14 +8,13 @@ import themes, {
   DARK,
   WHITE,
   GRAYSCALE,
-  BLACK,
-  chromatic,
+  BLACK
 } from "./themes";
 
 export { language_script_pairs };
 export type { Theme, Pois };
 
-export function namedTheme(name: string) {
+export function namedTheme(name: string):Theme {
   switch (name) {
     case "light":
       return LIGHT;
@@ -33,6 +32,7 @@ export function namedTheme(name: string) {
       return BLACK;
       break;
   }
+  throw new Error("Theme not found");
 }
 
 export function layers(
