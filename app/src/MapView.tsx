@@ -33,7 +33,7 @@ import {
   createSignal,
   onMount,
 } from "solid-js";
-import layers from "../../styles/src/index.ts";
+import { layers, Theme, namedTheme } from "../../styles/src/index.ts";
 import { language_script_pairs } from "../../styles/src/language.ts";
 import Nav from "./Nav";
 import {
@@ -130,9 +130,10 @@ const FeaturesProperties = (props: { features: MapGeoJSONFeature[] }) => {
 };
 
 function getMaplibreStyle(
-  theme: string,
   lang: string,
   localSprites: boolean,
+  flavorName?: string,
+  flavor?: Theme,
   tiles?: string,
   npmLayers?: LayerSpecification[],
   droppedArchive?: PMTiles,
@@ -143,6 +144,7 @@ function getMaplibreStyle(
     layers: [],
   } as StyleSpecification;
   if (!tiles) return style;
+  if (!flavor) return style;
   let tilesWithProtocol: string;
   if (droppedArchive) {
     tilesWithProtocol = `pmtiles://${droppedArchive.source.getKey()}`;
@@ -154,9 +156,9 @@ function getMaplibreStyle(
   style.layers = [];
 
   if (localSprites) {
-    style.sprite = `${location.protocol}//${location.host}/${theme}`;
+    style.sprite = `${location.protocol}//${location.host}/${flavorName}`;
   } else {
-    style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v4/${theme}`;
+    style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v4/${flavorName}`;
   }
 
   style.glyphs =
@@ -173,15 +175,28 @@ function getMaplibreStyle(
   if (npmLayers && npmLayers.length > 0) {
     style.layers = style.layers.concat(npmLayers);
   } else {
-    style.layers = style.layers.concat(layers("protomaps", theme, lang));
+    style.layers = style.layers.concat(
+      layers("protomaps", flavor, { lang: lang }),
+    );
   }
   return style;
 }
 
-function StyleJsonPane(props: { theme: string; lang: string; tiles: string }) {
+function StyleJsonPane(props: {
+  flavorName: string;
+  flavor?: Theme;
+  lang: string;
+  tiles: string;
+}) {
   const stringified = createMemo(() => {
     return JSON.stringify(
-      getMaplibreStyle(props.theme, props.lang, false, props.tiles),
+      getMaplibreStyle(
+        props.lang,
+        false,
+        props.flavorName,
+        props.flavor,
+        props.tiles,
+      ),
       null,
       4,
     );
@@ -211,7 +226,8 @@ function StyleJsonPane(props: { theme: string; lang: string; tiles: string }) {
 type MapLibreViewRef = { fit: () => void };
 
 function MapLibreView(props: {
-  theme: string;
+  flavorName?: string;
+  flavor?: Theme;
   lang: string;
   localSprites: boolean;
   showBoxes: boolean;
@@ -254,7 +270,7 @@ function MapLibreView(props: {
     const map = new MaplibreMap({
       hash: "map",
       container: mapContainer,
-      style: getMaplibreStyle("", "en", false),
+      style: getMaplibreStyle("en", false, props.flavorName, props.flavor),
       attributionControl: false,
     });
 
@@ -414,9 +430,10 @@ function MapLibreView(props: {
 
   const memoizedStyle = createMemo(() => {
     return getMaplibreStyle(
-      props.theme,
       props.lang,
       props.localSprites,
+      props.flavorName,
+      props.flavor,
       props.tiles,
       props.npmLayers,
       props.droppedArchive,
@@ -486,7 +503,9 @@ function MapLibreView(props: {
 
 function MapView() {
   const hash = parseHash(location.hash);
-  const [theme, setTheme] = createSignal<string>(hash.theme || "light");
+  const [flavorName, setFlavorName] = createSignal<string>(
+    hash.flavorName || "light",
+  );
   const [lang, setLang] = createSignal<string>(hash.lang || "en");
   const [tiles, setTiles] = createSignal<string>(hash.tiles || DEFAULT_TILES);
   const [localSprites, setLocalSprites] = createSignal<boolean>(
@@ -506,7 +525,7 @@ function MapView() {
 
   createEffect(() => {
     const record = {
-      theme: theme(),
+      flavorName: flavorName(),
       lang: lang(),
       tiles: droppedArchive()
         ? undefined
@@ -521,6 +540,10 @@ function MapView() {
     };
     location.hash = createHash(location.hash, record);
   });
+
+  const flavor = (): Theme => {
+    return namedTheme(flavorName());
+  };
 
   const drop: JSX.EventHandler<HTMLDivElement, DragEvent> = (event) => {
     event.preventDefault();
@@ -541,7 +564,7 @@ function MapView() {
   ) => {
     const c = event.charCode;
     if (c >= 49 && c <= 53) {
-      setTheme(["light", "dark", "white", "grayscale", "black"][c - 49]);
+      setFlavorName(["light", "dark", "white", "grayscale", "black"][c - 49]);
     }
   };
 
@@ -576,7 +599,7 @@ function MapView() {
       if (psv === undefined || psv === "") {
         setNpmLayers([]);
       } else {
-        setNpmLayers(await layersForVersion(psv, theme()));
+        setNpmLayers(await layersForVersion(psv, flavorName()));
       }
     })();
   });
@@ -626,13 +649,13 @@ function MapView() {
         </form>
         <div class="flex my-2 space-y-2 lg:space-y-0 space-x-2 flex-col lg:flex-row items-center">
           <div class="flex items-center">
-            <label for="theme" class="text-xs mr-1">
-              theme
+            <label for="flavorName" class="text-xs mr-1">
+              flavor
             </label>
             <select
-              id="theme"
-              onChange={(e) => setTheme(e.target.value)}
-              value={theme()}
+              id="flavorName"
+              onChange={(e) => setFlavorName(e.target.value)}
+              value={flavorName()}
               autocomplete="on"
             >
               <option value="light">light</option>
@@ -725,7 +748,8 @@ function MapView() {
           tiles={tiles()}
           localSprites={localSprites()}
           showBoxes={showBoxes()}
-          theme={theme()}
+          flavorName={flavorName()}
+          flavor={flavor()}
           lang={lang()}
           npmLayers={npmLayers()}
           npmVersion={publishedStyleVersion()}
@@ -733,7 +757,8 @@ function MapView() {
         />
         <Show when={showStyleJson()}>
           <StyleJsonPane
-            theme={theme()}
+            flavorName={flavorName()}
+            flavor={flavor()}
             lang={lang()}
             tiles={droppedArchive() ? "example.pmtiles" : tiles()}
           />
