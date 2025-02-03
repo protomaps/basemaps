@@ -1,3 +1,7 @@
+Tiles v4.2.0
+------
+- add `--clip` option to tile generation which clips the entire tileset by a polygon or multipolygon. [#51]
+
 Styles v4.4.0
 ------
 - Improve boundary appearances at low zooms
