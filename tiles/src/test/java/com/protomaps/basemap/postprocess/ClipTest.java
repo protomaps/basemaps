@@ -76,7 +76,6 @@ class ClipTest {
   void testClipPolygon() throws GeometryException {
     List<VectorTile.Feature> unclipped = new ArrayList<>();
     unclipped.add(new VectorTile.Feature("layer", 1,
-      // a V shape that enters and leaves the clipping square
       VectorTile.encodeGeometry(newPolygon(32, 160, 96, 160, 96, 224, 32, 224, 32, 160)),
       Map.of("foo", "bar")
     ));
