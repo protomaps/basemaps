@@ -16,8 +16,10 @@ import com.protomaps.basemap.layers.Pois;
 import com.protomaps.basemap.layers.Roads;
 import com.protomaps.basemap.layers.Transit;
 import com.protomaps.basemap.layers.Water;
+import com.protomaps.basemap.postprocess.Clip;
 import com.protomaps.basemap.text.FontRegistry;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ import java.util.Map;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb) {
+  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, Clip clip) {
 
     var admin = new Boundaries();
     registerHandler(admin);
@@ -72,6 +74,10 @@ public class Basemap extends ForwardingProfile {
     registerSourceHandler("osm", earth::processOsm);
     registerSourceHandler("osm_land", earth::processPreparedOsm);
     registerSourceHandler("ne", earth::processNe);
+
+    if (clip != null) {
+      registerHandler(clip);
+    }
   }
 
   @Override
@@ -86,7 +92,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.1.0";
+    return "4.2.0";
   }
 
   @Override
@@ -155,9 +161,17 @@ public class Basemap extends ForwardingProfile {
     FontRegistry fontRegistry = FontRegistry.getInstance();
     fontRegistry.setZipFilePath(pgfEncodingZip.toString());
 
+    Clip clip = null;
+    var clipArg = args.getString("clip", "File path to GeoJSON Polygon or MultiPolygon geometry to clip tileset.", "");
+    if (!clipArg.isEmpty()) {
+      clip =
+        Clip.fromGeoJSONFile(args.getStats(), planetiler.config().minzoom(), planetiler.config().maxzoom(), true,
+          Paths.get(clipArg));
+    }
+
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
-    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb)).setOutput(Path.of(area + ".pmtiles"))
+    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, clip)).setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
 }
