@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import sirv from "sirv";
 import { type ViteDevServer, defineConfig, searchForWorkspaceRoot } from "vite";
 import solid from "vite-plugin-solid";
+import tailwindcss from '@tailwindcss/vite'
 
 const serveTiles = sirv("../tiles", { dev: true });
 
@@ -33,7 +34,7 @@ const serveSpritesInSpritesDir = () => ({
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [solid(), servePmtilesInTilesDir(), serveSpritesInSpritesDir()],
+	plugins: [solid(), servePmtilesInTilesDir(), serveSpritesInSpritesDir(), tailwindcss()],
 	build: {
 		rollupOptions: {
 			input: {
