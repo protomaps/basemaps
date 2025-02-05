@@ -1,9 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer components {
-	.btn-primary {
-		@apply rounded bg-purple px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple;
-	}
+@theme {
+	--color-purple: #3131dc;
+	--color-gray: #e7e7f9;
+	--color-red: #ff0000;
+}
+
+.btn-primary {
+	@apply rounded bg-purple px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple;
 }
