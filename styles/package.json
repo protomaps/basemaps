@@ -42,7 +42,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
     "@maplibre/maplibre-gl-style-spec": "^19.3.1",
-    "esbuild": "^0.15.11",
+    "esbuild": "^0.25.0",
     "tsup": "^8.2.3",
     "tsx": "^4.7.2",
     "typedoc": "^0.26.8",
