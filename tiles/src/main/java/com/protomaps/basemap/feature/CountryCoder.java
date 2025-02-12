@@ -31,24 +31,19 @@ public class CountryCoder {
     var g = GeoJson.from(s);
 
     for (var feature : g) {
-
-      if (feature.geometry().getNumGeometries() == 0) {
-        continue;
-      }
-
-      MultiPolygon mp = (MultiPolygon) feature.geometry();
-
       var properties = feature.tags();
 
-      String country;
+      String country = "";
       if (properties.containsKey("iso1A2")) {
         country = properties.get("iso1A2").toString();
       } else if (properties.containsKey("country")) {
         country = properties.get("country").toString();
-      } else {
-        continue;
       }
 
+      if (country.isBlank() || feature.geometry().getNumGeometries() == 0) {
+        continue;
+      }
+      MultiPolygon mp = (MultiPolygon) feature.geometry();
       tree.insert(mp.getEnvelopeInternal(),
         new Record(country, properties.get("nameEn").toString(), mp));
     }
