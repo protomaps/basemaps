@@ -3,7 +3,6 @@ package com.protomaps.basemap.feature;
 import static com.onthegomap.planetiler.TestUtils.newPoint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
