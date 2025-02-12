@@ -1,12 +1,8 @@
 package com.protomaps.basemap.feature;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.onthegomap.planetiler.geo.GeoUtils;
+import com.onthegomap.planetiler.reader.geojson.GeoJson;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.locationtech.jts.geom.*;
@@ -32,57 +28,31 @@ public class CountryCoder {
   public static CountryCoder fromJsonString(String s) throws IOException {
     STRtree tree = new STRtree();
 
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode featureCollection = mapper.readTree(s);
-    ArrayNode features = (ArrayNode) featureCollection.get("features");
-    for (var feature : features) {
-      JsonNode properties = feature.get("properties");
+    var g = GeoJson.from(s);
 
-      if (!feature.has("geometry") || feature.get("geometry").isNull()) {
+    for (var feature : g) {
+
+      if (feature.geometry().getNumGeometries() == 0) {
         continue;
       }
 
+      MultiPolygon mp = (MultiPolygon) feature.geometry();
+
+      var properties = feature.tags();
+
       String country;
-      if (properties.has("iso1A2")) {
-        country = properties.get("iso1A2").asText();
-      } else if (properties.has("country")) {
-        country = properties.get("country").asText();
+      if (properties.containsKey("iso1A2")) {
+        country = properties.get("iso1A2").toString();
+      } else if (properties.containsKey("country")) {
+        country = properties.get("country").toString();
       } else {
         continue;
       }
 
-      List<Polygon> polygons = new ArrayList<>();
-      for (var polygon : feature.get("geometry").get("coordinates")) {
-        ArrayNode outerRingNode = (ArrayNode) polygon.get(0);
-        Coordinate[] outerRingCoordinates = parseCoordinates(outerRingNode);
-        LinearRing outerRing = GeoUtils.JTS_FACTORY.createLinearRing(outerRingCoordinates);
-
-        LinearRing[] innerRings = new LinearRing[polygon.size() - 1];
-        for (int j = 1; j < polygon.size(); j++) {
-          ArrayNode innerRingNode = (ArrayNode) polygon.get(j);
-          Coordinate[] innerRingCoordinates = parseCoordinates(innerRingNode);
-          innerRings[j - 1] = GeoUtils.JTS_FACTORY.createLinearRing(innerRingCoordinates);
-        }
-        polygons.add(GeoUtils.JTS_FACTORY.createPolygon(outerRing, innerRings));
-      }
-
-      MultiPolygon multiPolygon = GeoUtils.createMultiPolygon(polygons);
-      multiPolygon.getEnvelopeInternal();
-      tree.insert(multiPolygon.getEnvelopeInternal(),
-        new Record(country, properties.get("nameEn").asText(), multiPolygon));
+      tree.insert(mp.getEnvelopeInternal(),
+        new Record(country, properties.get("nameEn").toString(), mp));
     }
     return new CountryCoder(tree);
-  }
-
-  private static Coordinate[] parseCoordinates(ArrayNode coordinateArray) {
-    Coordinate[] coordinates = new Coordinate[coordinateArray.size()];
-    for (int i = 0; i < coordinateArray.size(); i++) {
-      ArrayNode coordinate = (ArrayNode) coordinateArray.get(i);
-      double x = coordinate.get(0).asDouble();
-      double y = coordinate.get(1).asDouble();
-      coordinates[i] = new Coordinate(x, y);
-    }
-    return coordinates;
   }
 
   public Optional<String> getCountryCode(Geometry geom) {
