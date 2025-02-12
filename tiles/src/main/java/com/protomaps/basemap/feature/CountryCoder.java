@@ -25,7 +25,7 @@ public class CountryCoder {
     return fromJsonString(jsonContent);
   }
 
-  public static CountryCoder fromJsonString(String s) throws IOException {
+  public static CountryCoder fromJsonString(String s) {
     STRtree tree = new STRtree();
 
     var g = GeoJson.from(s);
@@ -59,7 +59,7 @@ public class CountryCoder {
     List<Record> results = tree.query(geom.getEnvelopeInternal());
     if (results.isEmpty())
       return Optional.empty();
-    var filtered = results.stream().filter(record -> record.multiPolygon.contains(geom)
+    var filtered = results.stream().filter(rec -> rec.multiPolygon.contains(geom)
     ).toList();
     if (filtered.isEmpty()) {
       return Optional.empty();
