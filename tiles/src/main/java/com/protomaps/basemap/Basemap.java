@@ -20,6 +20,7 @@ import com.protomaps.basemap.layers.Water;
 import com.protomaps.basemap.postprocess.Clip;
 import com.protomaps.basemap.text.FontRegistry;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -152,9 +153,12 @@ public class Basemap extends ForwardingProfile {
         "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
-    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
-      .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
-      .run();
+
+    if (!Files.exists(nePath) || !Files.exists(pgfEncodingZip)) {
+      Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
+        .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
+        .run();
+    }
     //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
     var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
