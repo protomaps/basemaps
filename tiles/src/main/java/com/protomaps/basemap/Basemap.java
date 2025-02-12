@@ -175,7 +175,8 @@ public class Basemap extends ForwardingProfile {
 
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
-    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, countryCoder, clip)).setOutput(Path.of(area + ".pmtiles"))
+    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, countryCoder, clip))
+      .setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
 }
