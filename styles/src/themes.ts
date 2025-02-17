@@ -76,8 +76,8 @@ export interface Theme {
   state_label_halo: string;
   country_label: string;
 
-  housenumbers_label: string;
-  house_numbers_label_halo: string;
+  address_label: string;
+  address_label_halo: string;
 
   regular?: string;
   bold?: string;
@@ -192,8 +192,8 @@ export const CONTRAST: Theme = {
   state_label_halo: "#ffffff",
   country_label: "#9590aa",
 
-  housenumbers_label: "#91888b",
-  house_numbers_label_halo: "#ffffff",
+  address_label: "#91888b",
+  address_label_halo: "#ffffff",
 };
 
 export const LIGHT: Theme = {
@@ -276,8 +276,8 @@ export const LIGHT: Theme = {
   state_label_halo: "#e0e0e0",
   country_label: "#a3a3a3",
 
-  housenumbers_label: "#91888b",
-  house_numbers_label_halo: "#ffffff",
+  address_label: "#91888b",
+  address_label_halo: "#ffffff",
 
   pois: {
     blue: "#1A8CBD",
@@ -381,8 +381,8 @@ export const DARK: Theme = {
   state_label_halo: "#1f1f1f",
   country_label: "#5c5c5c",
 
-  housenumbers_label: "#525252",
-  house_numbers_label_halo: "#1f1f1f",
+  address_label: "#525252",
+  address_label_halo: "#1f1f1f",
 
   pois: {
     blue: "#4299BB",
@@ -486,8 +486,8 @@ export const WHITE: Theme = {
   state_label_halo: "#ffffff",
   country_label: "#b8b8b8",
 
-  housenumbers_label: "#adadad",
-  house_numbers_label_halo: "#ffffff",
+  address_label: "#adadad",
+  address_label_halo: "#ffffff",
 };
 
 export const GRAYSCALE: Theme = {
@@ -570,8 +570,8 @@ export const GRAYSCALE: Theme = {
   state_label_halo: "#cccccc",
   country_label: "#858585",
 
-  housenumbers_label: "#999999",
-  house_numbers_label_halo: "#e0e0e0",
+  address_label: "#999999",
+  address_label_halo: "#e0e0e0",
 };
 
 export const BLACK: Theme = {
@@ -654,8 +654,8 @@ export const BLACK: Theme = {
   state_label_halo: "#141414",
   country_label: "#707070",
 
-  housenumbers_label: "#525252",
-  house_numbers_label_halo: "#141414",
+  address_label: "#525252",
+  address_label_halo: "#141414",
 };
 
 const themes: Record<string, Theme> = {

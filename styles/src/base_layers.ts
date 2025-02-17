@@ -594,7 +594,11 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "buildings",
-      filter: ["!=", "kind", "address"],
+      filter: [
+        "or",
+        ["==", "kind", "building"],
+        ["==", "kind", "building_part"],
+      ],
       paint: {
         "fill-color": t.buildings,
         "fill-opacity": 0.5,
@@ -1387,7 +1391,7 @@ export function labels_layers(
 ): LayerSpecification[] {
   return [
     {
-      id: "housenumbers_label",
+      id: "address_label",
       type: "symbol",
       source: source,
       "source-layer": "buildings",
@@ -1397,14 +1401,14 @@ export function labels_layers(
         "symbol-placement": "point",
         "text-font": [t.italic || "Noto Sans Italic"],
         "text-field": ["get", "addr_housenumber"],
-        "text-size": 12
+        "text-size": 12,
       },
       paint: {
-        "text-color": t.housenumbers_label, 
-        "text-halo-color": t.house_numbers_label_halo, 
+        "text-color": t.address_label,
+        "text-halo-color": t.address_label_halo,
         "text-halo-width": 1,
         "text-halo-blur": 1,
-      }
+      },
     },
     {
       id: "water_waterway_label",
