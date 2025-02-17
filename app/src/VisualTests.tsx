@@ -5,7 +5,7 @@ import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import maplibregl from "maplibre-gl";
 import * as pmtiles from "pmtiles";
 import { For, createEffect, createSignal, onMount } from "solid-js";
-import layers from "../../styles/src/index.ts";
+import { layers, namedFlavor } from "../../styles/src/index.ts";
 import Nav from "./Nav";
 import rawExamples from "./examples.json";
 import { layersForVersion } from "./utils";
@@ -271,7 +271,7 @@ function VisualTests() {
       const leftLayers = await layersForVersion(leftLayersStr);
       const rightLayers = rightLayersStr
         ? await layersForVersion(rightLayersStr)
-        : layers("protomaps", "light", "en", "Latin");
+        : layers("protomaps", namedFlavor("light"), {lang:"en"});
 
       setDisplayInfo({
         leftTiles,
