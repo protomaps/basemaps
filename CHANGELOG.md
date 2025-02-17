@@ -1,4 +1,4 @@
-Tiles v4.3.0
+Tiles v4.3.0, Styles v4.5.0
 ------
 - Add housenumbers via @SiarheiFedartsou [#380]
 
