@@ -271,7 +271,7 @@ function VisualTests() {
       const leftLayers = await layersForVersion(leftLayersStr);
       const rightLayers = rightLayersStr
         ? await layersForVersion(rightLayersStr)
-        : layers("protomaps", namedFlavor("light"), {lang:"en"});
+        : layers("protomaps", namedFlavor("light"), { lang: "en" });
 
       setDisplayInfo({
         leftTiles,
