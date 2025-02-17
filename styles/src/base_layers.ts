@@ -594,11 +594,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "buildings",
-      filter: [
-        "or",
-        ["==", "kind", "building"],
-        ["==", "kind", "building_part"],
-      ],
+      filter: ["in", "kind", "building", "building_part"],
       paint: {
         "fill-color": t.buildings,
         "fill-opacity": 0.5,
