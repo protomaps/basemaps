@@ -1403,7 +1403,6 @@ export function labels_layers(
         "text-color": t.address_label,
         "text-halo-color": t.address_label_halo,
         "text-halo-width": 1,
-        "text-halo-blur": 1,
       },
     },
     {
