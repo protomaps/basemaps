@@ -3,8 +3,8 @@ import {
   ExpressionSpecification,
   LayerSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
-import { get_country_name, get_multiline_name } from "./language";
 import { Flavor } from "./flavors";
+import { get_country_name, get_multiline_name } from "./language";
 
 export function nolabels_layers(
   source: string,

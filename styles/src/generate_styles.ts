@@ -3,10 +3,12 @@ declare const process: unknown;
 
 import fs from "fs";
 import { writeFile } from "fs/promises";
-import { namedFlavor, layers } from "./index";
+import { layers, namedFlavor } from "./index";
 
 if (process.argv.length < 5) {
-  process.stdout.write("usage: generate-style OUTPUT TILEJSON_URL FLAVOR_NAME LANG");
+  process.stdout.write(
+    "usage: generate-style OUTPUT TILEJSON_URL FLAVOR_NAME LANG",
+  );
   process.exit(1);
 }
 
@@ -27,13 +29,10 @@ const style = {
       url: tileJson,
     },
   },
-  layers: layers("protomaps", flavor, {lang: lang}),
+  layers: layers("protomaps", flavor, { lang: lang }),
   sprite: `https://protomaps.github.io/basemaps-assets/sprites/v4/${flavorName}`,
   glyphs:
     "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
 };
 
-await writeFile(
-  out,
-  JSON.stringify(style, null, 2)
-)
+await writeFile(out, JSON.stringify(style, null, 2));
