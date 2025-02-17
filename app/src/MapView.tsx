@@ -133,7 +133,7 @@ function getMaplibreStyle(
   lang: string,
   localSprites: boolean,
   flavorName?: string,
-  flavor?: Theme,
+  flavor?: Flavor,
   tiles?: string,
   npmLayers?: LayerSpecification[],
   droppedArchive?: PMTiles,
@@ -184,7 +184,7 @@ function getMaplibreStyle(
 
 function StyleJsonPane(props: {
   flavorName: string;
-  flavor?: Theme;
+  flavor?: Flavor;
   lang: string;
   tiles: string;
 }) {
@@ -227,7 +227,7 @@ type MapLibreViewRef = { fit: () => void };
 
 function MapLibreView(props: {
   flavorName?: string;
-  flavor?: Theme;
+  flavor?: Flavor;
   lang: string;
   localSprites: boolean;
   showBoxes: boolean;
@@ -541,7 +541,7 @@ function MapView() {
     location.hash = createHash(location.hash, record);
   });
 
-  const flavor = (): Theme => {
+  const flavor = (): Flavor => {
     return namedFlavor(flavorName());
   };
 
