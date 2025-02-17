@@ -33,7 +33,7 @@ import {
   createSignal,
   onMount,
 } from "solid-js";
-import { type Theme, layers, namedTheme } from "../../styles/src/index.ts";
+import { type Flavor, layers, namedFlavor } from "../../styles/src/index.ts";
 import { language_script_pairs } from "../../styles/src/language.ts";
 import Nav from "./Nav";
 import {
@@ -542,7 +542,7 @@ function MapView() {
   });
 
   const flavor = (): Theme => {
-    return namedTheme(flavorName());
+    return namedFlavor(flavorName());
   };
 
   const drop: JSX.EventHandler<HTMLDivElement, DragEvent> = (event) => {
