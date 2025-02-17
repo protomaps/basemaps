@@ -1,3 +1,7 @@
+Tiles v4.3.0, Styles v4.5.0
+------
+- Add housenumbers via @SiarheiFedartsou [#380]
+
 Tiles v4.2.0
 ------
 - add `--clip` option to tile generation which clips the entire tileset by a polygon or multipolygon. [#51]

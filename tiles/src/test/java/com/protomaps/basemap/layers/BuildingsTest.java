@@ -1,10 +1,13 @@
 package com.protomaps.basemap.layers;
 
-import static com.onthegomap.planetiler.TestUtils.newPolygon;
+import static com.onthegomap.planetiler.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SimpleFeature;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,5 +74,37 @@ class BuildingsTest extends LayerTest {
         null,
         0
       )));
+  }
+
+  @Test
+  void addAddressPointCentroid() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "address")),
+      process(SimpleFeature.create(
+        newPoint(0, 0),
+        new HashMap<>(Map.of(
+          "addr:housenumber", "12",
+          "addr:street", "Main Street"
+        )),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void deduplicateAddress() throws GeometryException {
+    List<VectorTile.Feature> total = new ArrayList<>();
+    total.add(new VectorTile.Feature("layer", 1,
+      VectorTile.encodeGeometry(newPoint(0, 0)),
+      new HashMap<>(Map.of("addr_housenumber", "1", "addr_street", "main"))
+    ));
+    total.add(new VectorTile.Feature("layer", 1,
+      VectorTile.encodeGeometry(newPoint(1, 0)),
+      new HashMap<>(Map.of("addr_housenumber", "1", "addr_street", "main"))
+    ));
+    var b = new Buildings();
+    var deduplicated = b.postProcess(15, total);
+    assertEquals(1, deduplicated.size());
   }
 }
