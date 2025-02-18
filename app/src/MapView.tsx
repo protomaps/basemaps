@@ -33,7 +33,7 @@ import {
   createSignal,
   onMount,
 } from "solid-js";
-import { type Theme, layers, namedTheme } from "../../styles/src/index.ts";
+import { type Flavor, layers, namedFlavor } from "../../styles/src/index.ts";
 import { language_script_pairs } from "../../styles/src/language.ts";
 import Nav from "./Nav";
 import {
@@ -43,12 +43,12 @@ import {
   parseHash,
 } from "./utils";
 
-const STYLE_MAJOR_VERSION = 4;
+const STYLE_MAJOR_VERSION = 5;
 
 const DEFAULT_TILES = "https://demo-bucket.protomaps.com/v4.pmtiles";
 
 const VERSION_COMPATIBILITY: Record<number, number[]> = {
-  4: [4],
+  4: [4, 5],
   3: [3],
   2: [2],
   1: [1],
@@ -133,7 +133,7 @@ function getMaplibreStyle(
   lang: string,
   localSprites: boolean,
   flavorName?: string,
-  flavor?: Theme,
+  flavor?: Flavor,
   tiles?: string,
   npmLayers?: LayerSpecification[],
   droppedArchive?: PMTiles,
@@ -184,7 +184,7 @@ function getMaplibreStyle(
 
 function StyleJsonPane(props: {
   flavorName: string;
-  flavor?: Theme;
+  flavor?: Flavor;
   lang: string;
   tiles: string;
 }) {
@@ -227,7 +227,7 @@ type MapLibreViewRef = { fit: () => void };
 
 function MapLibreView(props: {
   flavorName?: string;
-  flavor?: Theme;
+  flavor?: Flavor;
   lang: string;
   localSprites: boolean;
   showBoxes: boolean;
@@ -541,8 +541,8 @@ function MapView() {
     location.hash = createHash(location.hash, record);
   });
 
-  const flavor = (): Theme => {
-    return namedTheme(flavorName());
+  const flavor = (): Flavor => {
+    return namedFlavor(flavorName());
   };
 
   const drop: JSX.EventHandler<HTMLDivElement, DragEvent> = (event) => {

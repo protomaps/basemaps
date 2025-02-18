@@ -1,6 +1,6 @@
 {
-  "name": "protomaps-themes-base",
-  "version": "4.5.0",
+  "name": "@protomaps/basemaps",
+  "version": "5.0.0",
   "description": "Protomaps basemap themes for MapLibre GL JS",
   "type": "module",
   "main": "dist/cjs/index.cjs",
@@ -24,8 +24,8 @@
     "src"
   ],
   "scripts": {
-    "generate-styles": "tsx src/generate_styles.ts",
-    "build": "tsup && npm run generate-styles https://example.com/tiles.json",
+    "build": "tsup",
+    "generate-style": "tsx src/generate_style.ts",
     "test": "tsx test/index.test.ts",
     "tsc-watch": "tsc --noEmit --watch",
     "tsc": "tsc --noEmit",

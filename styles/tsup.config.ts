@@ -31,9 +31,9 @@ export default [
     ...baseOptions,
     outDir: "dist",
     format: "iife",
-    globalName: "protomaps_themes_base",
+    globalName: "basemaps",
     entry: {
-      "protomaps-themes-base": "src/index.ts",
+      "basemaps": "src/index.ts",
     },
     outExtension: () => {
       return { js: ".js" };

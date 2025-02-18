@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.0.1/dist/maplibre-gl.css" crossorigin="anonymous">
         <script src="https://unpkg.com/maplibre-gl@5.0.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/pmtiles@4.2.1/dist/pmtiles.js"></script>
-        <script src="https://unpkg.com/protomaps-themes-base@4.5.0/dist/protomaps-themes-base.js"></script>
+        <script src="https://unpkg.com/@protomaps/basemaps@5.0.0/dist/basemaps.js"></script>
         <style>
             body {
                 margin: 0;
@@ -42,7 +42,7 @@
                   }
                 },
                 layers: [
-                  ...protomaps_themes_base.noLabels("example_source", "grayscale"),
+                  ...basemaps.layers("example_source", basemaps.namedFlavor("grayscale")),
                   {
                     "id": "overture_places",
                     "source": "overture_places",
@@ -62,7 +62,7 @@
                       ]
                     }
                   },
-                  ...protomaps_themes_base.labels("example_source", "grayscale", "en")
+                  ...basemaps.layers("example_source", basemaps.namedFlavor("grayscale"), {lang:"en", labelsOnly: true})
                 ]
               },
             });

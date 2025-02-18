@@ -3,12 +3,12 @@ import {
   ExpressionSpecification,
   LayerSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
+import { Flavor } from "./flavors";
 import { get_country_name, get_multiline_name } from "./language";
-import { Theme } from "./themes";
 
 export function nolabels_layers(
   source: string,
-  t: Theme,
+  t: Flavor,
 ): LayerSpecification[] {
   return [
     {
@@ -1381,7 +1381,7 @@ export function nolabels_layers(
 
 export function labels_layers(
   source: string,
-  t: Theme,
+  t: Flavor,
   lang: string,
   script?: string,
 ): LayerSpecification[] {
