@@ -41,18 +41,12 @@ import {
   isValidPMTiles,
   layersForVersion,
   parseHash,
+  VERSION_COMPATIBILITY,
 } from "./utils";
 
 const STYLE_MAJOR_VERSION = 5;
 
 const DEFAULT_TILES = "https://demo-bucket.protomaps.com/v4.pmtiles";
-
-const VERSION_COMPATIBILITY: Record<number, number[]> = {
-  4: [4, 5],
-  3: [3],
-  2: [2],
-  1: [1],
-};
 
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
