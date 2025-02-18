@@ -2,6 +2,7 @@
 import { render } from "solid-js/web";
 import "./index.css";
 import Nav from "./Nav";
+import { VERSION_COMPATIBILITY } from "./utils";
 
 import { For, Show, createResource, createSignal } from "solid-js";
 
@@ -109,7 +110,10 @@ function BuildComponent(props: {
         />
       </td>
       <td title={build.uploaded}>{build.key}</td>
-      <td>{build.version}</td>
+      <td>
+        {build.version}{" "}
+        {build.version < "4" ? "(requires old style version)" : ""}
+      </td>
       <td class="hidden lg:table-cell">{formatBytes(build.size)}</td>
       <td class="hidden lg:table-cell">{Hashes(build)}</td>
       <td>
@@ -181,6 +185,18 @@ function Builds() {
 
   const theme = "light";
 
+  const latestMajorTileVersion = () => {
+    const b = builds();
+    if (b) return +b[0].version.split(".")[0];
+  };
+
+  const compatibleNpmVersions = () => {
+    const l = latestMajorTileVersion();
+    if (l) {
+      return VERSION_COMPATIBILITY[l].join(", ");
+    }
+  };
+
   const openVisualTests = () => {
     const left = `https://build.protomaps.com/${builds()[cmpA()].key}`;
     const right = `https://build.protomaps.com/${builds()[cmpB()].key}`;
@@ -226,6 +242,19 @@ function Builds() {
             Documentation
           </a>{" "}
           for how to use.
+        </p>
+        <p>
+          The latest tiles version ({latestMajorTileVersion()}) is compatible
+          with{" "}
+          <a
+            class="underline"
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.npmjs.com/package/@protomaps/basemaps"
+          >
+            @protomaps/basemaps
+          </a>{" "}
+          versions {compatibleNpmVersions()}.
         </p>
         <div class="space-x-2 my-2">
           <button class="btn-primary" type="button" onClick={openVisualTests}>

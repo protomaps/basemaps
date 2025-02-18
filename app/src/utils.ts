@@ -1,3 +1,10 @@
+export const VERSION_COMPATIBILITY: Record<number, number[]> = {
+  4: [4, 5],
+  3: [3],
+  2: [2],
+  1: [1],
+};
+
 // Get the hash contents as a map.
 export function parseHash(hash: string): Record<string, string> {
   const retval: Record<string, string> = {};
