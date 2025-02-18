@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "generate-style": "tsx src/generate_styles.ts",
+    "generate-style": "tsx src/generate_style.ts",
     "test": "tsx test/index.test.ts",
     "tsc-watch": "tsc --noEmit --watch",
     "tsc": "tsc --noEmit",

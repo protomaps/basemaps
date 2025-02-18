@@ -4,6 +4,7 @@ Styles v5.0.0
 - NPM package renamed from `protomaps-themes-base` to `@protomaps/basemaps`
 - script-includes script name renamed from `protomaps-themes-base.js` to `basemaps.js`
 - `Theme` type renamed to `Flavor`
+- migrate `CONTRAST` flavor to external repo
 - Precomputed style JSON is no longer published to NPM
 - All layer generation functions unified into a single `layers` method. To migrate:
 
