@@ -37,11 +37,11 @@ import { type Flavor, layers, namedFlavor } from "../../styles/src/index.ts";
 import { language_script_pairs } from "../../styles/src/language.ts";
 import Nav from "./Nav";
 import {
+  VERSION_COMPATIBILITY,
   createHash,
   isValidPMTiles,
   layersForVersion,
   parseHash,
-  VERSION_COMPATIBILITY,
 } from "./utils";
 
 const STYLE_MAJOR_VERSION = 5;
