@@ -1,3 +1,34 @@
+Styles v5.0.0
+------
+- This is a breaking major version.
+- NPM package renamed from `protomaps-themes-base` to `@protomaps/basemaps`
+- script-includes script name renamed from `protomaps-themes-base.js` to `basemaps.js`
+- `Theme` type renamed to `Flavor`
+- Precomputed style JSON is no longer published to NPM
+- All layer generation functions unified into a single `layers` method. To migrate:
+
+Before:
+
+```js
+default("example","light","en")
+labels("example","light","en")
+layersWithCustomTheme("example",theme,"en")
+layersWithPartialCustomTheme("example",theme,"en")
+noLabelsWithCustomTheme("example",theme)
+labelsWithPartialCustomTheme("example",theme,"en")
+```
+
+After:
+
+```js
+layers("example",namedFlavor("light"),{lang:"en"})
+layers("example",namedFlavor("light"),{lang:"en",labelsOnly:true})
+layers("example",flavor,{lang:"en"})
+layers("example",{...flavor,buildings:"red"},{lang:"en"})
+layers("example",flavor)
+layers("example",{...flavor,buildings:"red"},{lang:"en",labelsOnly:true})
+```
+
 Tiles v4.3.0, Styles v4.5.0
 ------
 - Add housenumbers via @SiarheiFedartsou [#380]
