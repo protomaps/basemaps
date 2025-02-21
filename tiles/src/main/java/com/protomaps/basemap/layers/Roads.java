@@ -8,6 +8,8 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.reader.osm.OsmElement;
+import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.locales.CartographicLocale;
@@ -15,7 +17,7 @@ import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
-public class Roads implements ForwardingProfile.LayerPostProcesser {
+public class Roads implements ForwardingProfile.LayerPostProcesser, ForwardingProfile.OsmRelationPreprocessor {
 
   private CountryCoder countryCoder;
 
@@ -33,6 +35,26 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
 
   public record Shield(String text, String network) {}
 
+  private record RouteRelationInfo(
+    @Override long id,
+    String name, String ref, String network
+  ) implements OsmRelationInfo {}
+
+  @Override
+  public List<OsmRelationInfo> preprocessOsmRelation(OsmElement.Relation relation) {
+    if (relation.hasTag("type", "route") 
+    && relation.hasTag("route", "road")
+    && !relation.hasTag("state")) {
+      return List.of(new RouteRelationInfo(
+        relation.id(),
+        relation.getString("name"),
+        relation.getString("ref"),
+        relation.getString("network")
+      ));
+    }
+    return null;
+  }
+  
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
       !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
@@ -49,11 +71,43 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
       Shield shield = locale.getShield(sf);
       Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
 
+      List<String> relationNetworks = new ArrayList<>();
+      List<String> relationRefs = new ArrayList<>();
+      List<String> relationNames = new ArrayList<>();
+
+      for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
+        RouteRelationInfo relation = routeInfo.relation();
+        if (relation.network != null) {
+          relationNetworks.add(relation.network);
+        }
+        if (relation.ref != null) {
+          relationRefs.add(relation.ref);
+        }
+        if (relation.name != null) {
+          relationNames.add(relation.name);
+        }
+      }
+
+      boolean ARoad = false;
+      boolean BRoad = false;
+
+      // United States
+      ARoad |= relationNetworks.contains("US:I");
+      BRoad |= relationNetworks.contains("US:US");
+
+      boolean hasOverride = false;
+      try {
+        var code = countryCoder.getCountryCode(sf.latLonGeometry()).orElse("");
+        hasOverride |= code.equals("US"); // United States
+      } catch (Exception e) {
+        // do nothing
+      }
+
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         // TODO: (nvkelso 20230622) Use Natural Earth for low zoom roads at zoom 5 and earlier
         //       as normally OSM roads would start at 6, but we start at 3 to match Protomaps v2
         kind = "highway";
-        minZoom = 3;
+        minZoom = hasOverride ? 7 : 3;
 
         if (highway.equals("motorway")) {
           minZoomShieldText = 7;
@@ -69,7 +123,7 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
 
         if (highway.equals("trunk")) {
           // Just trunk earlier zoom, otherwise road network looks choppy just with motorways then
-          minZoom = 6;
+          minZoom = hasOverride ? 7 : 6;
           minZoomShieldText = 8;
         } else if (highway.equals("primary")) {
           minZoomShieldText = 10;
@@ -138,6 +192,15 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         minZoomNames = 14;
       }
 
+      if (hasOverride) {
+        if (BRoad) {
+          minZoom = 6;
+        }
+        if (ARoad) {
+          minZoom = 3;
+        }
+      }
+
       var feat = features.line("roads")
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
@@ -153,12 +216,6 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         .setMinPixelSize(0)
         .setPixelTolerance(0)
         .setZoomRange(minZoom, maxZoom);
-
-      try {
-        var code = countryCoder.getCountryCode(sf.latLonGeometry());
-      } catch (Exception e) {
-        // do logic based on country code
-      }
 
       if (!kindDetail.isEmpty()) {
         feat.setAttr("kind_detail", kindDetail);

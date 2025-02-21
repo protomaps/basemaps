@@ -31,55 +31,55 @@ public class Basemap extends ForwardingProfile {
 
   public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip) {
 
-    var admin = new Boundaries();
-    registerHandler(admin);
-    registerSourceHandler("osm", admin::processOsm);
-    registerSourceHandler("ne", admin::processNe);
+    // var admin = new Boundaries();
+    // registerHandler(admin);
+    // registerSourceHandler("osm", admin::processOsm);
+    // registerSourceHandler("ne", admin::processNe);
 
-    var buildings = new Buildings();
-    registerHandler(buildings);
-    registerSourceHandler("osm", buildings::processOsm);
+    // var buildings = new Buildings();
+    // registerHandler(buildings);
+    // registerSourceHandler("osm", buildings::processOsm);
 
-    var landuse = new Landuse();
-    registerHandler(landuse);
-    registerSourceHandler("osm", landuse::processOsm);
+    // var landuse = new Landuse();
+    // registerHandler(landuse);
+    // registerSourceHandler("osm", landuse::processOsm);
 
-    var landcover = new Landcover();
-    registerHandler(landcover);
-    registerSourceHandler("landcover", landcover::processLandcover);
+    // var landcover = new Landcover();
+    // registerHandler(landcover);
+    // registerSourceHandler("landcover", landcover::processLandcover);
 
-    var place = new Places(naturalEarthDb);
-    registerHandler(place);
-    registerSourceHandler("osm", place::processOsm);
+    // var place = new Places(naturalEarthDb);
+    // registerHandler(place);
+    // registerSourceHandler("osm", place::processOsm);
 
-    var poi = new Pois(qrankDb);
-    registerHandler(poi);
-    registerSourceHandler("osm", poi::processOsm);
+    // var poi = new Pois(qrankDb);
+    // registerHandler(poi);
+    // registerSourceHandler("osm", poi::processOsm);
 
     var roads = new Roads(countryCoder);
     registerHandler(roads);
     registerSourceHandler("osm", roads::processOsm);
 
-    var transit = new Transit();
-    registerHandler(transit);
-    registerSourceHandler("osm", transit::processOsm);
+    // var transit = new Transit();
+    // registerHandler(transit);
+    // registerSourceHandler("osm", transit::processOsm);
 
-    var water = new Water();
-    registerHandler(water);
-    registerSourceHandler("osm", water::processOsm);
-    registerSourceHandler("osm_water", water::processPreparedOsm);
-    registerSourceHandler("ne", water::processNe);
+    // var water = new Water();
+    // registerHandler(water);
+    // registerSourceHandler("osm", water::processOsm);
+    // registerSourceHandler("osm_water", water::processPreparedOsm);
+    // registerSourceHandler("ne", water::processNe);
 
-    var earth = new Earth();
-    registerHandler(earth);
+    // var earth = new Earth();
+    // registerHandler(earth);
 
-    registerSourceHandler("osm", earth::processOsm);
-    registerSourceHandler("osm_land", earth::processPreparedOsm);
-    registerSourceHandler("ne", earth::processNe);
+    // registerSourceHandler("osm", earth::processOsm);
+    // registerSourceHandler("osm_land", earth::processPreparedOsm);
+    // registerSourceHandler("ne", earth::processNe);
 
-    if (clip != null) {
-      registerHandler(clip);
-    }
+    // if (clip != null) {
+    //   registerHandler(clip);
+    // }
   }
 
   @Override
