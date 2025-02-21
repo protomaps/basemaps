@@ -37,18 +37,15 @@ public class Roads implements ForwardingProfile.LayerPostProcesser, ForwardingPr
 
   private record RouteRelationInfo(
     @Override long id,
-    String name, String ref, String network
+    String network
   ) implements OsmRelationInfo {}
 
   @Override
   public List<OsmRelationInfo> preprocessOsmRelation(OsmElement.Relation relation) {
     if (relation.hasTag("type", "route") 
-    && relation.hasTag("route", "road")
-    && !relation.hasTag("state")) {
+    && relation.hasTag("route", "road")) {
       return List.of(new RouteRelationInfo(
         relation.id(),
-        relation.getString("name"),
-        relation.getString("ref"),
         relation.getString("network")
       ));
     }
@@ -72,19 +69,11 @@ public class Roads implements ForwardingProfile.LayerPostProcesser, ForwardingPr
       Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
 
       List<String> relationNetworks = new ArrayList<>();
-      List<String> relationRefs = new ArrayList<>();
-      List<String> relationNames = new ArrayList<>();
 
       for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
         RouteRelationInfo relation = routeInfo.relation();
         if (relation.network != null) {
           relationNetworks.add(relation.network);
-        }
-        if (relation.ref != null) {
-          relationRefs.add(relation.ref);
-        }
-        if (relation.name != null) {
-          relationNames.add(relation.name);
         }
       }
 
