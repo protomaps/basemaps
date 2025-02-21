@@ -17,7 +17,7 @@ import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
-public class Roads implements ForwardingProfile.LayerPostProcesser, ForwardingProfile.OsmRelationPreprocessor {
+public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingProfile.OsmRelationPreprocessor {
 
   private CountryCoder countryCoder;
 
