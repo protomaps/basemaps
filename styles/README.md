@@ -9,28 +9,10 @@ nvm use
 npm ci
 ```
 
-## Generate JSON styles in all themes and languages
+## Generate JSON styles
 
-To generate style.json files in all themes and supported languages, run:
-
-```
-npm run generate-styles https://example.com/your-tilejson-url.json
-```
-
-Note that you have to replace the TileJSON URL with your own.
-
-This will create files in the `dist/styles/` folder like this:
+To generate a style.json for a default flavor and language:
 
 ```
-dist/
-  styles/
-    light/
-      ar.json
-      bg.json
-      ...
-    dark/
-      ar.json
-      bg.json
-      ...
-    ...
+npm run generate-style style.json https://example.com/tilejson.json light en
 ```
