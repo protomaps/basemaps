@@ -15,132 +15,91 @@ import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
-public class Roads implements ForwardingProfile.LayerPostProcesser {
+public class Roads implements ForwardingProfile.LayerPostProcessor {
 
-  private CountryCoder countryCoder;
+  private static final String LAYER_NAME = "roads";
 
-  public Roads(CountryCoder countryCoder) {
-    this.countryCoder = countryCoder;
-  }
+  private static class ProcessHighways {
+    private static final List<String> EXCLUDED_HIGHWAY_VALUES = List.of(
+      "proposed",
+      "abandoned",
+      "razed",
+      "demolished",
+      "removed",
+      "construction",
+      "elevator"
+    );
 
-  @Override
-  public String name() {
-    return "roads";
-  }
+    private record TagConfig(String tag, String value, String kind, Integer minZoom, Integer minZoomShieldText, Integer minZoomNames) {}
 
-  // Hardcoded to US for now
-  private CartographicLocale locale = new US();
+    private static final List<TagConfig> TAG_CONFIGS = List.of(
+      new TagConfig("highway", "motorway", "highway", 3, 7, 11),
+      new TagConfig("highway", "motorway_link", "highway", 3, 12, 11),
+      new TagConfig("highway", "trunk", "major_road", 6, 8, 12),
+      new TagConfig("highway", "trunk_link", "major_road", 7, 12, 12),
+      new TagConfig("highway", "primary", "major_road", 7, 10, 12),
+      new TagConfig("highway", "primary_link", "major_road", 7, 13, 12),
+      new TagConfig("highway", "secondary", "major_road", 9, 11, 12),
+      new TagConfig("highway", "secondary_link", "major_road", 9, 13, 14),
+      new TagConfig("highway", "tertiary", "major_road", 9, 12, 13),
+      new TagConfig("highway", "tertiary_link", "major_road", 9, 13, 14),
+      new TagConfig("highway", "residential", "minor_road", 12, 12, 14),
+      new TagConfig("highway", "service", "minor_road", 13, 12, 14),
+      new TagConfig("highway", "unclassified", "minor_road", 12, 12, 14),
+      new TagConfig("highway", "road", "minor_road", 12, 12, 14),
+      new TagConfig("highway", "raceway", "minor_road", 12, 12, 14),
+      new TagConfig("highway", "pedestrian", "path", 12, 12, 14),
+      new TagConfig("highway", "track", "path", 12, 12, 14),
+      new TagConfig("highway", "path", "path", 13, 12, 14),
+      new TagConfig("highway", "cycleway", "path", 13, 12, 14),
+      new TagConfig("highway", "bridleway", "path", 13, 12, 14),
+      new TagConfig("highway", "footway", "path", 13, 12, 14),
+      new TagConfig("highway", "steps", "path", 13, 12, 14),
+      new TagConfig("highway", "corridor", "path", 14, 12, 14)
+    );
 
-  public record Shield(String text, String network) {}
+    public static void process(SourceFeature sf, FeatureCollector features, CountryCoder countryCoder, CartographicLocale locale) {
+      String highway = sf.getString("highway", "");
 
-  public void processOsm(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBeLine() && sf.hasTag("highway") &&
-      !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
+      if (highway.equals("") || EXCLUDED_HIGHWAY_VALUES.contains(highway)) {
+        return;
+      }
+    
       String kind = "other";
-      String kindDetail = "";
-      int minZoom = 15;
-      int maxZoom = 15;
-      int minZoomShieldText = 10;
+      String kindDetail = highway;
+      int minZoom = 14;
+      int minZoomShieldText = 14;
       int minZoomNames = 14;
 
-      String highway = sf.getString("highway");
-      String service = "";
+      for (var tagConfig : TAG_CONFIGS) {
+        if (sf.hasTag(tagConfig.tag, tagConfig.value)) {
+          kind = tagConfig.kind;
+          minZoom = tagConfig.minZoom;
+          minZoomShieldText = tagConfig.minZoomShieldText;
+          minZoomNames = tagConfig.minZoomNames;
+          break;
+        }
+      }
+
+      if (kind.equals("minor_road") && highway.equals("service") && sf.hasTag("service")) {
+        minZoom = 14;
+      }
+      if (kind.equals("path") && sf.hasTag("footway", "sidewalk", "crossing")) {
+        minZoom = 14;
+        kindDetail = sf.getString("footway", "");
+      }
+      if (kind.equals("other")) {
+        kindDetail = sf.getString("service", "");
+      }
 
       Shield shield = locale.getShield(sf);
       Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
 
-      if (highway.equals("motorway") || highway.equals("motorway_link")) {
-        // TODO: (nvkelso 20230622) Use Natural Earth for low zoom roads at zoom 5 and earlier
-        //       as normally OSM roads would start at 6, but we start at 3 to match Protomaps v2
-        kind = "highway";
-        minZoom = 3;
-
-        if (highway.equals("motorway")) {
-          minZoomShieldText = 7;
-        } else {
-          minZoomShieldText = 12;
-        }
-
-        minZoomNames = 11;
-      } else if (highway.equals("trunk") || highway.equals("trunk_link") || highway.equals("primary") ||
-        highway.equals("primary_link")) {
-        kind = "major_road";
-        minZoom = 7;
-
-        if (highway.equals("trunk")) {
-          // Just trunk earlier zoom, otherwise road network looks choppy just with motorways then
-          minZoom = 6;
-          minZoomShieldText = 8;
-        } else if (highway.equals("primary")) {
-          minZoomShieldText = 10;
-        } else if (highway.equals("trunk_link")) {
-          minZoomShieldText = 12;
-        } else {
-          minZoomShieldText = 13;
-        }
-
-        minZoomNames = 12;
-      } else if (highway.equals("secondary") || highway.equals("secondary_link") || highway.equals("tertiary") ||
-        highway.equals("tertiary_link")) {
-        kind = "major_road";
-        minZoom = 9;
-
-        if (highway.equals("secondary")) {
-          minZoomShieldText = 11;
-          minZoomNames = 12;
-        } else if (highway.equals("tertiary")) {
-          minZoomShieldText = 12;
-          minZoomNames = 13;
-        } else {
-          minZoomShieldText = 13;
-          minZoomNames = 14;
-        }
-      } else if (highway.equals("residential") || highway.equals("service") || highway.equals("unclassified") ||
-        highway.equals("road") || highway.equals("raceway")) {
-        kind = "minor_road";
-        minZoom = 12;
-        minZoomShieldText = 12;
-        minZoomNames = 14;
-
-        if (highway.equals("service")) {
-          kindDetail = "service";
-          minZoom = 13;
-
-          // push down "alley", "driveway", "parking_aisle", "drive-through" & etc
-          if (sf.hasTag("service")) {
-            minZoom = 14;
-            service = sf.getString("service");
-          }
-        }
-      } else if (sf.hasTag("highway", "pedestrian", "track", "path", "cycleway", "bridleway", "footway",
-        "steps", "corridor")) {
-        kind = "path";
-        kindDetail = highway;
-        minZoom = 12;
-        minZoomShieldText = 12;
-        minZoomNames = 14;
-
-        if (sf.hasTag("highway", "path", "cycleway", "bridleway", "footway", "steps")) {
-          minZoom = 13;
-        }
-        if (sf.hasTag("footway", "sidewalk", "crossing")) {
-          minZoom = 14;
-          kindDetail = sf.getString("footway", "");
-        }
-        if (sf.hasTag("highway", "corridor")) {
-          minZoom = 14;
-        }
-      } else {
-        kind = "other";
-        kindDetail = sf.getString("service", "");
-        minZoom = 14;
-        minZoomShieldText = 14;
-        minZoomNames = 14;
-      }
-
-      var feat = features.line("roads")
+      var feat = features.line(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
+        .setAttr("kind_detail", kindDetail)
+        .inheritAttrFromSource("service")
         // To power better client label collisions
         .setAttr("min_zoom", minZoom + 1)
         .setAttrWithMinzoom("ref", shield.text(), minZoomShieldText)
@@ -150,9 +109,10 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         // `highway` is a temporary attribute that gets removed in the post-process step
         .setAttr("highway", highway)
         .setAttr("sort_rank", 400)
+        .setSortKey(minZoom)
         .setMinPixelSize(0)
         .setPixelTolerance(0)
-        .setZoomRange(minZoom, maxZoom);
+        .setMinZoom(minZoom);
 
       try {
         var code = countryCoder.getCountryCode(sf.latLonGeometry());
@@ -160,19 +120,7 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         // do logic based on country code
       }
 
-      if (!kindDetail.isEmpty()) {
-        feat.setAttr("kind_detail", kindDetail);
-      } else {
-        feat.setAttr("kind_detail", highway);
-      }
-
-      // Core OSM tags for different kinds of places
-      if (!service.isEmpty()) {
-        feat.setAttr("service", service);
-      }
-
-      if (sf.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
-        "tertiary_link")) {
+      if (kindDetail.endsWith("_link")) {
         feat.setAttr("is_link", true);
       }
 
@@ -184,85 +132,83 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         feat.setAttrWithMinzoom("is_tunnel", true, 12);
       }
 
-      // Server sort features so client label collisions are pre-sorted
-      feat.setSortKey(minZoom);
-
       OsmNames.setOsmNames(feat, sf, minZoomNames);
-    } // end highway=
+    }
+  }
 
-    // non-highway features
-    // todo: exclude railway stations, levels
-    if (sf.canBeLine() && (sf.hasTag("railway") ||
-      sf.hasTag("aerialway", "cable_car") ||
-      sf.hasTag("man_made", "pier") ||
-      sf.hasTag("route", "ferry") ||
-      sf.hasTag("aeroway", "runway", "taxiway")) &&
-      (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) &&
-      (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
+  private static class ProcessNonHighways {
+    private static final List<String> EXCLUDED_RAILWAY_VALUES = List.of(
+      "abandoned", 
+      "razed", 
+      "demolished", 
+      "removed", 
+      "construction", 
+      "platform", 
+      "proposed");
 
-      int minZoom = 11;
+    private record TagConfig(String tag, String value, String kind, String kindDetail, Integer minZoom) {}
 
-      if (sf.hasTag("aeroway", "runway")) {
-        minZoom = 9;
-      } else if (sf.hasTag("aeroway", "taxiway")) {
-        minZoom = 10;
-      } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
-        minZoom = 13;
-      } else if (sf.hasTag("man_made", "pier")) {
+    private static final List<TagConfig> TAG_CONFIGS = List.of(
+      new TagConfig("railway", "rail", "rail", "rail", 11),
+      new TagConfig("railway", "disused", "rail", "disused", 15),
+      new TagConfig("railway", "funicular", "rail", "funicular", 14),
+      new TagConfig("railway", "light_rail", "rail", "light_rail", 14),
+      new TagConfig("railway", "miniature", "rail", "miniature", 14),
+      new TagConfig("railway", "monorail", "rail", "monorail", 14),
+      new TagConfig("railway", "narrow_gauge", "rail", "narrow_gauge", 14),
+      new TagConfig("railway", "preserved", "rail", "preserved", 14),
+      new TagConfig("railway", "subway", "rail", "subway", 14),
+      new TagConfig("railway", "tram", "rail", "tram", 14),
+      new TagConfig("aeroway", "runnway", "aeroway", "aeroway", 9),
+      new TagConfig("aeroway", "taxiway", "aeroway", "aeroway", 10),
+      new TagConfig("man_made", "pier", "path", "pier", 13),
+      new TagConfig("aerialway", "cable_car", "aerialway", "cable_car", 11),
+      new TagConfig("route", "ferry", "ferry", "ferry", 11)
+    );
+  
+    public static void process(SourceFeature sf, FeatureCollector features) {
+      String railway = sf.getString("railway", "");
+
+      if (EXCLUDED_RAILWAY_VALUES.contains(railway) || sf.hasTag("building")) {
+        // for buildings see https://github.com/protomaps/basemaps/issues/249
+        return;
+      }
+
+      String kind = null;
+      String kindDetail = null;
+      Integer minZoom = null;
+
+      boolean hasNoValidTag = true;
+      for (var tagConfig : TAG_CONFIGS) {
+        if (sf.hasTag(tagConfig.tag, tagConfig.value)) {
+          kind = tagConfig.kind;
+          kindDetail = tagConfig.kindDetail;
+          minZoom = tagConfig.minZoom;
+          hasNoValidTag = false;
+          break;
+        }
+      }
+      if (hasNoValidTag) {
+        return;
+      }
+
+      if (sf.hasTag("service", "yard", "siding", "crossover")) {
         minZoom = 13;
       }
 
-      String kind = "other";
-      String kindDetail = "";
-      if (sf.hasTag("aeroway")) {
-        kind = "aeroway";
-        kindDetail = sf.getString("aeroway");
-      } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge",
-        "preserved", "subway", "tram")) {
-        kind = "rail";
-        kindDetail = sf.getString("railway");
-        minZoom = 14;
-
-        if (sf.hasTag("railway", "disused")) {
-          minZoom = 15;
-        }
-      } else if (sf.hasTag("railway")) {
-        kind = "rail";
-        kindDetail = sf.getString("railway");
-
-        if (kindDetail.equals("service")) {
-          minZoom = 13;
-
-          // eg a rail yard
-          if (sf.hasTag("service")) {
-            minZoom = 14;
-          }
-        }
-      } else if (sf.hasTag("route", "ferry")) {
-        kind = "ferry";
-      } else if (sf.hasTag("man_made", "pier")) {
-        kind = "path";
-        kindDetail = "pier";
-      } else if (sf.hasTag("aerialway")) {
-        kind = "aerialway";
-        kindDetail = sf.getString("aerialway");
-      }
-
-      var feature = features.line(this.name())
+      var feature = features.line(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
+        .setAttr("kind_detail", kindDetail)
         // Used for client-side label collisions
         .setAttr("min_zoom", minZoom + 1)
-        .setAttr("network", sf.getString("network"))
-        .setAttr("ref", sf.getString("ref"))
-        .setAttr("route", sf.getString("route"))
-        .setAttr("service", sf.getString("service"))
+        .inheritAttrFromSource("network")
+        .inheritAttrFromSource("ref")
+        .inheritAttrFromSource("route")
+        .inheritAttrFromSource("service")
         .setAttr("sort_rank", 400)
-        .setZoomRange(minZoom, 15);
-
-      if (!kindDetail.isEmpty()) {
-        feature.setAttr("kind_detail", kindDetail);
-      }
+        .setSortKey(minZoom)
+        .setMinZoom(minZoom);
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
@@ -278,12 +224,33 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
         feature.setMinPixelSize(2);
       }
 
-      // Server sort features so client label collisions are pre-sorted
-      feature.setSortKey(minZoom);
-
       // TODO: (nvkelso 20230623) This should be variable, but 12 is better than 0 for line merging
       OsmNames.setOsmNames(feature, sf, 12);
     }
+  }
+  
+  private CountryCoder countryCoder;
+
+  public Roads(CountryCoder countryCoder) {
+    this.countryCoder = countryCoder;
+  }
+
+  @Override
+  public String name() {
+    return LAYER_NAME;
+  }
+
+  // Hardcoded to US for now
+  private CartographicLocale locale = new US();
+
+  public record Shield(String text, String network) {}
+
+  public void processOsm(SourceFeature sf, FeatureCollector features) {
+    if (!sf.canBeLine()) {
+      return;
+    }
+    ProcessHighways.process(sf, features, countryCoder, locale);
+    ProcessNonHighways.process(sf, features);
   }
 
   @Override
