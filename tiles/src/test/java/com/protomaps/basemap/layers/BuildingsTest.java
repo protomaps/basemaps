@@ -77,12 +77,29 @@ class BuildingsTest extends LayerTest {
   }
 
   @Test
-  void addAddressPointCentroid() {
+  void addAddressPointNode() {
     assertFeatures(15,
       List.of(Map.of("kind", "address")),
       process(SimpleFeature.create(
         newPoint(0, 0),
         new HashMap<>(Map.of(
+          "addr:housenumber", "12",
+          "addr:street", "Main Street"
+        )),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void addAddressPointCentroid() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "building"), Map.of("kind", "address")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 1, 1, 0, 1, 0, 0),
+        new HashMap<>(Map.of(
+          "building", "yes",
           "addr:housenumber", "12",
           "addr:street", "Main Street"
         )),
