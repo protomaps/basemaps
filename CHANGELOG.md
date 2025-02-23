@@ -1,3 +1,7 @@
+Tiles 4.3.1
+------
+- Capture `kind=address` in `buildings` from building centroids via @pietervdvn [#387]
+
 Styles v5.0.0
 ------
 - This is a breaking major version.
