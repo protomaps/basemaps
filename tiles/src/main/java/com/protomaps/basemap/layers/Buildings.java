@@ -97,8 +97,8 @@ public class Buildings implements ForwardingProfile.LayerPostProcesser {
       // Names should mostly just be for POIs
       // Sometimes building name and address are useful items, but only at zoom 17+
       //OsmNames.setOsmNames(feature, sf, 13);
-    } 
-    
+    }
+
     if (sf.hasTag("addr:housenumber")) {
       FeatureCollector.Feature feature = null;
       if (sf.isPoint()) {
