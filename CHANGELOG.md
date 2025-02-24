@@ -1,3 +1,7 @@
+Tiles 4.4.0
+------
+- Improve the appearance of broken roads at zooms 0-6 by using relations [#386]
+
 Tiles 4.3.1
 ------
 - Capture `kind=address` in `buildings` from building centroids via @pietervdvn [#387]
