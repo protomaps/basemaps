@@ -19,6 +19,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public static final String LAYER_NAME = "water";
+
   @Override
   public String name() {
     return LAYER_NAME;
