@@ -42,8 +42,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   @Override
   public List<OsmRelationInfo> preprocessOsmRelation(OsmElement.Relation relation) {
-    if (relation.hasTag("type", "route") 
-    && relation.hasTag("route", "road")) {
+    if (relation.hasTag("type", "route") && relation.hasTag("route", "road")) {
       return List.of(new RouteRelationInfo(
         relation.id(),
         relation.getString("network")
@@ -51,7 +50,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     }
     return null;
   }
-  
+
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
       !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
