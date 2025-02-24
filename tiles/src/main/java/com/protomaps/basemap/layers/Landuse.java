@@ -10,7 +10,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 
-public class Landuse implements ForwardingProfile.LayerPostProcesser {
+public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBePolygon() && (sf.hasTag("aeroway", "aerodrome", "runway") ||
@@ -166,9 +166,11 @@ public class Landuse implements ForwardingProfile.LayerPostProcesser {
     }
   }
 
+  public static final String LAYER_NAME = "landuse";
+
   @Override
   public String name() {
-    return "landuse";
+    return LAYER_NAME;
   }
 
   @Override

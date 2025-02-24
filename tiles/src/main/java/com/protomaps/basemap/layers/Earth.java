@@ -11,10 +11,13 @@ import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import org.locationtech.jts.geom.Point;
 
-public class Earth implements ForwardingProfile.LayerPostProcesser {
+public class Earth implements ForwardingProfile.LayerPostProcessor {
+
+  public static final String LAYER_NAME = "earth";
+
   @Override
   public String name() {
-    return "earth";
+    return LAYER_NAME;
   }
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {

@@ -15,7 +15,7 @@ import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
-public class Roads implements ForwardingProfile.LayerPostProcesser {
+public class Roads implements ForwardingProfile.LayerPostProcessor {
 
   private CountryCoder countryCoder;
 
@@ -23,9 +23,11 @@ public class Roads implements ForwardingProfile.LayerPostProcesser {
     this.countryCoder = countryCoder;
   }
 
+  public static final String LAYER_NAME = "roads";
+
   @Override
   public String name() {
-    return "roads";
+    return LAYER_NAME;
   }
 
   // Hardcoded to US for now

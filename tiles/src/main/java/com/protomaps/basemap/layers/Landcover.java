@@ -32,9 +32,11 @@ public class Landcover implements ForwardingProfile.LayerPostProcesser {
       .setMinPixelSize(0.0);
   }
 
+  public static final String LAYER_NAME = "landcover";
+
   @Override
   public String name() {
-    return "landcover";
+    return LAYER_NAME;
   }
 
   @Override

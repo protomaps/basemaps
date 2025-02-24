@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.OptionalInt;
 
 public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
-  ForwardingProfile.LayerPostProcesser {
+  ForwardingProfile.LayerPostProcessor {
+
+  public static final String LAYER_NAME = "boundaries";
 
   @Override
   public String name() {
-    return "boundaries";
+    return LAYER_NAME;
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {

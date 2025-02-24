@@ -18,14 +18,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class Buildings implements ForwardingProfile.LayerPostProcesser {
+public class Buildings implements ForwardingProfile.LayerPostProcessor {
 
   static final String HEIGHT_KEY = "height";
   static final String MIN_HEIGHT_KEY = "min_height";
 
+  public static final String LAYER_NAME = "buildings";
+
   @Override
   public String name() {
-    return "buildings";
+    return LAYER_NAME;
   }
 
   public record Height(Double height, Double min_height) {}

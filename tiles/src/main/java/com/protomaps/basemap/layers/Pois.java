@@ -14,7 +14,7 @@ import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class Pois implements ForwardingProfile.LayerPostProcesser {
+public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   private QrankDb qrankDb;
 
@@ -22,9 +22,11 @@ public class Pois implements ForwardingProfile.LayerPostProcesser {
     this.qrankDb = qrankDb;
   }
 
+  public static final String LAYER_NAME = "pois";
+
   @Override
   public String name() {
-    return "pois";
+    return LAYER_NAME;
   }
 
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =

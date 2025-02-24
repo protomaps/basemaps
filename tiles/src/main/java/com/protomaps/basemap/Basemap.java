@@ -32,56 +32,56 @@ public class Basemap extends ForwardingProfile {
   public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
     String renderOnly) {
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Boundaries")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Boundaries.LAYER_NAME)) {
       var admin = new Boundaries();
       registerHandler(admin);
       registerSourceHandler("osm", admin::processOsm);
       registerSourceHandler("ne", admin::processNe);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Buildings")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Buildings.LAYER_NAME)) {
       var buildings = new Buildings();
       registerHandler(buildings);
       registerSourceHandler("osm", buildings::processOsm);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Landuse")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Landuse.LAYER_NAME)) {
       var landuse = new Landuse();
       registerHandler(landuse);
       registerSourceHandler("osm", landuse::processOsm);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Landcover")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Landcover.LAYER_NAME)) {
       var landcover = new Landcover();
       registerHandler(landcover);
       registerSourceHandler("landcover", landcover::processLandcover);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Places")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Places.LAYER_NAME)) {
       var place = new Places(naturalEarthDb);
       registerHandler(place);
       registerSourceHandler("osm", place::processOsm);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Pois")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Pois.LAYER_NAME)) {
       var poi = new Pois(qrankDb);
       registerHandler(poi);
       registerSourceHandler("osm", poi::processOsm);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Roads")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Roads.LAYER_NAME)) {
       var roads = new Roads(countryCoder);
       registerHandler(roads);
       registerSourceHandler("osm", roads::processOsm);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Transit")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Transit.LAYER_NAME)) {
       var transit = new Transit();
       registerHandler(transit);
       registerSourceHandler("osm", transit::processOsm);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Water")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Water.LAYER_NAME)) {
       var water = new Water();
       registerHandler(water);
       registerSourceHandler("osm", water::processOsm);
@@ -89,7 +89,7 @@ public class Basemap extends ForwardingProfile {
       registerSourceHandler("ne", water::processNe);
     }
 
-    if (renderOnly.isEmpty() || renderOnly.equals("Earth")) {
+    if (renderOnly.isEmpty() || renderOnly.equals(Earth.LAYER_NAME)) {
       var earth = new Earth();
       registerHandler(earth);
 
@@ -195,21 +195,22 @@ public class Basemap extends ForwardingProfile {
     }
 
     List<String> renderOnlyOptions = List.of(
-      "Boundaries",
-      "Buildings",
-      "Landuse",
-      "Landcover",
-      "Places",
-      "Pois",
-      "Roads",
-      "Transit",
-      "Water",
-      "Earth"
+      Boundaries.LAYER_NAME,
+      Buildings.LAYER_NAME,
+      Landuse.LAYER_NAME,
+      Landcover.LAYER_NAME,
+      Places.LAYER_NAME,
+      Pois.LAYER_NAME,
+      Roads.LAYER_NAME,
+      Transit.LAYER_NAME,
+      Water.LAYER_NAME,
+      Earth.LAYER_NAME
     );
+
     String renderOnly = args.getString("render_only",
       "Render only a single layer. Possible values are: " + String.join(", ", renderOnlyOptions), "");
     if (!(renderOnly.isEmpty() || renderOnlyOptions.contains(renderOnly))) {
-      System.err.println("Error: --render_only=\"" + renderOnly + "\" is not a valid option. Possible values are: " +
+      System.err.println("Error: --render_only=" + renderOnly + " is not a valid option. Possible values are: " +
         String.join(", ", renderOnlyOptions));
       System.exit(1);
     }
