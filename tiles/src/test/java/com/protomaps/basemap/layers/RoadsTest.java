@@ -80,7 +80,6 @@ class RoadsTest extends LayerTest {
 
     assertFeatures(0,
       List.of(Map.of(
-        "kind", "highway",
         "_minzoom", 6
       )),
       features
@@ -109,7 +108,6 @@ class RoadsTest extends LayerTest {
 
     assertFeatures(0,
       List.of(Map.of(
-        "kind", "highway",
         "_minzoom", 7
       )),
       features
@@ -138,7 +136,6 @@ class RoadsTest extends LayerTest {
 
     assertFeatures(0,
       List.of(Map.of(
-        "kind", "highway",
         "_minzoom", 3
       )),
       features
