@@ -29,7 +29,8 @@ import java.util.Map;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip, String renderOnly) {
+  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
+    String renderOnly) {
 
     if (renderOnly.isEmpty() || renderOnly.equals("Boundaries")) {
       var admin = new Boundaries();
@@ -91,7 +92,7 @@ public class Basemap extends ForwardingProfile {
     if (renderOnly.isEmpty() || renderOnly.equals("Earth")) {
       var earth = new Earth();
       registerHandler(earth);
-  
+
       registerSourceHandler("osm", earth::processOsm);
       registerSourceHandler("osm_land", earth::processPreparedOsm);
       registerSourceHandler("ne", earth::processNe);
@@ -194,20 +195,22 @@ public class Basemap extends ForwardingProfile {
     }
 
     List<String> renderOnlyOptions = List.of(
-      "Boundaries", 
-      "Buildings", 
-      "Landuse", 
-      "Landcover", 
-      "Places", 
-      "Pois", 
-      "Roads", 
-      "Transit", 
-      "Water", 
+      "Boundaries",
+      "Buildings",
+      "Landuse",
+      "Landcover",
+      "Places",
+      "Pois",
+      "Roads",
+      "Transit",
+      "Water",
       "Earth"
     );
-    String renderOnly = args.getString("render_only", "Render only a single layer. Possible values are: " + String.join(", ", renderOnlyOptions), "");
+    String renderOnly = args.getString("render_only",
+      "Render only a single layer. Possible values are: " + String.join(", ", renderOnlyOptions), "");
     if (!(renderOnly.isEmpty() || renderOnlyOptions.contains(renderOnly))) {
-      System.err.println("Error: --render_only=\"" + renderOnly + "\" is not a valid option. Possible values are: " + String.join(", ", renderOnlyOptions));
+      System.err.println("Error: --render_only=\"" + renderOnly + "\" is not a valid option. Possible values are: " +
+        String.join(", ", renderOnlyOptions));
       System.exit(1);
     }
 
