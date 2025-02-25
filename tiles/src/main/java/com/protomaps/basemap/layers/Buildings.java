@@ -102,14 +102,14 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
     }
 
     if (sf.hasTag("addr:housenumber")) {
-      FeatureCollector.Feature feature = null;
+      FeatureCollector.Feature housenumberFeature = null;
       if (sf.isPoint()) {
-        feature = features.point(this.name());
+        housenumberFeature = features.point(this.name());
       } else if (sf.canBePolygon()) {
-        feature = features.centroid(this.name());
+        housenumberFeature = features.centroid(this.name());
       }
-      if (feature != null) {
-        feature
+      if (housenumberFeature != null) {
+        housenumberFeature
           .setId(FeatureId.create(sf))
           .setAttr("addr_housenumber", sf.getString("addr:housenumber"))
           .setAttr("addr_street", sf.getString("addr:street"))
