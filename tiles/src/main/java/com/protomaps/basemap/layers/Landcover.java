@@ -9,7 +9,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 import java.util.Map;
 
-public class Landcover implements ForwardingProfile.LayerPostProcesser {
+public class Landcover implements ForwardingProfile.LayerPostProcessor {
 
   static final Map<String, String> kindMapping = Map.of("urban", "urban_area", "crop", "farmland", "grass", "grassland",
     "trees", "forest", "snow", "glacier", "shrub", "scrub");
@@ -32,9 +32,11 @@ public class Landcover implements ForwardingProfile.LayerPostProcesser {
       .setMinPixelSize(0.0);
   }
 
+  public static final String LAYER_NAME = "landcover";
+
   @Override
   public String name() {
-    return "landcover";
+    return LAYER_NAME;
   }
 
   @Override

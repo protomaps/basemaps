@@ -13,14 +13,16 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-public class Water implements ForwardingProfile.LayerPostProcesser {
+public class Water implements ForwardingProfile.LayerPostProcessor {
 
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
+  public static final String LAYER_NAME = "water";
+
   @Override
   public String name() {
-    return "water";
+    return LAYER_NAME;
   }
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Places implements ForwardingProfile.LayerPostProcesser {
+public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private NaturalEarthDb naturalEarthDb;
 
@@ -23,9 +23,11 @@ public class Places implements ForwardingProfile.LayerPostProcesser {
     this.naturalEarthDb = naturalEarthDb;
   }
 
+  public static final String LAYER_NAME = "places";
+
   @Override
   public String name() {
-    return "places";
+    return LAYER_NAME;
   }
 
   private final AtomicInteger placeNumber = new AtomicInteger(0);

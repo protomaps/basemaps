@@ -25,11 +25,11 @@ abstract class LayerTest {
     List.of(new NaturalEarthDb.NeAdmin1StateProvince("California", "US-CA", "Q2", 5.0, 8.0)),
     List.of(new NaturalEarthDb.NePopulatedPlace("San Francisco", "Q3", 9.0, 2))
   );
+
   final CountryCoder countryCoder = CountryCoder.fromJsonString(
     "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"US\",\"nameEn\":\"United States\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-124,47],[-124,25],[-71,25],[-71,47],[-124,47]]]]}}]}");
 
-  // US [-124,47],[-124,25],[-71,25],[-71,47],[-124,47]
-  final Basemap profile = new Basemap(naturalEarthDb, null, countryCoder, null);
+  final Basemap profile = new Basemap(naturalEarthDb, null, countryCoder, null, "");
 
   static void assertFeatures(int zoom, List<Map<String, Object>> expected, Iterable<FeatureCollector.Feature> actual) {
     var expectedList = expected.stream().toList();

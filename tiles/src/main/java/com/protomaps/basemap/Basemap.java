@@ -29,53 +29,74 @@ import java.util.Map;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip) {
+  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
+    String layer) {
 
-    var admin = new Boundaries();
-    registerHandler(admin);
-    registerSourceHandler("osm", admin::processOsm);
-    registerSourceHandler("ne", admin::processNe);
+    if (layer.isEmpty() || layer.equals(Boundaries.LAYER_NAME)) {
+      var admin = new Boundaries();
+      registerHandler(admin);
+      registerSourceHandler("osm", admin::processOsm);
+      registerSourceHandler("ne", admin::processNe);
+    }
 
-    var buildings = new Buildings();
-    registerHandler(buildings);
-    registerSourceHandler("osm", buildings::processOsm);
+    if (layer.isEmpty() || layer.equals(Buildings.LAYER_NAME)) {
+      var buildings = new Buildings();
+      registerHandler(buildings);
+      registerSourceHandler("osm", buildings::processOsm);
+    }
 
-    var landuse = new Landuse();
-    registerHandler(landuse);
-    registerSourceHandler("osm", landuse::processOsm);
+    if (layer.isEmpty() || layer.equals(Landuse.LAYER_NAME)) {
+      var landuse = new Landuse();
+      registerHandler(landuse);
+      registerSourceHandler("osm", landuse::processOsm);
+    }
 
-    var landcover = new Landcover();
-    registerHandler(landcover);
-    registerSourceHandler("landcover", landcover::processLandcover);
+    if (layer.isEmpty() || layer.equals(Landcover.LAYER_NAME)) {
+      var landcover = new Landcover();
+      registerHandler(landcover);
+      registerSourceHandler("landcover", landcover::processLandcover);
+    }
 
-    var place = new Places(naturalEarthDb);
-    registerHandler(place);
-    registerSourceHandler("osm", place::processOsm);
+    if (layer.isEmpty() || layer.equals(Places.LAYER_NAME)) {
+      var place = new Places(naturalEarthDb);
+      registerHandler(place);
+      registerSourceHandler("osm", place::processOsm);
+    }
 
-    var poi = new Pois(qrankDb);
-    registerHandler(poi);
-    registerSourceHandler("osm", poi::processOsm);
+    if (layer.isEmpty() || layer.equals(Pois.LAYER_NAME)) {
+      var poi = new Pois(qrankDb);
+      registerHandler(poi);
+      registerSourceHandler("osm", poi::processOsm);
+    }
 
-    var roads = new Roads(countryCoder);
-    registerHandler(roads);
-    registerSourceHandler("osm", roads::processOsm);
+    if (layer.isEmpty() || layer.equals(Roads.LAYER_NAME)) {
+      var roads = new Roads(countryCoder);
+      registerHandler(roads);
+      registerSourceHandler("osm", roads::processOsm);
+    }
 
-    var transit = new Transit();
-    registerHandler(transit);
-    registerSourceHandler("osm", transit::processOsm);
+    if (layer.isEmpty() || layer.equals(Transit.LAYER_NAME)) {
+      var transit = new Transit();
+      registerHandler(transit);
+      registerSourceHandler("osm", transit::processOsm);
+    }
 
-    var water = new Water();
-    registerHandler(water);
-    registerSourceHandler("osm", water::processOsm);
-    registerSourceHandler("osm_water", water::processPreparedOsm);
-    registerSourceHandler("ne", water::processNe);
+    if (layer.isEmpty() || layer.equals(Water.LAYER_NAME)) {
+      var water = new Water();
+      registerHandler(water);
+      registerSourceHandler("osm", water::processOsm);
+      registerSourceHandler("osm_water", water::processPreparedOsm);
+      registerSourceHandler("ne", water::processNe);
+    }
 
-    var earth = new Earth();
-    registerHandler(earth);
+    if (layer.isEmpty() || layer.equals(Earth.LAYER_NAME)) {
+      var earth = new Earth();
+      registerHandler(earth);
 
-    registerSourceHandler("osm", earth::processOsm);
-    registerSourceHandler("osm_land", earth::processPreparedOsm);
-    registerSourceHandler("ne", earth::processNe);
+      registerSourceHandler("osm", earth::processOsm);
+      registerSourceHandler("osm_land", earth::processPreparedOsm);
+      registerSourceHandler("ne", earth::processNe);
+    }
 
     if (clip != null) {
       registerHandler(clip);
@@ -173,9 +194,30 @@ public class Basemap extends ForwardingProfile {
           Paths.get(clipArg));
     }
 
+    List<String> availableLayers = List.of(
+      Boundaries.LAYER_NAME,
+      Buildings.LAYER_NAME,
+      Landuse.LAYER_NAME,
+      Landcover.LAYER_NAME,
+      Places.LAYER_NAME,
+      Pois.LAYER_NAME,
+      Roads.LAYER_NAME,
+      Transit.LAYER_NAME,
+      Water.LAYER_NAME,
+      Earth.LAYER_NAME
+    );
+
+    String layer = args.getString("layer",
+      "Process only a single layer. Possible values are: " + String.join(", ", availableLayers), "");
+    if (!(layer.isEmpty() || availableLayers.contains(layer))) {
+      System.err.println("Error: --layer=" + layer + " is not a valid option. Possible values are: " +
+        String.join(", ", availableLayers));
+      System.exit(1);
+    }
+
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
-    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, countryCoder, clip))
+    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, countryCoder, clip, layer))
       .setOutput(Path.of(area + ".pmtiles"))
       .run();
   }

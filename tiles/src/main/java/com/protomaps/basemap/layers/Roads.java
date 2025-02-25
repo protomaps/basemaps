@@ -25,9 +25,11 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     this.countryCoder = countryCoder;
   }
 
+  public static final String LAYER_NAME = "roads";
+
   @Override
   public String name() {
-    return "roads";
+    return LAYER_NAME;
   }
 
   // Hardcoded to US for now

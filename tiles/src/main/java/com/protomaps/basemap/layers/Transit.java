@@ -6,11 +6,13 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.List;
 
-public class Transit implements ForwardingProfile.LayerPostProcesser {
+public class Transit implements ForwardingProfile.LayerPostProcessor {
+
+  public static final String LAYER_NAME = "transit";
 
   @Override
   public String name() {
-    return "transit";
+    return LAYER_NAME;
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {}
