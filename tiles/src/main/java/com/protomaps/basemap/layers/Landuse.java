@@ -62,11 +62,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       use("kind", fromTag("military"))
     ),
     entry(
-      with("leisure", "garden", "dog_park", "pitch", "nature_reserve"),
-      use("kind", "other")
-    ),
-    entry(
-      with("leisure", "golf_course", "marina", "park", "stadium", "playground"),
+      with("leisure", "golf_course", "marina", "park", "stadium", "playground", "garden", "dog_park", "pitch", "nature_reserve"),
       use("kind", fromTag("leisure"))
     ),
     entry(
