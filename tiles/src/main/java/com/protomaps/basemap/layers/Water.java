@@ -25,6 +25,7 @@ public class Water implements ForwardingProfile.LayerPostProcesser {
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
     features.polygon(this.name())
+      .setId(0)
       .setAttr("kind", "ocean")
       .setAttr("sort_rank", 200)
       .setZoomRange(6, 15).setBufferPixels(8);
