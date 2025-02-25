@@ -1,3 +1,7 @@
+Tiles 4.4.1
+------
+Make FeatureID=0 consistent for preprocessed OSM land/water [#394]
+
 Tiles 4.4.0
 ------
 - Improve the appearance of broken roads at zooms 0-6 by using relations [#386]

@@ -10,6 +10,19 @@ import org.junit.jupiter.api.Test;
 
 class WaterTest extends LayerTest {
   @Test
+  void preparedOsm() {
+    assertFeatures(15,
+      List.of(Map.of("_id", 0L, "kind", "ocean")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of()),
+        "osm_water",
+        null,
+        1
+      )));
+  }
+
+  @Test
   void simple() {
     assertFeatures(15,
       List.of(Map.of("kind", "swimming_pool")),
