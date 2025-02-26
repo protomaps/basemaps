@@ -11,7 +11,7 @@ import java.util.Map;
 public class Matcher {
   public record Use(String key, Object value) {}
 
-  public static MultiExpression.Entry<Map<String, Object>> entry(Object... arguments) {
+  public static MultiExpression.Entry<Map<String, Object>> rule(Object... arguments) {
     Map<String, Object> result = new HashMap<>();
     List<Expression> conditions = new ArrayList<>();
     for (Object argument : arguments) {

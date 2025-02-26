@@ -1,6 +1,6 @@
 package com.protomaps.basemap.layers;
 
-import static com.protomaps.basemap.feature.Matcher.entry;
+import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.use;
@@ -23,119 +23,119 @@ import java.util.Map;
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
-    entry(
+    rule(
       with("area:aeroway", "taxiway", "runway"),
       use("kind", "other")
     ),
-    entry(
+    rule(
       with("aeroway", "aerodrome", "runway"),
       use("kind", fromTag("aeroway"))
     ),
-    entry(
+    rule(
       with("amenity", "hospital", "school", "kindergarten", "university", "college", "library", "post_office",
         "townhall", "cafe"),
       use("kind", fromTag("amenity"))
     ),
-    entry(
+    rule(
       with("boundary", "national_park", "protected_area"),
       use("kind", fromTag("boundary"))
     ),
-    entry(
+    rule(
       with("landuse", "recreation_ground", "railway", "commercial", "grass", "forest", "meadow", "grass"),
       use("kind", "other")
     ),
-    entry(
+    rule(
       with("landuse", "cemetery", "residential", "village_green", "allotments", "military"),
       use("kind", fromTag("landuse"))
     ),
-    entry(
+    rule(
       with("landuse", "orchard", "farmland", "farmyard"),
       use("kind", "farmland")
     ),
-    entry(
+    rule(
       with("landuse", "industrial", "brownfield"),
       use("kind", "industrial")
     ),
-    entry(
+    rule(
       with("landuse", "military"),
       with("military", "naval_base", "airfield"),
       use("kind", fromTag("military"))
     ),
-    entry(
+    rule(
       with("leisure", "golf_course", "marina", "park", "stadium", "playground", "garden", "dog_park", "pitch", "nature_reserve"),
       use("kind", fromTag("leisure"))
     ),
-    entry(
+    rule(
       with("man_made", "bridge"),
       use("kind", "pedestrian")
     ),
-    entry(
+    rule(
       with("man_made", "pier"),
       use("kind", "pier")
     ),
-    entry(
+    rule(
       with("natural", "beach", "wood", "glacier", "grass", "scrub", "sand", "wetland", "bare_rock"),
       use("kind", fromTag("natural"))
     ),
-    entry(
+    rule(
       with("place", "neighbourhood"),
       use("kind", "other")
     ),
-    entry(
+    rule(
       with("railway", "platform"),
       use("kind", "platform")
     ),
-    entry(
+    rule(
       with("tourism", "zoo"),
       use("kind", "other")
     ),
-    entry(
+    rule(
       with("tourism", "attraction", "camp_site", "hotel"),
       use("kind", fromTag("tourism"))
     ),
-    entry(
+    rule(
       with("area", "yes"),
       with("highway", "pedestrian", "footway"),
       use("kind", "pedestrian")
     ),
-    entry(
+    rule(
       with("shop", "grocery", "supermarket"),
       use("kind", fromTag("shop"))
     ),
-    entry(
+    rule(
       with("boundary", "national_park"),
       with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
         "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
         "United State Forest Service", "U.S. National Forest Service"),
       use("kind", "forest")
     ),
-    entry(
+    rule(
       with("boundary", "national_park"),
       with("protect_class", "6"),
       with("protection_title", "National Forest"),
       use("kind", "forest")
     ),
-    entry(
+    rule(
       with("landuse", "forest"),
       with("protect_class", "6"),
       use("kind", "forest")
     ),
-    entry(
+    rule(
       with("landuse", "forest"),
       with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
         "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
         "United State Forest Service", "U.S. National Forest Service"),
       use("kind", "forest")
     ),
-    entry(
+    rule(
       with("landuse", "forest"),
       use("kind", "forest")
     ),
-    entry(
+    rule(
       with("boundary", "national_park"),
       use("kind", "park")
     ),
-    entry(
+    rule(
       with("boundary", "protected_area"),
       with("protect_class", "6"),
       with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
@@ -143,7 +143,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
         "United State Forest Service", "U.S. National Forest Service"),
       use("kind", "forest")
     ),
-    entry(
+    rule(
       without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
         "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
         "United State Forest Service", "U.S. National Forest Service"),
@@ -155,7 +155,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       with("protect_class", "2", "3"),
       use("kind", "national_park")
     ),
-    entry(
+    rule(
       without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
         "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
         "United State Forest Service", "U.S. National Forest Service"),
@@ -168,7 +168,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
         "US National Park Service", "U.S. National Park Service", "US National Park service"),
       use("kind", "national_park")
     ),
-    entry(
+    rule(
       without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
         "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
         "United State Forest Service", "U.S. National Forest Service"),
@@ -180,7 +180,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       with("operator:en", "Parks Canada"),
       use("kind", "national_park")
     ),
-    entry(
+    rule(
       without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
         "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
         "United State Forest Service", "U.S. National Forest Service"),
@@ -192,7 +192,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       with("designation", "national_park"),
       use("kind", "national_park")
     ),
-    entry(
+    rule(
       without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
         "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
         "United State Forest Service", "U.S. National Forest Service"),
