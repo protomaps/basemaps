@@ -280,14 +280,6 @@ class LanduseTest extends LayerTest {
   }
 
   @Test
-  void testRemappingToPark() {
-    assertFeatures(15,
-      List.of(Map.of("kind", "park")),
-      processWith("boundary", "national_park")
-    );
-  }
-
-  @Test
   void testRemappingToIndustrial() {
     assertFeatures(15,
       List.of(Map.of("kind", "industrial")),
@@ -337,6 +329,186 @@ class LanduseTest extends LayerTest {
     assertFeatures(15,
       List.of(Map.of("kind", "other")),
       processWith("place", "neighbourhood")
+    );
+  }
+
+  @Test
+  void testRemappingToPark() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "operator", "United States Forest Service",
+        "protect_class", "2")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "operator", "United States Forest Service",
+        "operator:en", "Parks Canada")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "operator", "United States Forest Service",
+        "designation", "national_park")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "operator", "United States Forest Service",
+        "protection_title", "National Park")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "protection_title", "Conservation Area",
+        "protect_class", "2")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "protection_title", "Conservation Area",
+        "operator:en", "Parks Canada")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "protection_title", "Conservation Area",
+        "designation", "national_park")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park",
+        "protection_title", "Conservation Area",
+        "operator", "United States National Park Service")
+    );
+  }
+
+  @Test
+  void testRemappingToForest() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "United States Forest Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "US Forest Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "U.S. Forest Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "USDA Forest Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "United States Department of Agriculture")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "US National Forest Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "United State Forest Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("boundary", "protected_area",
+        "protect_class", "6",
+        "operator", "U.S. National Forest Service")
+    );
+  }
+
+  @Test
+  void testNationalPark() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "protect_class", "2")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "protect_class", "3")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "operator", "United States National Park Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "operator", "National Park Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "operator", "U.S. National Park Service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "operator", "US National Park service")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "operator:en", "Parks Canada")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "designation", "national_park")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park")),
+      processWith("boundary", "national_park",
+        "protection_title", "National Park")
     );
   }
 }

@@ -100,50 +100,108 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
         }
       }
 
+
+
       // National forests
       if (sf.hasTag("boundary", "national_park") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
+        sf.hasTag("operator", 
+          "United States Forest Service", //
+          "US Forest Service", //
+          "U.S. Forest Service", //
+          "USDA Forest Service", //
+          "United States Department of Agriculture", //
+          "US National Forest Service", //
+          "United State Forest Service", //
+          "U.S. National Forest Service" //
+      )) {
+        kind = "forest"; //
       } else if (sf.hasTag("boundary", "national_park") &&
         sf.hasTag("protect_class", "6") &&
         sf.hasTag("protection_title", "National Forest")) {
-        kind = "forest";
+        kind = "forest"; //
       } else if (sf.hasTag("landuse", "forest") &&
         sf.hasTag("protect_class", "6")) {
-        kind = "forest";
+        kind = "forest"; //
       } else if (sf.hasTag("landuse", "forest") &&
         sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
           "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
           "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
+        kind = "forest"; //
       } else if (sf.hasTag("landuse", "forest")) {
-        kind = "forest";
+        kind = "forest"; //
       } else if (sf.hasTag("boundary", "protected_area") &&
         sf.hasTag("protect_class", "6") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
+        sf.hasTag("operator", 
+          "United States Forest Service", // 
+          "US Forest Service",  //
+          "U.S. Forest Service", //
+          "USDA Forest Service", //
+          "United States Department of Agriculture", //
+          "US National Forest Service", //
+          "United State Forest Service", //
+          "U.S. National Forest Service" //
+        )) {
         kind = "forest";
       }
 
       // National parks
       if (sf.hasTag("boundary", "national_park")) {
-        if (!(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service") ||
-          sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-            "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-            "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-            "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-            "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")) &&
-          (sf.hasTag("protect_class", "2", "3") ||
-            sf.hasTag("operator", "United States National Park Service", "National Park Service",
-              "US National Park Service", "U.S. National Park Service", "US National Park service") ||
-            sf.hasTag("operator:en", "Parks Canada") ||
-            sf.hasTag("designation", "national_park") ||
-            sf.hasTag("protection_title", "National Park"))) {
+        if (!
+          (
+            sf.hasTag("operator", 
+              "United States Forest Service", 
+              "US Forest Service", 
+              "U.S. Forest Service",
+              "USDA Forest Service", 
+              "United States Department of Agriculture", 
+              "US National Forest Service",
+              "United State Forest Service", 
+              "U.S. National Forest Service"
+            ) ||
+            sf.hasTag("protection_title", 
+              "Conservation Area", 
+              "Conservation Park", 
+              "Environmental use", 
+              "Forest Reserve",
+              "National Forest", 
+              "National Wildlife Refuge", 
+              "Nature Refuge", 
+              "Nature Reserve", 
+              "Protected Site",
+              "Provincial Park", 
+              "Public Access Land",
+              "Regional Reserve", 
+              "Resources Reserve", 
+              "State Forest",
+              "State Game Land", 
+              "State Park", 
+              "Watershed Recreation Unit", 
+              "Wild Forest", 
+              "Wilderness Area",
+              "Wilderness Study Area", 
+              "Wildlife Management", 
+              "Wildlife Management Area", 
+              "Wildlife Sanctuary"
+            )
+          ) 
+          &&
+          (
+            sf.hasTag("protect_class", 
+              "2", //
+              "3"//
+            ) ||
+            sf.hasTag("operator", 
+              "United States National Park Service", //
+              "National Park Service", //
+              "US National Park Service", //
+              "U.S. National Park Service", //
+              "US National Park service" //
+            ) ||
+            sf.hasTag("operator:en", "Parks Canada") || //
+            sf.hasTag("designation", "national_park") || //
+            sf.hasTag("protection_title", "National Park") //
+          )
+        ) {
           kind = "national_park";
         } else {
           kind = "park";
