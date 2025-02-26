@@ -22,53 +22,37 @@ import java.util.Map;
 
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
+  private static final List<String> US_FOREST_OPERATORS = List.of("operator", "United States Forest Service",
+    "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
+    "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
+  private static final List<String> PROTECTION_TITLES =
+    List.of("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
+      "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
+      "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
+      "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
+      "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary");
+
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
-    rule(
-      with("area:aeroway", "taxiway", "runway"),
-      use("kind", "other")
-    ),
     rule(
       with("aeroway", "aerodrome", "runway"),
       use("kind", fromTag("aeroway"))
     ),
     rule(
-      with("amenity", "hospital", "school", "kindergarten", "university", "college", "library", "post_office",
-        "townhall", "cafe"),
+      with("amenity", "hospital", "school", "kindergarten", "university", "college"),
       use("kind", fromTag("amenity"))
     ),
     rule(
-      with("boundary", "national_park", "protected_area"),
-      use("kind", fromTag("boundary"))
+      with("boundary", "protected_area"),
+      use("kind", "protected_area")
     ),
     rule(
-      with("landuse", "recreation_ground", "railway", "commercial", "grass", "forest", "meadow", "grass"),
-      use("kind", "other")
-    ),
-    rule(
-      with("landuse", "cemetery", "residential", "village_green", "allotments", "military"),
+      with("landuse", "recreation_ground", "industrial", "railway", "cemetery", "commercial", "grass", "farmland",
+        "residential", "military", "village_green", "allotments", "forest", "meadow", "grass"),
       use("kind", fromTag("landuse"))
     ),
     rule(
-      with("landuse", "orchard", "farmland", "farmyard"),
-      use("kind", "farmland")
-    ),
-    rule(
-      with("landuse", "industrial", "brownfield"),
-      use("kind", "industrial")
-    ),
-    rule(
-      with("landuse", "military"),
-      with("military", "naval_base", "airfield"),
-      use("kind", fromTag("military"))
-    ),
-    rule(
-      with("leisure", "golf_course", "marina", "park", "stadium", "playground", "garden", "dog_park", "pitch",
-        "nature_reserve"),
+      with("leisure", "park", "garden", "golf_course", "dog_park", "playground", "pitch", "nature_reserve"),
       use("kind", fromTag("leisure"))
-    ),
-    rule(
-      with("man_made", "bridge"),
-      use("kind", "pedestrian")
     ),
     rule(
       with("man_made", "pier"),
@@ -79,8 +63,9 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       use("kind", fromTag("natural"))
     ),
     rule(
-      with("place", "neighbourhood"),
-      use("kind", "other")
+      with("highway", "pedestrian", "footway"),
+      with("area", "yes"),
+      use("kind", "pedestrian")
     ),
     rule(
       with("railway", "platform"),
@@ -88,48 +73,37 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("tourism", "zoo"),
-      use("kind", "other")
+      use("kind", "zoo")
     ),
     rule(
-      with("tourism", "attraction", "camp_site", "hotel"),
-      use("kind", fromTag("tourism"))
+      with("landuse", "military"),
+      with("military", "airfield", "naval_base"),
+      use("kind", fromTag("military"))
     ),
     rule(
-      with("area", "yes"),
-      with("highway", "pedestrian", "footway"),
+      with("landuse", "brownfield"),
+      use("kind", "industrial")
+    ),
+    rule(
+      with("landuse", "farmyard", "orchard"),
+      use("kind", "farmland")
+    ),
+    rule(
+      with("man_made", "bridge"),
       use("kind", "pedestrian")
     ),
     rule(
-      with("shop", "grocery", "supermarket"),
-      use("kind", fromTag("shop"))
+      with("area:aeroway", "taxiway", "runway"),
+      use("kind", "other")
     ),
     rule(
-      with("boundary", "national_park"),
-      with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      use("kind", "forest")
+      with("place", "neighbourhood"),
+      use("kind", "other")
     ),
     rule(
-      with("boundary", "national_park"),
+      with("boundary", "protected_area"),
       with("protect_class", "6"),
-      with("protection_title", "National Forest"),
-      use("kind", "forest")
-    ),
-    rule(
-      with("landuse", "forest"),
-      with("protect_class", "6"),
-      use("kind", "forest")
-    ),
-    rule(
-      with("landuse", "forest"),
-      with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      use("kind", "forest")
-    ),
-    rule(
-      with("landuse", "forest"),
+      with(US_FOREST_OPERATORS.toArray(String[]::new)),
       use("kind", "forest")
     ),
     rule(
@@ -137,71 +111,38 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       use("kind", "park")
     ),
     rule(
-      with("boundary", "protected_area"),
-      with("protect_class", "6"),
-      with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      use("kind", "forest")
-    ),
-    rule(
-      without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-        "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-        "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-        "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-        "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary"),
+      with("boundary", "national_park"),
+      without(US_FOREST_OPERATORS.toArray(String[]::new)),
+      without(PROTECTION_TITLES.toArray(String[]::new)),
       with("protect_class", "2", "3"),
       use("kind", "national_park")
     ),
     rule(
-      without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-        "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-        "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-        "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-        "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary"),
-      with("operator", "United States National Park Service", "National Park Service",
-        "US National Park Service", "U.S. National Park Service", "US National Park service"),
+      with("boundary", "national_park"),
+      without(US_FOREST_OPERATORS.toArray(String[]::new)),
+      without(PROTECTION_TITLES.toArray(String[]::new)),
+      with("operator", "United States National Park Service", "National Park Service", "US National Park Service",
+        "U.S. National Park Service", "US National Park service"),
       use("kind", "national_park")
     ),
     rule(
-      without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-        "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-        "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-        "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-        "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary"),
+      with("boundary", "national_park"),
+      without(US_FOREST_OPERATORS.toArray(String[]::new)),
+      without(PROTECTION_TITLES.toArray(String[]::new)),
       with("operator:en", "Parks Canada"),
       use("kind", "national_park")
     ),
     rule(
-      without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-        "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-        "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-        "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-        "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary"),
+      with("boundary", "national_park"),
+      without(US_FOREST_OPERATORS.toArray(String[]::new)),
+      without(PROTECTION_TITLES.toArray(String[]::new)),
       with("designation", "national_park"),
       use("kind", "national_park")
     ),
     rule(
-      without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-        "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-        "United State Forest Service", "U.S. National Forest Service"),
-      without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-        "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-        "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-        "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-        "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary"),
+      with("boundary", "national_park"),
+      without(US_FOREST_OPERATORS.toArray(String[]::new)),
+      without(PROTECTION_TITLES.toArray(String[]::new)),
       with("protection_title", "National Park"),
       use("kind", "national_park")
     )
