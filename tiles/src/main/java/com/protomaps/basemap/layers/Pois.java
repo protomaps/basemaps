@@ -1,17 +1,10 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
-import static com.protomaps.basemap.feature.Matcher.entry;
-import static com.protomaps.basemap.feature.Matcher.fromTag;
-import static com.protomaps.basemap.feature.Matcher.getString;
-import static com.protomaps.basemap.feature.Matcher.use;
-import static com.protomaps.basemap.feature.Matcher.with;
-import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
-import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
@@ -20,7 +13,6 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
-import java.util.Map;
 
 public class Pois implements ForwardingProfile.LayerPostProcessor {
 
@@ -41,82 +33,15 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
   private static final double LOG2 = Math.log(2);
 
-  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
-    entry(
-      with("aeroway", "aerodrome"),
-      use("kind", "aerodrome"),
-      use("kindDetail", ""),
-      use("minZoom", 13)
-    ),
-    entry(
-      with("aeroway", "aerodrome"),
-      with("iata"),
-      use("minZoom", 11)
-    ),
-    entry(
-      with("aeroway", "aerodrome"),
-      with("aerodrome"),
-      use("kindDetail", fromTag("aerodrome"))
-    ),
-    entry(
-      with("amenity"),
-      use("kind", "other"),
-      use("kindDetail", ""),
-      use("minZoom", 15)
-    ),
-    entry(
-      with("amenity", "hospital"),
-      use("kind", "hospital"),
-      use("minZoom", 12)
-    ),
-    entry(
-      with("amenity", "library", "post_office", "townhall"),
-      use("kind", fromTag("amenity")),
-      use("minZoom", 13)
-    ),
-    entry(
-      with("amenity", "university", "college"),
-      use("kind", fromTag("amenity")),
-      use("minZoom", 14)
-    ),
-    entry(
-      with("amenity", "school", "cafe"),
-      use("kind", fromTag("amenity"))
-    ),
-    entry(
-      with("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
-        "village_green", "allotments"),
-      use("kind", "other"),
-      use("kindDetail", ""),
-      use("minZoom", 15)
-    ),
-    entry(
-      with("landuse", "cemetery"),
-      use("kind", "cemetery"),
-      use("minZoom", 14)
-    ),
-    entry(
-      with("landuse", "military"),
-      use("kind", "military")
-    ),
-    entry(
-      with("landuse", "military"),
-      with("military", "naval_base", "airfield")
-      use("kind", fromTag("military"))
-    )
-
-  )).index();
-
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    if ((sf.isPoint() || sf.canBePolygon()) && (
-      // sf.hasTag("aeroway", "aerodrome") ||
-      // sf.hasTag("amenity") ||
+    if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
+      sf.hasTag("amenity") ||
       sf.hasTag("attraction") ||
       sf.hasTag("boundary", "national_park", "protected_area") ||
       sf.hasTag("craft") ||
       sf.hasTag("historic") ||
-      // sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
-      //   "village_green", "allotments") ||
+      sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
+        "village_green", "allotments") ||
       sf.hasTag("leisure") ||
       sf.hasTag("natural", "beach", "peak") ||
       sf.hasTag("railway", "station") ||
@@ -134,34 +59,34 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       }
 
       if (sf.hasTag("aeroway", "aerodrome")) {
-        // kind = sf.getString("aeroway");
-        // minZoom = 13;
+        kind = sf.getString("aeroway");
+        minZoom = 13;
 
-        // // Emphasize large international airports earlier
-        // if (kind.equals("aerodrome") && sf.hasTag("iata")) {
-        //   minZoom -= 2;
-        // }
+        // Emphasize large international airports earlier
+        if (kind.equals("aerodrome") && sf.hasTag("iata")) {
+          minZoom -= 2;
+        }
 
-        // if (sf.hasTag("aerodrome")) {
-        //   kindDetail = sf.getString("aerodrome");
-        // }
+        if (sf.hasTag("aerodrome")) {
+          kindDetail = sf.getString("aerodrome");
+        }
       } else if (sf.hasTag("amenity", "university", "college")) {
-        // kind = sf.getString("amenity");
-        // // One would think University should be earlier, but there are lots of dinky node only places
-        // // So if the university has a large area, it'll naturally improve it's zoom in the next section...
-        // minZoom = 14;
+        kind = sf.getString("amenity");
+        // One would think University should be earlier, but there are lots of dinky node only places
+        // So if the university has a large area, it'll naturally improve it's zoom in the next section...
+        minZoom = 14;
       } else if (sf.hasTag("amenity", "hospital")) {
-        // kind = sf.getString("amenity");
-        // minZoom = 12;
+        kind = sf.getString("amenity");
+        minZoom = 12;
       } else if (sf.hasTag("amenity", "library", "post_office", "townhall")) {
-        // kind = sf.getString("amenity");
-        // minZoom = 13;
+        kind = sf.getString("amenity");
+        minZoom = 13;
       } else if (sf.hasTag("amenity", "school")) {
-      //   // kind = sf.getString("amenity");
-      //   // minZoom = 15;
-      // } else if (sf.hasTag("amenity", "cafe")) {
-      //   kind = sf.getString("amenity");
-      //   minZoom = 15;
+        kind = sf.getString("amenity");
+        minZoom = 15;
+      } else if (sf.hasTag("amenity", "cafe")) {
+        kind = sf.getString("amenity");
+        minZoom = 15;
       } else if (sf.hasTag("landuse", "cemetery")) {
         kind = sf.getString("landuse");
         minZoom = 14;
