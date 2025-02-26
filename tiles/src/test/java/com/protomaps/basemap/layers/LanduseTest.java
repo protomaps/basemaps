@@ -29,34 +29,314 @@ class LanduseTest extends LayerTest {
   }
 
   @Test
-  void simple() {
+  void testFromTagAeroway() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "aerodrome")),
+      processWith("aeroway", "aerodrome")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "runway")),
+      processWith("aeroway", "runway")
+    );
+  }
+
+  @Test
+  void testFromTagAmenity() {
     assertFeatures(15,
       List.of(Map.of("kind", "hospital")),
       processWith("amenity", "hospital")
     );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "school")),
+      processWith("amenity", "school")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "kindergarten")),
+      processWith("amenity", "kindergarten")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "university")),
+      processWith("amenity", "university")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "college")),
+      processWith("amenity", "college")
+    );
   }
 
   @Test
-  void landuseVillageGreen() {
+  void testFromTagBoundary() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "protected_area")),
+      processWith("boundary", "protected_area")
+    );
+  }
+
+  @Test
+  void testFromTagLanduse() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "recreation_ground")),
+      processWith("landuse", "recreation_ground")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "industrial")),
+      processWith("landuse", "industrial")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "railway")),
+      processWith("landuse", "railway")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "cemetery")),
+      processWith("landuse", "cemetery")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "commercial")),
+      processWith("landuse", "commercial")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "grass")),
+      processWith("landuse", "grass")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "farmland")),
+      processWith("landuse", "farmland")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "residential")),
+      processWith("landuse", "residential")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "military")),
+      processWith("landuse", "military")
+    );
+
     assertFeatures(15,
       List.of(Map.of("kind", "village_green")),
       processWith("landuse", "village_green")
     );
-  }
 
-  @Test
-  void landuseAllotments() {
     assertFeatures(15,
       List.of(Map.of("kind", "allotments")),
       processWith("landuse", "allotments")
     );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest")),
+      processWith("landuse", "forest")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "meadow")),
+      processWith("landuse", "meadow")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "grass")),
+      processWith("landuse", "grass")
+    );
   }
 
   @Test
-  void landuseGlacier() {
+  void testFromTagLeisure() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("leisure", "park")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "garden")),
+      processWith("leisure", "garden")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "golf_course")),
+      processWith("leisure", "golf_course")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "dog_park")),
+      processWith("leisure", "dog_park")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "playground")),
+      processWith("leisure", "playground")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "pitch")),
+      processWith("leisure", "pitch")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "nature_reserve")),
+      processWith("leisure", "nature_reserve")
+    );
+  }
+
+  @Test
+  void testFromTagManMade() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "pier")),
+      processWith("man_made", "pier")
+    );
+  }
+
+  @Test
+  void testFromTagNatural() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "beach")),
+      processWith("natural", "beach")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "wood")),
+      processWith("natural", "wood")
+    );
+
     assertFeatures(15,
       List.of(Map.of("kind", "glacier")),
       processWith("natural", "glacier")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "grass")),
+      processWith("natural", "grass")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "scrub")),
+      processWith("natural", "scrub")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "sand")),
+      processWith("natural", "sand")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "wetland")),
+      processWith("natural", "wetland")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "bare_rock")),
+      processWith("natural", "bare_rock")
+    );
+  }
+
+  @Test
+  void testFromTagHighway() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "pedestrian")),
+      processWith("area", "yes",
+        "highway", "pedestrian")
+    );
+  }
+
+  @Test
+  void testFromTagRailway() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "platform")),
+      processWith("railway", "platform")
+    );
+  }
+
+  @Test
+  void testFromTagTourism() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "zoo")),
+      processWith("tourism", "zoo")
+    );
+  }
+
+  @Test
+  void testFromTagMilitary() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "naval_base")),
+      processWith("landuse", "military",
+        "military", "naval_base")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "airfield")),
+      processWith("landuse", "military",
+        "military", "airfield")
+    );
+  }
+
+  @Test
+  void testRemappingToPark() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "park")),
+      processWith("boundary", "national_park")
+    );
+  }
+
+  @Test
+  void testRemappingToIndustrial() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "industrial")),
+      processWith("landuse", "brownfield")
+    );
+  }
+
+  @Test
+  void testRemappingToFarmland() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "farmland")),
+      processWith("landuse", "orchard")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "farmland")),
+      processWith("landuse", "farmyard")
+    );
+  }
+
+  @Test
+  void testRemappingToPedestrian() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "pedestrian")),
+      processWith("man_made", "bridge")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "pedestrian")),
+      processWith("area", "yes",
+        "highway", "footway")
+    );
+  }
+
+  @Test
+  void testRemappingToOther() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "other")),
+      processWith("area:aeroway", "taxiway")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "other")),
+      processWith("area:aeroway", "runway")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "other")),
+      processWith("place", "neighbourhood")
     );
   }
 }
