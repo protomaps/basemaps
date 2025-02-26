@@ -1,15 +1,15 @@
 package com.protomaps.basemap.feature;
 
 import static com.onthegomap.planetiler.TestUtils.newPoint;
+import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getBoolean;
+import static com.protomaps.basemap.feature.Matcher.getDouble;
+import static com.protomaps.basemap.feature.Matcher.getInteger;
+import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
 import static com.protomaps.basemap.feature.Matcher.without;
-import static com.protomaps.basemap.feature.Matcher.getString;
-import static com.protomaps.basemap.feature.Matcher.getInteger;
-import static com.protomaps.basemap.feature.Matcher.getDouble;
-import static com.protomaps.basemap.feature.Matcher.getBoolean;
-import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.onthegomap.planetiler.expression.Expression;
@@ -115,7 +115,7 @@ class MatcherTest {
     );
     var matches = index.getMatches(sf);
     assertEquals("d", getString(sf, matches, "b", "d"));
-    
+
     sf = SimpleFeature.create(
       newPoint(0, 0),
       Map.of("a", "something"),
@@ -522,5 +522,5 @@ class MatcherTest {
     matches = index.getMatches(sf);
     assertEquals(true, getBoolean(sf, matches, "a", false));
   }
-  
+
 }

@@ -1,8 +1,8 @@
 package com.protomaps.basemap.layers;
 
-import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static com.protomaps.basemap.feature.Matcher.getString;
+import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
 import static com.protomaps.basemap.feature.Matcher.without;
@@ -62,7 +62,8 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       use("kind", fromTag("military"))
     ),
     rule(
-      with("leisure", "golf_course", "marina", "park", "stadium", "playground", "garden", "dog_park", "pitch", "nature_reserve"),
+      with("leisure", "golf_course", "marina", "park", "stadium", "playground", "garden", "dog_park", "pitch",
+        "nature_reserve"),
       use("kind", fromTag("leisure"))
     ),
     rule(

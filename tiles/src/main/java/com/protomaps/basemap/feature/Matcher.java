@@ -55,7 +55,7 @@ public class Matcher {
         if (value instanceof String stringValue) {
           return stringValue;
         } else if (value instanceof FromTag fromTag) {
-          return sf.getString(fromTag.key);
+          return sf.getString(fromTag.key, defaultValue);
         } else {
           return defaultValue;
         }
@@ -72,7 +72,31 @@ public class Matcher {
         if (value instanceof Integer integerValue) {
           return integerValue;
         } else if (value instanceof FromTag fromTag) {
-          return Integer.valueOf(sf.getString(fromTag.key, String.valueOf(defaultValue)));
+          try {
+            return sf.hasTag(fromTag.key) ? Integer.valueOf(sf.getString(fromTag.key)) : defaultValue;
+          } catch (NumberFormatException e) {
+            return defaultValue;
+          }
+        } else {
+          return defaultValue;
+        }
+      }
+    }
+    return defaultValue;
+  }
+
+  public static Double getDouble(SourceFeature sf, List<Map<String, Object>> matches, String key, Double defaultValue) {
+    for (var match : matches.reversed()) {
+      if (match.containsKey(key)) {
+        Object value = match.get(key);
+        if (value instanceof Double doubleValue) {
+          return doubleValue;
+        } else if (value instanceof FromTag fromTag) {
+          try {
+            return sf.hasTag(fromTag.key) ? Double.valueOf(sf.getString(fromTag.key)) : defaultValue;
+          } catch (NumberFormatException e) {
+            return defaultValue;
+          }
         } else {
           return defaultValue;
         }
