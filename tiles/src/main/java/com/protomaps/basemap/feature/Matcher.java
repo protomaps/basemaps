@@ -4,6 +4,7 @@ import com.onthegomap.planetiler.expression.Expression;
 import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,13 +107,32 @@ public class Matcher {
    * later arguments as possible values, e.g., {@code with("highway", "primary", "secondary")} matches to all source
    * features that have highway=primary or highway=secondary.
    * </p>
-   * .
+   * 
+   * <p>
+   * If an argument consists of multiple lines, it will be broken up into one argument per line. Example:
+   * 
+   * <pre>
+   * <code>
+   * with("""
+   *   highway
+   *   primary
+   *   secondary
+   * """)
+   * </code>
+   * </pre>
+   * </p>
    * 
    * @param arguments Field names to match.
    * @return An {@link Expression} for the given field names.
    */
   public static Expression with(String... arguments) {
-    List<String> argumentList = List.of(arguments);
+
+    List<String> argumentList = Arrays.stream(arguments)
+      .flatMap(String::lines)
+      .map(String::trim)
+      .filter(line -> !line.isBlank())
+      .toList();
+
     if (argumentList.isEmpty()) {
       return Expression.TRUE;
     } else if (argumentList.size() == 1) {

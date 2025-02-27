@@ -31,6 +31,13 @@ class MatcherTest {
 
     assertEquals(Expression.matchAny("a", "b", "c"),
       with("a", "b", "c"));
+
+    assertEquals(Expression.matchAny("a", "b", "c"),
+      with("""
+          a
+          b
+          c
+        """));
   }
 
   @Test

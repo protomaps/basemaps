@@ -22,23 +22,62 @@ import java.util.Map;
 
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
-  private static final List<String> US_FOREST_OPERATORS = List.of("operator", "United States Forest Service",
-    "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
-    "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
-  private static final List<String> PROTECTION_TITLES =
-    List.of("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-      "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-      "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-      "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-      "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary");
+  private static final String US_FOREST_OPERATORS = """
+      operatorUnited States Forest Service
+      US Forest Service
+      U.S. Forest Service
+      USDA Forest Service
+      United States Department of Agriculture
+      US National Forest Service
+      United State Forest Service
+      U.S. National Forest Service
+    """;
+
+  private static final String PROTECTION_TITLES = """
+      protection_title
+      Conservation Area
+      Conservation Park
+      Environmental use
+      Forest Reserve
+      National Forest
+      National Wildlife Refuge
+      Nature Refuge
+      Nature Reserve
+      Protected Site
+      Provincial Park
+      Public Access Land
+      Regional Reserve
+      Resources Reserve
+      State Forest
+      State Game Land
+      State Park
+      Watershed Recreation Unit
+      Wild Forest
+      Wilderness Area
+      Wilderness Study Area
+      Wildlife Management
+      Wildlife Management Area
+      Wildlife Sanctuary
+    """;
 
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
     rule(
-      with("aeroway", "aerodrome", "runway"),
+      with("""
+          aeroway
+          aerodrome
+          runway
+        """),
       use("kind", fromTag("aeroway"))
     ),
     rule(
-      with("amenity", "hospital", "school", "kindergarten", "university", "college"),
+      with("""
+          amenity
+          hospital
+          school
+          kindergarten
+          university
+          college
+        """),
       use("kind", fromTag("amenity"))
     ),
     rule(
@@ -46,12 +85,36 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       use("kind", "protected_area")
     ),
     rule(
-      with("landuse", "recreation_ground", "industrial", "railway", "cemetery", "commercial", "grass", "farmland",
-        "residential", "military", "village_green", "allotments", "forest", "meadow", "grass"),
+      with("""
+          landuse
+          recreation_ground
+          industrial
+          railway
+          cemetery
+          commercial
+          grass
+          farmland
+          residential
+          military
+          village_green
+          allotments
+          forest
+          meadow
+          grass
+        """),
       use("kind", fromTag("landuse"))
     ),
     rule(
-      with("leisure", "park", "garden", "golf_course", "dog_park", "playground", "pitch", "nature_reserve"),
+      with("""
+          leisure
+          park
+          garden
+          golf_course
+          dog_park
+          playground
+          pitch
+          nature_reserve
+        """),
       use("kind", fromTag("leisure"))
     ),
     rule(
@@ -59,11 +122,25 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       use("kind", "pier")
     ),
     rule(
-      with("natural", "beach", "wood", "glacier", "grass", "scrub", "sand", "wetland", "bare_rock"),
+      with("""
+          natural
+          beach
+          wood
+          glacier
+          grass
+          scrub
+          sand
+          wetland
+          bare_rock
+        """),
       use("kind", fromTag("natural"))
     ),
     rule(
-      with("highway", "pedestrian", "footway"),
+      with("""
+          highway
+          pedestrian
+          footway
+        """),
       with("area", "yes"),
       use("kind", "pedestrian")
     ),
@@ -103,7 +180,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
     rule(
       with("boundary", "protected_area"),
       with("protect_class", "6"),
-      with(US_FOREST_OPERATORS.toArray(String[]::new)),
+      with(US_FOREST_OPERATORS),
       use("kind", "forest")
     ),
     rule(
@@ -112,37 +189,43 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("boundary", "national_park"),
-      without(US_FOREST_OPERATORS.toArray(String[]::new)),
-      without(PROTECTION_TITLES.toArray(String[]::new)),
+      without(US_FOREST_OPERATORS),
+      without(PROTECTION_TITLES),
       with("protect_class", "2", "3"),
       use("kind", "national_park")
     ),
     rule(
       with("boundary", "national_park"),
-      without(US_FOREST_OPERATORS.toArray(String[]::new)),
-      without(PROTECTION_TITLES.toArray(String[]::new)),
-      with("operator", "United States National Park Service", "National Park Service", "US National Park Service",
-        "U.S. National Park Service", "US National Park service"),
+      without(US_FOREST_OPERATORS),
+      without(PROTECTION_TITLES),
+      with("""
+          operator
+          United States National Park Service
+          National Park Service
+          US National Park Service
+          U.S. National Park Service
+          US National Park service
+        """),
       use("kind", "national_park")
     ),
     rule(
       with("boundary", "national_park"),
-      without(US_FOREST_OPERATORS.toArray(String[]::new)),
-      without(PROTECTION_TITLES.toArray(String[]::new)),
+      without(US_FOREST_OPERATORS),
+      without(PROTECTION_TITLES),
       with("operator:en", "Parks Canada"),
       use("kind", "national_park")
     ),
     rule(
       with("boundary", "national_park"),
-      without(US_FOREST_OPERATORS.toArray(String[]::new)),
-      without(PROTECTION_TITLES.toArray(String[]::new)),
+      without(US_FOREST_OPERATORS),
+      without(PROTECTION_TITLES),
       with("designation", "national_park"),
       use("kind", "national_park")
     ),
     rule(
       with("boundary", "national_park"),
-      without(US_FOREST_OPERATORS.toArray(String[]::new)),
-      without(PROTECTION_TITLES.toArray(String[]::new)),
+      without(US_FOREST_OPERATORS),
+      without(PROTECTION_TITLES),
       with("protection_title", "National Park"),
       use("kind", "national_park")
     )
