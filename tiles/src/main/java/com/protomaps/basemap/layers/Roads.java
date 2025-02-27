@@ -56,10 +56,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
       !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
-      String kind = "other";
-      String kindDetail = "";
-      int minZoom = 15;
-      int maxZoom = 15;
+      String kind = "other"; // 
+      String kindDetail = ""; //
+      int minZoom = 15; //
+      int maxZoom = 15; //
       int minZoomShieldText = 10;
       int minZoomNames = 14;
 
@@ -175,9 +175,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
           minZoom = 14;
         }
       } else {
-        kind = "other";
-        kindDetail = sf.getString("service", "");
-        minZoom = 14;
+        kind = "other"; //
+        kindDetail = sf.getString("service", ""); //
+        minZoom = 14; //
         minZoomShieldText = 14;
         minZoomNames = 14;
       }
