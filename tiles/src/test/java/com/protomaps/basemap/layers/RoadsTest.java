@@ -181,6 +181,8 @@ class RoadsTest extends LayerTest {
 
   @Test
   void testHighwayMotorway() {
+
+    // generic highway=motorway
     assertFeatures(12,
       List.of(Map.of("kind", "highway",
         "kind_detail", "motorway",
@@ -189,12 +191,41 @@ class RoadsTest extends LayerTest {
       processWith("highway", "motorway")
     );
 
+
+    // US highway=motorway
+    assertFeatures(12,
+      List.of(Map.of("kind", "highway",
+        "kind_detail", "motorway",
+        "_minzoom", 7
+      )),
+      processWithRelationAndCoords("",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "motorway"
+      )
+    );
+
+    // US highway=motorway with relation US:US
+    assertFeatures(12,
+      List.of(Map.of("kind", "highway",
+        "kind_detail", "motorway",
+        "_minzoom", 6
+      )),
+      processWithRelationAndCoords("US:US",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "motorway"
+      )
+    );
+
+    // US highway=motorway with relation US:I
     assertFeatures(12,
       List.of(Map.of("kind", "highway",
         "kind_detail", "motorway",
         "_minzoom", 3
       )),
-      processWith("highway", "motorway")
+      processWithRelationAndCoords("US:I",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "motorway"
+      )
     );
   }
 }
