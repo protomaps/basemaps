@@ -12,22 +12,37 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class RoadsTest extends LayerTest {
+  private FeatureCollector processWith(String... arguments) {
+    Map<String, Object> tags = new HashMap<>();
+    List<String> argumentList = List.of(arguments);
+    if (argumentList.size() % 2 == 0) {
+      for (int i = 0; i < argumentList.size(); i += 2) {
+        tags.put(argumentList.get(i), argumentList.get(i + 1));
+      }
+    }
+    return process(SimpleFeature.create(
+      newLineString(0, 0, 1, 1),
+      tags,
+      "osm",
+      null,
+      0
+    ));
+  }
+
   @Test
   void simple() {
     assertFeatures(12,
-      List.of(Map.of("kind", "highway", "kind_detail", "motorway", "ref", "1", "network", "US:US",
-        "shield_text_length", 1)),
-      process(SimpleFeature.create(
-        newLineString(0, 0, 1, 1),
-        new HashMap<>(Map.of(
-          "layer", "1",
-          "highway", "motorway",
-          "ref", "US 1"
-        )),
-        "osm",
-        null,
-        0
-      )));
+      List.of(Map.of("kind", "highway",
+        "kind_detail", "motorway",
+        "ref", "1",
+        "network", "US:US",
+        "shield_text_length", 1
+      )),
+      processWith("layer", "1",
+        "highway", "motorway",
+        "ref", "US 1"
+      )
+    );
   }
 
   @Test
