@@ -23,7 +23,8 @@ import java.util.Map;
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   private static final String US_FOREST_OPERATORS = """
-      operatorUnited States Forest Service
+      operator
+      United States Forest Service
       US Forest Service
       U.S. Forest Service
       USDA Forest Service
