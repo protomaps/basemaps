@@ -228,4 +228,154 @@ class RoadsTest extends LayerTest {
       )
     );
   }
+
+  @Test
+  void testHighwayMotorwayLink() {
+
+    // generic highway=motorway_link
+    assertFeatures(12,
+      List.of(Map.of("kind", "highway",
+        "kind_detail", "motorway_link",
+        "_minzoom", 3
+      )),
+      processWith("highway", "motorway_link")
+    );
+
+
+    // US highway=motorway_link
+    assertFeatures(12,
+      List.of(Map.of("kind", "highway",
+        "kind_detail", "motorway_link",
+        "_minzoom", 7
+      )),
+      processWithRelationAndCoords("",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "motorway_link"
+      )
+    );
+
+    // US highway=motorway_link with relation US:US
+    assertFeatures(12,
+      List.of(Map.of("kind", "highway",
+        "kind_detail", "motorway_link",
+        "_minzoom", 6
+      )),
+      processWithRelationAndCoords("US:US",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "motorway_link"
+      )
+    );
+
+    // US highway=motorway_link with relation US:I
+    assertFeatures(12,
+      List.of(Map.of("kind", "highway",
+        "kind_detail", "motorway_link",
+        "_minzoom", 3
+      )),
+      processWithRelationAndCoords("US:I",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "motorway_link"
+      )
+    );
+  }
+
+  @Test
+  void testHighwayTrunk() {
+
+    // generic highway=trunk
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk",
+        "_minzoom", 6
+      )),
+      processWith("highway", "trunk")
+    );
+
+
+    // US highway=trunk
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk",
+        "_minzoom", 7
+      )),
+      processWithRelationAndCoords("",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "trunk"
+      )
+    );
+
+    // US highway=trunk with relation US:US
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk",
+        "_minzoom", 6
+      )),
+      processWithRelationAndCoords("US:US",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "trunk"
+      )
+    );
+
+    // US highway=trunk with relation US:I
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk",
+        "_minzoom", 3
+      )),
+      processWithRelationAndCoords("US:I",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "trunk"
+      )
+    );
+  }
+
+  @Test
+  void testHighwayTrunkLink() {
+
+    // generic highway=trunk_link
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk_link",
+        "_minzoom", 7
+      )),
+      processWith("highway", "trunk_link")
+    );
+
+
+    // US highway=trunk_link
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk_link",
+        "_minzoom", 7
+      )),
+      processWithRelationAndCoords("",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "trunk_link"
+      )
+    );
+
+    // US highway=trunk_link with relation US:US
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk_link",
+        "_minzoom", 6
+      )),
+      processWithRelationAndCoords("US:US",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "trunk_link"
+      )
+    );
+
+    // US highway=trunk_link with relation US:I
+    assertFeatures(12,
+      List.of(Map.of("kind", "major_road",
+        "kind_detail", "trunk_link",
+        "_minzoom", 3
+      )),
+      processWithRelationAndCoords("US:I",
+        -104.97235, 39.73867, -105.260503, 40.010771,
+        "highway", "trunk_link"
+      )
+    );
+  }
 }
