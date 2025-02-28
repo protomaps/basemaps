@@ -119,6 +119,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
           minZoomShieldText = 10;
         } else if (highway.equals("trunk_link")) {
           minZoomShieldText = 12;
+          minZoom = hasOverride ? 7 : 6;
         } else {
           minZoomShieldText = 13;
         }
