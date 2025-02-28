@@ -96,8 +96,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         // TODO: (nvkelso 20230622) Use Natural Earth for low zoom roads at zoom 5 and earlier
         //       as normally OSM roads would start at 6, but we start at 3 to match Protomaps v2
-        kind = "highway";
-        minZoom = hasOverride ? 7 : 3;
+        kind = "highway"; //
+        minZoom = hasOverride ? 7 : 3; //
 
         if (highway.equals("motorway")) {
           minZoomShieldText = 7;
@@ -109,11 +109,11 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       } else if (highway.equals("trunk") || highway.equals("trunk_link") || highway.equals("primary") ||
         highway.equals("primary_link")) {
         kind = "major_road";
-        minZoom = 7;
+        minZoom = 7; //
 
         if (highway.equals("trunk")) {
           // Just trunk earlier zoom, otherwise road network looks choppy just with motorways then
-          minZoom = hasOverride ? 7 : 6;
+          minZoom = hasOverride ? 7 : 6; //
           minZoomShieldText = 8;
         } else if (highway.equals("primary")) {
           minZoomShieldText = 10;
@@ -126,8 +126,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         minZoomNames = 12;
       } else if (highway.equals("secondary") || highway.equals("secondary_link") || highway.equals("tertiary") ||
         highway.equals("tertiary_link")) {
-        kind = "major_road";
-        minZoom = 9;
+        kind = "major_road"; //
+        minZoom = 9; //
 
         if (highway.equals("secondary")) {
           minZoomShieldText = 11;
@@ -141,14 +141,14 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         }
       } else if (highway.equals("residential") || highway.equals("service") || highway.equals("unclassified") ||
         highway.equals("road") || highway.equals("raceway")) {
-        kind = "minor_road";
-        minZoom = 12;
+        kind = "minor_road"; //
+        minZoom = 12; //
         minZoomShieldText = 12;
         minZoomNames = 14;
 
         if (highway.equals("service")) {
-          kindDetail = "service";
-          minZoom = 13;
+          kindDetail = "service"; //
+          minZoom = 13; //
 
           // push down "alley", "driveway", "parking_aisle", "drive-through" & etc
           if (sf.hasTag("service")) {
