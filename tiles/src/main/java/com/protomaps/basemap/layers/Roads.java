@@ -184,10 +184,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
       if (hasOverride) {
         if (BRoad) {
-          minZoom = 6;
+          minZoom = 6; // 
         }
         if (ARoad) {
-          minZoom = 3;
+          minZoom = 3; //
         }
       }
 
@@ -208,9 +208,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         .setZoomRange(minZoom, maxZoom);
 
       if (!kindDetail.isEmpty()) {
-        feat.setAttr("kind_detail", kindDetail);
+        feat.setAttr("kind_detail", kindDetail); //
       } else {
-        feat.setAttr("kind_detail", highway);
+        feat.setAttr("kind_detail", highway); //
       }
 
       // Core OSM tags for different kinds of places

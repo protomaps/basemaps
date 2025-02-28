@@ -125,41 +125,20 @@ class RoadsTest extends LayerTest {
     );
   }
 
-  @Test
-  void testHighwayExcluded() {
+  @ParameterizedTest
+  @CsvSource({
+    "proposed",
+    "abandoned",
+    "razed",
+    "demolished",
+    "removed",
+    "construction",
+    "elevator"
+  })
+  void testHighwayExcluded(String highway) {
     assertFeatures(12,
       List.of(),
-      processWith("highway", "proposed")
-    );
-
-    assertFeatures(12,
-      List.of(),
-      processWith("highway", "abandoned")
-    );
-
-    assertFeatures(12,
-      List.of(),
-      processWith("highway", "razed")
-    );
-
-    assertFeatures(12,
-      List.of(),
-      processWith("highway", "demolished")
-    );
-
-    assertFeatures(12,
-      List.of(),
-      processWith("highway", "removed")
-    );
-
-    assertFeatures(12,
-      List.of(),
-      processWith("highway", "construction")
-    );
-
-    assertFeatures(12,
-      List.of(),
-      processWith("highway", "elevator")
+      processWith("highway", highway)
     );
   }
 
