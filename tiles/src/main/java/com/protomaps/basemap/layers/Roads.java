@@ -158,21 +158,21 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         }
       } else if (sf.hasTag("highway", "pedestrian", "track", "path", "cycleway", "bridleway", "footway",
         "steps", "corridor")) {
-        kind = "path";
-        kindDetail = highway;
-        minZoom = 12;
+        kind = "path"; // 
+        kindDetail = highway; //
+        minZoom = 12; //
         minZoomShieldText = 12;
         minZoomNames = 14;
 
         if (sf.hasTag("highway", "path", "cycleway", "bridleway", "footway", "steps")) {
-          minZoom = 13;
+          minZoom = 13; //
         }
         if (sf.hasTag("footway", "sidewalk", "crossing")) {
           minZoom = 14;
           kindDetail = sf.getString("footway", "");
         }
         if (sf.hasTag("highway", "corridor")) {
-          minZoom = 14;
+          minZoom = 14; //
         }
       } else {
         kind = "other"; //

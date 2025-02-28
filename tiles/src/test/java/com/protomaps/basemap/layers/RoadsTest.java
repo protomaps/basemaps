@@ -200,7 +200,15 @@ class RoadsTest extends LayerTest {
     "residential, minor_road, residential, 12, 12",
     "unclassified, minor_road, unclassified, 12, 12",
     "road, minor_road, road, 12, 12",
-    "raceway, minor_road, raceway, 12, 12"
+    "raceway, minor_road, raceway, 12, 12",
+    "pedestrian, path, pedestrian, 12, 12",
+    "track, path, track, 12, 12",
+    "path, path, path, 13, 13",
+    "cycleway, path, cycleway, 13, 13",
+    "bridleway, path, bridleway, 13, 13",
+    "footway, path, footway, 13, 13",
+    "steps, path, steps, 13, 13",
+    "corridor, path, corridor, 14, 14",
   })
   void testHighways(String highway, String kind, String kindDetail, int genericMinZoom, int usMinZoom) {
 
