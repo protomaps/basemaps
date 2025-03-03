@@ -214,8 +214,13 @@ class LanduseTest extends LayerTest {
     );
 
     assertFeatures(15,
-      List.of(Map.of("kind", "grass")),
-      processWith("natural", "grass")
+      List.of(Map.of("kind", "grassland")),
+      processWith("natural", "grassland")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "dam")),
+      processWith("waterway", "dam")
     );
 
     assertFeatures(15,

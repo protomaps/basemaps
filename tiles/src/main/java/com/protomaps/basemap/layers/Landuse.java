@@ -128,7 +128,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
           beach
           wood
           glacier
-          grass
+          grassland
           scrub
           sand
           wetland
@@ -144,6 +144,10 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
         """),
       with("area", "yes"),
       use("kind", "pedestrian")
+    ),
+    rule(
+      with("waterway", "dam"),
+      use("kind", "dam")
     ),
     rule(
       with("railway", "platform"),
