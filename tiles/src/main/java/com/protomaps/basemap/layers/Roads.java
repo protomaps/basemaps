@@ -1,13 +1,11 @@
 package com.protomaps.basemap.layers;
 
-
 import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static com.protomaps.basemap.feature.Matcher.getInteger;
 import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
-import static com.protomaps.basemap.feature.Matcher.without;
 import static com.protomaps.basemap.postprocess.LinkSimplify.linkSimplify;
 
 import com.onthegomap.planetiler.FeatureCollector;
@@ -116,12 +114,12 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     ),
     rule(
       with("""
-        highway
-        residential
-        unclassified
-        road
-        raceway
-      """),
+          highway
+          residential
+          unclassified
+          road
+          raceway
+        """),
       use("kind", "minor_road"),
       use("minZoom", 12),
       use("minZoomShieldText", 12),
@@ -147,11 +145,11 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     ),
     rule(
       with("""
-        highway
-        pedestrian
-        track
-        corridor
-      """),
+          highway
+          pedestrian
+          track
+          corridor
+        """),
       use("kind", "path"),
       use("minZoom", 12),
       use("minZoomShieldText", 12),
@@ -159,13 +157,13 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     ),
     rule(
       with("""
-        highway
-        path
-        cycleway
-        bridleway
-        footway
-        steps
-      """),
+          highway
+          path
+          cycleway
+          bridleway
+          footway
+          steps
+        """),
       use("kind", "path"),
       use("minZoom", 13),
       use("minZoomShieldText", 12),
@@ -174,10 +172,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "footway"),
       with("""
-        footway
-        sidewalk
-        crossing
-      """),
+          footway
+          sidewalk
+          crossing
+        """),
       use("kind", "path"),
       use("kindDetail", fromTag("footway")),
       use("minZoom", 14),
@@ -195,12 +193,12 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("_country", "US"),
       with("""
-        highway
-        motorway
-        motorway_link
-        trunk
-        trunk_link
-      """),
+          highway
+          motorway
+          motorway_link
+          trunk
+          trunk_link
+        """),
       use("minZoom", 7)
     ),
     rule(
@@ -411,8 +409,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
       !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
-        processOsmHighways(sf, features);
-    } 
+      processOsmHighways(sf, features);
+    }
 
     if (sf.canBeLine() && (sf.hasTag("railway") ||
       sf.hasTag("aerialway", "cable_car") ||
