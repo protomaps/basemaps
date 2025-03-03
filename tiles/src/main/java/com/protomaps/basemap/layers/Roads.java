@@ -1,11 +1,19 @@
 package com.protomaps.basemap.layers;
 
+
+import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getString;
+import static com.protomaps.basemap.feature.Matcher.rule;
+import static com.protomaps.basemap.feature.Matcher.use;
+import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.without;
 import static com.protomaps.basemap.postprocess.LinkSimplify.linkSimplify;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
@@ -26,6 +34,17 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   public static final String LAYER_NAME = "roads";
+
+  private static final MultiExpression.Index<Map<String, Object>> indexHighways = MultiExpression.of(List.of(
+    rule(
+      with("""
+          aeroway
+          aerodrome
+          runway
+        """),
+      use("kind", fromTag("aeroway"))
+    )
+  )).index();
 
   @Override
   public String name() {
