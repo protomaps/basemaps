@@ -56,10 +56,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && sf.hasTag("highway") &&
       !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
-      String kind = "other"; // 
-      String kindDetail = ""; //
-      int minZoom = 15; //
-      int maxZoom = 15; //
+      String kind = "other";
+      String kindDetail = "";
+      int minZoom = 15;
+      int maxZoom = 15;
       int minZoomShieldText = 10;
       int minZoomNames = 14;
 
@@ -96,8 +96,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       if (highway.equals("motorway") || highway.equals("motorway_link")) {
         // TODO: (nvkelso 20230622) Use Natural Earth for low zoom roads at zoom 5 and earlier
         //       as normally OSM roads would start at 6, but we start at 3 to match Protomaps v2
-        kind = "highway"; //
-        minZoom = hasOverride ? 7 : 3; //
+        kind = "highway";
+        minZoom = hasOverride ? 7 : 3;
 
         if (highway.equals("motorway")) {
           minZoomShieldText = 7;
@@ -109,11 +109,11 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       } else if (highway.equals("trunk") || highway.equals("trunk_link") || highway.equals("primary") ||
         highway.equals("primary_link")) {
         kind = "major_road";
-        minZoom = 7; //
+        minZoom = 7;
 
         if (highway.equals("trunk")) {
           // Just trunk earlier zoom, otherwise road network looks choppy just with motorways then
-          minZoom = hasOverride ? 7 : 6; //
+          minZoom = hasOverride ? 7 : 6;
           minZoomShieldText = 8;
         } else if (highway.equals("primary")) {
           minZoomShieldText = 10;
@@ -126,8 +126,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         minZoomNames = 12;
       } else if (highway.equals("secondary") || highway.equals("secondary_link") || highway.equals("tertiary") ||
         highway.equals("tertiary_link")) {
-        kind = "major_road"; //
-        minZoom = 9; //
+        kind = "major_road";
+        minZoom = 9;
 
         if (highway.equals("secondary")) {
           minZoomShieldText = 11;
@@ -141,53 +141,53 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         }
       } else if (highway.equals("residential") || highway.equals("service") || highway.equals("unclassified") ||
         highway.equals("road") || highway.equals("raceway")) {
-        kind = "minor_road"; //
-        minZoom = 12; //
+        kind = "minor_road";
+        minZoom = 12;
         minZoomShieldText = 12;
         minZoomNames = 14;
 
         if (highway.equals("service")) {
-          kindDetail = "service"; //
-          minZoom = 13; //
+          kindDetail = "service";
+          minZoom = 13;
 
           // push down "alley", "driveway", "parking_aisle", "drive-through" & etc
           if (sf.hasTag("service")) {
-            minZoom = 14; //
-            service = sf.getString("service"); //
+            minZoom = 14;
+            service = sf.getString("service");
           }
         }
       } else if (sf.hasTag("highway", "pedestrian", "track", "path", "cycleway", "bridleway", "footway",
         "steps", "corridor")) {
-        kind = "path"; // 
-        kindDetail = highway; //
-        minZoom = 12; //
+        kind = "path";
+        kindDetail = highway;
+        minZoom = 12;
         minZoomShieldText = 12;
         minZoomNames = 14;
 
         if (sf.hasTag("highway", "path", "cycleway", "bridleway", "footway", "steps")) {
-          minZoom = 13; //
+          minZoom = 13;
         }
         if (sf.hasTag("footway", "sidewalk", "crossing")) {
-          minZoom = 14; //
-          kindDetail = sf.getString("footway", ""); //
+          minZoom = 14;
+          kindDetail = sf.getString("footway", "");
         }
         if (sf.hasTag("highway", "corridor")) {
-          minZoom = 14; //
+          minZoom = 14;
         }
       } else {
-        kind = "other"; //
-        kindDetail = sf.getString("service", ""); //
-        minZoom = 14; //
+        kind = "other";
+        kindDetail = sf.getString("service", "");
+        minZoom = 14;
         minZoomShieldText = 14;
         minZoomNames = 14;
       }
 
       if (hasOverride) {
         if (BRoad) {
-          minZoom = 6; // 
+          minZoom = 6;
         }
         if (ARoad) {
-          minZoom = 3; //
+          minZoom = 3;
         }
       }
 
@@ -208,9 +208,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         .setZoomRange(minZoom, maxZoom);
 
       if (!kindDetail.isEmpty()) {
-        feat.setAttr("kind_detail", kindDetail); //
+        feat.setAttr("kind_detail", kindDetail);
       } else {
-        feat.setAttr("kind_detail", highway); //
+        feat.setAttr("kind_detail", highway);
       }
 
       // Core OSM tags for different kinds of places
@@ -239,60 +239,60 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     // non-highway features
     // todo: exclude railway stations, levels
-    if (sf.canBeLine() && (sf.hasTag("railway") || //
-      sf.hasTag("aerialway", "cable_car") || //
-      sf.hasTag("man_made", "pier") || //
-      sf.hasTag("route", "ferry") || //
-      sf.hasTag("aeroway", "runway", "taxiway")) && //
-      (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) && // 
-      (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) { //
+    if (sf.canBeLine() && (sf.hasTag("railway") ||
+      sf.hasTag("aerialway", "cable_car") ||
+      sf.hasTag("man_made", "pier") ||
+      sf.hasTag("route", "ferry") ||
+      sf.hasTag("aeroway", "runway", "taxiway")) &&
+      (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) &&
+      (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
 
       int minZoom = 11;
 
       if (sf.hasTag("aeroway", "runway")) {
-        minZoom = 9; //
+        minZoom = 9;
       } else if (sf.hasTag("aeroway", "taxiway")) {
-        minZoom = 10; //
+        minZoom = 10;
       } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
-        minZoom = 13; //
+        minZoom = 13;
       } else if (sf.hasTag("man_made", "pier")) {
-        minZoom = 13; //
+        minZoom = 13;
       }
 
       String kind = "other";
       String kindDetail = "";
       if (sf.hasTag("aeroway")) {
-        kind = "aeroway"; //
-        kindDetail = sf.getString("aeroway"); //
+        kind = "aeroway";
+        kindDetail = sf.getString("aeroway");
       } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge",
         "preserved", "subway", "tram")) {
-        kind = "rail"; //
-        kindDetail = sf.getString("railway"); //
-        minZoom = 14; //
+        kind = "rail";
+        kindDetail = sf.getString("railway");
+        minZoom = 14;
 
         if (sf.hasTag("railway", "disused")) {
-          minZoom = 15; //
+          minZoom = 15;
         }
       } else if (sf.hasTag("railway")) {
-        kind = "rail"; //
-        kindDetail = sf.getString("railway"); //
+        kind = "rail";
+        kindDetail = sf.getString("railway");
 
         if (kindDetail.equals("service")) {
-          minZoom = 13; //
+          minZoom = 13;
 
           // eg a rail yard
           if (sf.hasTag("service")) {
-            minZoom = 14; //
+            minZoom = 14;
           }
         }
       } else if (sf.hasTag("route", "ferry")) {
-        kind = "ferry"; //
+        kind = "ferry";
       } else if (sf.hasTag("man_made", "pier")) {
-        kind = "path"; //
-        kindDetail = "pier"; //
+        kind = "path";
+        kindDetail = "pier";
       } else if (sf.hasTag("aerialway")) {
-        kind = "aerialway"; //
-        kindDetail = sf.getString("aerialway"); //
+        kind = "aerialway";
+        kindDetail = sf.getString("aerialway");
       }
 
       var feature = features.line(this.name())
