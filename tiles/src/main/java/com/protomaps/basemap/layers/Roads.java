@@ -213,6 +213,81 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     )
   )).index();
 
+  private static final MultiExpression.Index<Map<String, Object>> indexNonHighways = MultiExpression.of(List.of(
+    rule(
+      with("railway"),
+      use("kind", "rail"),
+      use("kindDetail", fromTag("railway")),
+      use("minZoom", 11)
+    ),
+    rule(
+      with("railway", "service"),
+      use("minZoom", 13)
+    ),
+    rule(
+      with("railway", "service"),
+      with("service"),
+      use("minZoom", 14)
+    ),
+    rule(
+      with("""
+          railway
+          funicular
+          light_rail
+          miniature
+          monorail
+          narrow_gauge
+          preserved
+          subway
+          tram
+        """),
+      use("minZoom", 14)
+    ),
+    rule(
+      with("railway", "disused"),
+      use("minZoom", 15)
+    ),
+    rule(
+      with("railway"),
+      with("""
+          service
+          yard
+          siding
+          crossover
+        """),
+      use("minZoom", 13)
+    ),
+    rule(
+      with("aerialway", "cable_car"),
+      use("kind", "aerialway"),
+      use("kindDetail", "cable_car"),
+      use("minZoom", 11)
+    ),
+    rule(
+      with("man_made", "pier"),
+      use("kind", "path"),
+      use("kindDetail", "pier"),
+      use("minZoom", 13)
+    ),
+    rule(
+      with("route", "ferry"),
+      use("kind", "ferry"),
+      use("minZoom", 11)
+    ),
+    rule(
+      with("aeroway", "taxiway"),
+      use("kind", "aeroway"),
+      use("kindDetail", "taxiway"),
+      use("minZoom", 10)
+    ),
+    rule(
+      with("aeroway", "runway"),
+      use("kind", "aeroway"),
+      use("kindDetail", "runway"),
+      use("minZoom", 9)
+    )
+  )).index();
+
   @Override
   public String name() {
     return LAYER_NAME;
@@ -240,6 +315,14 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   private void processOsmHighways(SourceFeature sf, FeatureCollector features) {
+
+    if (!sf.hasTag("highway")) {
+      return;
+    }
+
+    if (sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator")) {
+      return;
+    }
 
     String highway = sf.getString("highway");
 
@@ -321,53 +404,24 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   private void processOsmNonHighways(SourceFeature sf, FeatureCollector features) {
 
-    int minZoom = 11;
-
-    if (sf.hasTag("aeroway", "runway")) {
-      minZoom = 9;
-    } else if (sf.hasTag("aeroway", "taxiway")) {
-      minZoom = 10;
-    } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
-      minZoom = 13;
-    } else if (sf.hasTag("man_made", "pier")) {
-      minZoom = 13;
+    if (sf.hasTag("building")) {
+      // see https://github.com/protomaps/basemaps/issues/249
+      return;
     }
 
-    String kind = "other";
-    String kindDetail = "";
-    if (sf.hasTag("aeroway")) {
-      kind = "aeroway";
-      kindDetail = sf.getString("aeroway");
-    } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge",
-      "preserved", "subway", "tram")) {
-      kind = "rail";
-      kindDetail = sf.getString("railway");
-      minZoom = 14;
-
-      if (sf.hasTag("railway", "disused")) {
-        minZoom = 15;
-      }
-    } else if (sf.hasTag("railway")) {
-      kind = "rail";
-      kindDetail = sf.getString("railway");
-
-      if (kindDetail.equals("service")) {
-        minZoom = 13;
-
-        // eg a rail yard
-        if (sf.hasTag("service")) {
-          minZoom = 14;
-        }
-      }
-    } else if (sf.hasTag("route", "ferry")) {
-      kind = "ferry";
-    } else if (sf.hasTag("man_made", "pier")) {
-      kind = "path";
-      kindDetail = "pier";
-    } else if (sf.hasTag("aerialway")) {
-      kind = "aerialway";
-      kindDetail = sf.getString("aerialway");
+    if (sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed")) {
+      return;
     }
+
+    var matches = indexNonHighways.getMatches(sf);
+    if (matches.isEmpty()) {
+      return;
+    }
+
+    int minZoom = getInteger(sf, matches, "minZoom", 11);
+    String kind = getString(sf, matches, "kind", "other");
+    String kindDetail = getString(sf, matches, "kindDetail", "");
+
 
     var feature = features.line(this.name())
       .setId(FeatureId.create(sf))
@@ -407,20 +461,13 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    if (sf.canBeLine() && sf.hasTag("highway") &&
-      !(sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator"))) {
-      processOsmHighways(sf, features);
+    if (!sf.canBeLine()) {
+      return;
     }
 
-    if (sf.canBeLine() && (sf.hasTag("railway") ||
-      sf.hasTag("aerialway", "cable_car") ||
-      sf.hasTag("man_made", "pier") ||
-      sf.hasTag("route", "ferry") ||
-      sf.hasTag("aeroway", "runway", "taxiway")) &&
-      (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) &&
-      (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
-      processOsmNonHighways(sf, features);
-    }
+    processOsmHighways(sf, features);
+    processOsmNonHighways(sf, features);
+
   }
 
   @Override
