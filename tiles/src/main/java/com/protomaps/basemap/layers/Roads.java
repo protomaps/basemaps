@@ -239,60 +239,60 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     // non-highway features
     // todo: exclude railway stations, levels
-    if (sf.canBeLine() && (sf.hasTag("railway") ||
-      sf.hasTag("aerialway", "cable_car") ||
-      sf.hasTag("man_made", "pier") ||
-      sf.hasTag("route", "ferry") ||
-      sf.hasTag("aeroway", "runway", "taxiway")) &&
+    if (sf.canBeLine() && (sf.hasTag("railway") || //
+      sf.hasTag("aerialway", "cable_car") || //
+      sf.hasTag("man_made", "pier") || //
+      sf.hasTag("route", "ferry") || //
+      sf.hasTag("aeroway", "runway", "taxiway")) && //
       (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) &&
       (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
 
       int minZoom = 11;
 
       if (sf.hasTag("aeroway", "runway")) {
-        minZoom = 9;
+        minZoom = 9; //
       } else if (sf.hasTag("aeroway", "taxiway")) {
-        minZoom = 10;
+        minZoom = 10; //
       } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
         minZoom = 13;
       } else if (sf.hasTag("man_made", "pier")) {
-        minZoom = 13;
+        minZoom = 13; //
       }
 
       String kind = "other";
       String kindDetail = "";
       if (sf.hasTag("aeroway")) {
-        kind = "aeroway";
-        kindDetail = sf.getString("aeroway");
+        kind = "aeroway"; //
+        kindDetail = sf.getString("aeroway"); //
       } else if (sf.hasTag("railway", "disused", "funicular", "light_rail", "miniature", "monorail", "narrow_gauge",
         "preserved", "subway", "tram")) {
-        kind = "rail";
-        kindDetail = sf.getString("railway");
-        minZoom = 14;
+        kind = "rail"; //
+        kindDetail = sf.getString("railway"); //
+        minZoom = 14; //
 
         if (sf.hasTag("railway", "disused")) {
-          minZoom = 15;
+          minZoom = 15; //
         }
       } else if (sf.hasTag("railway")) {
-        kind = "rail";
-        kindDetail = sf.getString("railway");
+        kind = "rail"; //
+        kindDetail = sf.getString("railway"); //
 
         if (kindDetail.equals("service")) {
-          minZoom = 13;
+          minZoom = 13; //
 
           // eg a rail yard
           if (sf.hasTag("service")) {
-            minZoom = 14;
+            minZoom = 14; //
           }
         }
       } else if (sf.hasTag("route", "ferry")) {
-        kind = "ferry";
+        kind = "ferry"; //
       } else if (sf.hasTag("man_made", "pier")) {
-        kind = "path";
-        kindDetail = "pier";
+        kind = "path"; //
+        kindDetail = "pier"; //
       } else if (sf.hasTag("aerialway")) {
-        kind = "aerialway";
-        kindDetail = sf.getString("aerialway");
+        kind = "aerialway"; //
+        kindDetail = sf.getString("aerialway"); //
       }
 
       var feature = features.line(this.name())

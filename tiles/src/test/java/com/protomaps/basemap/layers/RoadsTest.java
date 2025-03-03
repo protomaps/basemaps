@@ -285,4 +285,148 @@ class RoadsTest extends LayerTest {
       )
     );
   }
+
+  @Test
+  void testRailway() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "rail",
+        "kind_detail", "a",
+        "_minzoom", 11
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "railway", "a"
+      )
+    );
+
+    assertFeatures(12,
+      List.of(Map.of("kind", "rail",
+        "kind_detail", "service",
+        "_minzoom", 13
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "railway", "service"
+      )
+    );
+
+    assertFeatures(12,
+      List.of(Map.of("kind", "rail",
+        "kind_detail", "service",
+        "_minzoom", 14
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "railway", "service",
+        "service", "a"
+      )
+    );
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "funicular",
+    "light_rail",
+    "miniature",
+    "monorail",
+    "narrow_gauge",
+    "preserved",
+    "subway", 
+    "tram"
+  })
+  void testRailwaysSpecial(String railway) {
+    assertFeatures(12,
+      List.of(Map.of("kind", "rail",
+        "kind_detail", railway,
+        "_minzoom", 14
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "railway", railway
+      )
+    );
+  }
+
+  @Test
+  void testRailwayDisused() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "rail",
+        "kind_detail", "disused",
+        "_minzoom", 15
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "railway", "disused"
+      )
+    );
+  }
+
+  @Test
+  void testAerialwayCableCar() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "aerialway",
+        "kind_detail", "cable_car",
+        "_minzoom", 11
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "aerialway", "cable_car"
+      )
+    );
+  }
+
+  @Test
+  void testManMadePier() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "path",
+        "kind_detail", "pier",
+        "_minzoom", 13
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "man_made", "pier"
+      )
+    );
+  }
+
+  @Test
+  void testRouteFerry() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "ferry",
+        "_minzoom", 11
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "route", "ferry"
+      )
+    );
+  }
+
+  @Test
+  void testAerowayTaxiway() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "aeroway",
+        "kind_detail", "taxiway",
+        "_minzoom", 10
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "aeroway", "taxiway"
+      )
+    );
+  }
+
+  @Test
+  void testAerowayRunway() {
+    assertFeatures(12,
+      List.of(Map.of("kind", "aeroway",
+        "kind_detail", "runway",
+        "_minzoom", 9
+      )),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "aeroway", "runway"
+      )
+    );
+  }
 }
