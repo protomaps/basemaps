@@ -152,8 +152,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
           // push down "alley", "driveway", "parking_aisle", "drive-through" & etc
           if (sf.hasTag("service")) {
-            minZoom = 14;
-            service = sf.getString("service");
+            minZoom = 14; //
+            service = sf.getString("service"); //
           }
         }
       } else if (sf.hasTag("highway", "pedestrian", "track", "path", "cycleway", "bridleway", "footway",
@@ -168,8 +168,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
           minZoom = 13; //
         }
         if (sf.hasTag("footway", "sidewalk", "crossing")) {
-          minZoom = 14;
-          kindDetail = sf.getString("footway", "");
+          minZoom = 14; //
+          kindDetail = sf.getString("footway", ""); //
         }
         if (sf.hasTag("highway", "corridor")) {
           minZoom = 14; //
