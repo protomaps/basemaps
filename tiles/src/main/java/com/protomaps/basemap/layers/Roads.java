@@ -244,8 +244,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       sf.hasTag("man_made", "pier") || //
       sf.hasTag("route", "ferry") || //
       sf.hasTag("aeroway", "runway", "taxiway")) && //
-      (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) &&
-      (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) {
+      (!sf.hasTag("building") /* see https://github.com/protomaps/basemaps/issues/249 */) && // 
+      (!sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed"))) { //
 
       int minZoom = 11;
 
@@ -254,7 +254,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       } else if (sf.hasTag("aeroway", "taxiway")) {
         minZoom = 10; //
       } else if (sf.hasTag("service", "yard", "siding", "crossover")) {
-        minZoom = 13;
+        minZoom = 13; //
       } else if (sf.hasTag("man_made", "pier")) {
         minZoom = 13; //
       }

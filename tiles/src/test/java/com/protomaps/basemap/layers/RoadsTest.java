@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.provider.CsvSource;
 
 
@@ -331,7 +330,7 @@ class RoadsTest extends LayerTest {
     "monorail",
     "narrow_gauge",
     "preserved",
-    "subway", 
+    "subway",
     "tram"
   })
   void testRailwaysSpecial(String railway) {
@@ -429,4 +428,54 @@ class RoadsTest extends LayerTest {
       )
     );
   }
+
+  @Test
+  void testAvoidBuildings() {
+    assertFeatures(12,
+      List.of(),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "aeroway", "runway",
+        "building", "a"
+      )
+    );
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "abandoned",
+    "razed",
+    "demolished",
+    "removed",
+    "construction",
+    "platform",
+    "proposed"
+  })
+  void testRailwayExcluded(String railway) {
+    assertFeatures(12,
+      List.of(),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "railway", railway
+      )
+    );
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "yard",
+    "siding",
+    "crossover"
+  })
+  void testRailwayService(String service) {
+    assertFeatures(13,
+      List.of(Map.of("_minzoom", 13)),
+      processWithRelationAndCoords("",
+        0, 0, 1, 1,
+        "railway", "a",
+        "service", service
+      )
+    );
+  }
+
 }
