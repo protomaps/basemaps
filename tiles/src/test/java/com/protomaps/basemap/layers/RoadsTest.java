@@ -263,13 +263,14 @@ class RoadsTest extends LayerTest {
   @Test
   void testService() {
     assertFeatures(12,
-      List.of(Map.of("service", "a",
-        "_minzoom", 14
+      List.of(Map.of("service", "b",
+        "_minzoom", 14,
+        "kind", "other"
       )),
       processWithRelationAndCoords("",
         0, 0, 1, 1,
-        "highway", "service",
-        "service", "a"
+        "highway", "a",
+        "service", "b"
       )
     );
   }

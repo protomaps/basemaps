@@ -38,9 +38,16 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   private static final MultiExpression.Index<Map<String, Object>> indexHighways = MultiExpression.of(List.of(
     rule(
+      with(),
+      use("kindDetail", fromTag("highway"))
+    ),
+    rule(
+      with("service"),
+      use("kindDetail", fromTag("service"))
+    ),
+    rule(
       with("highway", "motorway"),
       use("kind", "highway"),
-      use("kindDetail", "motorway"),
       use("minZoom", 3),
       use("minZoomShieldText", 7),
       use("minZoomNames", 11)
@@ -48,7 +55,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "motorway_link"),
       use("kind", "highway"),
-      use("kindDetail", "motorway_link"),
       use("minZoom", 3),
       use("minZoomShieldText", 12),
       use("minZoomNames", 11)
@@ -56,7 +62,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "trunk"),
       use("kind", "major_road"),
-      use("kindDetail", "trunk"),
       use("minZoom", 6),
       use("minZoomShieldText", 8),
       use("minZoomNames", 12)
@@ -64,7 +69,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "trunk_link"),
       use("kind", "major_road"),
-      use("kindDetail", "trunk_link"),
       use("minZoom", 7),
       use("minZoomShieldText", 12),
       use("minZoomNames", 12)
@@ -72,7 +76,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "primary"),
       use("kind", "major_road"),
-      use("kindDetail", "primary"),
       use("minZoom", 7),
       use("minZoomShieldText", 10),
       use("minZoomNames", 12)
@@ -80,14 +83,12 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "primary_link"),
       use("kind", "major_road"),
-      use("kindDetail", "primary_link"),
       use("minZoom", 7),
       use("minZoomNames", 13)
     ),
     rule(
       with("highway", "secondary"),
       use("kind", "major_road"),
-      use("kindDetail", "secondary"),
       use("minZoom", 9),
       use("minZoomShieldText", 11),
       use("minZoomNames", 12)
@@ -95,7 +96,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "secondary_link"),
       use("kind", "major_road"),
-      use("kindDetail", "secondary_link"),
       use("minZoom", 9),
       use("minZoomShieldText", 13),
       use("minZoomNames", 14)
@@ -103,7 +103,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "tertiary"),
       use("kind", "major_road"),
-      use("kindDetail", "tertiary"),
       use("minZoom", 9),
       use("minZoomShieldText", 12),
       use("minZoomNames", 13)
@@ -111,7 +110,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "tertiary_link"),
       use("kind", "major_road"),
-      use("kindDetail", "tertiary_link"),
       use("minZoom", 9),
       use("minZoomShieldText", 13),
       use("minZoomNames", 14)
@@ -125,7 +123,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         raceway
       """),
       use("kind", "minor_road"),
-      use("kindDetail", fromTag("highway")),
       use("minZoom", 12),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
@@ -156,7 +153,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         corridor
       """),
       use("kind", "path"),
-      use("kindDetail", fromTag("highway")),
       use("minZoom", 12),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
@@ -171,7 +167,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         steps
       """),
       use("kind", "path"),
-      use("kindDetail", fromTag("highway")),
       use("minZoom", 13),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
@@ -249,7 +244,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   private void processOsmHighways(SourceFeature sf, FeatureCollector features) {
 
     String highway = sf.getString("highway");
-    String service = "";
 
     Shield shield = locale.getShield(sf);
     Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
@@ -304,8 +298,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     }
 
     // Core OSM tags for different kinds of places
-    if (!service.isEmpty()) {
-      feat.setAttr("service", service);
+    if (kind.equals("other") && sf.hasTag("service")) {
+      feat.inheritAttrFromSource("service");
     }
 
     if (sf.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
