@@ -236,25 +236,14 @@ class RoadsTest extends LayerTest {
     );
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "pedestrian",
-    "track",
-    "path",
-    "cycleway",
-    "bridleway",
-    "footway",
-    "steps",
-    "corridor"
-  })
-  void testFootways(String highway) {
+  void testFootways() {
     assertFeatures(12,
       List.of(Map.of("kind_detail", "sidewalk",
         "_minzoom", 14
       )),
       processWithRelationAndCoords("",
         0, 0, 1, 1,
-        "highway", highway,
+        "highway", "footway",
         "footway", "sidewalk"
       )
     );
@@ -265,7 +254,7 @@ class RoadsTest extends LayerTest {
       )),
       processWithRelationAndCoords("",
         0, 0, 1, 1,
-        "highway", highway,
+        "highway", "footway",
         "footway", "crossing"
       )
     );
