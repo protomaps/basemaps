@@ -1,6 +1,11 @@
+Tiles 4.5.0
+------
+- Refactor of landuse to use Matchers [#399]
+- Fix roads trunk links minzoom [#403]
+
 Tiles 4.4.1
 ------
-Make FeatureID=0 consistent for preprocessed OSM land/water [#394]
+- Make FeatureID=0 consistent for preprocessed OSM land/water [#394]
 
 Tiles 4.4.0
 ------
