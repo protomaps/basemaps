@@ -64,6 +64,21 @@ class WaterTest extends LayerTest {
   }
 
   @Test
+  void kindDam() {
+    assertFeatures(15,
+      List.of(),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "waterway", "dam"
+        )),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
   void oceanLabel() {
     assertFeatures(12,
       List.of(Map.of("kind", "ocean")),
