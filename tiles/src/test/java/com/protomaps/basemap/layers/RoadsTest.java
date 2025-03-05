@@ -166,7 +166,7 @@ class RoadsTest extends LayerTest {
     "motorway, highway, motorway, 3, 7",
     "motorway_link, highway, motorway_link, 3, 7",
     "trunk, major_road, trunk, 6, 7",
-    "trunk_link, major_road, trunk_link, 7, 7",
+    "trunk_link, major_road, trunk_link, 6, 7",
     "primary, major_road, primary, 7, 7",
     "primary_link, major_road, primary_link, 7, 7",
     "secondary, major_road, secondary, 9, 9",
