@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 
-@SuppressWarnings("java:S1192")
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   private static final String US_FOREST_OPERATORS = """

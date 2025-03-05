@@ -13,6 +13,7 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
+@SuppressWarnings("java:S1192")
 public class Water implements ForwardingProfile.LayerPostProcessor {
 
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
