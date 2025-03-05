@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@SuppressWarnings("java:S1192")
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   private static final String US_FOREST_OPERATORS = """
@@ -61,7 +62,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       Wildlife Sanctuary
     """;
 
-  @SuppressWarnings("java:S1192")
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
     rule(
       with("""
