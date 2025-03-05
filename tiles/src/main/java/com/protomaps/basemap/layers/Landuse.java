@@ -61,6 +61,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       Wildlife Sanctuary
     """;
 
+  @SuppressWarnings("java:S1192")
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
     rule(
       with("""
