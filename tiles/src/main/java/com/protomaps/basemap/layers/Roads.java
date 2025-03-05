@@ -67,7 +67,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(
       with("highway", "trunk_link"),
       use("kind", "major_road"),
-      use("minZoom", 7),
+      use("minZoom", 6),
       use("minZoomShieldText", 12),
       use("minZoomNames", 12)
     ),
