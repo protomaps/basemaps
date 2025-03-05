@@ -1,3 +1,8 @@
+Tiles 4.6.0
+------
+- Symbolize kind=dam in landuse layer instead of waterway layer [#404]
+- Fix kind=grassland [#405]
+
 Tiles 4.5.0
 ------
 - Refactor of landuse to use Matchers [#399]

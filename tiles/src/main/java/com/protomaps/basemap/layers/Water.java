@@ -13,6 +13,7 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
+@SuppressWarnings("java:S1192") // Duplicated string literals
 public class Water implements ForwardingProfile.LayerPostProcessor {
 
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
@@ -109,7 +110,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     // polygons
     if (sf.canBePolygon() && (sf.hasTag("water") ||
-      sf.hasTag("waterway") ||
+      (sf.hasTag("waterway") && !sf.hasTag("waterway", "dam")) ||
       sf.hasTag("natural", "water") ||
       sf.hasTag("landuse", "reservoir") ||
       sf.hasTag("leisure", "swimming_pool"))) {
@@ -191,7 +192,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
     // lines
     if (sf.canBeLine() && !sf.canBePolygon() && sf.hasTag("waterway") &&
-      (!sf.hasTag("waterway", "riverbank", "reservoir"))) {
+      (!sf.hasTag("waterway", "riverbank", "reservoir", "dam"))) {
       int minZoom = 12;
       String kind = "other";
       if (sf.hasTag("waterway")) {

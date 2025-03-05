@@ -299,7 +299,7 @@ export function nolabels_layers(
       type: "fill",
       source: source,
       "source-layer": "landuse",
-      filter: ["==", "kind", "pedestrian"],
+      filter: ["in", "kind", "pedestrian", "dam"],
       paint: {
         "fill-color": t.pedestrian,
       },
