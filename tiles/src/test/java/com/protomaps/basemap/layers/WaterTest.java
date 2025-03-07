@@ -122,9 +122,10 @@ class WaterTest extends LayerTest {
     "Reservoir, ne_10m_lakes, 5, 5, lake",
     "Playa, ne_50m_lakes, 0, 4, playa",
     "Playa, ne_10m_lakes, 5, 5, playa",
-    
+    "Ocean, ne_50m_ocean, 0, 4, ocean",
+    "Ocean, ne_10m_ocean, 5, 5, ocean",
   })
-  void testNeLake(String featurecla, String sourceLayer, int minZoom, int maxZoom, String kind) {
+  void testNe(String featurecla, String sourceLayer, int minZoom, int maxZoom, String kind) {
     assertFeatures(1,
       List.of(Map.of("kind", kind, 
         "_minzoom", minZoom,
@@ -133,6 +134,21 @@ class WaterTest extends LayerTest {
       processWithPolygon("ne", sourceLayer,
         "featurecla", featurecla,
         "min_zoom", "1"
+      )
+    );
+  }
+
+  @Test
+  void testNeLakePoints() {
+    assertFeatures(1,
+      List.of(Map.of("kind", "lake", 
+        "_minzoom", 2,
+        "_maxzoom", 5
+      )),
+      processWithPolygon("ne", "ne_10m_lakes",
+        "featurecla", "Lake",
+        "min_label", "1",
+        "name", "a"
       )
     );
   }
