@@ -21,7 +21,6 @@ jobs:
       with:
         java-version: 21
         distribution: 'temurin'
-        cache: 'maven'
     - name: Run unit tests
       working-directory: tiles
       run: mvn --batch-mode test
