@@ -9,7 +9,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <planetiler.version>0.8.4-SNAPSHOT</planetiler.version>
+    <planetiler.version>0.8.5-SNAPSHOT</planetiler.version>
     <junit.version>5.10.0</junit.version>
     <mainClass>com.protomaps.basemap.Basemap</mainClass>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
