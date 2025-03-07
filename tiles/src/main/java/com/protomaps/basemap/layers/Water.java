@@ -27,7 +27,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
-    features.polygon(this.name())
+    features.polygon(LAYER_NAME)
       .setId(0)
       .setAttr("kind", "ocean")
       .setAttr("sort_rank", 200)
@@ -66,7 +66,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       }
 
       if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
-        features.polygon(this.name())
+        features.polygon(LAYER_NAME)
           // Core Tilezen schema properties
           .setAttr("kind", kind)
           .setAttr("sort_rank", 200)
@@ -79,7 +79,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       if (sourceLayer.equals("ne_10m_lakes")) {
         var minZoom = sf.getLong("min_label");
         if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name")) {
-          var waterLabelPosition = features.pointOnSurface(this.name())
+          var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
             .setAttr("kind", kind)
             .setAttr("min_zoom", minZoom + 1)
             .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
@@ -148,7 +148,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         kind = "swimming_pool";
       }
 
-      var feature = features.polygon(this.name())
+      var feature = features.polygon(LAYER_NAME)
         // Core Tilezen schema properties
         .setAttr("kind", kind)
         .setAttr("sort_rank", 200)
@@ -190,7 +190,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         }
       }
 
-      var feat = features.line(this.name())
+      var feat = features.line(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
         // Used for client-side label collisions
@@ -239,7 +239,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         minZoom = 3;
       }
 
-      var feat = features.point(this.name())
+      var feat = features.point(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
         // Used for client-side label collisions
@@ -331,7 +331,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         nameMinZoom = 14;
       }
 
-      var waterLabelPosition = features.pointOnSurface(this.name())
+      var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
         // Core Tilezen schema properties
         .setAttr("kind", kind)
         .setAttr("kind_detail", kindDetail)
