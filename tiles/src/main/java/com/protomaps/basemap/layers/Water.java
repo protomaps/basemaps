@@ -27,7 +27,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
-    features.polygon(this.name())
+    features.polygon(LAYER_NAME)
       .setId(0)
       .setAttr("kind", "ocean")
       .setAttr("sort_rank", 200)
@@ -37,8 +37,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
     var kind = "";
-    var alkaline = 0;
-    var reservoir = 0;
     var themeMinZoom = 0;
     var themeMaxZoom = 0;
 
@@ -62,40 +60,28 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       }
 
       switch (sf.getString("featurecla")) {
-        case "Alkaline Lake" -> {
-          kind = "lake";
-          alkaline = 1;
-        }
-        case "Lake" -> kind = "lake";
-        case "Reservoir" -> {
-          kind = "lake";
-          reservoir = 1;
-        }
+        case "Alkaline Lake", "Lake", "Reservoir" -> kind = "lake";
         case "Playa" -> kind = "playa";
         case "Ocean" -> kind = "ocean";
       }
 
       if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
-        features.polygon(this.name())
+        features.polygon(LAYER_NAME)
           // Core Tilezen schema properties
           .setAttr("kind", kind)
           .setAttr("sort_rank", 200)
-          //.setAttr("min_zoom", sf.getLong("min_zoom"))
-          .setZoomRange(
-            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")) - 1,
-            themeMaxZoom)
+          .setZoomRange(Math.max((int) sf.getLong("min_zoom") - 1, themeMinZoom), themeMaxZoom)
           // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
           .setBufferPixels(8);
       }
 
       if (sourceLayer.equals("ne_10m_lakes")) {
         var minZoom = sf.getLong("min_label");
-        if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
-          var waterLabelPosition = features.pointOnSurface(this.name())
+        if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name")) {
+          var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
             .setAttr("kind", kind)
             .setAttr("min_zoom", minZoom + 1)
-            .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
-              (int) Double.parseDouble(sf.getString("min_label")) + 1, themeMaxZoom)
+            .setZoomRange((int) sf.getLong("min_label") + 1, 5)
             .setBufferPixels(128);
 
           // Server sort features so client label collisions are pre-sorted
@@ -116,8 +102,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       sf.hasTag("leisure", "swimming_pool"))) {
       String kind = "other";
       String kindDetail = "";
-      var reservoir = false;
-      var alkaline = false;
 
       // coalesce values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
@@ -138,12 +122,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
             kindDetail = "lake";
           }
-          if (sf.hasTag("water", "reservoir")) {
-            reservoir = true;
-          }
-          if (sf.hasTag("water", "lagoon", "salt", "salt_pool")) {
-            alkaline = true;
-          }
         }
       } else if (sf.hasTag("waterway", "riverbank", "dock", "canal", "river", "stream", "ditch", "drain")) {
         kind = "water";
@@ -153,14 +131,13 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       } else if (sf.hasTag("landuse", "reservoir")) {
         kind = "water";
         kindDetail = sf.getString("landuse");
-        reservoir = true;
       } else if (sf.hasTag("leisure", "swimming_pool")) {
         kind = "swimming_pool";
       } else if (sf.hasTag("amenity", "swimming_pool")) {
         kind = "swimming_pool";
       }
 
-      var feature = features.polygon(this.name())
+      var feature = features.polygon(LAYER_NAME)
         // Core Tilezen schema properties
         .setAttr("kind", kind)
         .setAttr("sort_rank", 200)
@@ -176,12 +153,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       // Core Tilezen schema properties
       if (!kindDetail.isEmpty()) {
         feature.setAttr("kind_detail", kindDetail);
-      }
-      if (sf.hasTag("water", "reservoir") || reservoir) {
-        feature.setAttr("reservoir", true);
-      }
-      if (sf.hasTag("water", "lagoon", "salt", "salt_pool") || alkaline) {
-        feature.setAttr("alkaline", true);
       }
       if (sf.hasTag("intermittent", "yes")) {
         feature.setAttr("intermittent", true);
@@ -202,7 +173,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         }
       }
 
-      var feat = features.line(this.name())
+      var feat = features.line(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
         // Used for client-side label collisions
@@ -232,6 +203,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         feat.setAttr("level", 0);
       }
 
+
       // Server sort features so client label collisions are pre-sorted
       feat.setSortKey(minZoom);
 
@@ -251,7 +223,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         minZoom = 3;
       }
 
-      var feat = features.point(this.name())
+      var feat = features.point(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
         // Used for client-side label collisions
@@ -275,8 +247,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       String kind = "other";
       var kindDetail = "";
       var nameMinZoom = 15;
-      var reservoir = false;
-      var alkaline = false;
       Double wayArea = 0.0;
 
       try {
@@ -301,13 +271,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
             kindDetail = "lake";
-          }
-
-          if (sf.hasTag("water", "reservoir")) {
-            reservoir = true;
-          }
-          if (sf.hasTag("water", "lagoon", "salt", "salt_pool")) {
-            alkaline = true;
           }
         }
       } else if (sf.hasTag("waterway", "riverbank", "dock", "canal", "river", "stream", "ditch", "drain")) {
@@ -343,7 +306,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         nameMinZoom = 14;
       }
 
-      var waterLabelPosition = features.pointOnSurface(this.name())
+      var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
         // Core Tilezen schema properties
         .setAttr("kind", kind)
         .setAttr("kind_detail", kindDetail)
@@ -363,12 +326,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       if (!kindDetail.isEmpty()) {
         waterLabelPosition.setAttr("kind_detail", kindDetail);
       }
-      if (sf.hasTag("water", "reservoir") || reservoir) {
-        waterLabelPosition.setAttr("reservoir", true);
-      }
-      if (sf.hasTag("water", "lagoon", "salt", "salt_pool") || alkaline) {
-        waterLabelPosition.setAttr("alkaline", true);
-      }
       if (sf.hasTag("intermittent", "yes")) {
         waterLabelPosition.setAttr("intermittent", true);
       }
@@ -382,7 +339,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    // TODO filter to only polygons
     return FeatureMerge.mergeOverlappingPolygons(items, 1);
   }
 }

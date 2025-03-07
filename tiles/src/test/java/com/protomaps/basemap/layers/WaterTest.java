@@ -2,13 +2,34 @@ package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.*;
 
+import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class WaterTest extends LayerTest {
+
+  private FeatureCollector processWithPolygon(String source, String sourceLayer, String... arguments) {
+    Map<String, Object> tags = new HashMap<>();
+    List<String> argumentList = List.of(arguments);
+    if (argumentList.size() % 2 == 0) {
+      for (int i = 0; i < argumentList.size(); i += 2) {
+        tags.put(argumentList.get(i), argumentList.get(i + 1));
+      }
+    }
+    return process(SimpleFeature.create(
+      newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+      tags,
+      source,
+      sourceLayer,
+      1
+    ));
+  }
+
   @Test
   void preparedOsm() {
     assertFeatures(15,
@@ -89,5 +110,47 @@ class WaterTest extends LayerTest {
         null,
         0
       )));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "Lake, ne_50m_lakes, 0, 4, lake",
+    "Alkaline Lake, ne_50m_lakes, 0, 4, lake",
+    "Reservoir, ne_50m_lakes, 0, 4, lake",
+    "Lake, ne_10m_lakes, 5, 5, lake",
+    "Alkaline Lake, ne_10m_lakes, 5, 5, lake",
+    "Reservoir, ne_10m_lakes, 5, 5, lake",
+    "Playa, ne_50m_lakes, 0, 4, playa",
+    "Playa, ne_10m_lakes, 5, 5, playa",
+    "Ocean, ne_50m_ocean, 0, 4, ocean",
+    "Ocean, ne_10m_ocean, 5, 5, ocean",
+  })
+  void testNe(String featurecla, String sourceLayer, int minZoom, int maxZoom, String kind) {
+    assertFeatures(1,
+      List.of(Map.of("kind", kind, 
+        "_minzoom", minZoom,
+        "_maxzoom", maxZoom
+      )),
+      processWithPolygon("ne", sourceLayer,
+        "featurecla", featurecla,
+        "min_zoom", "1"
+      )
+    );
+  }
+
+  @Test
+  void testNeLakePoints() {
+    assertFeatures(1,
+      List.of(Map.of("kind", "lake", 
+        "_minzoom", 2,
+        "_maxzoom", 5,
+        "name", "a"
+      )),
+      processWithPolygon("ne", "ne_10m_lakes",
+        "featurecla", "Lake",
+        "min_label", "1",
+        "name", "a"
+      )
+    );
   }
 }
