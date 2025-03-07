@@ -60,13 +60,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       }
 
       switch (sf.getString("featurecla")) {
-        case "Alkaline Lake" -> {
-          kind = "lake";
-        }
-        case "Lake" -> kind = "lake";
-        case "Reservoir" -> {
-          kind = "lake";
-        }
+        case "Alkaline Lake", "Lake", "Reservoir" -> kind = "lake";
         case "Playa" -> kind = "playa";
         case "Ocean" -> kind = "ocean";
       }
@@ -77,16 +71,14 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           .setAttr("kind", kind)
           .setAttr("sort_rank", 200)
           //.setAttr("min_zoom", sf.getLong("min_zoom"))
-          .setZoomRange(
-            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")) - 1,
-            themeMaxZoom)
+          .setZoomRange((int) sf.getLong("min_zoom") - 1, themeMaxZoom)
           // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
           .setBufferPixels(8);
       }
 
       if (sourceLayer.equals("ne_10m_lakes")) {
         var minZoom = sf.getLong("min_label");
-        if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
+        if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name")) {
           var waterLabelPosition = features.pointOnSurface(this.name())
             .setAttr("kind", kind)
             .setAttr("min_zoom", minZoom + 1)
