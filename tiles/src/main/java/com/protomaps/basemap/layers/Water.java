@@ -104,8 +104,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       sf.hasTag("leisure", "swimming_pool"))) {
       String kind = "other";
       String kindDetail = "";
-      var reservoir = false;
-      var alkaline = false;
 
       // coalesce values across tags to single kind value
       if (sf.hasTag("natural", "water", "bay", "strait", "fjord")) {
@@ -126,12 +124,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
             kindDetail = "lake";
           }
-          if (sf.hasTag("water", "reservoir")) {
-            reservoir = true;
-          }
-          if (sf.hasTag("water", "lagoon", "salt", "salt_pool")) {
-            alkaline = true;
-          }
         }
       } else if (sf.hasTag("waterway", "riverbank", "dock", "canal", "river", "stream", "ditch", "drain")) {
         kind = "water";
@@ -141,7 +133,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       } else if (sf.hasTag("landuse", "reservoir")) {
         kind = "water";
         kindDetail = sf.getString("landuse");
-        reservoir = true;
       } else if (sf.hasTag("leisure", "swimming_pool")) {
         kind = "swimming_pool";
       } else if (sf.hasTag("amenity", "swimming_pool")) {
@@ -164,12 +155,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       // Core Tilezen schema properties
       if (!kindDetail.isEmpty()) {
         feature.setAttr("kind_detail", kindDetail);
-      }
-      if (sf.hasTag("water", "reservoir") || reservoir) {
-        feature.setAttr("reservoir", true);
-      }
-      if (sf.hasTag("water", "lagoon", "salt", "salt_pool") || alkaline) {
-        feature.setAttr("alkaline", true);
       }
       if (sf.hasTag("intermittent", "yes")) {
         feature.setAttr("intermittent", true);
@@ -264,8 +249,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       String kind = "other";
       var kindDetail = "";
       var nameMinZoom = 15;
-      var reservoir = false;
-      var alkaline = false;
       Double wayArea = 0.0;
 
       try {
@@ -290,13 +273,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
           if (sf.hasTag("water", "lagoon", "oxbow", "pond", "reservoir", "wastewater")) {
             kindDetail = "lake";
-          }
-
-          if (sf.hasTag("water", "reservoir")) {
-            reservoir = true;
-          }
-          if (sf.hasTag("water", "lagoon", "salt", "salt_pool")) {
-            alkaline = true;
           }
         }
       } else if (sf.hasTag("waterway", "riverbank", "dock", "canal", "river", "stream", "ditch", "drain")) {
@@ -351,12 +327,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
       if (!kindDetail.isEmpty()) {
         waterLabelPosition.setAttr("kind_detail", kindDetail);
-      }
-      if (sf.hasTag("water", "reservoir") || reservoir) {
-        waterLabelPosition.setAttr("reservoir", true);
-      }
-      if (sf.hasTag("water", "lagoon", "salt", "salt_pool") || alkaline) {
-        waterLabelPosition.setAttr("alkaline", true);
       }
       if (sf.hasTag("intermittent", "yes")) {
         waterLabelPosition.setAttr("intermittent", true);
