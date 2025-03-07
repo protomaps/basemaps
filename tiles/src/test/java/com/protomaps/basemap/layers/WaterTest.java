@@ -117,9 +117,9 @@ class WaterTest extends LayerTest {
     "Lake, ne_50m_lakes, 0, 4, lake",
     "Alkaline Lake, ne_50m_lakes, 0, 4, lake",
     "Reservoir, ne_50m_lakes, 0, 4, lake",
-    "Lake, ne_10m_lakes, 0, 5, lake",
-    "Alkaline Lake, ne_10m_lakes, 0, 5, lake",
-    "Reservoir, ne_10m_lakes, 0, 5, lake",
+    "Lake, ne_10m_lakes, 5, 5, lake",
+    "Alkaline Lake, ne_10m_lakes, 5, 5, lake",
+    "Reservoir, ne_10m_lakes, 5, 5, lake",
   })
   void testNeLake(String featurecla, String sourceLayer, int minZoom, int maxZoom, String kind) {
     assertFeatures(1,
