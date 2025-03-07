@@ -37,8 +37,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
     var kind = "";
-    var alkaline = 0;
-    var reservoir = 0;
     var themeMinZoom = 0;
     var themeMaxZoom = 0;
 
@@ -64,12 +62,10 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       switch (sf.getString("featurecla")) {
         case "Alkaline Lake" -> {
           kind = "lake";
-          alkaline = 1;
         }
         case "Lake" -> kind = "lake";
         case "Reservoir" -> {
           kind = "lake";
-          reservoir = 1;
         }
         case "Playa" -> kind = "playa";
         case "Ocean" -> kind = "ocean";
