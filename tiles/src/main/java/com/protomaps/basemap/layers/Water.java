@@ -37,6 +37,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   public void processNe(SourceFeature sf, FeatureCollector features) {
     var sourceLayer = sf.getSourceLayer();
     var kind = "";
+    var themeMinZoom = 0;
     var themeMaxZoom = 0;
 
     // Only process certain Natural Earth layers
@@ -45,12 +46,16 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       sourceLayer.equals("ne_10m_ocean") ||
       sourceLayer.equals("ne_10m_lakes")) {
       if (sourceLayer.equals("ne_50m_ocean")) {
+        themeMinZoom = 0;
         themeMaxZoom = 4;
       } else if (sourceLayer.equals("ne_50m_lakes")) {
+        themeMinZoom = 0;
         themeMaxZoom = 4;
       } else if (sourceLayer.equals("ne_10m_ocean")) {
+        themeMinZoom = 5;
         themeMaxZoom = 5;
       } else if (sourceLayer.equals("ne_10m_lakes")) {
+        themeMinZoom = 5;
         themeMaxZoom = 5;
       }
 
@@ -65,8 +70,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           // Core Tilezen schema properties
           .setAttr("kind", kind)
           .setAttr("sort_rank", 200)
-          //.setAttr("min_zoom", sf.getLong("min_zoom"))
-          .setZoomRange((int) sf.getLong("min_zoom") - 1, themeMaxZoom)
+          .setZoomRange(Math.max((int) sf.getLong("min_zoom") - 1, themeMinZoom), themeMaxZoom)
           // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
           .setBufferPixels(8);
       }
@@ -77,7 +81,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
             .setAttr("kind", kind)
             .setAttr("min_zoom", minZoom + 1)
-            .setZoomRange((int) sf.getLong("min_label") + 1, themeMaxZoom)
+            .setZoomRange(Math.max((int) sf.getLong("min_label") + 1, themeMinZoom), themeMaxZoom)
             .setBufferPixels(128);
 
           // Server sort features so client label collisions are pre-sorted
@@ -335,7 +339,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    // TODO filter to only polygons
     return FeatureMerge.mergeOverlappingPolygons(items, 1);
   }
 }
