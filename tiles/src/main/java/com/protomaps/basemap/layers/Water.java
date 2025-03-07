@@ -220,7 +220,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         feat.setAttr("level", 0);
       }
 
-      
+
       // Server sort features so client label collisions are pre-sorted
       feat.setSortKey(minZoom);
 
