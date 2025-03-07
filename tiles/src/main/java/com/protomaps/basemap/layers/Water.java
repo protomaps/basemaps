@@ -82,8 +82,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
             .setAttr("kind", kind)
             .setAttr("min_zoom", minZoom + 1)
-            .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
-              (int) Double.parseDouble(sf.getString("min_label")) + 1, themeMaxZoom)
+            .setZoomRange((int) sf.getLong("min_label") + 1, themeMaxZoom)
             .setBufferPixels(128);
 
           // Server sort features so client label collisions are pre-sorted
