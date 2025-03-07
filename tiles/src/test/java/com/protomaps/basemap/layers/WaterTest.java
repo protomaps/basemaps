@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class WaterTest extends LayerTest {
 
@@ -110,12 +112,23 @@ class WaterTest extends LayerTest {
       )));
   }
 
-  @Test
-  void testNeLake() {
+  @ParameterizedTest
+  @CsvSource({
+    "Lake, ne_50m_lakes, 0, 4, lake",
+    "Alkaline Lake, ne_50m_lakes, 0, 4, lake",
+    "Reservoir, ne_50m_lakes, 0, 4, lake",
+    "Lake, ne_10m_lakes, 0, 5, lake",
+    "Alkaline Lake, ne_10m_lakes, 0, 5, lake",
+    "Reservoir, ne_10m_lakes, 0, 5, lake",
+  })
+  void testNeLake(String featurecla, String sourceLayer, int minZoom, int maxZoom, String kind) {
     assertFeatures(1,
-      List.of(Map.of("kind", "lake")),
-      processWithPolygon("ne", "ne_50m_lakes",
-        "featurecla", "Alkaline Lake",
+      List.of(Map.of("kind", kind, 
+        "_minzoom", minZoom,
+        "_maxzoom", maxZoom
+      )),
+      processWithPolygon("ne", sourceLayer,
+        "featurecla", featurecla,
         "min_zoom", "1"
       )
     );
