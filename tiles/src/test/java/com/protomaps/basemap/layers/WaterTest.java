@@ -143,7 +143,8 @@ class WaterTest extends LayerTest {
     assertFeatures(1,
       List.of(Map.of("kind", "lake", 
         "_minzoom", 2,
-        "_maxzoom", 5
+        "_maxzoom", 5,
+        "name", "a"
       )),
       processWithPolygon("ne", "ne_10m_lakes",
         "featurecla", "Lake",
