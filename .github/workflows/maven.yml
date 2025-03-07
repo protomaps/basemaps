@@ -21,9 +21,10 @@ jobs:
       with:
         java-version: 21
         distribution: 'temurin'
+        cache: 'maven'
     - name: Run unit tests
       working-directory: tiles
-      run: mvn --batch-mode test
+      run: mvn --batch-mode -no-transfer-progress test
     - name: Ensure code formatted with mvn spotless:apply
       working-directory: tiles
       run: mvn spotless:check
