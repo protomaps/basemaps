@@ -2,6 +2,7 @@ package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.*;
 
+import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,24 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class WaterTest extends LayerTest {
+
+  private FeatureCollector processWithPolygon(String source, String sourceLayer, String... arguments) {
+    Map<String, Object> tags = new HashMap<>();
+    List<String> argumentList = List.of(arguments);
+    if (argumentList.size() % 2 == 0) {
+      for (int i = 0; i < argumentList.size(); i += 2) {
+        tags.put(argumentList.get(i), argumentList.get(i + 1));
+      }
+    }
+    return process(SimpleFeature.create(
+      newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+      tags,
+      source,
+      sourceLayer,
+      1
+    ));
+  }
+
   @Test
   void preparedOsm() {
     assertFeatures(15,
@@ -89,5 +108,16 @@ class WaterTest extends LayerTest {
         null,
         0
       )));
+  }
+
+  @Test
+  void testNeLake() {
+    assertFeatures(1,
+      List.of(Map.of("kind", "lake")),
+      processWithPolygon("ne", "ne_50m_lakes",
+        "featurecla", "Alkaline Lake",
+        "min_zoom", "1"
+      )
+    );
   }
 }
