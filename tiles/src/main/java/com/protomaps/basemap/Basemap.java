@@ -115,7 +115,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.6.0";
+    return "4.6.1";
   }
 
   @Override
@@ -169,7 +169,7 @@ public class Basemap extends ForwardingProfile {
         "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
       .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
+      .addGeoPackageSource("EPSG:4326:lon_first", "landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
         "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");

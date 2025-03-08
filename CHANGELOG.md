@@ -1,3 +1,7 @@
+Tiles 4.6.1
+------
+- hotfix reversed X/Y order of landcover related to planetiler 8.5.0
+
 Tiles 4.6.0
 ------
 - Symbolize kind=dam in landuse layer instead of waterway layer [#404]
