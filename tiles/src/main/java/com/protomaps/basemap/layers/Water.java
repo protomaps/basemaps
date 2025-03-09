@@ -1,9 +1,18 @@
 package com.protomaps.basemap.layers;
 
+import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getInteger;
+import static com.protomaps.basemap.feature.Matcher.getString;
+import static com.protomaps.basemap.feature.Matcher.rule;
+import static com.protomaps.basemap.feature.Matcher.use;
+import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.without;
+
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
@@ -12,6 +21,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("java:S1192") // Duplicated string literals
 public class Water implements ForwardingProfile.LayerPostProcessor {
@@ -20,6 +30,34 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public static final String LAYER_NAME = "water";
+
+  private static final MultiExpression.Index<Map<String, Object>> neIndex = MultiExpression.of(List.of(
+    rule(
+      with("featurecla", "Ocean"),
+      use("minZoom", fromTag("min_zoom")),
+      use("kind", "ocean")
+    ),
+    rule(
+      with("featurecla", "Playa"),
+      use("minZoom", fromTag("min_zoom")),
+      use("kind", "playa")
+    ),
+    rule(
+      with("featurecla", "Reservoir"),
+      use("minZoom", fromTag("min_zoom")),
+      use("kind", "lake")
+    ),
+    rule(
+      with("featurecla", "Lake"),
+      use("minZoom", fromTag("min_zoom")),
+      use("kind", "lake")
+    ),
+    rule(
+      with("featurecla", "Alkaline Lake"),
+      use("minZoom", fromTag("min_zoom")),
+      use("kind", "lake")
+    )
+  )).index();
 
   @Override
   public String name() {
@@ -35,76 +73,43 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
-    var sourceLayer = sf.getSourceLayer();
-    var kind = "";
-    var alkaline = 0;
-    var reservoir = 0;
-    var themeMinZoom = 0;
-    var themeMaxZoom = 0;
 
-    // Only process certain Natural Earth layers
-    // Notably the landscan derived urban areas and NA roads supplement themes causes problems otherwise
-    if (sourceLayer.equals("ne_50m_ocean") || sourceLayer.equals("ne_50m_lakes") ||
-      sourceLayer.equals("ne_10m_ocean") ||
-      sourceLayer.equals("ne_10m_lakes")) {
-      if (sourceLayer.equals("ne_50m_ocean")) {
-        themeMinZoom = 0;
-        themeMaxZoom = 4;
-      } else if (sourceLayer.equals("ne_50m_lakes")) {
-        themeMinZoom = 0;
-        themeMaxZoom = 4;
-      } else if (sourceLayer.equals("ne_10m_ocean")) {
-        themeMinZoom = 5;
-        themeMaxZoom = 5;
-      } else if (sourceLayer.equals("ne_10m_lakes")) {
-        themeMinZoom = 5;
-        themeMaxZoom = 5;
-      }
-
-      switch (sf.getString("featurecla")) {
-        case "Alkaline Lake" -> {
-          kind = "lake";
-          alkaline = 1;
-        }
-        case "Lake" -> kind = "lake";
-        case "Reservoir" -> {
-          kind = "lake";
-          reservoir = 1;
-        }
-        case "Playa" -> kind = "playa";
-        case "Ocean" -> kind = "ocean";
-      }
-
-      if (!kind.isEmpty() && sf.hasTag("min_zoom")) {
-        features.polygon(this.name())
-          // Core Tilezen schema properties
-          .setAttr("kind", kind)
-          .setAttr("sort_rank", 200)
-          //.setAttr("min_zoom", sf.getLong("min_zoom"))
-          .setZoomRange(
-            sf.getString("min_zoom") == null ? themeMinZoom : (int) Double.parseDouble(sf.getString("min_zoom")) - 1,
-            themeMaxZoom)
-          // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
-          .setBufferPixels(8);
-      }
-
-      if (sourceLayer.equals("ne_10m_lakes")) {
-        var minZoom = sf.getLong("min_label");
-        if (!kind.isEmpty() && sf.hasTag("min_label") && sf.hasTag("name") && sf.getTag("name") != null) {
-          var waterLabelPosition = features.pointOnSurface(this.name())
-            .setAttr("kind", kind)
-            .setAttr("min_zoom", minZoom + 1)
-            .setZoomRange(sf.getString("min_label") == null ? themeMinZoom :
-              (int) Double.parseDouble(sf.getString("min_label")) + 1, themeMaxZoom)
-            .setBufferPixels(128);
-
-          // Server sort features so client label collisions are pre-sorted
-          waterLabelPosition.setSortKey((int) minZoom);
-
-          NeNames.setNeNames(waterLabelPosition, sf, 0);
-        }
-      }
+    var matches = neIndex.getMatches(sf);
+    if (matches.isEmpty()) {
+      return;
     }
+
+    String kind = getString(sf, matches, "kind", null);
+    if (kind == null) {
+      return;
+    }
+
+    Integer minZoom = getInteger(sf, matches, "minZoom", null);
+    
+    if (minZoom != null) {
+      var themeMinZoom = sf.getSourceLayer().contains("_50m_") ? 0 : 5;
+      var themeMaxZoom = sf.getSourceLayer().contains("_50m_") ? 4 : 5;
+
+      features.polygon(LAYER_NAME)
+        .setAttr("kind", kind)
+        .setAttr("sort_rank", 200)
+        .setZoomRange(0, themeMaxZoom)
+        // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
+        .setBufferPixels(8);
+    }
+
+    if (sf.getSourceLayer().equals("ne_10m_lakes") && sf.hasTag("min_label") && sf.hasTag("name")) {
+      minZoom = (int) sf.getLong("min_label");
+      var waterLabelPosition = features.pointOnSurface(this.name())
+        .setAttr("kind", kind)
+        .setAttr("min_zoom", minZoom + 1)
+        .setZoomRange(minZoom + 1, 5)
+        .setSortKey(minZoom)
+        .setBufferPixels(128);
+
+      NeNames.setNeNames(waterLabelPosition, sf, 0);
+    }
+    
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {

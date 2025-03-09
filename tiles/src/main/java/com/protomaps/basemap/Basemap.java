@@ -84,8 +84,8 @@ public class Basemap extends ForwardingProfile {
     if (layer.isEmpty() || layer.equals(Water.LAYER_NAME)) {
       var water = new Water();
       registerHandler(water);
-      registerSourceHandler("osm", water::processOsm);
-      registerSourceHandler("osm_water", water::processPreparedOsm);
+      // registerSourceHandler("osm", water::processOsm);
+      // registerSourceHandler("osm_water", water::processPreparedOsm);
       registerSourceHandler("ne", water::processNe);
     }
 
