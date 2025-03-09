@@ -178,13 +178,13 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       with("name"),
       with("place", "sea"),
       use("kind", "sea"),
-      use("minZoom", 3)
+      use("minZoom", 6)
     ),
     rule(
       with("name"),
       with("place", "ocean"),
       use("kind", "ocean"),
-      use("minZoom", 0)
+      use("minZoom", 6)
     )
   )).index();
 
@@ -308,7 +308,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       var feat = features.point(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
-        .setAttr("min_zoom", minZoom + 1)
+        .setAttr("min_zoom", minZoom)
         .setSortKey(minZoom)
         .setZoomRange(minZoom, 15);
 
