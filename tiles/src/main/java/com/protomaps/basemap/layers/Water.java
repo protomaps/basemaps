@@ -84,22 +84,24 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    Integer minZoom = getInteger(sf, matches, "minZoom", null);
+    String minZoomString = getString(sf, matches, "minZoom", null);
     
-    if (minZoom != null) {
-      var themeMinZoom = sf.getSourceLayer().contains("_50m_") ? 0 : 5;
-      var themeMaxZoom = sf.getSourceLayer().contains("_50m_") ? 4 : 5;
+    if (minZoomString != null) {
+      int minZoom = (int) Math.round(Double.parseDouble(minZoomString));
+
+      int themeMinZoom = sf.getSourceLayer().contains("_50m_") ? 0 : 5;
+      int themeMaxZoom = sf.getSourceLayer().contains("_50m_") ? 4 : 5;
 
       features.polygon(LAYER_NAME)
         .setAttr("kind", kind)
         .setAttr("sort_rank", 200)
-        .setZoomRange(0, themeMaxZoom)
+        .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
         // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
         .setBufferPixels(8);
     }
 
     if (sf.getSourceLayer().equals("ne_10m_lakes") && sf.hasTag("min_label") && sf.hasTag("name")) {
-      minZoom = (int) sf.getLong("min_label");
+      int minZoom = (int) Math.round(Double.parseDouble(sf.getString("min_label")));
       var waterLabelPosition = features.pointOnSurface(this.name())
         .setAttr("kind", kind)
         .setAttr("min_zoom", minZoom + 1)
