@@ -59,6 +59,136 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
+  private static final MultiExpression.Index<Map<String, Object>> osmIndex = MultiExpression.of(List.of(
+    rule(
+      with("natural", "reef"),
+      use("kind", "reef")
+    ),
+    rule(
+      with("natural", "reef"),
+      with("""
+        reef
+        coral
+        rock
+        sand
+      """),
+      use("kindDetail", fromTag("reef"))
+    ),
+    rule(
+      with("waterway", "drain"),
+      use("kind", "drain"),
+      use("minZoom", 16)
+    ),
+    rule(
+      with("waterway", "ditch"),
+      use("kind", "ditch"),
+      use("minZoom", 16)
+    ),
+    rule(
+      with("waterway", "stream"),
+      use("kind", "stream"),
+      use("minZoom", 11)
+    ),
+    rule(
+      with("waterway", "river"),
+      use("kind", "river"),
+      use("minZoom", 9)
+    ),
+    rule(
+      with("waterway", "canal"),
+      use("kind", "canal"),
+      use("minZoom", 11)
+    ),
+    rule(
+      with("waterway", "canal"),
+      with("boat", "yes"),
+      use("kind", "canal"),
+      use("minZoom", 9)
+    ),
+    rule(
+      with("amenity", "swimming_pool"),
+      use("kind", "swimming_pool")
+    ),
+    rule(
+      with("leisure", "swimming_pool"),
+      use("kind", "swimming_pool")
+    ),
+    rule(
+      with("landuse", "reservoir"),
+      use("kind", "lake")
+    ),
+    rule(
+      with("landuse", "basin"),
+      use("kind", "basin")
+    ),
+    rule(
+      with("""
+        natural
+        fjord
+        strait
+        bay
+      """),
+      use("kind", fromTag("natural"))
+    ),
+    rule(
+      with("natural", "water"),
+      use("kind", "water")
+    ),
+    rule(
+      with("natural", "water"),
+      with("""
+        water
+        basin
+        canal
+        ditch
+        drain
+        lake
+        river
+        stream
+      """),
+      use("kindDetail", fromTag("water"))
+    ),
+    rule(
+      with("natural", "water"),
+      with("""
+        water
+        lagoon
+        oxbow
+        pond
+        reservoir
+        wastewater
+      """),
+      use("kindDetail", "lake")
+    ),
+    rule(
+      with("amenity", "fountain"),
+      use("kind", "fountain")
+    ),
+    rule(
+      with("waterway", "dock"),
+      use("kind", "dock")
+    ),
+    rule(
+      with("waterway", "riverbank"),
+      use("kind", "riverbank")
+    ),
+    rule(
+      with("covered", "yes"),
+      use("kind", null)
+    ),
+    rule(
+      with("name"),
+      with("place", "sea"),
+      use("kind", "sea")
+    ),
+    rule(
+      with("name"),
+      with("place", "ocean"),
+      use("kind", "ocean")
+    )
+  )).index();
+
+
   @Override
   public String name() {
     return LAYER_NAME;
