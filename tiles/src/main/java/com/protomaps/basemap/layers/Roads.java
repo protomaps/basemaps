@@ -433,6 +433,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setAttr("route", sf.getString("route"))
       .setAttr("service", sf.getString("service"))
       .setAttr("sort_rank", 400)
+      .setMinPixelSize(0)
+      .setPixelTolerance(0)
       .setZoomRange(minZoom, 15);
 
     if (!kindDetail.isEmpty()) {
