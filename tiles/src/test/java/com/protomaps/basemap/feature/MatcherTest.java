@@ -135,6 +135,27 @@ class MatcherTest {
   }
 
   @Test
+  void testGetStringWithNull() {
+    var index = MultiExpression.of(List.of(
+      rule(
+        with("a"),
+        use("b", null)
+      )
+    )).index();
+
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "something"),
+      "osm",
+      null,
+      0
+    );
+
+    var matches = index.getMatches(sf);
+    assertEquals("d", getString(sf, matches, "b", "d"));
+  }
+
+  @Test
   void testGetStringWithAB() {
     var index = MultiExpression.of(List.of(
       rule(
