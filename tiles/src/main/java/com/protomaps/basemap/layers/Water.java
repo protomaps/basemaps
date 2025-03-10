@@ -1,6 +1,7 @@
 package com.protomaps.basemap.layers;
 
 import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getBoolean;
 import static com.protomaps.basemap.feature.Matcher.getInteger;
 import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
@@ -126,7 +127,8 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           strait
           bay
         """),
-      use("kind", fromTag("natural"))
+      use("kind", fromTag("natural")),
+      use("keepPolygon", false)
     ),
     rule(
       with("natural", "water"),
@@ -178,12 +180,14 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       with("name"),
       with("place", "sea"),
       use("kind", "sea"),
+      use("keepPolygon", false),
       use("minZoom", 6)
     ),
     rule(
       with("name"),
       with("place", "ocean"),
       use("kind", "ocean"),
+      use("keepPolygon", false),
       use("minZoom", 6)
     )
   )).index();
@@ -255,9 +259,10 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     }
 
     String kindDetail = getString(sf, matches, "kindDetail", null);
+    boolean keepPolygon = getBoolean(sf, matches, "keepPolygon", true);
 
     // polygons
-    if (sf.canBePolygon()) {
+    if (sf.canBePolygon() && keepPolygon) {
       features.polygon(LAYER_NAME)
         .setAttr("kind", kind)
         .setAttr("kind_detail", kindDetail)
