@@ -202,6 +202,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       .setId(0)
       .setAttr("kind", "ocean")
       .setAttr("sort_rank", 200)
+      // .setPixelTolerance(0.2)
       .setZoomRange(6, 15).setBufferPixels(8);
   }
 
@@ -228,6 +229,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       features.polygon(LAYER_NAME)
         .setAttr("kind", kind)
         .setAttr("sort_rank", 200)
+        // .setPixelTolerance(0.2)
         .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
         // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
         .setBufferPixels(8);
@@ -272,6 +274,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
+        // .setPixelTolerance(0.2)
         .setZoomRange(6, 15)
         .setMinPixelSize(1.0)
         .setBufferPixels(8);
@@ -378,11 +381,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    items = FeatureMerge.mergeLineStrings(items,
-      0.5, // after merging, remove lines that are still less than 0.5px long
-      0.1, // simplify output linestrings using a 0.1px tolerance
-      4 // remove any detail more than 4px outside the tile boundary
-    );
+    items = FeatureMerge.mergeLineStrings(items, 0.5, 0.2, 4.0);
     return FeatureMerge.mergeOverlappingPolygons(items, 1);
   }
 }
