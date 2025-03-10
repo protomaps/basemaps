@@ -7,6 +7,7 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
@@ -55,6 +56,16 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       with("featurecla", "Alkaline Lake"),
       use("minZoom", fromTag("min_zoom")),
       use("kind", "lake")
+    ),
+    rule(
+      without("""
+          _source_layer
+          ne_50m_ocean
+          ne_50m_lakes
+          ne_10m_ocean
+          ne_10m_lakes
+        """),
+      use("kind", null)
     )
   )).index();
 
@@ -192,6 +203,8 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
+  private final double PIXEL_TOLERANCE = 0.2;
+
   @Override
   public String name() {
     return LAYER_NAME;
@@ -202,11 +215,12 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       .setId(0)
       .setAttr("kind", "ocean")
       .setAttr("sort_rank", 200)
-      // .setPixelTolerance(0.2)
+      .setPixelTolerance(PIXEL_TOLERANCE)
       .setZoomRange(6, 15).setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
+    sf.setTag("_source_layer", sf.getSourceLayer());
 
     var matches = neIndex.getMatches(sf);
     if (matches.isEmpty()) {
@@ -229,7 +243,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       features.polygon(LAYER_NAME)
         .setAttr("kind", kind)
         .setAttr("sort_rank", 200)
-        // .setPixelTolerance(0.2)
+        .setPixelTolerance(PIXEL_TOLERANCE)
         .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
         // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
         .setBufferPixels(8);
@@ -274,7 +288,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
-        // .setPixelTolerance(0.2)
+        .setPixelTolerance(PIXEL_TOLERANCE)
         .setZoomRange(6, 15)
         .setMinPixelSize(1.0)
         .setBufferPixels(8);
@@ -381,7 +395,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    items = FeatureMerge.mergeLineStrings(items, 0.5, 0.2, 4.0);
-    return FeatureMerge.mergeOverlappingPolygons(items, 1);
+    items = FeatureMerge.mergeLineStrings(items, 0.5, PIXEL_TOLERANCE, 4.0);
+    return FeatureMerge.mergeNearbyPolygons(items, 1.0, 1.0, 0.5, 0.5);
   }
 }
