@@ -288,6 +288,8 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
         .setAttr("sort_rank", 200)
         .setSortKey(minZoom)
+        .setMinPixelSize(0)
+        .setPixelTolerance(0)
         .setZoomRange(minZoom, 15);
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
@@ -376,6 +378,11 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
+    items = FeatureMerge.mergeLineStrings(items,
+      0.5, // after merging, remove lines that are still less than 0.5px long
+      0.1, // simplify output linestrings using a 0.1px tolerance
+      4 // remove any detail more than 4px outside the tile boundary
+    );
     return FeatureMerge.mergeOverlappingPolygons(items, 1);
   }
 }
