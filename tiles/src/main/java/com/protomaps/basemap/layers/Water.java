@@ -23,6 +23,7 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class Water implements ForwardingProfile.LayerPostProcessor {
 
@@ -87,17 +88,17 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     rule(
       with("waterway", "drain"),
       use("kind", "drain"),
-      use("minZoom", 16)
+      use("minZoom", 15)
     ),
     rule(
       with("waterway", "ditch"),
       use("kind", "ditch"),
-      use("minZoom", 16)
+      use("minZoom", 15)
     ),
     rule(
       with("waterway", "stream"),
       use("kind", "stream"),
-      use("minZoom", 11)
+      use("minZoom", 13)
     ),
     rule(
       with("waterway", "river"),
@@ -107,7 +108,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     rule(
       with("waterway", "canal"),
       use("kind", "canal"),
-      use("minZoom", 11)
+      use("minZoom", 10)
     ),
     rule(
       with("waterway", "canal"),
@@ -203,8 +204,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
-  private final double PIXEL_TOLERANCE = 0.2;
-
   @Override
   public String name() {
     return LAYER_NAME;
@@ -215,7 +214,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       .setId(0)
       .setAttr("kind", "ocean")
       .setAttr("sort_rank", 200)
-      .setPixelTolerance(PIXEL_TOLERANCE)
+      .setPixelTolerance(Earth.PIXEL_TOLERANCE)
       .setZoomRange(6, 15).setBufferPixels(8);
   }
 
@@ -243,7 +242,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       features.polygon(LAYER_NAME)
         .setAttr("kind", kind)
         .setAttr("sort_rank", 200)
-        .setPixelTolerance(PIXEL_TOLERANCE)
+        .setPixelTolerance(Earth.PIXEL_TOLERANCE)
         .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
         // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
         .setBufferPixels(8);
@@ -277,6 +276,8 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     String kindDetail = getString(sf, matches, "kindDetail", null);
     boolean keepPolygon = getBoolean(sf, matches, "keepPolygon", true);
 
+    int extraAttrMinzoom = 14;
+
     // polygons
     if (sf.canBePolygon() && keepPolygon) {
       features.polygon(LAYER_NAME)
@@ -285,11 +286,11 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttr("sort_rank", 200)
         // Core OSM tags for different kinds of places
         // Add less common attributes only at higher zooms
-        .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
-        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
-        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
-        .setPixelTolerance(PIXEL_TOLERANCE)
-        .setZoomRange(6, 15)
+        .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
+        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
+        .setPixelTolerance(0.0)
+        .setMinZoom(6)
         .setMinPixelSize(1.0)
         .setBufferPixels(8);
     }
@@ -302,24 +303,24 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
         .setAttr("min_zoom", minZoom + 1)
-        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
         .setAttr("sort_rank", 200)
         .setSortKey(minZoom)
         .setMinPixelSize(0)
         .setPixelTolerance(0)
-        .setZoomRange(minZoom, 15);
+        .setMinZoom(minZoom);
 
       // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
       // Because of MapLibre performance and draw order limitations, generally the boolean is sufficient
       // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
       if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
-        feat.setAttr("level", 1);
+        feat.setAttrWithMinzoom("level", 1, extraAttrMinzoom);
       } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
-        feat.setAttr("level", -1);
+        feat.setAttrWithMinzoom("level", -1, extraAttrMinzoom);
       } else if (sf.hasTag("layer", "-6", "-5", "-4", "-3", "-2", "-1")) {
-        feat.setAttr("level", -1);
+        feat.setAttrWithMinzoom("level", -1, extraAttrMinzoom);
       } else {
-        feat.setAttr("level", 0);
+        feat.setAttrWithMinzoom("level", 0, extraAttrMinzoom);
       }
 
       OsmNames.setOsmNames(feat, sf, 0);
@@ -381,10 +382,10 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         // 512 px zooms versus 256 px logical zooms
         .setAttr("min_zoom", nameMinZoom + 1)
         // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
-        .setAttrWithMinzoom("bridge", sf.getString("bridge"), 12)
-        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), 12)
-        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 12)
-        .setZoomRange(nameMinZoom, 15)
+        .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
+        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
+        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
+        .setMinZoom(nameMinZoom)
         .setAttr("sort_rank", 200)
         .setSortKey(nameMinZoom)
         .setBufferPixels(128);
@@ -395,7 +396,25 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    items = FeatureMerge.mergeLineStrings(items, 0.5, PIXEL_TOLERANCE, 4.0);
-    return FeatureMerge.mergeNearbyPolygons(items, 1.0, 1.0, 0.5, 0.5);
+    items = FeatureMerge.mergeLineStrings(items, 0.5, Earth.PIXEL_TOLERANCE, 4.0);
+
+    List<VectorTile.Feature> riverLikeItems = new ArrayList<>();
+    List<VectorTile.Feature> notRiverLikeItems = new ArrayList<>();
+    for (var item : items) {
+      if (item.hasTag("kind_detail", "canal", "ditch", "drain", "river", "stream")) {
+        riverLikeItems.add(item);
+      }
+      else {
+        notRiverLikeItems.add(item);
+      }
+    }
+    // Meandering rivers, streams, etc should not be buffered, as otherwise they turn into pearl-string-like structures
+    riverLikeItems = FeatureMerge.mergeNearbyPolygons(riverLikeItems, Earth.MIN_AREA, Earth.MIN_AREA, 0.5, Earth.BUFFER);
+    notRiverLikeItems = FeatureMerge.mergeNearbyPolygons(notRiverLikeItems, Earth.MIN_AREA, Earth.MIN_AREA, 0.5, Earth.BUFFER);
+    
+    List<VectorTile.Feature> result = new ArrayList<>();
+    result.addAll(riverLikeItems);
+    result.addAll(notRiverLikeItems);
+    return result;
   }
 }

@@ -15,16 +15,24 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "earth";
 
+  public static final double BUFFER = 0.0625;
+  public static final double MIN_AREA = 10.0;
+
+  public static final double PIXEL_TOLERANCE = 0.2;
+
   @Override
   public String name() {
     return LAYER_NAME;
   }
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
-    features.polygon(this.name())
+    features.polygon(LAYER_NAME)
       .setId(0)
       .setAttr("kind", "earth")
-      .setZoomRange(6, 15).setBufferPixels(8);
+      .setPixelTolerance(PIXEL_TOLERANCE)
+      .setMinPixelSize(1.0)
+      .setMinZoom(6)
+      .setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
@@ -56,7 +64,7 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && !sf.canBePolygon() && sf.hasTag("natural", "cliff")) {
       int minZoom = 12;
-      var feat = features.line(this.name())
+      var feat = features.line(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("min_zoom", minZoom + 1)
         .setAttr("kind", "cliff")
@@ -68,6 +76,6 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    return FeatureMerge.mergeOverlappingPolygons(items, 1);
+    return FeatureMerge.mergeNearbyPolygons(items, MIN_AREA, MIN_AREA, 0.5, BUFFER);
   }
 }
