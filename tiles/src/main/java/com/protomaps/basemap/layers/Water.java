@@ -215,7 +215,8 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       .setAttr("kind", "ocean")
       .setAttr("sort_rank", 200)
       .setPixelTolerance(Earth.PIXEL_TOLERANCE)
-      .setZoomRange(6, 15).setBufferPixels(8);
+      .setMinZoom(6)
+      .setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
@@ -244,7 +245,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttr("sort_rank", 200)
         .setPixelTolerance(Earth.PIXEL_TOLERANCE)
         .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
-        // (nvkelso 20230802) Don't set setMinPixelSize here else small islands chains like Hawaii are garbled
+        .setMinPixelSize(1.0)
         .setBufferPixels(8);
     }
 
@@ -284,12 +285,10 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttr("kind", kind)
         .setAttr("kind_detail", kindDetail)
         .setAttr("sort_rank", 200)
-        // Core OSM tags for different kinds of places
-        // Add less common attributes only at higher zooms
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
-        .setPixelTolerance(0.0)
+        .setPixelTolerance(Earth.PIXEL_TOLERANCE)
         .setMinZoom(6)
         .setMinPixelSize(1.0)
         .setBufferPixels(8);
@@ -381,7 +380,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         // predictable client-side label collisions
         // 512 px zooms versus 256 px logical zooms
         .setAttr("min_zoom", nameMinZoom + 1)
-        // Add less common core Tilezen attributes only at higher zooms (will continue to v4)
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
@@ -397,24 +395,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     items = FeatureMerge.mergeLineStrings(items, 0.5, Earth.PIXEL_TOLERANCE, 4.0);
-
-    List<VectorTile.Feature> riverLikeItems = new ArrayList<>();
-    List<VectorTile.Feature> notRiverLikeItems = new ArrayList<>();
-    for (var item : items) {
-      if (item.hasTag("kind_detail", "canal", "ditch", "drain", "river", "stream")) {
-        riverLikeItems.add(item);
-      }
-      else {
-        notRiverLikeItems.add(item);
-      }
-    }
-    // Meandering rivers, streams, etc should not be buffered, as otherwise they turn into pearl-string-like structures
-    riverLikeItems = FeatureMerge.mergeNearbyPolygons(riverLikeItems, Earth.MIN_AREA, Earth.MIN_AREA, 0.5, Earth.BUFFER);
-    notRiverLikeItems = FeatureMerge.mergeNearbyPolygons(notRiverLikeItems, Earth.MIN_AREA, Earth.MIN_AREA, 0.5, Earth.BUFFER);
-    
-    List<VectorTile.Feature> result = new ArrayList<>();
-    result.addAll(riverLikeItems);
-    result.addAll(notRiverLikeItems);
-    return result;
+    return FeatureMerge.mergeNearbyPolygons(items, Earth.MIN_AREA, Earth.MIN_AREA, 0.5, Earth.BUFFER);
   }
 }
