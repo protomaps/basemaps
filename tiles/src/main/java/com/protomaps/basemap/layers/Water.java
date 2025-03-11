@@ -188,20 +188,45 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       use("kind", null)
     ),
     rule(
-      with("name"),
       with("place", "sea"),
       use("kind", "sea"),
       use("keepPolygon", false),
       use("minZoom", 6)
     ),
     rule(
-      with("name"),
+      with("place", "sea"),
+      with("""
+        name:en
+        North Atlantic Ocean
+        South Atlantic Ocean
+        Caribbean Sea
+        Gulf of Mexico
+        Mediterranean Sea
+        North Sea
+        Philippine Sea
+        Tasman Sea
+        Fiji Sea
+        South China Sea
+        North Pacific Ocean
+        South Pacific Ocean
+        Scotia Sea
+        Weddell Sea
+        Indian Ocean
+        Bering Sea
+        Gulf of Alaska
+        Gulf of Guinea
+      """),
+      use("minZoom", 3)
+    ),
+    rule(
       with("place", "ocean"),
       use("kind", "ocean"),
       use("keepPolygon", false),
-      use("minZoom", 6)
+      use("minZoom", 0)
     )
   )).index();
+
+
 
   @Override
   public String name() {
@@ -333,7 +358,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttr("kind", kind)
         .setAttr("min_zoom", minZoom)
         .setSortKey(minZoom)
-        .setZoomRange(minZoom, 15);
+        .setMinZoom(minZoom);
 
       OsmNames.setOsmNames(feat, sf, 0);
     }
