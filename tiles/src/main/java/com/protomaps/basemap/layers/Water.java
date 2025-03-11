@@ -23,7 +23,6 @@ import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
 public class Water implements ForwardingProfile.LayerPostProcessor {
 

@@ -6,10 +6,8 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 import java.util.Map;
-
 import org.locationtech.jts.geom.Point;
 
 public class Landcover implements ForwardingProfile.LayerPostProcessor {
@@ -20,7 +18,7 @@ public class Landcover implements ForwardingProfile.LayerPostProcessor {
   static final Map<String, Integer> sortKeyMapping =
     Map.of("barren", 0, "snow", 1, "crop", 2, "shrub", 3, "grass", 4, "trees", 5);
 
-  public void processNe(SourceFeature sf, FeatureCollector features) {   
+  public void processNe(SourceFeature sf, FeatureCollector features) {
     // Daylight landcover uses ESA WorldCover which only goes to a latitude of roughly 80 deg S.
     // Parts of Antarctica therefore get no landcover = glacier from Daylight.
     // To fix this, we add glaciated areas from Natural Earth in Antarctica.

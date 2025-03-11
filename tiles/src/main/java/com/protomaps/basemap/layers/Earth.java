@@ -41,7 +41,7 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
     }
     int minZoom = sourceLayer.equals("ne_50m_land") ? 0 : 4;
     int maxZoom = sourceLayer.equals("ne_50m_land") ? 4 : 5;
-    
+
     features.polygon(LAYER_NAME)
       .setAttr("kind", "earth")
       .setZoomRange(minZoom, maxZoom)
