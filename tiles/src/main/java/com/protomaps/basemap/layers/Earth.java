@@ -39,7 +39,7 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
     if (!(sourceLayer.equals("ne_50m_land") || sourceLayer.equals("ne_10m_land"))) {
       return;
     }
-    int minZoom = sourceLayer.equals("ne_50m_land") ? 0 : 4;
+    int minZoom = sourceLayer.equals("ne_50m_land") ? 0 : 5;
     int maxZoom = sourceLayer.equals("ne_50m_land") ? 4 : 5;
 
     features.polygon(LAYER_NAME)
