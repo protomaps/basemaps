@@ -189,12 +189,55 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("place", "sea"),
+      with("_can_be_polygon"),
       use("kind", "sea"),
-      use("keepPolygon", false),
+      use("keepPolygon", false)
+    ),
+    rule(
+      with("place", "sea"),
+      with("_can_be_polygon"),
+      with("""
+        name:en
+        Caspian Sea
+        Red Sea
+        Persian Gulf
+        Sea of Oman
+        Gulf of Aden
+        Gulf of Thailand
+        Sea of Japan
+      """),
+      use("minZoom", 5)
+    ),
+    rule(
+      with("place", "sea"),
+      with("_can_be_polygon"),
+      with("""
+        name:en
+        Arabian Sea
+        Bay of Bengal
+        Black Sea
+      """),
+      use("minZoom", 3)
+    ),
+    rule(
+      with("place", "sea"),
+      with("_can_be_polygon"),
+      with("""
+          name:en
+          Black Sea
+          Caspian Sea
+      """),
+      use("nameOverride", fromTag("name:en"))
+    ),
+    rule(
+      with("place", "sea"),
+      with("_is_point"),
+      use("kind", "sea"),
       use("minZoom", 6)
     ),
     rule(
       with("place", "sea"),
+      with("_is_point"),
       with("""
         name:en
         North Atlantic Ocean
@@ -216,17 +259,15 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         Gulf of Alaska
         Gulf of Guinea
       """),
+      use("kind", "sea"),
       use("minZoom", 3)
     ),
     rule(
       with("place", "ocean"),
       use("kind", "ocean"),
-      use("keepPolygon", false),
       use("minZoom", 0)
     )
   )).index();
-
-
 
   @Override
   public String name() {
@@ -272,21 +313,16 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setMinPixelSize(1.0)
         .setBufferPixels(8);
     }
-
-    if (sf.getSourceLayer().equals("ne_10m_lakes") && sf.hasTag("min_label") && sf.hasTag("name")) {
-      int minZoom = (int) Math.round(Double.parseDouble(sf.getString("min_label")));
-      var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
-        .setAttr("kind", kind)
-        .setAttr("min_zoom", minZoom + 1)
-        .setZoomRange(minZoom + 1, 5)
-        .setSortKey(minZoom)
-        .setBufferPixels(128);
-
-      NeNames.setNeNames(waterLabelPosition, sf, 0);
-    }
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
+    if (!sf.tags().isEmpty() && sf.isPoint()) {
+      sf.setTag("_is_point", "yes");
+    }
+
+    if (!sf.tags().isEmpty() && sf.canBePolygon()) {
+      sf.setTag("_can_be_polygon", "yes");
+    }
 
     var matches = osmIndex.getMatches(sf);
     if (matches.isEmpty()) {
@@ -298,6 +334,11 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
+    String nameOverride = getString(sf, matches, "nameOverride", null);
+    if (nameOverride != null) {
+      sf.setTag("name", nameOverride);
+    }
+    
     String kindDetail = getString(sf, matches, "kindDetail", null);
     boolean keepPolygon = getBoolean(sf, matches, "keepPolygon", true);
 
@@ -333,19 +374,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setPixelTolerance(0)
         .setMinZoom(minZoom);
 
-      // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
-      // Because of MapLibre performance and draw order limitations, generally the boolean is sufficient
-      // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
-      if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
-        feat.setAttrWithMinzoom("level", 1, extraAttrMinzoom);
-      } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
-        feat.setAttrWithMinzoom("level", -1, extraAttrMinzoom);
-      } else if (sf.hasTag("layer", "-6", "-5", "-4", "-3", "-2", "-1")) {
-        feat.setAttrWithMinzoom("level", -1, extraAttrMinzoom);
-      } else {
-        feat.setAttrWithMinzoom("level", 0, extraAttrMinzoom);
-      }
-
       OsmNames.setOsmNames(feat, sf, 0);
     }
 
@@ -356,7 +384,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       var feat = features.point(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
-        .setAttr("min_zoom", minZoom)
+        .setAttr("min_zoom", minZoom + 1)
         .setSortKey(minZoom)
         .setMinZoom(minZoom);
 
@@ -374,28 +402,14 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         e.log("Exception in way area calculation");
       }
 
-      // We don't want to show too many water labels at early zooms else it crowds the map
-      // TODO: (nvkelso 20230621) These numbers are super wonky, they should instead be sq meters in web mercator prj
-      // Zoom 5 and earlier from Natural Earth instead (see above)
-      if (wayArea > 25000) { //500000000
-        nameMinZoom = 6;
-      } else if (wayArea > 8000) { //500000000
-        nameMinZoom = 7;
-      } else if (wayArea > 3000) { //200000000
-        nameMinZoom = 8;
-      } else if (wayArea > 500) { //40000000
-        nameMinZoom = 9;
-      } else if (wayArea > 200) { //8000000
-        nameMinZoom = 10;
-      } else if (wayArea > 30) { //1000000
-        nameMinZoom = 11;
-      } else if (wayArea > 25) { //500000
-        nameMinZoom = 12;
-      } else if (wayArea > 0.5) { //50000
-        nameMinZoom = 13;
-      } else if (wayArea > 0.05) { //10000
-        nameMinZoom = 14;
+      for (int i = 6; i < 15; ++i) {
+        if (wayArea > Math.pow(4, 15 - i)) {
+          nameMinZoom = i;
+          break;
+        }
       }
+
+      nameMinZoom = getInteger(sf, matches, "minZoom", nameMinZoom);
 
       var waterLabelPosition = features.pointOnSurface(LAYER_NAME)
         .setAttr("kind", kind)
@@ -404,9 +418,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         // predictable client-side label collisions
         // 512 px zooms versus 256 px logical zooms
         .setAttr("min_zoom", nameMinZoom + 1)
-        .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
-        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
-        .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
         .setMinZoom(nameMinZoom)
         .setAttr("sort_rank", 200)
         .setSortKey(nameMinZoom)
