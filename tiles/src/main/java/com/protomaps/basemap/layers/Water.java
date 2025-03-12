@@ -19,7 +19,6 @@ import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.names.NeNames;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "water";
 
-  private static final MultiExpression.Index<Map<String, Object>> neIndex = MultiExpression.of(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> neIndex = MultiExpression.ofOrdered(List.of(
     rule(
       with("featurecla", "Ocean"),
       use("minZoom", fromTag("min_zoom")),
@@ -69,7 +68,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
-  private static final MultiExpression.Index<Map<String, Object>> osmIndex = MultiExpression.of(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> osmIndex = MultiExpression.ofOrdered(List.of(
     rule(
       with("natural", "reef"),
       use("kind", "reef")
@@ -197,37 +196,47 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       with("place", "sea"),
       with("_can_be_polygon"),
       with("""
-        name:en
-        Caspian Sea
-        Red Sea
-        Persian Gulf
-        Sea of Oman
-        Gulf of Aden
-        Gulf of Thailand
-        Sea of Japan
-      """),
+          name:en
+          North Sea
+          Alboran Sea
+        """),
+      use("kind", null)
+    ),
+    rule(
+      with("place", "sea"),
+      with("_can_be_polygon"),
+      with("""
+          name:en
+          Caspian Sea
+          Red Sea
+          Persian Gulf
+          Sea of Oman
+          Gulf of Aden
+          Gulf of Thailand
+          Sea of Japan
+        """),
       use("minZoom", 5)
     ),
     rule(
       with("place", "sea"),
       with("_can_be_polygon"),
       with("""
-        name:en
-        Arabian Sea
-        Bay of Bengal
-        Black Sea
-      """),
+          name:en
+          Arabian Sea
+          Bay of Bengal
+          Black Sea
+        """),
       use("minZoom", 3)
     ),
     rule(
       with("place", "sea"),
       with("""
-          name:en
-          North Sea
-          Baltic Sea
-          Black Sea
-          Caspian Sea
-      """),
+            name:en
+            North Sea
+            Baltic Sea
+            Black Sea
+            Caspian Sea
+        """),
       use("nameOverride", fromTag("name:en"))
     ),
     rule(
@@ -240,27 +249,26 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       with("place", "sea"),
       with("_is_point"),
       with("""
-        name:en
-        North Atlantic Ocean
-        South Atlantic Ocean
-        Caribbean Sea
-        Gulf of Mexico
-        Mediterranean Sea
-        North Sea
-        Philippine Sea
-        Tasman Sea
-        Fiji Sea
-        South China Sea
-        North Pacific Ocean
-        South Pacific Ocean
-        Scotia Sea
-        Weddell Sea
-        Indian Ocean
-        Bering Sea
-        Gulf of Alaska
-        Gulf of Guinea
-      """),
-      use("kind", "sea"),
+          name:en
+          North Atlantic Ocean
+          South Atlantic Ocean
+          Caribbean Sea
+          Gulf of Mexico
+          Mediterranean Sea
+          North Sea
+          Philippine Sea
+          Tasman Sea
+          Fiji Sea
+          South China Sea
+          North Pacific Ocean
+          South Pacific Ocean
+          Scotia Sea
+          Weddell Sea
+          Indian Ocean
+          Bering Sea
+          Gulf of Alaska
+          Gulf of Guinea
+        """),
       use("minZoom", 3)
     ),
     rule(
@@ -339,7 +347,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     if (nameOverride != null) {
       sf.setTag("name", nameOverride);
     }
-    
+
     String kindDetail = getString(sf, matches, "kindDetail", null);
     boolean keepPolygon = getBoolean(sf, matches, "keepPolygon", true);
 
@@ -381,7 +389,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     // points
     if (sf.isPoint()) {
       int minZoom = getInteger(sf, matches, "minZoom", 12);
-
       var feat = features.point(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)

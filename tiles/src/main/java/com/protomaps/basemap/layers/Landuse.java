@@ -61,7 +61,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       Wildlife Sanctuary
     """;
 
-  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.ofOrdered(List.of(
     rule(
       with("""
           aeroway
