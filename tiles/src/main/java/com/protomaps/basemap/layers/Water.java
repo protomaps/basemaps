@@ -388,7 +388,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
     // points
     if (sf.isPoint()) {
-      int minZoom = getInteger(sf, matches, "minZoom", 12);
+      int minZoom = getInteger(sf, matches, "minZoom", 15);
       var feat = features.point(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("kind", kind)
