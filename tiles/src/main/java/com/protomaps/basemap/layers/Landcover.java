@@ -35,7 +35,7 @@ public class Landcover implements ForwardingProfile.LayerPostProcessor {
             .setPixelTolerance(Earth.PIXEL_TOLERANCE);
         }
       } catch (GeometryException e) {
-        System.out.println("Error: " + e);
+        e.log("Error: " + e);
       }
     }
   }
