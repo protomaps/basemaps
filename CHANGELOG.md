@@ -1,3 +1,7 @@
+Tiles 4.6.1
+------
+- Refactor of roads layer to use Matchers [#407]
+
 Tiles 4.6.0
 ------
 - Symbolize kind=dam in landuse layer instead of waterway layer [#404]
