@@ -411,7 +411,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
       }
 
       for (int i = 6; i < 15; ++i) {
-        if (wayArea > Math.pow(4, 15 - i)) {
+        if (wayArea > Math.pow(4.0, 15.0 - i)) {
           nameMinZoom = i;
           break;
         }
