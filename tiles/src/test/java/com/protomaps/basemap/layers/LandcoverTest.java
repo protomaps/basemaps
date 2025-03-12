@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -31,5 +32,32 @@ class LandcoverTest extends LayerTest {
         null,
         0
       )));
+  }
+
+  @Test
+  void testNe() {
+    assertFeatures(15,
+      List.of(),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of()),
+        "ne",
+        "ne_10m_glaciated_areas",
+        1
+      ))
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "glacier",
+        "_minzoom", 0,
+        "_maxzoom", 7)),
+      process(SimpleFeature.create(
+        newPolygon(0, -75, 0, -76, 1, -76, 0, -75),
+        new HashMap<>(Map.of()),
+        "ne",
+        "ne_10m_glaciated_areas",
+        1
+      ))
+    );
   }
 }
