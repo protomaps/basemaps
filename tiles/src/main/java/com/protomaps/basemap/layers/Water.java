@@ -221,9 +221,10 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("place", "sea"),
-      with("_can_be_polygon"),
       with("""
           name:en
+          North Sea
+          Baltic Sea
           Black Sea
           Caspian Sea
       """),
