@@ -199,17 +199,20 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
           trunk
           trunk_link
         """),
-      use("minZoom", 7)
+      use("minZoom", 7),
+      use("kind", "major_road")
     ),
     rule(
       with("_country", "US"),
       with("_r_network_US:US"),
-      use("minZoom", 6)
+      use("minZoom", 6),
+      use("kind", "major_road")
     ),
     rule(
       with("_country", "US"),
       with("_r_network_US:I"),
-      use("minZoom", 3)
+      use("minZoom", 3),
+      use("kind", "highway")
     )
   )).index();
 
