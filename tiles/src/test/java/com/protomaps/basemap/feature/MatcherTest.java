@@ -83,7 +83,7 @@ class MatcherTest {
 
   @Test
   void testGetStringWith() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", "b")
@@ -106,7 +106,7 @@ class MatcherTest {
 
   @Test
   void testGetStringWithA() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with("a"),
         use("b", "c")
@@ -157,7 +157,7 @@ class MatcherTest {
 
   @Test
   void testGetStringWithAB() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with("a", "b"),
         use("c", "d")
@@ -187,7 +187,7 @@ class MatcherTest {
 
   @Test
   void testGetStringWithoutAB() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         without("a", "b"),
         use("c", "d")
@@ -217,7 +217,7 @@ class MatcherTest {
 
   @Test
   void testGetStringWithABC() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with("a", "b", "c"),
         use("d", "e")
@@ -257,7 +257,7 @@ class MatcherTest {
 
   @Test
   void testGetStringMultipleUse() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", "b"),
@@ -279,7 +279,7 @@ class MatcherTest {
 
   @Test
   void testGetStringLastRule() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", "b")
@@ -303,7 +303,7 @@ class MatcherTest {
 
   @Test
   void testGetStringTypeMismatch() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", 1)
@@ -323,7 +323,7 @@ class MatcherTest {
 
   @Test
   void testGetStringFromTag() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", fromTag("b"))
@@ -353,7 +353,7 @@ class MatcherTest {
 
   @Test
   void testGetInteger() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", 1)
@@ -373,7 +373,7 @@ class MatcherTest {
 
   @Test
   void testGetIntegerFromTag() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", fromTag("b"))
@@ -413,7 +413,7 @@ class MatcherTest {
 
   @Test
   void testGetDouble() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", 1.5)
@@ -433,7 +433,7 @@ class MatcherTest {
 
   @Test
   void testGetDoubleFromTag() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", fromTag("b"))
@@ -473,7 +473,7 @@ class MatcherTest {
 
   @Test
   void testGetBoolean() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", true)
@@ -493,7 +493,7 @@ class MatcherTest {
 
   @Test
   void testGetBooleanFromTag() {
-    var index = MultiExpression.of(List.of(
+    var index = MultiExpression.ofOrdered(List.of(
       rule(
         with(),
         use("a", fromTag("b"))

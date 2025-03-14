@@ -30,7 +30,7 @@ import java.util.Map;
  * 
  * <pre>
  * <code>
- *var index = MultiExpression.of(List.of(rule(with("highway", "primary"), use("kind", "major_road")))).index();
+ *var index = MultiExpression.ofOrdered(List.of(rule(with("highway", "primary"), use("kind", "major_road")))).index();
  *var matches = index.getMatches(sourceFeature);
  *String kind = getString(sourceFeature, matches, "kind", "other");
  * </code>
@@ -163,7 +163,7 @@ public class Matcher {
    * 
    * <pre>
    * <code>
-   *var index = MultiExpression.of(List.of(rule(with("highway", "primary", "secondary"), use("kind", fromTag("highway"))))).index();
+   *var index = MultiExpression.ofOrdered(List.of(rule(with("highway", "primary", "secondary"), use("kind", fromTag("highway"))))).index();
    *var matches = index.getMatches(sourceFeature);
    *String kind = getString(sourceFeature, matches, "kind", "other");
    * </code>

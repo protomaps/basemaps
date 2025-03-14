@@ -36,4 +36,32 @@ class EarthTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void testNe() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "earth",
+        "_minzoom", 0,
+        "_maxzoom", 4)),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of()),
+        "ne",
+        "ne_50m_land",
+        1
+      ))
+    );
+    assertFeatures(15,
+      List.of(Map.of("kind", "earth",
+        "_minzoom", 5,
+        "_maxzoom", 5)),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of()),
+        "ne",
+        "ne_10m_land",
+        1
+      ))
+    );
+  }
 }

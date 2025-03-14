@@ -9,11 +9,16 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
-import org.locationtech.jts.geom.Point;
 
+@SuppressWarnings("java:S1192") // Duplicated string literals
 public class Earth implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "earth";
+
+  public static final double BUFFER = 0.0625;
+  public static final double MIN_AREA = 10.0;
+
+  public static final double PIXEL_TOLERANCE = 0.2;
 
   @Override
   public String name() {
@@ -21,46 +26,40 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
-    features.polygon(this.name())
+    features.polygon(LAYER_NAME)
       .setId(0)
       .setAttr("kind", "earth")
-      .setZoomRange(6, 15).setBufferPixels(8);
+      .setPixelTolerance(PIXEL_TOLERANCE)
+      .setMinPixelSize(1.0)
+      .setMinZoom(6)
+      .setBufferPixels(8);
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
-    var sourceLayer = sf.getSourceLayer();
-    if (sourceLayer.equals("ne_50m_land")) {
-      features.polygon(this.name()).setZoomRange(0, 4).setBufferPixels(8).setAttr("kind", "earth");
-    } else if (sourceLayer.equals("ne_10m_land")) {
-      features.polygon(this.name()).setZoomRange(5, 5).setBufferPixels(8).setAttr("kind", "earth");
+    String sourceLayer = sf.getSourceLayer();
+    if (!(sourceLayer.equals("ne_50m_land") || sourceLayer.equals("ne_10m_land"))) {
+      return;
     }
-    // Daylight landcover uses ESA WorldCover which only goes to a latitude of roughly 80 deg S.
-    // Parts of Antarctica therefore get no landcover = glacier from Daylight.
-    // To fix this, we add glaciated areas from Natural Earth in Antarctica.
-    if (sourceLayer.equals("ne_10m_glaciated_areas")) {
-      try {
-        Point centroid = (Point) sf.centroid();
-        // Web Mercator Y = 0.7 is roughly 60 deg South, i.e., Antarctica.
-        if (centroid.getY() > 0.7) {
-          features.polygon("landcover")
-            .setAttr("kind", "glacier")
-            .setZoomRange(0, 7)
-            .setMinPixelSize(0.0);
-        }
-      } catch (GeometryException e) {
-        System.out.println("Error: " + e);
-      }
-    }
+    int minZoom = sourceLayer.equals("ne_50m_land") ? 0 : 5;
+    int maxZoom = sourceLayer.equals("ne_50m_land") ? 4 : 5;
+
+    features.polygon(LAYER_NAME)
+      .setAttr("kind", "earth")
+      .setZoomRange(minZoom, maxZoom)
+      .setPixelTolerance(PIXEL_TOLERANCE)
+      .setMinPixelSize(1.0)
+      .setBufferPixels(8);
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (sf.canBeLine() && !sf.canBePolygon() && sf.hasTag("natural", "cliff")) {
       int minZoom = 12;
-      var feat = features.line(this.name())
+      var feat = features.line(LAYER_NAME)
         .setId(FeatureId.create(sf))
         .setAttr("min_zoom", minZoom + 1)
         .setAttr("kind", "cliff")
-        .setZoomRange(minZoom, 15);
+        .setPixelTolerance(PIXEL_TOLERANCE)
+        .setMinZoom(minZoom);
 
       OsmNames.setOsmNames(feat, sf, 0);
     }
@@ -68,6 +67,6 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    return FeatureMerge.mergeOverlappingPolygons(items, 1);
+    return FeatureMerge.mergeNearbyPolygons(items, MIN_AREA, MIN_AREA, 0.5, BUFFER);
   }
 }
