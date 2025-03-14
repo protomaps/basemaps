@@ -1,3 +1,7 @@
+Tiles 4.7.0
+------
+- port water, earth and landcover to use Matchers [#416]
+
 Tiles 4.6.1
 ------
 - Refactor of roads layer to use Matchers [#407]
