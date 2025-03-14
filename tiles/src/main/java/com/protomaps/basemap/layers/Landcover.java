@@ -29,7 +29,7 @@ public class Landcover implements ForwardingProfile.LayerPostProcessor {
         // Web Mercator Y = 0.7 is roughly 60 deg South, i.e., Antarctica.
         if (centroid.getY() > 0.7) {
           features.polygon(LAYER_NAME)
-            .setId(0)
+            .setId(1)
             .setAttr("kind", "glacier")
             .setMaxZoom(7)
             .setMinPixelSize(1.0)
@@ -49,7 +49,7 @@ public class Landcover implements ForwardingProfile.LayerPostProcessor {
     Integer sortKey = sortKeyMapping.getOrDefault(daylightClass, 6);
 
     features.polygon(LAYER_NAME)
-      .setId(0)
+      .setId(1 + sortKey)
       .setAttr("kind", kind)
       .setZoomRange(0, 7)
       .setSortKey(sortKey)

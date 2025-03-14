@@ -14,7 +14,7 @@ class EarthTest extends LayerTest {
   @Test
   void simple() {
     assertFeatures(15,
-      List.of(Map.of("_id", 0L, "kind", "earth")),
+      List.of(Map.of("_id", 1L, "kind", "earth")),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of()),

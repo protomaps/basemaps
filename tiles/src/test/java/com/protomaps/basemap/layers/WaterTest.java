@@ -12,7 +12,7 @@ class WaterTest extends LayerTest {
   @Test
   void preparedOsm() {
     assertFeatures(15,
-      List.of(Map.of("_id", 0L, "kind", "ocean")),
+      List.of(Map.of("_id", 1L, "kind", "ocean")),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of()),
