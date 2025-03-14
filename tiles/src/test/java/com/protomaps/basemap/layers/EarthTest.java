@@ -41,6 +41,7 @@ class EarthTest extends LayerTest {
   void testNe() {
     assertFeatures(15,
       List.of(Map.of("kind", "earth",
+        "_id", 1L,
         "_minzoom", 0,
         "_maxzoom", 4)),
       process(SimpleFeature.create(

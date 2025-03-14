@@ -49,7 +49,7 @@ public class Landcover implements ForwardingProfile.LayerPostProcessor {
     Integer sortKey = sortKeyMapping.getOrDefault(daylightClass, 6);
 
     features.polygon(LAYER_NAME)
-      .setId(1 + sortKey)
+      .setId(1L + sortKey)
       .setAttr("kind", kind)
       .setZoomRange(0, 7)
       .setSortKey(sortKey)
