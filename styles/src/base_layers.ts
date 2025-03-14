@@ -406,7 +406,10 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "major_road"],
+        ["any",
+          ["==", "kind", "major_road"],
+          ["==", "min_zoom", 7]
+        ]
       ],
       paint: {
         "line-color": t.tunnel_major_casing,
@@ -442,7 +445,7 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "highway"],
+        ["==", "min_zoom", 4],
         ["!has", "is_link"],
       ],
       paint: {
@@ -541,7 +544,10 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "roads",
-      filter: ["all", ["has", "is_tunnel"], ["==", "kind", "major_road"]],
+      filter: ["all", ["has", "is_tunnel"], ["any",
+        ["==", "kind", "major_road"],
+        ["==", "min_zoom", 7]
+      ]],
       paint: {
         "line-color": t.tunnel_major,
         "line-width": [
@@ -735,7 +741,10 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "major_road"],
+        ["any",
+          ["==", "kind", "major_road"],
+          ["==", "min_zoom", 7]
+        ],
       ],
       paint: {
         "line-color": t.major_casing_late,
@@ -773,7 +782,7 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "highway"],
+        ["==", "min_zoom", 4],
         ["!has", "is_link"],
       ],
       paint: {
@@ -921,7 +930,10 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "major_road"],
+        ["any",
+          ["==", "kind", "major_road"],
+          ["==", "min_zoom", 7]
+        ],
       ],
       paint: {
         "line-color": t.major_casing_early,
@@ -956,7 +968,10 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "major_road"],
+        ["any",
+          ["==", "kind", "major_road"],
+          ["==", "min_zoom", 7]
+        ],
       ],
       paint: {
         "line-color": t.major,
@@ -985,7 +1000,7 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "highway"],
+        ["==", "min_zoom", 4],
         ["!has", "is_link"],
       ],
       paint: {
@@ -1021,7 +1036,7 @@ export function nolabels_layers(
         "all",
         ["!has", "is_tunnel"],
         ["!has", "is_bridge"],
-        ["==", "kind", "highway"],
+        ["==", "min_zoom", 4],
         ["!has", "is_link"],
       ],
       paint: {
@@ -1192,7 +1207,10 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", ["has", "is_bridge"], ["==", "kind", "major_road"]],
+      filter: ["all", ["has", "is_bridge"], ["any",
+        ["==", "kind", "major_road"],
+        ["==", "min_zoom", 7]
+      ]],
       paint: {
         "line-color": t.bridges_major_casing,
         "line-gap-width": [
@@ -1290,7 +1308,10 @@ export function nolabels_layers(
       source: source,
       "source-layer": "roads",
       minzoom: 12,
-      filter: ["all", ["has", "is_bridge"], ["==", "kind", "major_road"]],
+      filter: ["all", ["has", "is_bridge"], ["any",
+        ["==", "kind", "major_road"],
+        ["==", "min_zoom", 7]
+      ]],
       paint: {
         "line-color": t.bridges_major,
         "line-width": [
@@ -1317,7 +1338,7 @@ export function nolabels_layers(
       filter: [
         "all",
         ["has", "is_bridge"],
-        ["==", "kind", "highway"],
+        ["==", "min_zoom", 4],
         ["!has", "is_link"],
       ],
       paint: {
@@ -1354,7 +1375,7 @@ export function nolabels_layers(
       filter: [
         "all",
         ["has", "is_bridge"],
-        ["==", "kind", "highway"],
+        ["==", "min_zoom", 4],
         ["!has", "is_link"],
       ],
       paint: {
