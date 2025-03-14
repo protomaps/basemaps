@@ -27,7 +27,7 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
 
   public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
     features.polygon(LAYER_NAME)
-      .setId(0)
+      .setId(1)
       .setAttr("kind", "earth")
       .setPixelTolerance(PIXEL_TOLERANCE)
       .setMinPixelSize(1.0)
@@ -44,6 +44,7 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
     int maxZoom = sourceLayer.equals("ne_50m_land") ? 4 : 5;
 
     features.polygon(LAYER_NAME)
+      .setId(1)
       .setAttr("kind", "earth")
       .setZoomRange(minZoom, maxZoom)
       .setPixelTolerance(PIXEL_TOLERANCE)
