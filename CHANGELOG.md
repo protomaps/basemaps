@@ -1,3 +1,7 @@
+Tiles 4.7.1
+------
+- adjust vector tile feature IDs to start at id=1 [#420]
+
 Tiles 4.7.0
 ------
 - port water, earth and landcover to use Matchers [#416]
