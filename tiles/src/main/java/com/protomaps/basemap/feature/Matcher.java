@@ -2,6 +2,7 @@ package com.protomaps.basemap.feature;
 
 import com.onthegomap.planetiler.expression.Expression;
 import com.onthegomap.planetiler.expression.MultiExpression;
+import com.onthegomap.planetiler.geo.GeometryType;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,6 +147,30 @@ public class Matcher {
    */
   public static Expression without(String... arguments) {
     return Expression.not(with(arguments));
+  }
+
+  public static Expression withPoint() {
+    return Expression.matchGeometryType(GeometryType.POINT);
+  }
+
+  public static Expression withoutPoint() {
+    return Expression.not(withPoint());
+  }
+
+  public static Expression withLine() {
+    return Expression.matchGeometryType(GeometryType.LINE);
+  }
+
+  public static Expression withoutLine() {
+    return Expression.not(withLine());
+  }
+
+  public static Expression withPolygon() {
+    return Expression.matchGeometryType(GeometryType.POLYGON);
+  }
+
+  public static Expression withoutPolygon() {
+    return Expression.not(withPolygon());
   }
 
   public record FromTag(String key) {}

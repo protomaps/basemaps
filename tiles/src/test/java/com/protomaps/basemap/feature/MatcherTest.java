@@ -1,6 +1,8 @@
 package com.protomaps.basemap.feature;
 
+import static com.onthegomap.planetiler.TestUtils.newLineString;
 import static com.onthegomap.planetiler.TestUtils.newPoint;
+import static com.onthegomap.planetiler.TestUtils.newPolygon;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static com.protomaps.basemap.feature.Matcher.getBoolean;
 import static com.protomaps.basemap.feature.Matcher.getDouble;
@@ -9,7 +11,13 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.withLine;
+import static com.protomaps.basemap.feature.Matcher.withPoint;
+import static com.protomaps.basemap.feature.Matcher.withPolygon;
 import static com.protomaps.basemap.feature.Matcher.without;
+import static com.protomaps.basemap.feature.Matcher.withoutLine;
+import static com.protomaps.basemap.feature.Matcher.withoutPoint;
+import static com.protomaps.basemap.feature.Matcher.withoutPolygon;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.onthegomap.planetiler.expression.Expression;
@@ -51,6 +59,147 @@ class MatcherTest {
 
     assertEquals(Expression.not(Expression.matchAny("a", "b", "c")),
       without("a", "b", "c"));
+  }
+
+  @Test
+  void testWithPoint() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withPoint(),
+        use("a", "b")
+      ),
+      rule(
+        withoutPoint(),
+        use("a", "c")
+      )
+    )).index();
+
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+
+    assertEquals("b", getString(sf, matches, "a", "d"));
+
+    sf = SimpleFeature.create(
+      newLineString(0, 0, 1, 1),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+
+    assertEquals("c", getString(sf, matches, "a", "d"));
+
+    sf = SimpleFeature.create(
+      newPolygon(0, 0, 1, 1, 2, 2, 0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+
+    assertEquals("c", getString(sf, matches, "a", "d"));
+  }
+
+  @Test
+  void testWithLine() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withLine(),
+        use("a", "b")
+      ),
+      rule(
+        withoutLine(),
+        use("a", "c")
+      )
+    )).index();
+
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+
+    assertEquals("c", getString(sf, matches, "a", "d"));
+
+    sf = SimpleFeature.create(
+      newLineString(0, 0, 1, 1),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+
+    assertEquals("b", getString(sf, matches, "a", "d"));
+
+    sf = SimpleFeature.create(
+      newPolygon(0, 0, 1, 1, 2, 2, 0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+
+    assertEquals("c", getString(sf, matches, "a", "d"));
+  }
+
+  @Test
+  void testWithPolygon() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withPolygon(),
+        use("a", "b")
+      ),
+      rule(
+        withoutPolygon(),
+        use("a", "c")
+      )
+    )).index();
+
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+
+    assertEquals("c", getString(sf, matches, "a", "d"));
+
+    sf = SimpleFeature.create(
+      newLineString(0, 0, 1, 1),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+
+    assertEquals("c", getString(sf, matches, "a", "d"));
+
+    sf = SimpleFeature.create(
+      newPolygon(0, 0, 1, 1, 2, 2, 0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+
+    assertEquals("b", getString(sf, matches, "a", "d"));
   }
 
   @Test
