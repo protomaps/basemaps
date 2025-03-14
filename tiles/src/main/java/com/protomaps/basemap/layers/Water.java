@@ -7,6 +7,8 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.withPoint;
+import static com.protomaps.basemap.feature.Matcher.withPolygon;
 import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
@@ -189,13 +191,13 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("place", "sea"),
-      with("_can_be_polygon"),
+      withPolygon(),
       use("kind", "sea"),
       use("keepPolygon", false)
     ),
     rule(
       with("place", "sea"),
-      with("_can_be_polygon"),
+      withPolygon(),
       with("""
           name:en
           North Sea
@@ -205,7 +207,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("place", "sea"),
-      with("_can_be_polygon"),
+      withPolygon(),
       with("""
           name:en
           Caspian Sea
@@ -220,7 +222,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("place", "sea"),
-      with("_can_be_polygon"),
+      withPolygon(),
       with("""
           name:en
           Arabian Sea
@@ -242,13 +244,13 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("place", "sea"),
-      with("_is_point"),
+      withPoint(),
       use("kind", "sea"),
       use("minZoom", 6)
     ),
     rule(
       with("place", "sea"),
-      with("_is_point"),
+      withPoint(),
       with("""
           name:en
           North Atlantic Ocean
@@ -326,14 +328,6 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    if (!sf.tags().isEmpty() && sf.isPoint()) {
-      sf.setTag("_is_point", "yes");
-    }
-
-    if (!sf.tags().isEmpty() && sf.canBePolygon()) {
-      sf.setTag("_can_be_polygon", "yes");
-    }
-
     var matches = osmIndex.getMatches(sf);
     if (matches.isEmpty()) {
       return;
