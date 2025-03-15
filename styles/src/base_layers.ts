@@ -1478,6 +1478,29 @@ export function labels_layers(
       },
     },
     {
+      id: "earth_label_islands",
+      type: "symbol",
+      source: source,
+      "source-layer": "earth",
+      filter: ["in", "kind", "island"],
+      layout: {
+        "text-font": [t.italic || "Noto Sans Italic"],
+        "text-field": get_multiline_name(
+          lang,
+          script,
+          t.regular,
+        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-size": 10,
+        "text-letter-spacing": 0.1,
+        "text-max-width": 9,
+      },
+      paint: {
+        "text-color": t.subplace_label,
+        "text-halo-color": t.subplace_label_halo,
+        "text-halo-width": 1,
+      },
+    },
+    {
       id: "water_label_lakes",
       type: "symbol",
       source: source,
