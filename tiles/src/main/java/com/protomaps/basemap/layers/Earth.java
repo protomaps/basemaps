@@ -64,6 +64,14 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
 
       OsmNames.setOsmNames(feat, sf, 0);
     }
+
+    if (sf.canBePolygon() && sf.hasTag("place", "island")) {
+      var feat = features.innermostPoint(LAYER_NAME)
+        .setId(FeatureId.create(sf))
+        .setMinPixelSize(10)
+        .setAttr("kind", "island");
+      OsmNames.setOsmNames(feat, sf, 0);
+    }
   }
 
   @Override
