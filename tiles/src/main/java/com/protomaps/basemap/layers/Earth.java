@@ -68,9 +68,9 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
     if (sf.canBePolygon() && sf.hasTag("place", "island")) {
       var feat = features.innermostPoint(LAYER_NAME)
         .setId(FeatureId.create(sf))
-        .setMinZoom(6)
+        .setAttr("kind", "island")
         .setMinPixelSize(10)
-        .setAttr("kind", "island");
+        .setMinZoom(6);
       OsmNames.setOsmNames(feat, sf, 0);
     }
   }
