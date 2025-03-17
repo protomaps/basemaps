@@ -24,6 +24,7 @@ import com.onthegomap.planetiler.stats.DefaultStats;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -354,7 +355,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     if (sf.canBePolygon() && keepPolygon) {
       features.polygon(LAYER_NAME)
         .setAttr("kind", kind)
-        .setAttrWithMinzoom("kind_detail", kindDetail, "river".equals(kindDetail) ? 10 : 6)
+        .setAttr("kind_detail", kindDetail)
         .setAttr("sort_rank", 200)
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
@@ -435,7 +436,23 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     items = FeatureMerge.mergeLineStrings(items, 0.5, Earth.PIXEL_TOLERANCE, 4.0);
-    return FeatureMerge.mergeNearbyPolygons(items, Earth.MIN_AREA, Earth.MIN_AREA, 0.1, 0.1, 
+    List<VectorTile.Feature> rivers = new ArrayList<>();
+    List<VectorTile.Feature> nonRivers = new ArrayList<>();
+    for (var item : items) {
+      if (item.hasTag("kind_detail", "river")) {
+        rivers.add(item);
+      } else {
+        nonRivers.add(item);
+      }
+    }
+    rivers = FeatureMerge.mergeNearbyPolygons(rivers, 1, 1, 0.1, 0.1,
       DefaultStats.get(), GeometryPipeline.simplifyDP(Earth.PIXEL_TOLERANCE));
+    nonRivers = FeatureMerge.mergeNearbyPolygons(nonRivers, 10, 10, 0.1, 0.1,
+      DefaultStats.get(), GeometryPipeline.simplifyDP(Earth.PIXEL_TOLERANCE));
+
+    List<VectorTile.Feature> result = new ArrayList<>();
+    result.addAll(rivers);
+    result.addAll(nonRivers);
+    return result;
   }
 }
