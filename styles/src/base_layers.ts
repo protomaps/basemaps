@@ -1492,7 +1492,7 @@ export function labels_layers(
         ) as DataDrivenPropertyValueSpecification<string>,
         "text-size": 10,
         "text-letter-spacing": 0.1,
-        "text-max-width": 5,
+        "text-max-width": 8,
       },
       paint: {
         "text-color": t.subplace_label,
