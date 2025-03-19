@@ -205,7 +205,7 @@ function ExampleComponent(props: { result: ExampleResult }) {
         </a>
         <a
           class="underline"
-          href={`/map/#map=${example.zoom}/${example.center[1]}/${example.center[0]}`}
+          href={`/#map=${example.zoom}/${example.center[1]}/${example.center[0]}`}
           target="_blank"
           rel="noreferrer"
         >
