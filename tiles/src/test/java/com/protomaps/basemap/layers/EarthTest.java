@@ -38,6 +38,19 @@ class EarthTest extends LayerTest {
   }
 
   @Test
+  void island() {
+    assertFeatures(6,
+      List.of(Map.of("kind", "island", "_minzoom", 6)),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("place", "island")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
   void testNe() {
     assertFeatures(15,
       List.of(Map.of("kind", "earth",

@@ -82,5 +82,12 @@
     "tags": ["landuse"],
     "center": [-118.0726, 34.8328],
     "zoom": 10
+  },
+  {
+    "name": "island-names",
+    "description": "label the names of prominent islands at zoom 7",
+    "tags": ["earth"],
+    "center": [-123.22, 48.111],
+    "zoom": 7
   }
 ]
