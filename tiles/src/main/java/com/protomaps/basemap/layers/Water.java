@@ -18,10 +18,13 @@ import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.GeometryPipeline;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.stats.DefaultStats;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -357,9 +360,9 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
         .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
-        .setPixelTolerance(Earth.PIXEL_TOLERANCE)
+        .setPixelTolerance(0.0)
         .setMinZoom(6)
-        .setMinPixelSize(1.0)
+        .setMinPixelSize(0.0)
         .setBufferPixels(8);
     }
 
@@ -433,6 +436,23 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     items = FeatureMerge.mergeLineStrings(items, 0.5, Earth.PIXEL_TOLERANCE, 4.0);
-    return FeatureMerge.mergeNearbyPolygons(items, Earth.MIN_AREA, Earth.MIN_AREA, 0.5, Earth.BUFFER);
+    List<VectorTile.Feature> rivers = new ArrayList<>();
+    List<VectorTile.Feature> nonRivers = new ArrayList<>();
+    for (var item : items) {
+      if (item.hasTag("kind_detail", "river")) {
+        rivers.add(item);
+      } else {
+        nonRivers.add(item);
+      }
+    }
+    rivers = FeatureMerge.mergeNearbyPolygons(rivers, 1, 1, 0.1, 0.1,
+      DefaultStats.get(), GeometryPipeline.simplifyDP(Earth.PIXEL_TOLERANCE));
+    nonRivers = FeatureMerge.mergeNearbyPolygons(nonRivers, 10, 10, 0.1, 0.1,
+      DefaultStats.get(), GeometryPipeline.simplifyDP(Earth.PIXEL_TOLERANCE));
+
+    List<VectorTile.Feature> result = new ArrayList<>();
+    result.addAll(rivers);
+    result.addAll(nonRivers);
+    return result;
   }
 }
