@@ -16,7 +16,7 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
   public static final String LAYER_NAME = "earth";
 
   public static final double BUFFER = 0.0625;
-  public static final double MIN_AREA = 10.0;
+  public static final double MIN_AREA = 1.0;
 
   public static final double PIXEL_TOLERANCE = 0.2;
 
@@ -30,7 +30,6 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
       .setId(1)
       .setAttr("kind", "earth")
       .setPixelTolerance(PIXEL_TOLERANCE)
-      .setMinPixelSize(1.0)
       .setMinZoom(6)
       .setBufferPixels(8);
   }
