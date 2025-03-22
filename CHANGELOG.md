@@ -1,3 +1,7 @@
+Styles 5.0.1
+------
+- fix passing of regular font via @Shane98c [#427]
+
 Tiles 4.8.0
 ------
 - add island names [#294]
