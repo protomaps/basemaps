@@ -1,3 +1,7 @@
+Tiles 4.8.0
+------
+- add island names [#294]
+
 Tiles 4.7.1
 ------
 - adjust vector tile feature IDs to start at id=1 [#420]
