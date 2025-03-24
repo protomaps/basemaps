@@ -1,3 +1,8 @@
+Tiles 4.8.1, Styles 5.0.2
+------
+- change earth pixel minimum size to 1px [#428]
+- export localization helper functions in style via @russss [#431]
+
 Styles 5.0.1
 ------
 - fix passing of regular font via @Shane98c [#427]
