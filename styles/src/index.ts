@@ -1,7 +1,11 @@
 import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { labels_layers, nolabels_layers } from "./base_layers";
 import { BLACK, DARK, Flavor, GRAYSCALE, LIGHT, Pois, WHITE } from "./flavors";
-import { language_script_pairs, get_multiline_name, get_country_name } from "./language";
+import {
+  language_script_pairs,
+  get_multiline_name,
+  get_country_name,
+} from "./language";
 
 export { language_script_pairs, get_multiline_name, get_country_name };
 export type { Pois, Flavor };
