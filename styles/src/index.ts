@@ -2,9 +2,9 @@ import { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { labels_layers, nolabels_layers } from "./base_layers";
 import { BLACK, DARK, Flavor, GRAYSCALE, LIGHT, Pois, WHITE } from "./flavors";
 import {
-  language_script_pairs,
-  get_multiline_name,
   get_country_name,
+  get_multiline_name,
+  language_script_pairs,
 } from "./language";
 
 export { language_script_pairs, get_multiline_name, get_country_name };

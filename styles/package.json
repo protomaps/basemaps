@@ -1,6 +1,6 @@
 {
   "name": "@protomaps/basemaps",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Protomaps basemap style for MapLibre GL",
   "type": "module",
   "main": "dist/cjs/index.cjs",
