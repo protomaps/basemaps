@@ -1,10 +1,20 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
+import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getBoolean;
+import static com.protomaps.basemap.feature.Matcher.getInteger;
+import static com.protomaps.basemap.feature.Matcher.getString;
+import static com.protomaps.basemap.feature.Matcher.rule;
+import static com.protomaps.basemap.feature.Matcher.use;
+import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.without;
+import static com.protomaps.basemap.feature.Matcher.withoutPoint;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
@@ -25,12 +35,159 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "places";
 
+  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.ofOrdered(List.of(
+    rule(
+      with("population"),
+      use("population", fromTag("population"))
+    ),
+    rule(
+      with("place", "country"),
+      use("kind", "country"),
+      use("minZoom", 5),
+      use("maxZoom", 8),
+      use("kindRank", 0)
+    ),
+    rule(
+      with("""
+        place
+        state
+        province
+      """),
+      use("kind", "region"),
+      use("minZoom", 8),
+      use("maxZoom", 11),
+      use("kindRank", 1)
+    ),
+    rule(
+      with("""
+        place
+        city
+        town
+      """),
+      use("kind", "locality"),
+      use("minZoom", 7),
+      use("maxZoom", 15),
+      use("kindRank", 2)
+    ),
+    rule(
+      with("place", "city"),
+      without("population"),
+      use("population", 5000),
+      use("minZoom", 8)
+    ),
+    rule(
+      with("place", "town"),
+      without("population"),
+      use("population", 10000),
+      use("minZoom", 9)
+    ),
+    rule(
+      with("place", "village"),
+      use("kind", "locality"),
+      use("minZoom", 10),
+      use("maxZoom", 15),
+      use("kindRank", 3)
+    ),
+    rule(
+      with("place", "village"),
+      without("population"),
+      use("minZoom", 11),
+      use("population", 2000)
+    ),
+    rule(
+      with("place", "locality"),
+      use("kind", "locality"),
+      use("minZoom", 11),
+      use("maxZoom", 15),
+      use("kindRank", 3)
+    ),
+    rule(
+      with("place", "locality"),
+      without("population"),
+      use("minZoom", 12),
+      use("population", 1000)
+    ),
+    rule(
+      with("place", "hamlet"),
+      use("kind", "locality"),
+      use("minZoom", 11),
+      use("maxZoom", 15),
+      use("kindRank", 3)
+    ),
+    rule(
+      with("place", "hamlet"),
+      without("population"),
+      use("minZoom", 12),
+      use("population", 200)
+    ),
+    rule(
+      with("place", "isolated_dwelling"),
+      use("kind", "locality"),
+      use("minZoom", 13),
+      use("maxZoom", 15),
+      use("kindRank", 3)
+    ),
+    rule(
+      with("place", "isolated_dwelling"),
+      without("population"),
+      use("minZoom", 14),
+      use("population", 100)
+    ),
+    rule(
+      with("place", "farm"),
+      use("kind", "locality"),
+      use("minZoom", 13),
+      use("maxZoom", 15),
+      use("kindRank", 3)
+    ),
+    rule(
+      with("place", "farm"),
+      without("population"),
+      use("minZoom", 14),
+      use("population", 50)
+    ),
+    rule(
+      with("place", "allotments"),
+      use("kind", "locality"),
+      use("minZoom", 13),
+      use("maxZoom", 15),
+      use("kindRank", 3)
+    ),
+    rule(
+      with("place", "allotments"),
+      without("population"),
+      use("minZoom", 14),
+      use("population", 1000)
+    ),
+    rule(
+      with("place", "suburb"),
+      use("kind", "neighbourhood"),
+      use("minZoom", 11),
+      use("maxZoom", 15),
+      use("kindRank", 4)
+    ),
+    rule(
+      with("place", "quarter"),
+      use("kind", "macrohood"),
+      use("minZoom", 10),
+      use("maxZoom", 15),
+      use("kindRank", 5)
+    ),
+    rule(
+      with("place", "neighbourhood"),
+      use("kind", "neighbourhood"),
+      use("minZoom", 12),
+      use("maxZoom", 15),
+      use("kindRank", 6)
+    )
+  )).index();
+
   @Override
   public String name() {
     return LAYER_NAME;
   }
 
-  private final AtomicInteger placeNumber = new AtomicInteger(0);
+  // private final AtomicInteger placeNumber = new AtomicInteger(0);
 
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
   static int getSortKey(double minZoom, int kindRank, int populationRank, long population, String name) {
@@ -69,240 +226,123 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     ), 0);
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    if (sf.isPoint() && sf.hasTag("name") &&
-      (sf.hasTag("place", "suburb", "town", "village", "locality", "hamlet",
-        "isolated_dwelling", "farm", "allotments", "neighbourhood", "quarter", "city", "country", "state",
-        "province"))) {
-      String kind = "other";
-      int kindRank = 6;
-
-      double minZoom = 12.0;
-      double maxZoom = 15.0;
-      int population = 0;
-      if (sf.hasTag("population")) {
-        Integer parsed = parseIntOrNull(sf.getString("population"));
-        if (parsed != null) {
-          population = parsed;
-        }
-      }
-
-      int populationRank = 0;
-      String place = sf.getString("place");
-
-      switch (place) {
-        case "country":
-          // (nvkelso 20230802) OSM countries are allowlisted to show up at earlier zooms
-          //                    TODO: Really these should switch over to NE source
-          kind = "country";
-          minZoom = 5.0;
-          maxZoom = 8.0;
-          var neAdmin0 = naturalEarthDb.getAdmin0ByWikidata(sf.getString("wikidata"));
-          if (neAdmin0 != null) {
-            minZoom = neAdmin0.minLabel() - NE_ZOOM_OFFSET;
-            maxZoom = neAdmin0.maxLabel() - NE_ZOOM_OFFSET;
-          }
-          kindRank = 0;
-          break;
-        case "state":
-        case "province":
-          // (nvkelso 20230802) OSM regions are allowlisted to show up at earlier zooms
-          //                    TODO: Really these should switch over to NE source
-          kind = "region";
-          minZoom = 8.0;
-          maxZoom = 11.0;
-          var neAdmin1 = naturalEarthDb.getAdmin1ByWikidata(sf.getString("wikidata"));
-          if (neAdmin1 != null) {
-            minZoom = neAdmin1.minLabel() - NE_ZOOM_OFFSET;
-            maxZoom = neAdmin1.maxLabel() - NE_ZOOM_OFFSET;
-          }
-          kindRank = 1;
-          break;
-        case "city":
-        case "town":
-          kind = "locality";
-          // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 7.0f;
-          maxZoom = 15.0f;
-          kindRank = 2;
-          if (population == 0) {
-            minZoom = 8.0f;
-            if (place.equals("town")) {
-              minZoom = 9.0f;
-              population = 10000;
-            } else {
-              population = 5000;
-            }
-          }
-          break;
-        case "village":
-          kind = "locality";
-          // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 10.0f;
-          maxZoom = 15.0f;
-          kindRank = 3;
-          if (population == 0) {
-            minZoom = 11.0f;
-            population = 2000;
-          }
-          break;
-        case "locality":
-          kind = "locality";
-          // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 11.0f;
-          maxZoom = 15.0f;
-          kindRank = 3;
-          if (population == 0) {
-            minZoom = 12.0f;
-            population = 1000;
-          }
-          break;
-        case "hamlet":
-          kind = "locality";
-          // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 11.0f;
-          maxZoom = 15.0f;
-          kindRank = 3;
-          if (population == 0) {
-            minZoom = 12.0f;
-            population = 200;
-          }
-          break;
-        case "isolated_dwelling":
-          kind = "locality";
-          // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 13.0f;
-          maxZoom = 15.0f;
-          kindRank = 3;
-          if (population == 0) {
-            minZoom = 14.0f;
-            population = 100;
-          }
-          break;
-        case "farm":
-          kind = "locality";
-          // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 13.0f;
-          maxZoom = 15.0f;
-          kindRank = 3;
-          if (population == 0) {
-            minZoom = 14.0f;
-            population = 50;
-          }
-          break;
-        // NOTE (nvkelso 20240617): areas outside of main population center with different postal city in Eastern Europe
-        case "allotments":
-          kind = "locality";
-          // This minZoom can be changed to smaller value in the NE data join step below
-          minZoom = 13.0f;
-          maxZoom = 15.0f;
-          kindRank = 3;
-          if (population == 0) {
-            minZoom = 14.0f;
-            population = 1000;
-          }
-          break;
-        // NOTE (nvkelso 20240617): suburb can mean locality in some countries and should be localized
-        case "suburb":
-          kind = "neighbourhood";
-          minZoom = 11.0f;
-          maxZoom = 15.0f;
-          kindRank = 4;
-          break;
-        case "quarter":
-          kind = "macrohood";
-          minZoom = 10.0f;
-          maxZoom = 15.0f;
-          kindRank = 5;
-          break;
-        case "neighbourhood":
-          kind = "neighbourhood";
-          minZoom = 12.0f;
-          maxZoom = 15.0f;
-          kindRank = 6;
-          break;
-      }
-
-      int[] popBreaks = {
-        1000000000,
-        100000000,
-        50000000,
-        20000000,
-        10000000,
-        5000000,
-        1000000,
-        500000,
-        200000,
-        100000,
-        50000,
-        20000,
-        10000,
-        5000,
-        2000,
-        1000,
-        200,
-        0};
-
-      for (int i = 0; i < popBreaks.length; i++) {
-        if (population >= popBreaks[i]) {
-          populationRank = popBreaks.length - i;
-          break;
-        }
-      }
-
-      // Join OSM locality with nearby NE localities based on Wikidata ID and
-      // harvest the min_zoom to achieve consistent label collisions at zoom 7+
-      // By this zoom we get OSM points centered in feature better for area labels
-      // While NE earlier aspires to be more the downtown area
-      //
-      // First scope down the NE <> OSM data join (to speed up total build time)
-      if (kind.equals("locality")) {
-        // We could add more fallback equivalency tests here, but 98% of NE places have a Wikidata ID
-        var nePopulatedPlace = naturalEarthDb.getPopulatedPlaceByWikidata(sf.getString("wikidata"));
-        if (nePopulatedPlace != null) {
-          minZoom = nePopulatedPlace.minZoom() - NE_ZOOM_OFFSET;
-          // (nvkelso 20230815) We could set the population value here, too
-          //                    But by the OSM zooms the value should be the incorporated value
-          //                    While symbology should be for the metro population value
-          populationRank = nePopulatedPlace.rankMax();
-        }
-      }
-
-      var feat = features.point(this.name())
-        .setId(FeatureId.create(sf))
-        // Core Tilezen schema properties
-        .setAttr("kind", kind)
-        .setAttr("kind_detail", place)
-        .setAttr("min_zoom", minZoom + 1)
-        // Core OSM tags for different kinds of places
-        .setAttr("capital", sf.getString("capital"))
-        .setAttr("population", population)
-        .setAttr("population_rank", populationRank)
-        // Generally we use NE and low zooms, and OSM at high zooms
-        // With exceptions for country and region labels
-        .setZoomRange((int) minZoom, (int) maxZoom);
-
-      // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
-      if (sf.hasTag("wikidata")) {
-        feat.setAttr("wikidata", sf.getString("wikidata"));
-      }
-
-      //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
-      feat.setSortKey(getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name")));
-
-      // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
-      // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
-      //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
-      feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
-        .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
-        .setBufferPixels(64);
-
-      // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
-      // label grid squares will be the consistent between adjacent tiles
-      feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 64));
-
-      OsmNames.setOsmNames(feat, sf, 0);
-      OsmNames.setOsmRefs(feat, sf, 0);
+    if (!sf.isPoint() || !sf.hasTag("name")) {
+      return;
     }
+
+    var matches = index.getMatches(sf);
+    if (matches.isEmpty()) {
+      return;
+    }
+
+    String kind = getString(sf, matches, "kind", null);
+    if (kind == null) {
+      return;
+    }
+
+    Integer kindRank = getInteger(sf, matches, "kindRank", 6);
+    Integer minZoom = getInteger(sf, matches, "minZoom", 12);
+    Integer maxZoom = getInteger(sf, matches, "maxZoom", 15);
+    Integer population = getInteger(sf, matches, "population", 0);
+
+    int populationRank = 0;
+
+    int[] popBreaks = {
+      1000000000,
+      100000000,
+      50000000,
+      20000000,
+      10000000,
+      5000000,
+      1000000,
+      500000,
+      200000,
+      100000,
+      50000,
+      20000,
+      10000,
+      5000,
+      2000,
+      1000,
+      200,
+      0};
+
+    for (int i = 0; i < popBreaks.length; i++) {
+      if (population >= popBreaks[i]) {
+        populationRank = popBreaks.length - i;
+        break;
+      }
+    }
+
+    if (kind.equals("country")) {
+      var neAdmin0 = naturalEarthDb.getAdmin0ByWikidata(sf.getString("wikidata"));
+      if (neAdmin0 != null) {
+        minZoom = (int) neAdmin0.minLabel() - NE_ZOOM_OFFSET;
+        maxZoom = (int) neAdmin0.maxLabel() - NE_ZOOM_OFFSET;
+      }
+    }
+
+    if (kind.equals("region")) {
+      var neAdmin1 = naturalEarthDb.getAdmin1ByWikidata(sf.getString("wikidata"));
+      if (neAdmin1 != null) {
+        minZoom = (int) neAdmin1.minLabel() - NE_ZOOM_OFFSET;
+        maxZoom = (int) neAdmin1.maxLabel() - NE_ZOOM_OFFSET;
+      }
+    }
+
+    // Join OSM locality with nearby NE localities based on Wikidata ID and
+    // harvest the min_zoom to achieve consistent label collisions at zoom 7+
+    // By this zoom we get OSM points centered in feature better for area labels
+    // While NE earlier aspires to be more the downtown area
+    //
+    // First scope down the NE <> OSM data join (to speed up total build time)
+    if (kind.equals("locality")) {
+      // We could add more fallback equivalency tests here, but 98% of NE places have a Wikidata ID
+      var nePopulatedPlace = naturalEarthDb.getPopulatedPlaceByWikidata(sf.getString("wikidata"));
+      if (nePopulatedPlace != null) {
+        minZoom = (int) nePopulatedPlace.minZoom() - NE_ZOOM_OFFSET;
+        // (nvkelso 20230815) We could set the population value here, too
+        //                    But by the OSM zooms the value should be the incorporated value
+        //                    While symbology should be for the metro population value
+        populationRank = nePopulatedPlace.rankMax();
+      }
+    }
+
+    var feat = features.point(this.name())
+      .setId(FeatureId.create(sf))
+      // Core Tilezen schema properties
+      .setAttr("kind", kind)
+      .setAttr("kind_detail", sf.getString("place"))
+      .setAttr("min_zoom", minZoom + 1)
+      // Core OSM tags for different kinds of places
+      .setAttr("capital", sf.getString("capital"))
+      .setAttr("population", population)
+      .setAttr("population_rank", populationRank)
+      // Generally we use NE and low zooms, and OSM at high zooms
+      // With exceptions for country and region labels
+      .setZoomRange((int) minZoom, (int) maxZoom);
+
+    // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
+    if (sf.hasTag("wikidata")) {
+      feat.setAttr("wikidata", sf.getString("wikidata"));
+    }
+
+    //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
+    feat.setSortKey(getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name")));
+
+    // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
+    // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
+    //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
+    feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
+      .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
+      .setBufferPixels(64);
+
+    // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
+    // label grid squares will be the consistent between adjacent tiles
+    feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 64));
+
+    OsmNames.setOsmNames(feat, sf, 0);
+    OsmNames.setOsmRefs(feat, sf, 0);
   }
 
   @Override
