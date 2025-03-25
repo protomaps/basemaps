@@ -1,15 +1,12 @@
 package com.protomaps.basemap.layers;
 
-import static com.onthegomap.planetiler.util.Parse.parseIntOrNull;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
-import static com.protomaps.basemap.feature.Matcher.getBoolean;
 import static com.protomaps.basemap.feature.Matcher.getInteger;
 import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
 import static com.protomaps.basemap.feature.Matcher.without;
-import static com.protomaps.basemap.feature.Matcher.withoutPoint;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
@@ -23,7 +20,6 @@ import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Places implements ForwardingProfile.LayerPostProcessor {
 
@@ -49,10 +45,10 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("""
-        place
-        state
-        province
-      """),
+          place
+          state
+          province
+        """),
       use("kind", "region"),
       use("minZoom", 8),
       use("maxZoom", 11),
@@ -60,10 +56,10 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("""
-        place
-        city
-        town
-      """),
+          place
+          city
+          town
+        """),
       use("kind", "locality"),
       use("minZoom", 7),
       use("maxZoom", 15),
