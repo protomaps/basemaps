@@ -95,7 +95,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       use("kind", "locality"),
       use("minZoom", 11),
       use("maxZoom", 15),
-      use("kindRank", 3)
+      use("kindRank", 4)
     ),
     rule(
       with("place", "locality"),
@@ -108,7 +108,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       use("kind", "locality"),
       use("minZoom", 11),
       use("maxZoom", 15),
-      use("kindRank", 3)
+      use("kindRank", 5)
     ),
     rule(
       with("place", "hamlet"),
@@ -121,7 +121,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       use("kind", "locality"),
       use("minZoom", 13),
       use("maxZoom", 15),
-      use("kindRank", 3)
+      use("kindRank", 6)
     ),
     rule(
       with("place", "isolated_dwelling"),
@@ -134,7 +134,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       use("kind", "locality"),
       use("minZoom", 13),
       use("maxZoom", 15),
-      use("kindRank", 3)
+      use("kindRank", 7)
     ),
     rule(
       with("place", "farm"),
@@ -147,7 +147,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       use("kind", "locality"),
       use("minZoom", 13),
       use("maxZoom", 15),
-      use("kindRank", 3)
+      use("kindRank", 8)
     ),
     rule(
       with("place", "allotments"),
@@ -160,21 +160,21 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       use("kind", "neighbourhood"),
       use("minZoom", 11),
       use("maxZoom", 15),
-      use("kindRank", 4)
+      use("kindRank", 9)
     ),
     rule(
       with("place", "quarter"),
       use("kind", "macrohood"),
       use("minZoom", 10),
       use("maxZoom", 15),
-      use("kindRank", 5)
+      use("kindRank", 10)
     ),
     rule(
       with("place", "neighbourhood"),
       use("kind", "neighbourhood"),
       use("minZoom", 12),
       use("maxZoom", 15),
-      use("kindRank", 6)
+      use("kindRank", 11)
     )
   )).index();
 
@@ -191,13 +191,15 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       // (nvkelso 20230803) floats with significant single decimal precision
       //                    but results in "Too many possible values"
       // Order ASCENDING (smaller manually curated Natural Earth min_zoom win over larger values, across kinds)
-      .orderByInt((int) minZoom, 0, 15)
+      // minZoom is a float with 1 significant digit for manually curated places
+      .orderByInt((int) (minZoom * 10), 0, 150)
       // Order ASCENDING (smaller values win, countries then locality then neighbourhood, breaks ties for same minZoom)
-      .thenByInt(kindRank, 0, 6)
+      .thenByInt(kindRank, 0, 12)
       // Order DESCENDING (larger values win, San Francisco rank 11 wins over Oakland rank 10)
-      .thenByInt(populationRank, 15, 0)
+      // Disabled to allow population log to have larger range
+      //.thenByInt(populationRank, 15, 0)
       // Order DESCENDING (larger values win, Millbrea 40k wins over San Bruno 20k, both rank 7)
-      .thenByLog(population, 1000000000, 1, 100)
+      .thenByLog(population, 40000000, 1, 100)
       // Order ASCENDING (shorter strings are better than longer strings for map display and adds predictability)
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
@@ -210,15 +212,30 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION =
     ZoomFunction.fromMaxZoomThresholds(Map.of(
-      6, 32,
-      7, 64
+      3, 24,
+      4, 24,
+      5, 24,
+      7, 24,
+      8, 32,
+      9, 32,
+      10, 32,
+      11, 24,
+      14, 24,
+      15, 16
     ), 0);
 
   private static final ZoomFunction<Number> LOCALITY_GRID_LIMIT_ZOOM_FUNCTION =
     ZoomFunction.fromMaxZoomThresholds(Map.of(
-      6, 8,
-      7, 6,
-      9, 4
+      3, 1,
+      4, 1,
+      5, 1,
+      6, 1,
+      8, 1,
+      9, 1,
+      10, 1,
+      11, 1,
+      14, 2,
+      15, 3
     ), 0);
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
@@ -328,12 +345,14 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     feat.setSortKey(sortKey);
     feat.setAttr("sort_key", sortKey);
 
+    // This is only necessary when prepping for raster renderers
+    feat.setBufferPixels(16);
+
     // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
     // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
     //feat.setPointLabelGridSizeAndLimit(13, 64, 4); // each cell in the 4x4 grid can have 4 items
     feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
-      .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION)
-      .setBufferPixels(64);
+      .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION);
 
     // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
     // label grid squares will be the consistent between adjacent tiles
