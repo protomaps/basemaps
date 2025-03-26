@@ -1,3 +1,7 @@
+Tiles 4.8.2
+------
+- port places to use Matchers [#434]
+
 Tiles 4.8.1, Styles 5.0.2
 ------
 - change earth pixel minimum size to 1px [#428]
