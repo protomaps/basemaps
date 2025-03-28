@@ -57,6 +57,12 @@
       <version>${planetiler.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.google.myanmartools</groupId>
+      <artifactId>myanmar-tools</artifactId>
+      <version>1.2.0</version>
+    </dependency>
+
     <!-- To use test utilities: -->
     <dependency>
       <groupId>com.onthegomap.planetiler</groupId>

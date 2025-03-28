@@ -152,11 +152,11 @@ function getMaplibreStyle(
   if (localSprites) {
     style.sprite = `${location.protocol}//${location.host}/${flavorName}`;
   } else {
-    style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v4/${flavorName}`;
+    style.sprite = `https://wipfli.github.io/basemaps-assets/sprites/v4/${flavorName}`;
   }
 
   style.glyphs =
-    "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
+    "https://wipfli.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
 
   style.sources = {
     protomaps: {

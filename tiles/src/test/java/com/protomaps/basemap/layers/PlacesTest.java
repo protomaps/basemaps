@@ -189,4 +189,23 @@ class PlacesTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void testMyanmar() {
+    assertFeatures(14,
+      List.of(Map.of(
+        "kind", "country",
+        "name", "Myanmar",
+        "name2", "မြန်မာနိုင်ငံ",
+        "script2", "Myanmar"
+      // "pgf:name2", "ျမန္မာနိုင္ငံ"
+      )),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "country", "name", "Myanmar မြန်မာနိုင်ငံ")),
+        "osm",
+        null,
+        0
+      )));
+  }
 }

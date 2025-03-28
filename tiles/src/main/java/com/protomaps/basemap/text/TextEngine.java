@@ -1,5 +1,6 @@
 package com.protomaps.basemap.text;
 
+import com.google.myanmartools.TransliterateU2Z;
 import com.protomaps.basemap.names.Script;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
@@ -11,8 +12,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class TextEngine {
+
+  private static final TransliterateU2Z unicodeToZawgyiConverter = new TransliterateU2Z("Unicode to Zawgyi");
 
   private static Integer[][] deltas = new Integer[][]{
     {0, 0},
@@ -151,6 +153,8 @@ public class TextEngine {
       String script = Script.getScript(segment);
       if (fontRegistry.getScripts().contains(script)) {
         encodedText += TextEngine.encode(segment, fontRegistry.getFont(script), fontRegistry.getEncoding(script));
+      } else if (script.equals("Myanmar")) {
+        encodedText += unicodeToZawgyiConverter.convert(segment);
       } else {
         encodedText += segment;
       }
