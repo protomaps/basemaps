@@ -53,7 +53,7 @@ class PlacesTest extends LayerTest {
     assertFeatures(12,
       List.of(Map.of("_minzoom", 4, "_maxzoom", 7, "kind", "region")),
       process(SimpleFeature.create(
-        newPoint(1, 1),
+        newPoint(-119.9583, 37.2221),
         new HashMap<>(Map.of("place", "state", "wikidata", "Q2", "name", "CA")),
         "osm",
         null,
@@ -66,7 +66,7 @@ class PlacesTest extends LayerTest {
     assertFeatures(12,
       List.of(Map.of("_minzoom", 8, "_maxzoom", 11, "kind", "region")),
       process(SimpleFeature.create(
-        newPoint(1, 1),
+        newPoint(-119.9583, 37.2221),
         new HashMap<>(Map.of("place", "state", "wikidata", "Q999", "name", "XX")),
         "osm",
         null,
