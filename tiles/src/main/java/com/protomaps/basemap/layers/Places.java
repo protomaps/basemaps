@@ -324,7 +324,9 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     }
 
     //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
-    feat.setSortKey(getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name")));
+    int sortKey = getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name"));
+    feat.setSortKey(sortKey);
+    feat.setAttr("sort_key", sortKey);
 
     // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
     // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes

@@ -1686,7 +1686,7 @@ export function labels_layers(
       "source-layer": "places",
       filter: ["==", "kind", "neighbourhood"],
       layout: {
-        "symbol-sort-key": ["get", "min_zoom"],
+        "symbol-sort-key": ["get", "sort_key"],
         "text-field": get_multiline_name(
           lang,
           script,
@@ -1747,6 +1747,7 @@ export function labels_layers(
           ["literal", [t.bold || "Noto Sans Medium"]],
           ["literal", [t.regular || "Noto Sans Regular"]],
         ],
+        "symbol-sort-key": ["get", "sort_key"],
         "text-padding": [
           "interpolate",
           ["linear"],
@@ -1849,7 +1850,7 @@ export function labels_layers(
       "source-layer": "places",
       filter: ["==", "kind", "region"],
       layout: {
-        "symbol-sort-key": ["get", "min_zoom"],
+        "symbol-sort-key": ["get", "sort_key"],
         "text-field": [
           "step",
           ["zoom"],
@@ -1880,7 +1881,7 @@ export function labels_layers(
       "source-layer": "places",
       filter: ["==", "kind", "country"],
       layout: {
-        "symbol-sort-key": ["get", "min_zoom"],
+        "symbol-sort-key": ["get", "sort_key"],
         "text-field": get_country_name(
           lang,
           script,
