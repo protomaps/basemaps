@@ -19,6 +19,8 @@ function get_name_block(
         "case",
         ["==", ["get", script], "Devanagari"],
         ["literal", ["Noto Sans Devanagari Regular v1"]],
+        ["==", ["get", script], "Myanmar"],
+        ["literal", ["Zawgyi One Regular"]],
         ["literal", [regular || "Noto Sans Regular"]],
       ],
     },
@@ -62,6 +64,11 @@ function get_font_formatting(script: string) {
       "text-font": ["literal", ["Noto Sans Devanagari Regular v1"]],
     };
   }
+  if (script === "Myanmar") {
+    return {
+      "text-font": ["literal", ["Zawgyi One Regular"]],
+    };
+  }
   return {};
 }
 
@@ -73,7 +80,7 @@ function get_default_script(lang: string) {
 export function get_country_name(lang: string, script?: string) {
   const _script = script || get_default_script(lang);
   let name_prefix: string;
-  if (_script === "Devanagari") {
+  if (_script === "Devanagari" || _script === "Myanmar") {
     name_prefix = "pgf:";
   } else {
     name_prefix = "";
@@ -92,7 +99,7 @@ export function get_multiline_name(
 ) {
   const _script = script || get_default_script(lang);
   let name_prefix: string;
-  if (_script === "Devanagari") {
+  if (_script === "Devanagari" || _script === "Myanmar") {
     name_prefix = "pgf:";
   } else {
     name_prefix = "";
@@ -142,6 +149,8 @@ export function get_multiline_name(
               "case",
               ["==", ["get", "script"], "Devanagari"],
               ["literal", ["Noto Sans Devanagari Regular v1"]],
+              ["==", ["get", "script"], "Myanmar"],
+              ["literal", ["Zawgyi One Regular"]],
               ["literal", [regular || "Noto Sans Regular"]],
             ],
           },

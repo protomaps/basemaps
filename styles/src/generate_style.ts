@@ -30,9 +30,9 @@ const style = {
     },
   },
   layers: layers("protomaps", flavor, { lang: lang }),
-  sprite: `https://protomaps.github.io/basemaps-assets/sprites/v4/${flavorName}`,
+  sprite: `https://wipfli.github.io/basemaps-assets/sprites/v4/${flavorName}`,
   glyphs:
-    "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+    "https://wipfli.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
 };
 
 await writeFile(out, JSON.stringify(style, null, 2));
