@@ -1,4 +1,5 @@
 Tiles 4.10.0, Styles 5.2.0
+------
 - Restrict region labels to United States, Canada, Brazil, India, China, and Australia [#441]
 
 Tiles 4.9.0, Styles 5.1.0
