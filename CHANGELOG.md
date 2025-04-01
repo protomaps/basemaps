@@ -1,3 +1,6 @@
+Tiles 4.10.0, Styles 5.2.0
+- Restrict region labels to United States, Canada, Brazil, India, China, and Australia [#441]
+
 Tiles 4.9.0, Styles 5.1.0
 ------
 - Use sort_rank to order places correctly across tile boundaries [#436, #434]
