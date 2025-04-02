@@ -355,7 +355,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     feat.setAttr("sort_key", sortKey);
 
     // This is only necessary when prepping for raster renderers
-    feat.setBufferPixels(16);
+    feat.setBufferPixels(24);
 
     // We set the sort keys so the label grid can be sorted predictably (bonus: tile features also sorted)
     // NOTE: The buffer needs to be consistent with the innteral grid pixel sizes
