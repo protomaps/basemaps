@@ -227,27 +227,12 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION =
     ZoomFunction.fromMaxZoomThresholds(Map.of(
-      3, 24,
-      4, 24,
-      5, 24,
-      7, 24,
-      8, 24,
-      9, 24,
-      10, 24,
-      11, 24,
       14, 24,
       15, 16
     ), 0);
 
   private static final ZoomFunction<Number> LOCALITY_GRID_LIMIT_ZOOM_FUNCTION =
     ZoomFunction.fromMaxZoomThresholds(Map.of(
-      3, 1,
-      4, 1,
-      5, 1,
-      6, 1,
-      8, 1,
-      9, 1,
-      10, 1,
       11, 1,
       14, 2,
       15, 3
