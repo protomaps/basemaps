@@ -12,21 +12,26 @@ import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
+import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private NaturalEarthDb naturalEarthDb;
+  private CountryCoder countryCoder;
 
-  public Places(NaturalEarthDb naturalEarthDb) {
+  public Places(NaturalEarthDb naturalEarthDb, CountryCoder countryCoder) {
     this.naturalEarthDb = naturalEarthDb;
+    this.countryCoder = countryCoder;
   }
 
   public static final String LAYER_NAME = "places";
@@ -49,6 +54,16 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
           state
           province
         """),
+      with("""
+          _country
+          US
+          CA
+          BR
+          IN
+          CN
+          AU
+        """
+      ),
       use("kind", "region"),
       use("minZoom", 8),
       use("maxZoom", 11),
@@ -239,8 +254,17 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     ), 0);
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    if (!sf.isPoint() || !sf.hasTag("name")) {
+    if (!sf.isPoint() || !sf.hasTag("name") || !sf.hasTag("place")) {
       return;
+    }
+
+    try {
+      Optional<String> code = countryCoder.getCountryCode(sf.latLonGeometry());
+      if (code.isPresent()) {
+        sf.setTag("_country", code.get());
+      }
+    } catch (GeometryException e) {
+      // do nothing
     }
 
     var matches = index.getMatches(sf);

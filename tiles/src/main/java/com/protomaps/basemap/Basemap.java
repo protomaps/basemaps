@@ -59,7 +59,7 @@ public class Basemap extends ForwardingProfile {
     }
 
     if (layer.isEmpty() || layer.equals(Places.LAYER_NAME)) {
-      var place = new Places(naturalEarthDb);
+      var place = new Places(naturalEarthDb, countryCoder);
       registerHandler(place);
       registerSourceHandler("osm", place::processOsm);
     }
@@ -116,7 +116,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.8.2";
+    return "4.10.0";
   }
 
   @Override
