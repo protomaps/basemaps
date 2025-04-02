@@ -216,9 +216,9 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       4, 24,
       5, 24,
       7, 24,
-      8, 32,
-      9, 32,
-      10, 32,
+      8, 24,
+      9, 24,
+      10, 24,
       11, 24,
       14, 24,
       15, 16
