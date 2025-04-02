@@ -1,3 +1,7 @@
+Tiles 4.11.0
+------
+- Tune place label density [#437]
+
 Tiles 4.10.0, Styles 5.2.0
 ------
 - Restrict region labels to United States, Canada, Brazil, India, China, and Australia [#441]
