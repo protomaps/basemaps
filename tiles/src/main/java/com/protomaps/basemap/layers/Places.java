@@ -49,6 +49,1492 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       use("kindRank", 0)
     ),
     rule(
+      with("place", "country"),
+      with("_country", "AD"), // Andorra
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AE"), // United Arab Emirates
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AF"), // Afghanistan
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AG"), // Antigua and Barb
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AI"), // Anguilla
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AL"), // Albania
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AM"), // Armenia
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AO"), // Angola
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AQ"), // Antarctica
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AR"), // Argentina
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AS"), // American Samoa
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AT"), // Austria
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AU"), // Australia
+      use("minZoom", 1),
+      use("maxZoom", 5)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AW"), // Aruba
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AX"), // Åland
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "AZ"), // Azerbaijan
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BA"), // Bosnia and Herz
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BB"), // Barbados
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BD"), // Bangladesh
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BE"), // Belgium
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BF"), // Burkina Faso
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BG"), // Bulgaria
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BH"), // Bahrain
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BI"), // Burundi
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BJ"), // Benin
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BL"), // St-Barthélemy
+      use("minZoom", 5),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BM"), // Bermuda
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BN"), // Brunei
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BO"), // Bolivia
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BR"), // Brazil
+      use("minZoom", 1),
+      use("maxZoom", 5)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BS"), // Bahamas
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BT"), // Bhutan
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BV"), // Bouvet Island
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BW"), // Botswana
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BY"), // Belarus
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "BZ"), // Belize
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CA"), // Canada
+      use("minZoom", 1),
+      use("maxZoom", 5)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CD"), // Dem. Rep. Congo
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CF"), // Central African Rep
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CG"), // Congo
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CH"), // Switzerland
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CI"), // Côte d'Ivoire
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CK"), // Cook Is
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CL"), // Chile
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CM"), // Cameroon
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CN"), // China
+      use("minZoom", 1),
+      use("maxZoom", 5)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CO"), // Colombia
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CR"), // Costa Rica
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CU"), // Cuba
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CV"), // Cabo Verde
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CW"), // Curaçao
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CY"), // Cyprus
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "CZ"), // Czechia
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "DE"), // Germany
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "DJ"), // Djibouti
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "DK"), // Denmark
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "DM"), // Dominica
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "DO"), // Dominican Rep
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "DZ"), // Algeria
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "EC"), // Ecuador
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "EE"), // Estonia
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "EG"), // Egypt
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "EH"), // W. Sahara
+      use("minZoom", 5),
+      use("maxZoom", 10)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ER"), // Eritrea
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ES"), // Spain
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ET"), // Ethiopia
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "FI"), // Finland
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "FJ"), // Fiji
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "FK"), // Falkland Is
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "FM"), // Micronesia
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "FO"), // Faeroe Is
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "FR"), // France
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GA"), // Gabon
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GB"), // United Kingdom
+      without("country_code_iso3166_1_alpha_2", "IO"), // British Indian Ocean Territory
+      without("ISO3166-1:alpha2", "SH"), // Saint Helena, Ascension and Tristan da Cunha
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GD"), // Grenada
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GE"), // Georgia
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GF"), // French Guiana
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GG"), // Guernsey
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GH"), // Ghana
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GI"), // Gibraltar
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GL"), // Greenland
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GM"), // Gambia
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GN"), // Guinea
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GP"), // Guadeloupe
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GQ"), // Eq. Guinea
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GR"), // Greece
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GS"), // S. Geo. and the Is
+      use("minZoom", 4),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GT"), // Guatemala
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GU"), // Guam
+      use("minZoom", 2),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GW"), // Guinea-Bissau
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "GY"), // Guyana
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "HK"), // Hong Kong
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "HM"), // Heard I. and McDonald Is
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "HN"), // Honduras
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "HR"), // Croatia
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "HT"), // Haiti
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "HU"), // Hungary
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      // Defaulting to iso3166 alpha2 because the node for Indonesia is 
+      // not inside the country polygon used by the country coder
+      with("country_code_iso3166_1_alpha_2", "ID"), // Indonesia
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IE"), // Ireland
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IL"), // Israel
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IM"), // Isle of Man
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IN"), // India
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IO"), // Br. Indian Ocean Ter
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IQ"), // Iraq
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IR"), // Iran
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IS"), // Iceland
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "IT"), // Italy
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "JE"), // Jersey
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "JM"), // Jamaica
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "JO"), // Jordan
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "JP"), // Japan
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KE"), // Kenya
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KG"), // Kyrgyzstan
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KH"), // Cambodia
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KI"), // Kiribati
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KM"), // Comoros
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KN"), // St. Kitts and Nevis
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KP"), // North Korea
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KR"), // South Korea
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KW"), // Kuwait
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KY"), // Cayman Is
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "KZ"), // Kazakhstan
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LA"), // Laos
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LB"), // Lebanon
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LC"), // Saint Lucia
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LI"), // Liechtenstein
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LK"), // Sri Lanka
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LR"), // Liberia
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LS"), // Lesotho
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LT"), // Lithuania
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LU"), // Luxembourg
+      use("minZoom", 5),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LV"), // Latvia
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "LY"), // Libya
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MA"), // Morocco
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MC"), // Monaco
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MD"), // Moldova
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ME"), // Montenegro
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MF"), // St-Martin
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MG"), // Madagascar
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MH"), // Marshall Is
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MK"), // Macedonia
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ML"), // Mali
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MM"), // Myanmar
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MN"), // Mongolia
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MO"), // Macao
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MP"), // N. Mariana Is
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MQ"), // Martinique
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MR"), // Mauritania
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MS"), // Montserrat
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MT"), // Malta
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MU"), // Mauritius
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MV"), // Maldives
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MW"), // Malawi
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MX"), // Mexico
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MY"), // Malaysia
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "MZ"), // Mozambique
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NA"), // Namibia
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NC"), // New Caledonia
+      use("minZoom", 4),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NE"), // Niger
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NF"), // Norfolk Island
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NG"), // Nigeria
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NI"), // Nicaragua
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NL"), // Netherlands
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NO"), // Norway
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NP"), // Nepal
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NR"), // Nauru
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NU"), // Niue
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "NZ"), // New Zealand
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "OM"), // Oman
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PA"), // Panama
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PE"), // Peru
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PF"), // Fr. Polynesia
+      use("minZoom", 3),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PG"), // Papua New Guinea
+      use("minZoom", 1),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PH"), // Philippines
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PK"), // Pakistan
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PL"), // Poland
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PM"), // St. Pierre and Miquelon
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PN"), // Pitcairn Is
+      use("minZoom", 4),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PR"), // Puerto Rico
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PS"), // Palestine
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PT"), // Portugal
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PW"), // Palau
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "PY"), // Paraguay
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "QA"), // Qatar
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "RE"), // Réunion
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "RO"), // Romania
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "RS"), // Serbia
+      use("minZoom", 3),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "RU"), // Russia
+      use("minZoom", 1),
+      use("maxZoom", 4)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "RW"), // Rwanda
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SA"), // Saudi Arabia
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SB"), // Solomon Is
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SC"), // Seychelles
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SD"), // Sudan
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SE"), // Sweden
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SG"), // Singapore
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SH"), // Saint Helena
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SI"), // Slovenia
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SJ"), // Svalbard and Jan Mayen
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SK"), // Slovakia
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SL"), // Sierra Leone
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SM"), // San Marino
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SN"), // Senegal
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SO"), // Somalia
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SR"), // Suriname
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SS"), // S. Sudan
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ST"), // São Tomé and Principe
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SV"), // El Salvador
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SX"), // Sint Maarten
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SY"), // Syria
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "SZ"), // eSwatini
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TC"), // Turks and Caicos Is
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TD"), // Chad
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TF"), // Fr. S. Antarctic Lands
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TG"), // Togo
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TH"), // Thailand
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TJ"), // Tajikistan
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TK"), // Tokelau
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TL"), // Timor-Leste
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TM"), // Turkmenistan
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TN"), // Tunisia
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TO"), // Tonga
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TR"), // Turkey
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TT"), // Trinidad and Tobago
+      use("minZoom", 3),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TV"), // Tuvalu
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TW"), // Taiwan
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "TZ"), // Tanzania
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "UA"), // Ukraine
+      use("minZoom", 2),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "UG"), // Uganda
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "UM"), // U.S. Minor Outlying Is
+      use("minZoom", 6),
+      use("maxZoom", 10)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "US"), // United States of America
+      use("minZoom", 1),
+      use("maxZoom", 5)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "UY"), // Uruguay
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "UZ"), // Uzbekistan
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "VA"), // Vatican
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "VC"), // St. Vin. and Gren
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "VE"), // Venezuela
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "VG"), // British Virgin Is
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "VI"), // U.S. Virgin Is
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "VN"), // Vietnam
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "VU"), // Vanuatu
+      use("minZoom", 3),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "WF"), // Wallis and Futuna Is
+      use("minZoom", 4),
+      use("maxZoom", 8)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "WS"), // Samoa
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "XK"), // Kosovo
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "YE"), // Yemen
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "YT"), // Mayotte
+      use("minZoom", 4),
+      use("maxZoom", 9)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ZA"), // South Africa
+      use("minZoom", 1),
+      use("maxZoom", 6)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ZM"), // Zambia
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
+      with("place", "country"),
+      with("_country", "ZW"), // Zimbabwe
+      use("minZoom", 2),
+      use("maxZoom", 7)
+    ),
+    rule(
       with("""
           place
           state
@@ -293,14 +1779,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       if (population >= popBreaks[i]) {
         populationRank = popBreaks.length - i;
         break;
-      }
-    }
-
-    if (kind.equals("country")) {
-      var neAdmin0 = naturalEarthDb.getAdmin0ByWikidata(sf.getString("wikidata"));
-      if (neAdmin0 != null) {
-        minZoom = (int) neAdmin0.minLabel() - NE_ZOOM_OFFSET;
-        maxZoom = (int) neAdmin0.maxLabel() - NE_ZOOM_OFFSET;
       }
     }
 
