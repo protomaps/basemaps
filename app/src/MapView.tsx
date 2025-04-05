@@ -572,14 +572,11 @@ function MapView() {
   };
 
   const getVersions = async (pkg: string) => {
-    const resp = await fetch(
-      `https://registry.npmjs.org/${pkg}`,
-      {
-        headers: { Accept: "application/vnd.npm.install-v1+json" },
-      },
-    );
+    const resp = await fetch(`https://registry.npmjs.org/${pkg}`, {
+      headers: { Accept: "application/vnd.npm.install-v1+json" },
+    });
     return Object.keys((await resp.json()).versions);
-  }
+  };
 
   const loadVersionsFromNpm = async () => {
     const oldVersions = await getVersions("protomaps-themes-base");
