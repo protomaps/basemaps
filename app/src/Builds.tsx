@@ -172,12 +172,9 @@ function Builds() {
     });
   });
   const [latestStyle] = createResource(async () => {
-    const resp = await fetch(
-      "https://registry.npmjs.org/protomaps-themes-base",
-      {
-        headers: { Accept: "application/vnd.npm.install-v1+json" },
-      },
-    );
+    const resp = await fetch("https://registry.npmjs.org/@protomaps/basemaps", {
+      headers: { Accept: "application/vnd.npm.install-v1+json" },
+    });
     const j = await resp.json();
     const versions = Object.keys(j.versions).filter(
       (v) => +v.split(".")[0] >= 2,
