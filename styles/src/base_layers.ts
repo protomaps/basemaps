@@ -1,7 +1,7 @@
 import {
-  DataDrivenPropertyValueSpecification,
-  ExpressionSpecification,
-  LayerSpecification,
+  type DataDrivenPropertyValueSpecification,
+  type ExpressionSpecification,
+  type LayerSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
 import { Flavor } from "./flavors";
 import { get_country_name, get_multiline_name } from "./language";
