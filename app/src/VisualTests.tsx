@@ -156,7 +156,7 @@ const linkTo = (props: { name?: string; tag?: string }) => {
 };
 
 const latestVersion = async () => {
-  const resp = await fetch("https://registry.npmjs.org/protomaps-themes-base", {
+  const resp = await fetch("https://registry.npmjs.org/@protomaps/basemaps", {
     headers: { Accept: "application/vnd.npm.install-v1+json" },
   });
   return (await resp.json())["dist-tags"].latest;

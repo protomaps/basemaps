@@ -173,7 +173,7 @@ function Builds() {
   });
   const [latestStyle] = createResource(async () => {
     const resp = await fetch(
-      "https://registry.npmjs.org/protomaps-themes-base",
+      "https://registry.npmjs.org/@protomaps/basemaps",
       {
         headers: { Accept: "application/vnd.npm.install-v1+json" },
       },
