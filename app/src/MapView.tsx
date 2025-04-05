@@ -571,16 +571,18 @@ function MapView() {
     }
   };
 
+  const getVersions = async (pkg: string) => {
+    const resp = await fetch(`https://registry.npmjs.org/${pkg}`, {
+      headers: { Accept: "application/vnd.npm.install-v1+json" },
+    });
+    return Object.keys((await resp.json()).versions);
+  };
+
   const loadVersionsFromNpm = async () => {
-    const resp = await fetch(
-      "https://registry.npmjs.org/protomaps-themes-base",
-      {
-        headers: { Accept: "application/vnd.npm.install-v1+json" },
-      },
-    );
-    const j = await resp.json();
+    const oldVersions = await getVersions("protomaps-themes-base");
+    const versions = await getVersions("@protomaps/basemaps");
     setKnownNpmVersions(
-      Object.keys(j.versions)
+      [...oldVersions, ...versions]
         .sort()
         .filter((v) => +v.split(".")[0] >= 2)
         .reverse(),
