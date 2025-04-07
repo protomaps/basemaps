@@ -204,13 +204,12 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private record MinMaxZoom(int minZoom, int maxZoom) {}
 
-  private static Map<String, MinMaxZoom> createCountryZooms() {
+  private static Map<String, MinMaxZoom> readWikidataZooms(String filename) {
     Map<String, MinMaxZoom> countryZooms = new HashMap<>();
-    String filename = "/country-zooms.csv";
     InputStream inputStream = Places.class.getResourceAsStream(filename);
 
     if (inputStream == null) {
-      LOGGER.error("Places Error: File \"{}\" not found in resources.", filename);
+      LOGGER.error("File \"{}\" not found in resources.", filename);
       return countryZooms;
     }
 
@@ -228,12 +227,12 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       }
 
     } catch (IOException e) {
-      LOGGER.error("Places Error", e);
+      LOGGER.error("IOException", e);
     }
     return countryZooms;
   }
 
-  private static final Map<String, MinMaxZoom> COUNTRY_ZOOMS = createCountryZooms();
+  private static final Map<String, MinMaxZoom> COUNTRY_ZOOMS = readWikidataZooms("/country-zooms.csv");
 
   @Override
   public String name() {
