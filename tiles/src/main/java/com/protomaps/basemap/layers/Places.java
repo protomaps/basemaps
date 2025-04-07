@@ -210,7 +210,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     InputStream inputStream = Places.class.getResourceAsStream(filename);
 
     if (inputStream == null) {
-      LOGGER.error("Places Error: File \"" + filename + "\" not found in resources.");
+      LOGGER.error("Places Error: File \"{}\" not found in resources.", filename);
       return countryZooms;
     }
 
