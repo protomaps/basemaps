@@ -25,10 +25,23 @@ class PlacesTest extends LayerTest {
   @Test
   void testMinMaxLabelCountry() {
     assertFeatures(12,
-      List.of(Map.of("_minzoom", 2, "_maxzoom", 4, "kind", "country")),
+      List.of(Map.of("_minzoom", 1, "_maxzoom", 5, "kind", "country")),
       process(SimpleFeature.create(
         newPoint(1, 1),
-        new HashMap<>(Map.of("place", "country", "wikidata", "Q1", "name", "US")),
+        new HashMap<>(Map.of("place", "country", "wikidata", "Q30", "name", "US")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testMinMaxLabelCountryNotFound() {
+    assertFeatures(12,
+      List.of(Map.of("_minzoom", 5, "_maxzoom", 8, "kind", "country")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("place", "country", "wikidata", "Q-some-wikidata", "name", "some-name")),
         "osm",
         null,
         0
