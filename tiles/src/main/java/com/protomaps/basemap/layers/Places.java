@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -202,37 +203,58 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
-  private record MinMaxZoom(int minZoom, int maxZoom) {}
-
-  private static Map<String, MinMaxZoom> readWikidataZooms(String filename) {
-    Map<String, MinMaxZoom> countryZooms = new HashMap<>();
+  private static List<List<String>> readCSV(String filename) {
+    List<List<String>> rows = new ArrayList<>();
     InputStream inputStream = Places.class.getResourceAsStream(filename);
-
     if (inputStream == null) {
       LOGGER.error("File \"{}\" not found in resources.", filename);
-      return countryZooms;
+      return rows;
     }
-
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
       String line = br.readLine(); // skip header
       line = br.readLine();
 
       while (line != null) {
-        List<String> columns = List.of(line.split(","));
-        String wikidata = columns.get(0);
-        Integer minZoom = Integer.parseInt(columns.get(1));
-        Integer maxZoom = Integer.parseInt(columns.get(2));
-        countryZooms.put(wikidata, new MinMaxZoom(minZoom, maxZoom));
+        rows.add(List.of(line.split(",")));
         line = br.readLine();
       }
-
     } catch (IOException e) {
       LOGGER.error("IOException", e);
+    }
+    return rows;
+  }
+
+  private record CountryZoom(int minZoom, int maxZoom) {}
+
+  private static Map<String, CountryZoom> readCountryWikidataZoom() {
+    Map<String, CountryZoom> countryZooms = new HashMap<>();
+    List<List<String>> rows = readCSV("/country-wikidata-zoom.csv");
+    for (var row : rows) {
+      String wikidata = row.get(0);
+      Integer minZoom = Integer.parseInt(row.get(1));
+      Integer maxZoom = Integer.parseInt(row.get(2));
+      countryZooms.put(wikidata, new CountryZoom(minZoom, maxZoom));
     }
     return countryZooms;
   }
 
-  private static final Map<String, MinMaxZoom> COUNTRY_ZOOMS = readWikidataZooms("/country-zooms.csv");
+  private static final Map<String, CountryZoom> COUNTRY_ZOOMS = readCountryWikidataZoom();
+
+  private record LocalityZoomRank(int minZoom, int rankMax) {}
+
+  private static Map<String, LocalityZoomRank> readLocalityWikidataZoomRank() {
+    Map<String, LocalityZoomRank> localityZoomRanks = new HashMap<>();
+    List<List<String>> rows = readCSV("/locality-wikidata-zoom-rank.csv");
+    for (var row : rows) {
+      String wikidata = row.get(0);
+      Integer minZoom = Integer.parseInt(row.get(1));
+      Integer rankMax = Integer.parseInt(row.get(2));
+      localityZoomRanks.put(wikidata, new LocalityZoomRank(minZoom, rankMax));
+    }
+    return localityZoomRanks;
+  }
+
+  private static final Map<String, LocalityZoomRank> LOCALITY_ZOOM_RANKS = readLocalityWikidataZoomRank();
 
   @Override
   public String name() {
@@ -351,22 +373,10 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
-    // Join OSM locality with nearby NE localities based on Wikidata ID and
-    // harvest the min_zoom to achieve consistent label collisions at zoom 7+
-    // By this zoom we get OSM points centered in feature better for area labels
-    // While NE earlier aspires to be more the downtown area
-    //
-    // First scope down the NE <> OSM data join (to speed up total build time)
-    if (kind.equals("locality")) {
-      // We could add more fallback equivalency tests here, but 98% of NE places have a Wikidata ID
-      var nePopulatedPlace = naturalEarthDb.getPopulatedPlaceByWikidata(sf.getString("wikidata"));
-      if (nePopulatedPlace != null) {
-        minZoom = (int) nePopulatedPlace.minZoom() - NE_ZOOM_OFFSET;
-        // (nvkelso 20230815) We could set the population value here, too
-        //                    But by the OSM zooms the value should be the incorporated value
-        //                    While symbology should be for the metro population value
-        populationRank = nePopulatedPlace.rankMax();
-      }
+    if (kind.equals("locality") && LOCALITY_ZOOM_RANKS.containsKey(sf.getString("wikidata"))) {
+      var localityZoomRank = LOCALITY_ZOOM_RANKS.get(sf.getString("wikidata"));
+      minZoom = localityZoomRank.minZoom();
+      populationRank = localityZoomRank.rankMax();
     }
 
     var feat = features.point(this.name())
