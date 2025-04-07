@@ -20,11 +20,20 @@ import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.names.OsmNames;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Places implements ForwardingProfile.LayerPostProcessor {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Places.class);
 
   private NaturalEarthDb naturalEarthDb;
   private CountryCoder countryCoder;
@@ -193,6 +202,38 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
+  private record MinMaxZoom(int minZoom, int maxZoom) {}
+
+  private static Map<String, MinMaxZoom> readWikidataZooms(String filename) {
+    Map<String, MinMaxZoom> countryZooms = new HashMap<>();
+    InputStream inputStream = Places.class.getResourceAsStream(filename);
+
+    if (inputStream == null) {
+      LOGGER.error("File \"{}\" not found in resources.", filename);
+      return countryZooms;
+    }
+
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+      String line = br.readLine(); // skip header
+      line = br.readLine();
+
+      while (line != null) {
+        List<String> columns = List.of(line.split(","));
+        String wikidata = columns.get(0);
+        Integer minZoom = Integer.parseInt(columns.get(1));
+        Integer maxZoom = Integer.parseInt(columns.get(2));
+        countryZooms.put(wikidata, new MinMaxZoom(minZoom, maxZoom));
+        line = br.readLine();
+      }
+
+    } catch (IOException e) {
+      LOGGER.error("IOException", e);
+    }
+    return countryZooms;
+  }
+
+  private static final Map<String, MinMaxZoom> COUNTRY_ZOOMS = readWikidataZooms("/country-zooms.csv");
+
   @Override
   public String name() {
     return LAYER_NAME;
@@ -296,12 +337,10 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
-    if (kind.equals("country")) {
-      var neAdmin0 = naturalEarthDb.getAdmin0ByWikidata(sf.getString("wikidata"));
-      if (neAdmin0 != null) {
-        minZoom = (int) neAdmin0.minLabel() - NE_ZOOM_OFFSET;
-        maxZoom = (int) neAdmin0.maxLabel() - NE_ZOOM_OFFSET;
-      }
+    if (kind.equals("country") && COUNTRY_ZOOMS.containsKey(sf.getString("wikidata"))) {
+      var minMaxZoom = COUNTRY_ZOOMS.get(sf.getString("wikidata"));
+      minZoom = minMaxZoom.minZoom();
+      maxZoom = minMaxZoom.maxZoom();
     }
 
     if (kind.equals("region")) {

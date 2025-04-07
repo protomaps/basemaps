@@ -1,3 +1,7 @@
+Tiles 4.11.1
+------
+- Use country min and maxzooms from tilezen [#445]
+
 Tiles 4.11.0
 ------
 - Tune place label density [#437]
