@@ -215,8 +215,8 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     }
 
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-      br.readLine(); // skip header
-      String line = br.readLine();
+      String line = br.readLine(); // skip header
+      line = br.readLine();
 
       while (line != null) {
         List<String> columns = List.of(line.split(","));
