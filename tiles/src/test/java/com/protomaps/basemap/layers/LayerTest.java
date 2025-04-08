@@ -29,7 +29,7 @@ abstract class LayerTest {
   final CountryCoder countryCoder = CountryCoder.fromJsonString(
     "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"US\",\"nameEn\":\"United States\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-124,47],[-124,25],[-71,25],[-71,47],[-124,47]]]]}}]}");
 
-  final Basemap profile = new Basemap(naturalEarthDb, null, countryCoder, null, "");
+  final Basemap profile = new Basemap(null, countryCoder, null, "");
 
   static void assertFeatures(int zoom, List<Map<String, Object>> expected, Iterable<FeatureCollector.Feature> actual) {
     var expectedList = expected.stream().toList();

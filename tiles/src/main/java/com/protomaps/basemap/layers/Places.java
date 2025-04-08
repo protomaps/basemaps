@@ -18,7 +18,6 @@ import com.onthegomap.planetiler.util.SortKey;
 import com.onthegomap.planetiler.util.ZoomFunction;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,11 +34,9 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Places.class);
 
-  private NaturalEarthDb naturalEarthDb;
   private CountryCoder countryCoder;
 
-  public Places(NaturalEarthDb naturalEarthDb, CountryCoder countryCoder) {
-    this.naturalEarthDb = naturalEarthDb;
+  public Places(CountryCoder countryCoder) {
     this.countryCoder = countryCoder;
   }
 
@@ -202,15 +199,15 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
-  private record MinMaxZoom(int minZoom, int maxZoom) {}
+  private record WikidataConfig(int minZoom, int maxZoom, int rankMax) {}
 
-  private static Map<String, MinMaxZoom> readWikidataZooms(String filename) {
-    Map<String, MinMaxZoom> countryZooms = new HashMap<>();
-    InputStream inputStream = Places.class.getResourceAsStream(filename);
+  private static Map<String, WikidataConfig> readWikidataConfigs() {
+    Map<String, WikidataConfig> wikidataConfigs = new HashMap<>();
+    InputStream inputStream = Places.class.getResourceAsStream("/places.csv");
 
     if (inputStream == null) {
-      LOGGER.error("File \"{}\" not found in resources.", filename);
-      return countryZooms;
+      LOGGER.error("File places.csv not found in resources.");
+      return wikidataConfigs;
     }
 
     try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -222,17 +219,18 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
         String wikidata = columns.get(0);
         Integer minZoom = Integer.parseInt(columns.get(1));
         Integer maxZoom = Integer.parseInt(columns.get(2));
-        countryZooms.put(wikidata, new MinMaxZoom(minZoom, maxZoom));
+        Integer rankMax = Integer.parseInt(columns.get(3));
+        wikidataConfigs.put(wikidata, new WikidataConfig(minZoom, maxZoom, rankMax));
         line = br.readLine();
       }
 
     } catch (IOException e) {
       LOGGER.error("IOException", e);
     }
-    return countryZooms;
+    return wikidataConfigs;
   }
 
-  private static final Map<String, MinMaxZoom> COUNTRY_ZOOMS = readWikidataZooms("/country-zooms.csv");
+  private static final Map<String, WikidataConfig> WIKIDATA_CONFIGS = readWikidataConfigs();
 
   @Override
   public String name() {
@@ -261,10 +259,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       .get();
   }
 
-
-  // Offset by 1 here because of 256 versus 512 pixel tile sizes
-  // and how the OSM processing assumes 512 tile size (while NE is 256)
-  private static final int NE_ZOOM_OFFSET = 1;
 
   private static final ZoomFunction<Number> LOCALITY_GRID_SIZE_ZOOM_FUNCTION =
     ZoomFunction.fromMaxZoomThresholds(Map.of(
@@ -337,35 +331,15 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
-    if (kind.equals("country") && COUNTRY_ZOOMS.containsKey(sf.getString("wikidata"))) {
-      var minMaxZoom = COUNTRY_ZOOMS.get(sf.getString("wikidata"));
-      minZoom = minMaxZoom.minZoom();
-      maxZoom = minMaxZoom.maxZoom();
-    }
-
-    if (kind.equals("region")) {
-      var neAdmin1 = naturalEarthDb.getAdmin1ByWikidata(sf.getString("wikidata"));
-      if (neAdmin1 != null) {
-        minZoom = (int) neAdmin1.minLabel() - NE_ZOOM_OFFSET;
-        maxZoom = (int) neAdmin1.maxLabel() - NE_ZOOM_OFFSET;
+    if (WIKIDATA_CONFIGS.containsKey(sf.getString("wikidata"))) {
+      var wikidataConfig = WIKIDATA_CONFIGS.get(sf.getString("wikidata"));
+      if (kind.equals("country") || kind.equals("region")) {
+        minZoom = wikidataConfig.minZoom();
+        maxZoom = wikidataConfig.maxZoom();
       }
-    }
-
-    // Join OSM locality with nearby NE localities based on Wikidata ID and
-    // harvest the min_zoom to achieve consistent label collisions at zoom 7+
-    // By this zoom we get OSM points centered in feature better for area labels
-    // While NE earlier aspires to be more the downtown area
-    //
-    // First scope down the NE <> OSM data join (to speed up total build time)
-    if (kind.equals("locality")) {
-      // We could add more fallback equivalency tests here, but 98% of NE places have a Wikidata ID
-      var nePopulatedPlace = naturalEarthDb.getPopulatedPlaceByWikidata(sf.getString("wikidata"));
-      if (nePopulatedPlace != null) {
-        minZoom = (int) nePopulatedPlace.minZoom() - NE_ZOOM_OFFSET;
-        // (nvkelso 20230815) We could set the population value here, too
-        //                    But by the OSM zooms the value should be the incorporated value
-        //                    While symbology should be for the metro population value
-        populationRank = nePopulatedPlace.rankMax();
+      if (kind.equals("locality")) {
+        minZoom = wikidataConfig.minZoom();
+        populationRank = wikidataConfig.rankMax();
       }
     }
 

@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class Basemap extends ForwardingProfile {
 
-  public Basemap(NaturalEarthDb naturalEarthDb, QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
+  public Basemap(QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
     String layer) {
 
     if (layer.isEmpty() || layer.equals(Boundaries.LAYER_NAME)) {
@@ -59,7 +59,7 @@ public class Basemap extends ForwardingProfile {
     }
 
     if (layer.isEmpty() || layer.equals(Places.LAYER_NAME)) {
-      var place = new Places(naturalEarthDb, countryCoder);
+      var place = new Places(countryCoder);
       registerHandler(place);
       registerSourceHandler("osm", place::processOsm);
     }
@@ -179,8 +179,6 @@ public class Basemap extends ForwardingProfile {
       .run();
     //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
 
-    var tmpDir = nePath.resolveSibling(nePath.getFileName() + "-unzipped");
-    var naturalEarthDb = NaturalEarthDb.fromSqlite(nePath, tmpDir);
     //    var qrankDb = QrankDb.fromCsv(sourcesDir.resolve("qrank.csv.gz"));
     var qrankDb = QrankDb.empty();
 
@@ -218,7 +216,7 @@ public class Basemap extends ForwardingProfile {
 
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
-    planetiler.setProfile(new Basemap(naturalEarthDb, qrankDb, countryCoder, clip, layer))
+    planetiler.setProfile(new Basemap(qrankDb, countryCoder, clip, layer))
       .setOutput(Path.of(area + ".pmtiles"))
       .run();
   }
