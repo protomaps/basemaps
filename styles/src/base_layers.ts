@@ -1882,13 +1882,7 @@ export function labels_layers(
           8,
           ["literal", ["center"]],
         ],
-        "text-radial-offset": [
-          "step",
-          ["zoom"],
-          0.1,
-          6,
-          0.0
-        ],
+        "text-radial-offset": ["step", ["zoom"], 0.1, 6, 0.0],
       },
       paint: {
         "text-color": t.city_label,
