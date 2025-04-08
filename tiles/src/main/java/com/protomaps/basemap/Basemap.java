@@ -5,7 +5,6 @@ import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
 import com.onthegomap.planetiler.util.Downloader;
 import com.protomaps.basemap.feature.CountryCoder;
-import com.protomaps.basemap.feature.NaturalEarthDb;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.layers.Boundaries;
 import com.protomaps.basemap.layers.Buildings;
