@@ -64,10 +64,10 @@ class PlacesTest extends LayerTest {
   @Test
   void testMinMaxLabelRegion() {
     assertFeatures(12,
-      List.of(Map.of("_minzoom", 4, "_maxzoom", 7, "kind", "region")),
+      List.of(Map.of("_minzoom", 3, "_maxzoom", 7, "kind", "region")),
       process(SimpleFeature.create(
         newPoint(-119.9583, 37.2221),
-        new HashMap<>(Map.of("place", "state", "wikidata", "Q2", "name", "CA")),
+        new HashMap<>(Map.of("place", "state", "wikidata", "Q99", "name", "CA")),
         "osm",
         null,
         0
@@ -90,10 +90,10 @@ class PlacesTest extends LayerTest {
   @Test
   void testMinMaxLabelPopulatedPlace() {
     assertFeatures(12,
-      List.of(Map.of("_minzoom", 8, "kind", "locality", "population_rank", 2)),
+      List.of(Map.of("_minzoom", 4, "kind", "locality", "population_rank", 12)),
       process(SimpleFeature.create(
         newPoint(1, 1),
-        new HashMap<>(Map.of("place", "city", "wikidata", "Q3", "name", "SF")),
+        new HashMap<>(Map.of("place", "city", "wikidata", "Q72", "name", "Zürich")),
         "osm",
         null,
         0
