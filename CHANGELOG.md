@@ -1,3 +1,9 @@
+Tiles 4.11.2, Styles 5.3.0
+------
+- Move curated generalized places from natural earth DB to embedded CSV [#452, #445]
+- text-variable-anchor for place points [#451]
+- type-only imports of maplibre-style-spec [#448]
+
 Tiles 4.11.1
 ------
 - Use country min and maxzooms from tilezen [#445]
