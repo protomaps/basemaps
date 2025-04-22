@@ -77,7 +77,7 @@ public class OsmNames {
 
       if (key.equals("name")) {
         List<String> segments = ScriptSegmenter.segmentByScript(value);
-        if (segments.size() >= 1) {
+        if (!segments.isEmpty()) {
           int index = 0;
           feature.setAttrWithMinzoom("name", segments.get(index), minZoom);
 
@@ -155,15 +155,11 @@ public class OsmNames {
       var key = tag.getKey();
       // Short codes (CA not Calif.)
       // (nvkelso 20230801) 58% of state/province nodes have ref values
-      if (key.equals("ref") || key.startsWith("ref:")) {
-        // Really, they should be short (CA not US-CA)
-        if (sf.getString(key).length() < 5) {
-          // Really, they should be strings not numbers (CA not 6)
-          ParsePosition pos = new ParsePosition(0);
-          NumberFormat.getInstance().parse(sf.getString(key), pos);
-          if (sf.getString(key).length() != pos.getIndex()) {
-            feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
-          }
+      if ((key.equals("ref") || key.startsWith("ref:")) && sf.getString(key).length() < 5) {
+        ParsePosition pos = new ParsePosition(0);
+        NumberFormat.getInstance().parse(sf.getString(key), pos);
+        if (sf.getString(key).length() != pos.getIndex()) {
+          feature.setAttrWithMinzoom(key, sf.getTag(key), minZoom);
         }
       }
     }

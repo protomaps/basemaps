@@ -356,10 +356,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           }
 
           // Discount wilderness areas within US national forests and parks
-          if (kind.equals("nature_reserve")) {
-            if (sf.getString("name").contains("Wilderness")) {
-              minZoom = minZoom + 1;
-            }
+          if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
+            minZoom = minZoom + 1;
           }
         } else if (kind.equals("cemetery") ||
           kind.equals("school")) {
