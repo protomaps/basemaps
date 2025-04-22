@@ -26,7 +26,7 @@ public class Script {
       if (overallScript.equals("")) {
         overallScript = script;
       } else {
-        if (!script.equals(overallScript)) {{
+        if (!script.equals(overallScript)) {
           for (int j = 0; j < text.length(); ++j) {
             Character.UnicodeScript unicodeScript = Character.UnicodeScript.of(text.charAt(j));
             if (unicodeScript.equals(Character.UnicodeScript.KATAKANA) ||
