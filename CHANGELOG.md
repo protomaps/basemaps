@@ -1,3 +1,7 @@
+Tiles 4.11.3
+------
+- Code quality refactorings [#458, #459, #460, #461]
+
 Tiles 4.11.2, Styles 5.3.0
 ------
 - Move curated generalized places from natural earth DB to embedded CSV [#452, #445]
