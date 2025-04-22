@@ -303,6 +303,10 @@ function MapLibreView(props: {
       maxWidth: "none",
     });
 
+    map.on("load", () => {
+      map.resize();
+    });
+
     map.on("error", (e) => {
       setError(e.error.message);
     });
