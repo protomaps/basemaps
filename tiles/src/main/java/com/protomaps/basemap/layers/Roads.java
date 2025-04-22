@@ -311,7 +311,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         relation.getString("network")
       ));
     }
-    return null;
+    return new ArrayList<>();
   }
 
   private void processOsmHighways(SourceFeature sf, FeatureCollector features) {

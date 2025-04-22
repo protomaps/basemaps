@@ -212,6 +212,11 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
             minZoom = 10;
             themeMinZoom = 10;
           }
+          default -> {
+            kind = "locality";
+            minZoom = 10;
+            themeMinZoom = 10;
+          }
         }
 
         if (!kind.isEmpty()) {

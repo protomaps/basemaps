@@ -10,9 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TextEngine {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextEngine.class);
 
   private static Integer[][] deltas = new Integer[][]{
     {0, 0},
@@ -70,7 +72,7 @@ public class TextEngine {
         return encoding.get(glyphKey);
       }
     }
-    System.err.println("Could not find a matching glyph for index = " + index +
+    LOGGER.error("Could not find a matching glyph for index = " + index +
       ", xOffset = " + xOffset +
       ", yOffset = " + yOffset +
       ", xAdvance = " + xAdvance +

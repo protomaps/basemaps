@@ -163,7 +163,7 @@ public class Basemap extends ForwardingProfile {
     String area = args.getString("area", "geofabrik area to download", "monaco");
 
     var planetiler = Planetiler.create(args)
-      .addNaturalEarthSource("ne", nePath, neUrl)
+      .addGeoPackageSource("ne", nePath, neUrl)
       .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
       .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
