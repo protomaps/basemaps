@@ -95,10 +95,6 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
         feature.setAttr("kind_detail", sf.getString("building:part"));
         feature.setAttr(MIN_HEIGHT_KEY, height.min_height());
       }
-
-      // Names should mostly just be for POIs
-      // Sometimes building name and address are useful items, but only at zoom 17+
-      //OsmNames.setOsmNames(feature, sf, 13);
     }
 
     if (sf.hasTag("addr:housenumber")) {

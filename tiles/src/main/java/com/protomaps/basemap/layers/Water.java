@@ -286,7 +286,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     return LAYER_NAME;
   }
 
-  public void processPreparedOsm(SourceFeature ignoredSf, FeatureCollector features) {
+  public void processPreparedOsm(@SuppressWarnings("unused") SourceFeature sf, FeatureCollector features) {
     features.polygon(LAYER_NAME)
       .setId(1)
       .setAttr("kind", "ocean")
