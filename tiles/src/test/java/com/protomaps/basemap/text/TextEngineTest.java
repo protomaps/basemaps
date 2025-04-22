@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Font;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class TextEngineTest {
@@ -25,7 +25,7 @@ public class TextEngineTest {
 
     String text = "काठमाडौँ";
     Font font = fontRegistry.getFont(script);
-    HashMap<String, Integer> encoding = fontRegistry.getEncoding(script);
+    Map<String, Integer> encoding = fontRegistry.getEncoding(script);
 
     String textEncoded = TextEngine.encode(text, font, encoding);
 

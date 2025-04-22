@@ -6,8 +6,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphMetrics;
 import java.awt.font.GlyphVector;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class TextEngine {
     {4, 0},
   };
 
-  private static int codepointFromGlyph(HashMap<String, Integer> encoding, int index, int xOffset, int yOffset,
+  private static int codepointFromGlyph(Map<String, Integer> encoding, int index, int xOffset, int yOffset,
     int xAdvance, int yAdvance) {
 
     for (int i = 0; i < deltas.length; ++i) {
@@ -83,7 +83,7 @@ public class TextEngine {
     return 33;
   }
 
-  public static String encode(String text, Font font, HashMap<String, Integer> encoding) {
+  public static String encode(String text, Font font, Map<String, Integer> encoding) {
     String result = "";
 
     FontRenderContext frc = new FontRenderContext(null, true, true);
