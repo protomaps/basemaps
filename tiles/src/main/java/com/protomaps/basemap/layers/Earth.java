@@ -25,7 +25,8 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
     return LAYER_NAME;
   }
 
-  public void processPreparedOsm(@SuppressWarnings("unused") SourceFeature sf, FeatureCollector features) {
+  @SuppressWarnings("java:S1172")
+  public void processPreparedOsm(SourceFeature sf, FeatureCollector features) {
     features.polygon(LAYER_NAME)
       .setId(1)
       .setAttr("kind", "earth")
