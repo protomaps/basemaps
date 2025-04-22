@@ -353,7 +353,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       .setAttr("population_rank", populationRank)
       // Generally we use NE and low zooms, and OSM at high zooms
       // With exceptions for country and region labels
-      .setZoomRange((int) minZoom, (int) maxZoom);
+      .setZoomRange(minZoom, maxZoom);
 
     // Instead of exporting ISO country_code_iso3166_1_alpha_2 (which are sparse), we export Wikidata IDs
     if (sf.hasTag("wikidata")) {

@@ -103,10 +103,7 @@ public class ScriptSegmenter {
       return false;
     }
 
-    if (scriptsInLine.size() > 1) {
-      return true;
-    }
-    return false;
+    return scriptsInLine.size() > 1;
   }
 
   public static List<String> segmentByScript(String input) {

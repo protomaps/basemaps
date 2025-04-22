@@ -26,9 +26,7 @@ public class Script {
       if (overallScript.equals("")) {
         overallScript = script;
       } else {
-        if (script.equals(overallScript)) {
-          continue;
-        } else {
+        if (!script.equals(overallScript)) {
           for (int j = 0; j < text.length(); ++j) {
             Character.UnicodeScript unicodeScript = Character.UnicodeScript.of(text.charAt(j));
             if (unicodeScript.equals(Character.UnicodeScript.KATAKANA) ||
@@ -46,9 +44,6 @@ public class Script {
       return "Generic";
     }
 
-    String firstLetterCapitalized =
-      overallScript.substring(0, 1).toUpperCase() + overallScript.substring(1).toLowerCase();
-
-    return firstLetterCapitalized;
+    return overallScript.substring(0, 1).toUpperCase() + overallScript.substring(1).toLowerCase();
   }
 }

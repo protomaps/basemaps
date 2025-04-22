@@ -37,7 +37,7 @@ public class FontRegistry {
   private static FontRegistry instance;
 
   private FontRegistry() {
-    this.registry = new HashMap<String, FontBundle>();
+    this.registry = new HashMap<>();
   }
 
   public static synchronized FontRegistry getInstance() {
@@ -106,7 +106,7 @@ public class FontRegistry {
   }
 
   private static HashMap<String, Integer> readEncoding(String name, String version) {
-    HashMap<String, Integer> encoding = new HashMap<String, Integer>();
+    HashMap<String, Integer> encoding = new HashMap<>();
 
     if (zipFilePath == null) {
       return new HashMap<>();

@@ -58,7 +58,7 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
     // special case: if val is very small, we don't want it rounding to zero, so
     // round the smallest values up to the first step.
     if (val < step) {
-      return (int) step;
+      return step;
     }
 
     return (int) Math.round(val / step) * step;

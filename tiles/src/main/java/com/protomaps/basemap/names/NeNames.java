@@ -15,7 +15,7 @@ public class NeNames {
     FontRegistry fontRegistry = FontRegistry.getInstance();
 
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
-      String key = tag.getKey().toString();
+      String key = tag.getKey();
       if (sf.getTag(key) == null) {
         continue;
       }
