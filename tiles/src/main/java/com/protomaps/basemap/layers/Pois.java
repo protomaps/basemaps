@@ -31,7 +31,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
-  private static final double LOG2 = Math.log(2);
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
@@ -259,11 +258,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           kind.equals("naval_base") ||
           kind.equals("stadium") ||
           kind.equals("zoo")) {
-          //if (way_area > 300000) { // 500000000 sq meters (web mercator proj)
-          //  min_zoom = 5;
-          //} else if (way_area > 25000) { // 500000000 sq meters (web mercator proj)
-          //  min_zoom = 6;
-          //} else
           if (wayArea > 20000) { // 500000000
             minZoom = 7;
           } else if (wayArea > 5000) { // 200000000

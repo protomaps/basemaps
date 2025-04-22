@@ -176,9 +176,6 @@ public class Basemap extends ForwardingProfile {
     Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
       .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
       .run();
-    //      .add("qrank", "https://qrank.wmcloud.org/download/qrank.csv.gz", sourcesDir.resolve("qrank.csv.gz")).run();
-
-    //    var qrankDb = QrankDb.fromCsv(sourcesDir.resolve("qrank.csv.gz"));
     var qrankDb = QrankDb.empty();
 
     FontRegistry fontRegistry = FontRegistry.getInstance();

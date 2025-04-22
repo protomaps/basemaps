@@ -256,9 +256,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
         .setZoomRange(2, 15)
         .setMinPixelSize(2.0);
 
-
-      // NOTE: (nvkelso 20230622) landuse labels for polygons are found in the pois layer
-      //OsmNames.setOsmNames(poly, sf, 0);
     }
   }
 

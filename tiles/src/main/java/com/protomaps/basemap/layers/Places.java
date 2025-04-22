@@ -237,10 +237,8 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     return LAYER_NAME;
   }
 
-  // private final AtomicInteger placeNumber = new AtomicInteger(0);
-
   // Evaluates place layer sort ordering of inputs into an integer for the sort-key field.
-  static int getSortKey(double minZoom, int kindRank, int populationRank, long population, String name) {
+  static int getSortKey(double minZoom, int kindRank, long population, String name) {
     return SortKey
       // (nvkelso 20230803) floats with significant single decimal precision
       //                    but results in "Too many possible values"
@@ -362,8 +360,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       feat.setAttr("wikidata", sf.getString("wikidata"));
     }
 
-    //feat.setSortKey(minZoom * 1000 + 400 - populationRank * 200 + placeNumber.incrementAndGet());
-    int sortKey = getSortKey(minZoom, kindRank, populationRank, population, sf.getString("name"));
+    int sortKey = getSortKey(minZoom, kindRank, population, sf.getString("name"));
     feat.setSortKey(sortKey);
     feat.setAttr("sort_key", sortKey);
 

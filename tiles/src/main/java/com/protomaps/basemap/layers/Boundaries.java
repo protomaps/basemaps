@@ -171,7 +171,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
 
         var kind = "";
 
-        var minZoom = 0;
         var themeMinZoom = 6;
 
         // Core Tilezen schema properties
@@ -179,37 +178,31 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
           case 2 -> {
             kind = "country";
             // While country boundary lines should show up very early
-            minZoom = 0;
             // Natural Earth is used for low zooms (for compilation and tile size reasons)
             themeMinZoom = 6;
           }
           // used in Colombia, Brazil, Kenya (historical)
           case 3 -> {
             kind = "region";
-            minZoom = 6;
             themeMinZoom = 6;
           }
           case 4 -> {
             kind = "region";
             // While region boundary lines should show up early-zooms
-            minZoom = 6;
             // Natural Earth is used for low zooms (for compilation and tile size reasons)
             themeMinZoom = 6;
           }
           // used in Colombia, Brazil
           case 5 -> {
             kind = "county";
-            minZoom = 8;
             themeMinZoom = 8;
           }
           case 6 -> {
             kind = "county";
-            minZoom = 8;
             themeMinZoom = 8;
           }
           case 8 -> {
             kind = "locality";
-            minZoom = 10;
             themeMinZoom = 10;
           }
           default -> {
