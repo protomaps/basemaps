@@ -12,8 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FontRegistry {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FontRegistry.class);
 
   private class FontBundle {
     public String name;
@@ -83,11 +86,11 @@ public class FontRegistry {
           font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
         }
       } else {
-        System.out.println("readFont(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
+        LOGGER.error("readFont(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
         System.exit(1);
       }
     } catch (IOException | FontFormatException e) {
-      e.printStackTrace();
+      LOGGER.error("Error", e);
       System.exit(1);
     }
 
@@ -106,7 +109,7 @@ public class FontRegistry {
     HashMap<String, Integer> encoding = new HashMap<String, Integer>();
 
     if (zipFilePath == null) {
-      return null;
+      return new HashMap<>();
     }
 
     try (ZipFile zipFile = new ZipFile(zipFilePath)) {
@@ -192,7 +195,7 @@ public class FontRegistry {
   public HashMap<String, Integer> getEncoding(String script) {
     FontBundle fontBundle = registry.get(script);
     if (fontBundle == null) {
-      return null;
+      return new HashMap<>();
     }
     return fontBundle.encoding;
   }
