@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -19,9 +20,9 @@ public class FontRegistry {
     public String name;
     public String version;
     public Font font;
-    public HashMap<String, Integer> encoding;
+    public Map<String, Integer> encoding;
 
-    public FontBundle(String name, String version, Font font, HashMap<String, Integer> encoding) {
+    public FontBundle(String name, String version, Font font, Map<String, Integer> encoding) {
       this.name = name;
       this.version = version;
       this.font = font;
@@ -189,7 +190,7 @@ public class FontRegistry {
     return fontBundle.font;
   }
 
-  public HashMap<String, Integer> getEncoding(String script) {
+  public Map<String, Integer> getEncoding(String script) {
     FontBundle fontBundle = registry.get(script);
     if (fontBundle == null) {
       return null;
