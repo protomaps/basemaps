@@ -19,6 +19,7 @@ import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.feature.OsmTags;
 import com.protomaps.basemap.locales.CartographicLocale;
 import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
@@ -37,96 +38,96 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   private static final MultiExpression.Index<Map<String, Object>> indexHighways = MultiExpression.of(List.of(
     rule(
       with(),
-      use("kindDetail", fromTag("highway"))
+      use("kindDetail", fromTag(OsmTags.HIGHWAY))
     ),
     rule(
-      with("service"),
-      use("kindDetail", fromTag("service"))
+      with(OsmTags.SERVICE),
+      use("kindDetail", fromTag(OsmTags.SERVICE))
     ),
     rule(
-      with("highway", "motorway"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.MOTORWAY),
       use("kind", "highway"),
       use("minZoom", 3),
       use("minZoomShieldText", 7),
       use("minZoomNames", 11)
     ),
     rule(
-      with("highway", "motorway_link"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.MOTORWAY_LINK),
       use("kind", "highway"),
       use("minZoom", 3),
       use("minZoomShieldText", 12),
       use("minZoomNames", 11)
     ),
     rule(
-      with("highway", "trunk"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TRUNK),
       use("kind", "major_road"),
       use("minZoom", 6),
       use("minZoomShieldText", 8),
       use("minZoomNames", 12)
     ),
     rule(
-      with("highway", "trunk_link"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TRUNK_LINK),
       use("kind", "major_road"),
       use("minZoom", 6),
       use("minZoomShieldText", 12),
       use("minZoomNames", 12)
     ),
     rule(
-      with("highway", "primary"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.PRIMARY),
       use("kind", "major_road"),
       use("minZoom", 7),
       use("minZoomShieldText", 10),
       use("minZoomNames", 12)
     ),
     rule(
-      with("highway", "primary_link"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.PRIMARY_LINK),
       use("kind", "major_road"),
       use("minZoom", 7),
       use("minZoomNames", 13)
     ),
     rule(
-      with("highway", "secondary"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SECONDARY),
       use("kind", "major_road"),
       use("minZoom", 9),
       use("minZoomShieldText", 11),
       use("minZoomNames", 12)
     ),
     rule(
-      with("highway", "secondary_link"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SECONDARY_LINK),
       use("kind", "major_road"),
       use("minZoom", 9),
       use("minZoomShieldText", 13),
       use("minZoomNames", 14)
     ),
     rule(
-      with("highway", "tertiary"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TERTIARY),
       use("kind", "major_road"),
       use("minZoom", 9),
       use("minZoomShieldText", 12),
       use("minZoomNames", 13)
     ),
     rule(
-      with("highway", "tertiary_link"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TERTIARY_LINK),
       use("kind", "major_road"),
       use("minZoom", 9),
       use("minZoomShieldText", 13),
       use("minZoomNames", 14)
     ),
     rule(
-      with("""
-          highway
-          residential
-          unclassified
-          road
-          raceway
-        """),
+      with(
+        OsmTags.HIGHWAY,
+        OsmTags.HighwayValues.RESIDENTIAL,
+        OsmTags.HighwayValues.UNCLASSIFIED,
+        OsmTags.HighwayValues.ROAD,
+        OsmTags.HighwayValues.RACEWAY
+      ),
       use("kind", "minor_road"),
       use("minZoom", 12),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
     ),
     rule(
-      with("highway", "service"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SERVICE),
       use("kind", "minor_road"),
       use("kindDetail", "service"),
       use("minZoom", 13),
@@ -134,71 +135,71 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       use("minZoomNames", 14)
     ),
     rule(
-      with("highway", "service"),
-      with("service"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SERVICE),
+      with(OsmTags.SERVICE),
       use("kind", "minor_road"),
       use("kindDetail", "service"),
       use("minZoom", 14),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14),
-      use("service", fromTag("service"))
+      use("service", fromTag(OsmTags.SERVICE))
     ),
     rule(
-      with("""
-          highway
-          pedestrian
-          track
-          corridor
-        """),
+      with(
+        OsmTags.HIGHWAY,
+        OsmTags.HighwayValues.PEDESTRIAN,
+        OsmTags.HighwayValues.TRACK,
+        OsmTags.HighwayValues.CORRIDOR
+      ),
       use("kind", "path"),
       use("minZoom", 12),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
     ),
     rule(
-      with("""
-          highway
-          path
-          cycleway
-          bridleway
-          footway
-          steps
-        """),
+      with(
+        OsmTags.HIGHWAY,
+        OsmTags.HighwayValues.PATH,
+        OsmTags.HighwayValues.CYCLEWAY,
+        OsmTags.HighwayValues.BRIDLEWAY,
+        OsmTags.HighwayValues.FOOTWAY,
+        OsmTags.HighwayValues.STEPS
+      ),
       use("kind", "path"),
       use("minZoom", 13),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
     ),
     rule(
-      with("highway", "footway"),
-      with("""
-          footway
-          sidewalk
-          crossing
-        """),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.FOOTWAY),
+      with(
+        OsmTags.FOOTWAY,
+        OsmTags.FootwayValues.SIDEWALK,
+        OsmTags.FootwayValues.CROSSING
+      ),
       use("kind", "path"),
-      use("kindDetail", fromTag("footway")),
+      use("kindDetail", fromTag(OsmTags.FOOTWAY)),
       use("minZoom", 14),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
     ),
     rule(
-      with("highway", "corridor"),
+      with(OsmTags.HIGHWAY, OsmTags.HighwayValues.CORRIDOR),
       use("kind", "path"),
-      use("kindDetail", fromTag("footway")),
+      use("kindDetail", fromTag(OsmTags.FOOTWAY)),
       use("minZoom", 14),
       use("minZoomShieldText", 12),
       use("minZoomNames", 14)
     ),
     rule(
       with("_country", "US"),
-      with("""
-          highway
-          motorway
-          motorway_link
-          trunk
-          trunk_link
-        """),
+      with(
+        OsmTags.HIGHWAY,
+        OsmTags.HighwayValues.MOTORWAY,
+        OsmTags.HighwayValues.MOTORWAY_LINK,
+        OsmTags.HighwayValues.TRUNK,
+        OsmTags.HighwayValues.TRUNK_LINK
+      ),
       use("minZoom", 7)
     ),
     rule(
@@ -226,7 +227,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     ),
     rule(
       with("railway", "service"),
-      with("service"),
+      with(OsmTags.SERVICE),
       use("minZoom", 14)
     ),
     rule(
@@ -316,15 +317,16 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   private void processOsmHighways(SourceFeature sf, FeatureCollector features) {
 
-    if (!sf.hasTag("highway")) {
+    if (!sf.hasTag(OsmTags.HIGHWAY)) {
       return;
     }
 
-    if (sf.hasTag("highway", "proposed", "abandoned", "razed", "demolished", "removed", "construction", "elevator")) {
+    if (sf.hasTag(OsmTags.HIGHWAY, "proposed", "abandoned", "razed", "demolished", "removed", "construction",
+      "elevator")) {
       return;
     }
 
-    String highway = sf.getString("highway");
+    String highway = sf.getString(OsmTags.HIGHWAY);
 
     Shield shield = locale.getShield(sf);
     Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
@@ -379,11 +381,11 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     }
 
     // Core OSM tags for different kinds of places
-    if (kind.equals("other") && sf.hasTag("service")) {
-      feat.inheritAttrFromSource("service");
+    if (kind.equals("other") && sf.hasTag(OsmTags.SERVICE)) {
+      feat.inheritAttrFromSource(OsmTags.SERVICE);
     }
 
-    if (sf.hasTag("highway", "motorway_link", "trunk_link", "primary_link", "secondary_link",
+    if (sf.hasTag(OsmTags.HIGHWAY, "motorway_link", "trunk_link", "primary_link", "secondary_link",
       "tertiary_link")) {
       feat.setAttr("is_link", true);
     }
@@ -431,7 +433,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setAttr("network", sf.getString("network"))
       .setAttr("ref", sf.getString("ref"))
       .setAttr("route", sf.getString("route"))
-      .setAttr("service", sf.getString("service"))
+      .setAttr("service", sf.getString(OsmTags.SERVICE))
       .setAttr("sort_rank", 400)
       .setMinPixelSize(0)
       .setPixelTolerance(0)
