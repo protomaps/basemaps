@@ -72,11 +72,9 @@ public class TextEngine {
         return encoding.get(glyphKey);
       }
     }
-    LOGGER.error("Could not find a matching glyph for index = " + index +
-      ", xOffset = " + xOffset +
-      ", yOffset = " + yOffset +
-      ", xAdvance = " + xAdvance +
-      ", yAdvance = " + yAdvance + ". Inserting an exclamation mark.");
+    LOGGER.error(
+      "Could not find a matching glyph for index = {}, xOffset = {}, yOffset = {}, xAdvance = {}, yAdvance = {}. Inserting an exclamation mark.",
+      index, xOffset, yOffset, xAdvance, yAdvance);
 
     // Unicode decimal 33 == "!"
     // Excalmation mark means did not find a matching codepoint
@@ -84,7 +82,7 @@ public class TextEngine {
   }
 
   public static String encode(String text, Font font, Map<String, Integer> encoding) {
-    String result = "";
+    StringBuilder resultBld = new StringBuilder();
 
     FontRenderContext frc = new FontRenderContext(null, true, true);
     char[] charArray = text.toCharArray();
@@ -110,9 +108,9 @@ public class TextEngine {
 
       sumXAdvances += xAdvance;
 
-      result += new StringBuilder().appendCodePoint(codepoint).toString();
+      resultBld.append(new StringBuilder().appendCodePoint(codepoint).toString());
     }
-    return result;
+    return resultBld.toString();
   }
 
   public static List<String> segment(String text, List<String> scripts) {
@@ -126,11 +124,11 @@ public class TextEngine {
       return new ArrayList<>(List.of(text));
     }
 
-    String inner = "";
+    StringBuilder innerBld = new StringBuilder();
     for (String script : scripts) {
-      inner += "\\p{In" + script + "}";
+      innerBld.append("\\p{In" + script + "}");
     }
-    String regex = "[" + inner + "]+|[^" + inner + "]+";
+    String regex = "[" + innerBld.toString() + "]+|[^" + innerBld.toString() + "]+";
 
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(text);
@@ -148,15 +146,15 @@ public class TextEngine {
     }
     FontRegistry fontRegistry = FontRegistry.getInstance();
     List<String> segments = segment(text, fontRegistry.getScripts());
-    String encodedText = "";
+    StringBuilder encodedTextBld = new StringBuilder();
     for (String segment : segments) {
       String script = Script.getScript(segment);
       if (fontRegistry.getScripts().contains(script)) {
-        encodedText += TextEngine.encode(segment, fontRegistry.getFont(script), fontRegistry.getEncoding(script));
+        encodedTextBld.append(TextEngine.encode(segment, fontRegistry.getFont(script), fontRegistry.getEncoding(script)));
       } else {
-        encodedText += segment;
+        encodedTextBld.append(segment);
       }
     }
-    return encodedText;
+    return encodedTextBld.toString();
   }
 }

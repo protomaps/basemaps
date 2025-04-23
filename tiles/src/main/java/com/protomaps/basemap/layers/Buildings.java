@@ -72,8 +72,6 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
       Integer minZoom = 11;
       String kind = "building";
 
-      // Limit building:part features to later zooms
-      // TODO: (nvkelso 20230621) this should be based on area and volume, too
       if (sf.hasTag("building:part")) {
         kind = "building_part";
         minZoom = 14;

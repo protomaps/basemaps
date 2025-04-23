@@ -112,7 +112,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         minZoom = 17;
       } else if (sf.hasTag("natural", "peak")) {
         kind = sf.getString("natural");
-        // TODO: rank based on ele
         minZoom = 13;
       } else {
         // Avoid problem of too many "other" kinds
@@ -546,9 +545,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-
-    // TODO: (nvkelso 20230623) Consider adding a "rank" here for POIs, like for Places
-
     return items;
   }
 }
