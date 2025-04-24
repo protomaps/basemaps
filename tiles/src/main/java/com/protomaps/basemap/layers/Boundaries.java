@@ -13,6 +13,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import java.util.List;
 import java.util.OptionalInt;
 
+@SuppressWarnings("java:S1192")
 public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
   ForwardingProfile.LayerPostProcessor {
 

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Point;
 
-@SuppressWarnings("java:S1192") // Duplicated string literals
+@SuppressWarnings("java:S1192")
 public class Landcover implements ForwardingProfile.LayerPostProcessor {
 
   static final Map<String, String> kindMapping = Map.of("urban", "urban_area", "crop", "farmland", "grass", "grassland",

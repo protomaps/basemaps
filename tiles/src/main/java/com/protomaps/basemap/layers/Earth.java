@@ -10,7 +10,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 
-@SuppressWarnings("java:S1192") // Duplicated string literals
+@SuppressWarnings("java:S1192")
 public class Earth implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "earth";
