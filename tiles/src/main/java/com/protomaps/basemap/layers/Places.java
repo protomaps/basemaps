@@ -30,6 +30,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("java:S1192")
 public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Places.class);

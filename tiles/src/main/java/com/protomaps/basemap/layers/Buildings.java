@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("java:S1192")
 public class Buildings implements ForwardingProfile.LayerPostProcessor {
 
   static final String HEIGHT_KEY = "height";
