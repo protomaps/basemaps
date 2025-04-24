@@ -35,83 +35,92 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   public static final String LAYER_NAME = "roads";
 
+  private static final class UseKeys {
+    public static final String KIND = "kind";
+    public static final String KIND_DETAIL = "kind_detail";
+    public static final String MIN_ZOOM = "min_zoom";
+    public static final String MIN_ZOOM_SHIELD_TEXT = "min_zoom_shield_text";
+    public static final String MIN_ZOOM_NAMES = "min_zoom_names";
+    public static final String SERVICE = "service";
+  }
+
   private static final MultiExpression.Index<Map<String, Object>> indexHighways = MultiExpression.of(List.of(
     rule(
       with(),
-      use("kindDetail", fromTag(OsmTags.HIGHWAY))
+      use(UseKeys.KIND_DETAIL, fromTag(OsmTags.HIGHWAY))
     ),
     rule(
       with(OsmTags.SERVICE),
-      use("kindDetail", fromTag(OsmTags.SERVICE))
+      use(UseKeys.KIND_DETAIL, fromTag(OsmTags.SERVICE))
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.MOTORWAY),
-      use("kind", "highway"),
-      use("minZoom", 3),
-      use("minZoomShieldText", 7),
-      use("minZoomNames", 11)
+      use(UseKeys.KIND, "highway"),
+      use(UseKeys.MIN_ZOOM, 3),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 7),
+      use(UseKeys.MIN_ZOOM_NAMES, 11)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.MOTORWAY_LINK),
-      use("kind", "highway"),
-      use("minZoom", 3),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 11)
+      use(UseKeys.KIND, "highway"),
+      use(UseKeys.MIN_ZOOM, 3),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 11)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TRUNK),
-      use("kind", "major_road"),
-      use("minZoom", 6),
-      use("minZoomShieldText", 8),
-      use("minZoomNames", 12)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 6),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 8),
+      use(UseKeys.MIN_ZOOM_NAMES, 12)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TRUNK_LINK),
-      use("kind", "major_road"),
-      use("minZoom", 6),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 12)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 6),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 12)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.PRIMARY),
-      use("kind", "major_road"),
-      use("minZoom", 7),
-      use("minZoomShieldText", 10),
-      use("minZoomNames", 12)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 7),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 10),
+      use(UseKeys.MIN_ZOOM_NAMES, 12)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.PRIMARY_LINK),
-      use("kind", "major_road"),
-      use("minZoom", 7),
-      use("minZoomNames", 13)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 7),
+      use(UseKeys.MIN_ZOOM_NAMES, 13)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SECONDARY),
-      use("kind", "major_road"),
-      use("minZoom", 9),
-      use("minZoomShieldText", 11),
-      use("minZoomNames", 12)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 9),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 11),
+      use(UseKeys.MIN_ZOOM_NAMES, 12)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SECONDARY_LINK),
-      use("kind", "major_road"),
-      use("minZoom", 9),
-      use("minZoomShieldText", 13),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 9),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 13),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TERTIARY),
-      use("kind", "major_road"),
-      use("minZoom", 9),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 13)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 9),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 13)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.TERTIARY_LINK),
-      use("kind", "major_road"),
-      use("minZoom", 9),
-      use("minZoomShieldText", 13),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "major_road"),
+      use(UseKeys.MIN_ZOOM, 9),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 13),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with(
@@ -121,28 +130,28 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         OsmTags.HighwayValues.ROAD,
         OsmTags.HighwayValues.RACEWAY
       ),
-      use("kind", "minor_road"),
-      use("minZoom", 12),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "minor_road"),
+      use(UseKeys.MIN_ZOOM, 12),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SERVICE),
-      use("kind", "minor_road"),
-      use("kindDetail", "service"),
-      use("minZoom", 13),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "minor_road"),
+      use(UseKeys.KIND_DETAIL, "service"),
+      use(UseKeys.MIN_ZOOM, 13),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.SERVICE),
       with(OsmTags.SERVICE),
-      use("kind", "minor_road"),
-      use("kindDetail", "service"),
-      use("minZoom", 14),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 14),
-      use("service", fromTag(OsmTags.SERVICE))
+      use(UseKeys.KIND, "minor_road"),
+      use(UseKeys.KIND_DETAIL, "service"),
+      use(UseKeys.MIN_ZOOM, 14),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 14),
+      use(UseKeys.SERVICE, fromTag(OsmTags.SERVICE))
     ),
     rule(
       with(
@@ -151,10 +160,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         OsmTags.HighwayValues.TRACK,
         OsmTags.HighwayValues.CORRIDOR
       ),
-      use("kind", "path"),
-      use("minZoom", 12),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "path"),
+      use(UseKeys.MIN_ZOOM, 12),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with(
@@ -165,10 +174,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         OsmTags.HighwayValues.FOOTWAY,
         OsmTags.HighwayValues.STEPS
       ),
-      use("kind", "path"),
-      use("minZoom", 13),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "path"),
+      use(UseKeys.MIN_ZOOM, 13),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.FOOTWAY),
@@ -177,19 +186,19 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         OsmTags.FootwayValues.SIDEWALK,
         OsmTags.FootwayValues.CROSSING
       ),
-      use("kind", "path"),
-      use("kindDetail", fromTag(OsmTags.FOOTWAY)),
-      use("minZoom", 14),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "path"),
+      use(UseKeys.KIND_DETAIL, fromTag(OsmTags.FOOTWAY)),
+      use(UseKeys.MIN_ZOOM, 14),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with(OsmTags.HIGHWAY, OsmTags.HighwayValues.CORRIDOR),
-      use("kind", "path"),
-      use("kindDetail", fromTag(OsmTags.FOOTWAY)),
-      use("minZoom", 14),
-      use("minZoomShieldText", 12),
-      use("minZoomNames", 14)
+      use(UseKeys.KIND, "path"),
+      use(UseKeys.KIND_DETAIL, fromTag(OsmTags.FOOTWAY)),
+      use(UseKeys.MIN_ZOOM, 14),
+      use(UseKeys.MIN_ZOOM_SHIELD_TEXT, 12),
+      use(UseKeys.MIN_ZOOM_NAMES, 14)
     ),
     rule(
       with("_country", "US"),
@@ -200,92 +209,92 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         OsmTags.HighwayValues.TRUNK,
         OsmTags.HighwayValues.TRUNK_LINK
       ),
-      use("minZoom", 7)
+      use(UseKeys.MIN_ZOOM, 7)
     ),
     rule(
       with("_country", "US"),
       with("_r_network_US:US"),
-      use("minZoom", 6)
+      use(UseKeys.MIN_ZOOM, 6)
     ),
     rule(
       with("_country", "US"),
       with("_r_network_US:I"),
-      use("minZoom", 3)
+      use(UseKeys.MIN_ZOOM, 3)
     )
   )).index();
 
   private static final MultiExpression.Index<Map<String, Object>> indexNonHighways = MultiExpression.of(List.of(
     rule(
-      with("railway"),
-      use("kind", "rail"),
-      use("kindDetail", fromTag("railway")),
-      use("minZoom", 11)
+      with(OsmTags.RAILWAY),
+      use(UseKeys.KIND, "rail"),
+      use(UseKeys.KIND_DETAIL, fromTag("railway")),
+      use(UseKeys.MIN_ZOOM, 11)
     ),
     rule(
-      with("railway", "service"),
-      use("minZoom", 13)
+      with(OsmTags.RAILWAY, OsmTags.RailwayValues.SERVICE),
+      use(UseKeys.MIN_ZOOM, 13)
     ),
     rule(
-      with("railway", "service"),
+      with(OsmTags.RAILWAY, OsmTags.RailwayValues.SERVICE),
       with(OsmTags.SERVICE),
-      use("minZoom", 14)
+      use(UseKeys.MIN_ZOOM, 14)
     ),
     rule(
-      with("""
-          railway
-          funicular
-          light_rail
-          miniature
-          monorail
-          narrow_gauge
-          preserved
-          subway
-          tram
-        """),
-      use("minZoom", 14)
+      with(
+        OsmTags.RAILWAY,
+        OsmTags.RailwayValues.FUNICULAR,
+        OsmTags.RailwayValues.LIGHT_RAIL,
+        OsmTags.RailwayValues.MINIATURE,
+        OsmTags.RailwayValues.MONORAIL,
+        OsmTags.RailwayValues.NARROW_GAUGE,
+        OsmTags.RailwayValues.PRESERVED,
+        OsmTags.RailwayValues.SUBWAY,
+        OsmTags.RailwayValues.TRAM
+      ),
+      use(UseKeys.MIN_ZOOM, 14)
     ),
     rule(
-      with("railway", "disused"),
-      use("minZoom", 15)
+      with(OsmTags.RAILWAY, OsmTags.RailwayValues.DISUSED),
+      use(UseKeys.MIN_ZOOM, 15)
     ),
     rule(
-      with("railway"),
-      with("""
-          service
-          yard
-          siding
-          crossover
-        """),
-      use("minZoom", 13)
+      with(OsmTags.RAILWAY),
+      with(
+        OsmTags.SERVICE,
+        OsmTags.ServiceValues.YARD,
+        OsmTags.ServiceValues.SIDING,
+        OsmTags.ServiceValues.CROSSOVER
+      ),
+      use(UseKeys.MIN_ZOOM, 13)
     ),
     rule(
-      with("aerialway", "cable_car"),
-      use("kind", "aerialway"),
-      use("kindDetail", "cable_car"),
-      use("minZoom", 11)
+      with(OsmTags.AERIALWAY, OsmTags.AerialwayValues.CABLE_CAR),
+      use(UseKeys.KIND, "aerialway"),
+      use(UseKeys.KIND_DETAIL, "cable_car"),
+      use(UseKeys.MIN_ZOOM, 11)
     ),
     rule(
-      with("man_made", "pier"),
-      use("kind", "path"),
-      use("kindDetail", "pier"),
-      use("minZoom", 13)
+      with(OsmTags.MAN_MADE, OsmTags.ManMadeValues.PIER),
+      use(UseKeys.KIND, "path"),
+      use(UseKeys.KIND_DETAIL, "pier"),
+      use(UseKeys.MIN_ZOOM, 13)
     ),
     rule(
-      with("route", "ferry"),
-      use("kind", "ferry"),
-      use("minZoom", 11)
+      with(OsmTags.ROUTE, OsmTags.RouteValues.FERRY),
+      use(UseKeys.KIND, "ferry"),
+      use(UseKeys.MIN_ZOOM, 11)
     ),
     rule(
-      with("aeroway", "taxiway"),
-      use("kind", "aeroway"),
-      use("kindDetail", "taxiway"),
-      use("minZoom", 10)
+      with(OsmTags.AEROWAY, OsmTags.AerowayValues.TAXIWAY),
+      use(UseKeys.KIND, "aeroway"),
+      use(UseKeys.KIND_DETAIL, "taxiway"),
+      use(UseKeys.MIN_ZOOM, 10)
     ),
     rule(
-      with("aeroway", "runway"),
-      use("kind", "aeroway"),
-      use("kindDetail", "runway"),
-      use("minZoom", 9)
+      with(OsmTags.AEROWAY, OsmTags.AerowayValues.RUNWAY),
+      use(UseKeys.KIND, "aeroway"),
+      use(UseKeys.KIND_DETAIL, "runway"),
+      use(UseKeys.MIN_ZOOM, 9)
     )
   )).index();
 
@@ -321,8 +330,15 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    if (sf.hasTag(OsmTags.HIGHWAY, "proposed", "abandoned", "razed", "demolished", "removed", "construction",
-      "elevator")) {
+    if (sf.hasTag(OsmTags.HIGHWAY,
+      OsmTags.HighwayValues.PROPOSED,
+      OsmTags.HighwayValues.ABANDONED,
+      OsmTags.HighwayValues.RAZED,
+      OsmTags.HighwayValues.DEMOLISHED,
+      OsmTags.HighwayValues.REMOVED,
+      OsmTags.HighwayValues.CONSTRUCTION,
+      OsmTags.HighwayValues.ELEVATOR
+    )) {
       return;
     }
 
@@ -352,11 +368,11 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    String kind = getString(sf, matches, "kind", "other");
-    String kindDetail = getString(sf, matches, "kindDetail", "");
-    int minZoom = getInteger(sf, matches, "minZoom", 14);
-    int minZoomShieldText = getInteger(sf, matches, "minZoomShieldText", 14);
-    int minZoomNames = getInteger(sf, matches, "minZoomNames", 14);
+    String kind = getString(sf, matches, UseKeys.KIND, "other");
+    String kindDetail = getString(sf, matches, UseKeys.KIND_DETAIL, "");
+    int minZoom = getInteger(sf, matches, UseKeys.MIN_ZOOM, 14);
+    int minZoomShieldText = getInteger(sf, matches, UseKeys.MIN_ZOOM_SHIELD_TEXT, 14);
+    int minZoomNames = getInteger(sf, matches, UseKeys.MIN_ZOOM_NAMES, 14);
 
     var feat = features.line("roads")
       .setId(FeatureId.create(sf))
@@ -385,16 +401,21 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       feat.inheritAttrFromSource(OsmTags.SERVICE);
     }
 
-    if (sf.hasTag(OsmTags.HIGHWAY, "motorway_link", "trunk_link", "primary_link", "secondary_link",
-      "tertiary_link")) {
+    if (sf.hasTag(OsmTags.HIGHWAY,
+      OsmTags.HighwayValues.MOTORWAY_LINK,
+      OsmTags.HighwayValues.TRUNK_LINK,
+      OsmTags.HighwayValues.PRIMARY_LINK,
+      OsmTags.HighwayValues.SECONDARY_LINK,
+      OsmTags.HighwayValues.TERTIARY_LINK
+    )) {
       feat.setAttr("is_link", true);
     }
 
     // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
     // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
-    if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
+    if (sf.hasTag(OsmTags.BRIDGE) && !sf.hasTag(OsmTags.BRIDGE, OsmTags.BridgeValues.NO)) {
       feat.setAttrWithMinzoom("is_bridge", true, 12);
-    } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
+    } else if (sf.hasTag(OsmTags.TUNNEL) && !sf.hasTag(OsmTags.TUNNEL, OsmTags.TunnelValues.NO)) {
       feat.setAttrWithMinzoom("is_tunnel", true, 12);
     }
 
@@ -406,12 +427,21 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   private void processOsmNonHighways(SourceFeature sf, FeatureCollector features) {
 
-    if (sf.hasTag("building")) {
+    if (sf.hasTag(OsmTags.BUILDING)) {
       // see https://github.com/protomaps/basemaps/issues/249
       return;
     }
 
-    if (sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed")) {
+    if (sf.hasTag(
+      OsmTags.RAILWAY,
+      OsmTags.RailwayValues.ABANDONED,
+      OsmTags.RailwayValues.RAZED,
+      OsmTags.RailwayValues.DEMOLISHED,
+      OsmTags.RailwayValues.REMOVED,
+      OsmTags.RailwayValues.CONSTRUCTION,
+      OsmTags.RailwayValues.PLATFORM,
+      OsmTags.RailwayValues.PROPOSED
+    )) {
       return;
     }
 
@@ -420,14 +450,14 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    int minZoom = getInteger(sf, matches, "minZoom", 11);
-    String kind = getString(sf, matches, "kind", "other");
-    String kindDetail = getString(sf, matches, "kindDetail", "");
+    int minZoom = getInteger(sf, matches, UseKeys.MIN_ZOOM, 11);
+    String kind = getString(sf, matches, UseKeys.KIND, "other");
+    String kindDetail = getString(sf, matches, UseKeys.KIND_DETAIL, "");
 
 
     var feature = features.line(this.name())
       .setId(FeatureId.create(sf))
-      .setAttr("kind", kind)
+      .setAttr(UseKeys.KIND, kind)
       // Used for client-side label collisions
       .setAttr("min_zoom", minZoom + 1)
       .setAttr("network", sf.getString("network"))
@@ -446,9 +476,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // Set "brunnel" (bridge / tunnel) property where "level" = 1 is a bridge, 0 is ground level, and -1 is a tunnel
     // Because of MapLibre performance and draw order limitations, generally the boolean is sufficent
     // See also: "layer" for more complicated ±6 layering for more sophisticated graphics libraries
-    if (sf.hasTag("bridge") && !sf.hasTag("bridge", "no")) {
+    if (sf.hasTag(OsmTags.BRIDGE) && !sf.hasTag(OsmTags.BRIDGE, OsmTags.BridgeValues.NO)) {
       feature.setAttrWithMinzoom("is_bridge", true, 12);
-    } else if (sf.hasTag("tunnel") && !sf.hasTag("tunnel", "no")) {
+    } else if (sf.hasTag(OsmTags.TUNNEL) && !sf.hasTag(OsmTags.TUNNEL, OsmTags.TunnelValues.NO)) {
       feature.setAttrWithMinzoom("is_tunnel", true, 12);
     }
 
