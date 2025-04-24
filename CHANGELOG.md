@@ -1,3 +1,7 @@
+Tiles 4.11.4
+------
+- More code quality refactorings [#468, #464]
+
 Tiles 4.11.3
 ------
 - Code quality refactorings [#458, #459, #460, #461]
