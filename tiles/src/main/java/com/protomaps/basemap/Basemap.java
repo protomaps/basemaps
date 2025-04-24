@@ -24,9 +24,13 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Basemap extends ForwardingProfile {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Basemap.class);
 
   public Basemap(QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
     String layer) {
@@ -205,7 +209,7 @@ public class Basemap extends ForwardingProfile {
     String layer = args.getString("layer",
       "Process only a single layer. Possible values are: " + String.join(", ", availableLayers), "");
     if (!(layer.isEmpty() || availableLayers.contains(layer))) {
-      System.err.println("Error: --layer=" + layer + " is not a valid option. Possible values are: " +
+      LOGGER.error("Error: --layer={} is not a valid option. Possible values are: {}", layer,
         String.join(", ", availableLayers));
       System.exit(1);
     }

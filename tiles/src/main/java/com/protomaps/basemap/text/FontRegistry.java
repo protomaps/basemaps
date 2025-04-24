@@ -19,19 +19,7 @@ import org.slf4j.LoggerFactory;
 public class FontRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(FontRegistry.class);
 
-  private class FontBundle {
-    public String name;
-    public String version;
-    public Font font;
-    public Map<String, Integer> encoding;
-
-    public FontBundle(String name, String version, Font font, Map<String, Integer> encoding) {
-      this.name = name;
-      this.version = version;
-      this.font = font;
-      this.encoding = encoding;
-    }
-  }
+  private record FontBundle(String name, String version, Font font, Map<String, Integer> encoding) {}
 
   private HashMap<String, FontBundle> registry;
   private static String zipFilePath;
@@ -87,7 +75,7 @@ public class FontRegistry {
           font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
         }
       } else {
-        LOGGER.error("readFont(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
+        LOGGER.error("readFont(): File {} not found in the ZIP archive {}", fileNameInZip, zipFilePath);
         System.exit(1);
       }
     } catch (IOException | FontFormatException e) {
@@ -139,7 +127,7 @@ public class FontRegistry {
           }
         }
       } else {
-        System.out.println("readEncoding(): File " + fileNameInZip + " not found in the ZIP archive " + zipFilePath);
+        LOGGER.error("readEncoding(): File {} not found in the ZIP archive {}", fileNameInZip, zipFilePath);
         System.exit(1);
       }
     } catch (IOException e) {

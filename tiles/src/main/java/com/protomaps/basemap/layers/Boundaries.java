@@ -41,8 +41,6 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
       kind = "tz_boundary";
     }
 
-    // TODO (nvkelso 2023-03-26)
-    //      Compiler is fussy about booleans and strings, beware
     if (!kind.isEmpty()) {
       switch (sf.getString("featurecla")) {
         case "Disputed (please verify)" -> {
@@ -172,7 +170,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
 
         var kind = "";
 
-        var themeMinZoom = 6;
+        int themeMinZoom = 0;
 
         // Core Tilezen schema properties
         switch (minAdminLevel.getAsInt()) {

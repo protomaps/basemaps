@@ -459,7 +459,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // Server sort features so client label collisions are pre-sorted
     feature.setSortKey(minZoom);
 
-    // TODO: (nvkelso 20230623) This should be variable, but 12 is better than 0 for line merging
     OsmNames.setOsmNames(feature, sf, 12);
   }
 
@@ -476,7 +475,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     // limit the application of LinkSimplify to where cloverleafs are unlikely to be at tile edges.
-    // TODO: selectively apply each class depending on zoom level.
     if (zoom < 12) {
       items = linkSimplify(items, "highway", "motorway", "motorway_link");
       items = linkSimplify(items, "highway", "trunk", "trunk_link");
