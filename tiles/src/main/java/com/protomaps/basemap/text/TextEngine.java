@@ -150,7 +150,8 @@ public class TextEngine {
     for (String segment : segments) {
       String script = Script.getScript(segment);
       if (fontRegistry.getScripts().contains(script)) {
-        encodedTextBld.append(TextEngine.encode(segment, fontRegistry.getFont(script), fontRegistry.getEncoding(script)));
+        encodedTextBld
+          .append(TextEngine.encode(segment, fontRegistry.getFont(script), fontRegistry.getEncoding(script)));
       } else {
         encodedTextBld.append(segment);
       }
