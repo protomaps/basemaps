@@ -284,8 +284,8 @@ public class Basemap extends ForwardingProfile {
     }
 
     var planetiler = Planetiler.create(args)
-      .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
-        "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip");
+      .addGeoPackageSource("ne", sourcesDir.resolve("natural_earth_vector.gpkg.zip"),
+        "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip");
 
     if (!overtureFile.isEmpty()) {
       Path base = args.inputFile("overture", "overture base directory", Path.of("data", "overture"));
@@ -313,7 +313,6 @@ public class Basemap extends ForwardingProfile {
         .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
           "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
     }
-
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
     Path qrankCsv = sourcesDir.resolve("qrank.csv.gz");
 
