@@ -1,0 +1,35 @@
+# Derived from planetiler (Apache License)
+# https://github.com/onthegomap/planetiler/blob/main/.github/workflows/maven.yml
+
+name: Monaco CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  monaco_roads:
+    name: Build the roads layer on Monaco
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: 21
+        distribution: 'temurin'
+        cache: 'maven'
+    - name: Build jar
+      working-directory: tiles
+      run: mvn clean package -DskipTests
+    - name: Run roads layer on Monaco
+      working-directory: tiles
+      run: java -Xmx2g -jar target/protomaps-basemap-HEAD-with-deps.jar \
+        --osm_url=https://protomaps.dev/~wipfli/fixtures/monaco-2025-02-15.osm.pbf \
+        --nodemap-type=sparsearray \
+        --layer=roads \
+        --log_jts_exceptions \
+        --download
