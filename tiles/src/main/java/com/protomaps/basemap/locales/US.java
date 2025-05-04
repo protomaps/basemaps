@@ -1,7 +1,6 @@
 package com.protomaps.basemap.locales;
 
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.protomaps.basemap.layers.Roads;
 
 /*
  * Logic specific to the 50 US states.
@@ -11,7 +10,7 @@ import com.protomaps.basemap.layers.Roads;
 public class US extends CartographicLocale {
 
   @Override
-  public Roads.Shield getShield(SourceFeature sf) {
+  public Shield getShield(SourceFeature sf) {
     String ref = sf.getString("ref");
     String network = "other";
 
@@ -25,9 +24,9 @@ public class US extends CartographicLocale {
         shieldText = firstRef.replace("I ", "");
         network = "US:US_I";
       }
-      return new Roads.Shield(strip(shieldText), network);
+      return new Shield(strip(shieldText), network);
     }
 
-    return new Roads.Shield(null, null);
+    return new Shield(null, null);
   }
 }

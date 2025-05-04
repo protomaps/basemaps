@@ -297,8 +297,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   // Hardcoded to US for now
   private CartographicLocale locale = new US();
 
-  public record Shield(String text, String network) {}
-
   private record RouteRelationInfo(
     @Override long id,
     String network
@@ -327,7 +325,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     String highway = sf.getString("highway");
 
-    Shield shield = locale.getShield(sf);
+    CartographicLocale.Shield shield = locale.getShield(sf);
     Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
 
     for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
