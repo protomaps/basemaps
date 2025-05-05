@@ -14,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TextEngine {
+
+  private TextEngine() {}
+
   private static final Logger LOGGER = LoggerFactory.getLogger(TextEngine.class);
 
   private static Integer[][] deltas = new Integer[][]{

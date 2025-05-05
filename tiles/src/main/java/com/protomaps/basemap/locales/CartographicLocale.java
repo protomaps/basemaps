@@ -1,7 +1,6 @@
 package com.protomaps.basemap.locales;
 
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.protomaps.basemap.layers.Roads;
 
 /*
  * Encapsulates country-specific logic applied to OpenStreetMap tags.
@@ -16,6 +15,8 @@ import com.protomaps.basemap.layers.Roads;
  */
 public class CartographicLocale {
 
+  public record Shield(String text, String network) {}
+
   protected String strip(String s) {
     if (s != null) {
       return s.replaceAll("\\s", "");
@@ -23,12 +24,12 @@ public class CartographicLocale {
     return null;
   }
 
-  public Roads.Shield getShield(SourceFeature sf) {
+  public Shield getShield(SourceFeature sf) {
     String ref = sf.getString("ref");
     if (ref != null) {
       String firstRef = ref.split(";")[0];
-      return new Roads.Shield(strip(firstRef), "other");
+      return new Shield(strip(firstRef), "other");
     }
-    return new Roads.Shield(null, null);
+    return new Shield(null, null);
   }
 }
