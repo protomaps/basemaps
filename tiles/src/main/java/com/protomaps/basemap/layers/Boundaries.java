@@ -237,7 +237,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
   public List<OsmRelationInfo> preprocessOsmRelation(OsmElement.Relation relation) {
     if (relation.hasTag("type", "boundary") &&
       (relation.hasTag("boundary", "administrative") || relation.hasTag("boundary", "disputed") ||
-      relation.hasTag("boundary", "claim"))) {
+        relation.hasTag("boundary", "claim"))) {
       Integer adminLevel = Parse.parseIntOrNull(relation.getString("admin_level"));
       Integer disputed = relation.hasTag("boundary", "disputed") || relation.hasTag("disputed", "yes") ||
         relation.hasTag("dispute", "yes") || relation.hasTag("disputed_by") || relation.hasTag("claimed_by") ? 1 : 0;
