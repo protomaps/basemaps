@@ -1,3 +1,7 @@
+Tiles 4.11.5
+------
+- Bump to planetiler v0.9.0
+
 Tiles 4.11.4
 ------
 - More code quality refactorings [#468, #464]
