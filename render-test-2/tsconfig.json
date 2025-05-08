@@ -1,0 +1,37 @@
+{
+    "compilerOptions": {
+      "forceConsistentCasingInFileNames": true,
+      "allowJs": true,
+      "allowSyntheticDefaultImports": true,
+      "checkJs": true,
+      "isolatedModules": false,
+      "noEmit": true,
+      "esModuleInterop": true,
+      "importHelpers": false,
+      "module": "ESNext",
+      "moduleResolution": "Bundler",
+      "resolveJsonModule": true,
+      "skipLibCheck": false,
+      "strict": false,
+      "target": "ES2016",
+      "lib": [
+        "ESNext",
+        "DOM",
+        "DOM.Iterable"
+      ]
+    },
+    "ts-node": {
+      "experimentalSpecifierResolution": "node",
+      "esm": true,
+      "compilerOptions": {
+        "target": "es2019",
+        "types": [
+          "node"
+        ]
+      }
+    },
+    "include": [
+      "run_render_tests.ts"
+    ]
+  }
+  
