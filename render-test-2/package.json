@@ -18,13 +18,15 @@
         "@types/node": "^22.15.3",
         "@types/pixelmatch": "^5.2.6",
         "@types/pngjs": "^6.0.5",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
         "glob": "^11.0.2",
         "junit-report-builder": "^5.1.1",
         "maplibre-gl": "^5.5.0",
         "monocart-coverage-reports": "^2.12.4",
         "pixelmatch": "^7.1.0",
+        "pmtiles": "^4.3.0",
         "pngjs": "^7.0.0",
-        "st": "^3.0.1",
         "typescript": "^5.8.3"
     }
 }

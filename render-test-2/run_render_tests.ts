@@ -1,6 +1,5 @@
 import path, {dirname, resolve} from 'path';
 import fs from 'fs';
-import st from 'st';
 import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 import {fileURLToPath} from 'url';
@@ -12,6 +11,9 @@ import {CoverageReport} from 'monocart-coverage-reports';
 import type {Map as MaplibreMap, CanvasSource, PointLike, StyleSpecification} from 'maplibre-gl';
 import junitReportBuilder, {type TestSuite} from 'junit-report-builder';
 import type * as maplibreglModule from 'maplibre-gl';
+import * as pmtiles from 'pmtiles';
+import express from 'express';
+import cors from 'cors';
 
 const __dirname = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 let maplibregl: typeof maplibreglModule;
@@ -418,7 +420,7 @@ async function getImageFromStyle(styleForTest: StyleWithTestData, page: Page): P
         return new Promise(async (resolve, reject) => {
             setTimeout(() => {
                 reject(new Error('Test timed out'));
-            }, options.timeout || 40000);
+            }, options.timeout || 4000);
 
             if (options.addFakeCanvas) {
                 const fakeCanvas = await createFakeCanvas(document, options.addFakeCanvas.id, options.addFakeCanvas.image);
@@ -431,6 +433,9 @@ async function getImageFromStyle(styleForTest: StyleWithTestData, page: Page): P
                     false // Don't lazy load the plugin
                 );
             }
+
+            const protocol = new pmtiles.Protocol();
+            maplibregl.addProtocol('pmtiles', protocol.tile);
 
             const map = new maplibregl.Map({
                 container: 'map',
@@ -626,6 +631,7 @@ async function createPageAndStart(browser: Browser, testStyles: StyleWithTestDat
     await page.coverage.startJSCoverage({includeRawScriptCoverage: true});
     applyDebugParameter(options, page);
     await page.addScriptTag({path: 'node_modules/maplibre-gl/dist/maplibre-gl-dev.js'});
+    await page.addScriptTag({path: 'node_modules/pmtiles/dist/pmtiles.js'});
     await runTests(page, testStyles, directory);
     return page;
 }
@@ -697,35 +703,63 @@ async function executeRenderTests() {
             '--disable-web-security'
         ]});
 
-    const mount = st({
-        path: 'test/integration/assets',
-        cors: true,
-        passthrough: true,
-    });
-    const server = http.createServer((req, res) => {
-        mount(req, res, () => {
-            if (req.url.includes('/sparse204/1-')) {
-                res.writeHead(204);
-                res.end('');
-            } else {
-                res.writeHead(404);
-                res.end('');
-            }
-        });
+    // const mount = st({
+    //     path: 'test/integration/assets',
+    //     cors: true,
+    //     passthrough: true,
+    // });
+    // const server = http.createServer((req, res) => {
+    //     mount(req, res, () => {
+    //         if (req.url.includes('/sparse204/1-')) {
+    //             res.writeHead(204);
+    //             res.end('');
+    //         } else {
+    //             res.writeHead(404);
+    //             res.end('');
+    //         }
+    //     });
+    // });
+
+    const serverApp = express();
+    serverApp.use(cors());
+    serverApp.use(express.static('test/integration/assets'));
+    serverApp.use((req, res, next) => {
+        if (req.url.includes('/sparse204/1-')) {
+            res.status(204).end();
+        } else {
+            res.status(404).end();
+        }
     });
 
-    const mvtServer = http.createServer(
-        st({
-            path: 'node_modules/@mapbox/mvt-fixtures/real-world',
-            cors: true,
-        })
-    );
+    // const mvtServer = http.createServer(
+    //     st({
+    //         path: 'node_modules/@mapbox/mvt-fixtures/real-world',
+    //         cors: true,
+    //     })
+    // );
 
-    await new Promise<void>((resolve) => server.listen(2900, '0.0.0.0', resolve));
-    await new Promise<void>((resolve) => mvtServer.listen(2901, '0.0.0.0', resolve));
+    const mvtServerApp = express();
+    mvtServerApp.use(cors());
+    mvtServerApp.use(express.static('node_modules/@mapbox/mvt-fixtures/real-world'));
+
+    // const pmtilesServer = http.createServer(
+    //     st({
+    //         path: 'pmtiles',
+    //         cors: true
+    //     })
+    // );
+
+    const pmtilesServerApp = express();
+    pmtilesServerApp.use(cors());
+    pmtilesServerApp.use(express.static('pmtiles'));
+
+    const serverPort = 2900;
+    await new Promise<void>((resolve) => serverApp.listen(serverPort, '0.0.0.0', resolve));
+    await new Promise<void>((resolve) => mvtServerApp.listen(2901, '0.0.0.0', resolve));
+    await new Promise<void>((resolve) => pmtilesServerApp.listen(2902, '0.0.0.0', resolve));
 
     const directory = path.join(__dirname);
-    let testStyles = getTestStyles(options, directory, (server.address() as any).port);
+    let testStyles = getTestStyles(options, directory, serverPort);
 
     if (process.env.SPLIT_COUNT && process.env.CURRENT_SPLIT_INDEX) {
         const numberOfTestsForThisPart = Math.ceil(testStyles.length / +process.env.SPLIT_COUNT);
