@@ -1,4 +1,4 @@
-import path, {dirname} from 'path';
+import path, {dirname, resolve} from 'path';
 import fs from 'fs';
 import st from 'st';
 import {PNG} from 'pngjs';
@@ -13,7 +13,7 @@ import type {Map as MaplibreMap, CanvasSource, PointLike, StyleSpecification} fr
 import junitReportBuilder, {type TestSuite} from 'junit-report-builder';
 import type * as maplibreglModule from 'maplibre-gl';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 let maplibregl: typeof maplibreglModule;
 
 type TestData = {
@@ -918,7 +918,7 @@ async function createPageAndStart(browser: Browser, testStyles: StyleWithTestDat
     const page = await browser.newPage();
     await page.coverage.startJSCoverage({includeRawScriptCoverage: true});
     applyDebugParameter(options, page);
-    await page.addScriptTag({path: 'dist/maplibre-gl-dev.js'});
+    await page.addScriptTag({path: 'node_modules/maplibre-gl/dist/maplibre-gl-dev.js'});
     await runTests(page, testStyles, directory);
     return page;
 }
@@ -937,7 +937,7 @@ async function closePageAndFinish(page: Page, reportCoverage: boolean) {
             ...it.rawScriptCoverage
         };
         if (entry.url.endsWith('maplibre-gl-dev.js')) {
-            entry.sourceMap = JSON.parse(fs.readFileSync('dist/maplibre-gl-dev.js.map').toString('utf-8'));
+            entry.sourceMap = JSON.parse(fs.readFileSync('node_modules/maplibre-gl/dist/maplibre-gl-dev.js.map').toString('utf-8'));
         }
         return entry;
     });

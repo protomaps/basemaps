@@ -5,7 +5,8 @@
       "allowSyntheticDefaultImports": true,
       "checkJs": true,
       "isolatedModules": false,
-      "noEmit": true,
+      "noEmit": false,
+      "outDir": "dist",
       "esModuleInterop": true,
       "importHelpers": false,
       "module": "ESNext",
@@ -13,7 +14,7 @@
       "resolveJsonModule": true,
       "skipLibCheck": false,
       "strict": false,
-      "target": "ES2016",
+      "target": "ES2017",
       "lib": [
         "ESNext",
         "DOM",

@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "ts-node run_render_tests.ts"
+        "build": "tsc",
+        "test": "node dist/run_render_tests.js"
     },
     "keywords": [],
     "author": "",
@@ -24,7 +25,6 @@
         "pixelmatch": "^7.1.0",
         "pngjs": "^7.0.0",
         "st": "^3.0.1",
-        "ts-node": "^10.9.2",
         "typescript": "^5.8.3"
     }
 }
