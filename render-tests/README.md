@@ -15,7 +15,7 @@ npm run build
 Then install the dependencies in the render-test folder with:
 
 ```
-npm i
+npm ci
 ```
 
 Then build the render test runner:
