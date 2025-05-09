@@ -37,4 +37,10 @@ jobs:
     - name: Run render tests
       run: npm run test
       working-directory: render-tests
-  
+    - name: Upload render test results.html on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: render-test-report
+        path: ${{ github.workspace }}/render-tests/results.html
+
