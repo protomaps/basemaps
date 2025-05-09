@@ -4,11 +4,8 @@ import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 import {fileURLToPath} from 'url';
 import {globSync} from 'glob';
-import http from 'http';
 import puppeteer, {type Page, type Browser} from 'puppeteer';
-import {CoverageReport} from 'monocart-coverage-reports';
-// import {localizeURLs} from '../lib/localize-urls';
-import type {Map as MaplibreMap, CanvasSource, PointLike, StyleSpecification} from 'maplibre-gl';
+import type {PointLike, StyleSpecification} from 'maplibre-gl';
 import junitReportBuilder, {type TestSuite} from 'junit-report-builder';
 import type * as maplibreglModule from 'maplibre-gl';
 import * as pmtiles from 'pmtiles';
@@ -44,7 +41,6 @@ type TestData = {
     collisionDebug: boolean;
     localIdeographFontFamily: string;
     crossSourceCollisions: boolean;
-    operations: any[];
     queryGeometry: PointLike;
     queryOptions: any;
     error?: Error;
@@ -208,7 +204,7 @@ function compareRenderResults(directory: string, testData: TestData, data: Uint8
  * @param directory - The base directory
  * @returns The tests data structure and the styles that were loaded
  */
-function getTestStyles(options: RenderOptions, directory: string, port: number): StyleWithTestData[] {
+function getTestStyles(options: RenderOptions, directory: string): StyleWithTestData[] {
     const tests = options.tests || [];
 
     const sequence = globSync('**/style.json', {cwd: directory})
@@ -240,7 +236,6 @@ function getTestStyles(options: RenderOptions, directory: string, port: number):
                 console.log(`* skipped ${test.id}`);
                 return false;
             }
-            // localizeURLs(style, port, path.join(__dirname, '../'));
             return true;
         });
     return sequence;
@@ -282,150 +277,11 @@ async function getImageFromStyle(styleForTest: StyleWithTestData, page: Page): P
 
         const options = style.metadata.test;
 
-        async function updateFakeCanvas(document: Document, id: string, imagePath: string) {
-            const fakeCanvas = document.getElementById(id) as HTMLCanvasElement;
-
-            const getMeta = async (url) => {
-                const img = new Image();
-                img.src = url;
-                img.crossOrigin = 'anonymous';
-                await img.decode();
-                return img;
-            };
-
-            const image = await getMeta(`http://localhost:2900/${imagePath}`);
-
-            fakeCanvas.width = image.naturalWidth;
-            fakeCanvas.height = image.naturalHeight;
-            fakeCanvas.id = id;
-
-            const ctx = fakeCanvas.getContext('2d');
-            ctx?.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
-
-        }
-
-        /**
-         * Executes the operations in the test data
-         *
-         * @param testData - The test data to operate upon
-         * @param map - The Map
-         * @param operations - The operations
-         * @param callback - The callback to use when all the operations are executed
-         */
-        async function applyOperations(testData: TestData, map: MaplibreMap & { _render: () => void}, idle: boolean) {
-            if (!testData.operations || testData.operations.length === 0) {
-                return;
-            }
-            for (const operation of testData.operations) {
-                console.log(`Running operation: ${JSON.stringify(operation)}`);
-                switch (operation[0]) {
-                    case 'wait':
-                        if (operation.length <= 1) {
-                            while (!map.loaded()) {
-                                await map.once('render');
-                            }
-                        } else {
-                            if (typeof operation[1] === 'string') {
-                                // Wait for the event to fire
-                                await map.once(operation[1]);
-                            } else {
-                                await new Promise<void>((resolve) => {
-                                    setTimeout(() => {
-                                        resolve();
-                                    }, operation[1]);
-                                });
-                                map._render();
-                            }
-                        }
-                        console.log('done waiting');
-                        break;
-                    case 'idle':
-                        map.repaint = false;
-                        if (idle) {
-                            console.log('idle is true');
-                            break;
-                        }
-                        await map.once('idle');
-                        console.log('done waiting for idle');
-                        break;
-                    case 'sleep':
-                        await new Promise<void>((resolve) => {
-                            setTimeout(() => {
-                                resolve();
-                            }, operation[1]);
-                        });
-                        break;
-                    case 'addImage': {
-                        const getImage = async (url) => {
-                            const img = new Image();
-                            img.src = url;
-                            img.crossOrigin = 'anonymous';
-                            await img.decode();
-                            return img;
-                        };
-                        const image = await getImage(`http://localhost:2900/${operation[2]}`);
-
-                        map.addImage(operation[1], image, operation[3] || {});
-                        break;
-                    }
-                    case 'updateFakeCanvas': {
-                        const canvasSource = map.getSource<CanvasSource>(operation[1]);
-                        canvasSource.play();
-                        // update before pause should be rendered
-                        await updateFakeCanvas(window.document, testData.addFakeCanvas.id, operation[2]);
-                        canvasSource.pause();
-                        // update after pause should not be rendered
-                        await updateFakeCanvas(window.document, testData.addFakeCanvas.id, operation[3]);
-                        map._render();
-                        break;
-                    }
-                    case 'setStyle':
-                        map.setStyle(operation[1], {localIdeographFontFamily: false as any});
-                        break;
-                    case 'pauseSource':
-                        map.style.sourceCaches[operation[1]].pause();
-                        break;
-                    default:
-                        if (typeof map[operation[0]] === 'function') {
-                            map[operation[0]](...operation.slice(1));
-                        }
-                }
-            }
-
-        }
-
-        async function createFakeCanvas(document: Document, id: string, imagePath: string): Promise<HTMLCanvasElement> {
-            const fakeCanvas: HTMLCanvasElement = document.createElement('canvas');
-
-            const getImage = async (url) => {
-                const img = new Image();
-                img.src = url;
-                img.crossOrigin = 'anonymous';
-                await img.decode();
-                return img;
-            };
-
-            const image = await getImage(`http://localhost:2900/${imagePath}`);
-
-            fakeCanvas.width = image.naturalWidth;
-            fakeCanvas.height = image.naturalHeight;
-            fakeCanvas.id = id;
-
-            const ctx = fakeCanvas.getContext('2d');
-            ctx?.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
-
-            return fakeCanvas;
-        }
-
         return new Promise(async (resolve, reject) => {
             setTimeout(() => {
                 reject(new Error('Test timed out'));
             }, options.timeout || 4000);
 
-            if (options.addFakeCanvas) {
-                const fakeCanvas = await createFakeCanvas(document, options.addFakeCanvas.id, options.addFakeCanvas.image);
-                document.body.appendChild(fakeCanvas);
-            }
 
             if (maplibregl.getRTLTextPluginStatus() === 'unavailable') {
                 maplibregl.setRTLTextPlugin(
@@ -465,14 +321,8 @@ async function getImageFromStyle(styleForTest: StyleWithTestData, page: Page): P
             await map.once('load');
             if (options.collisionDebug) {
                 map.showCollisionBoxes = true;
-                if (options.operations) {
-                    options.operations.push(['wait']);
-                } else {
-                    options.operations = [['wait']];
-                }
             }
 
-            await applyOperations(options, map as any, idle);
             const viewport = gl.getParameter(gl.VIEWPORT);
             const w = options.reportWidth ?? viewport[2];
             const h = options.reportHeight ?? viewport[3];
@@ -628,43 +478,11 @@ async function runTests(page: Page, testStyles: StyleWithTestData[], directory: 
 
 async function createPageAndStart(browser: Browser, testStyles: StyleWithTestData[], directory: string, options: RenderOptions) {
     const page = await browser.newPage();
-    await page.coverage.startJSCoverage({includeRawScriptCoverage: true});
     applyDebugParameter(options, page);
     await page.addScriptTag({path: 'node_modules/maplibre-gl/dist/maplibre-gl-dev.js'});
     await page.addScriptTag({path: 'node_modules/pmtiles/dist/pmtiles.js'});
     await runTests(page, testStyles, directory);
     return page;
-}
-
-async function closePageAndFinish(page: Page, reportCoverage: boolean) {
-    const coverage = await page.coverage.stopJSCoverage();
-    await page.close();
-    if (!reportCoverage) {
-        return;
-    }
-
-    const rawV8CoverageData = coverage.map((it) => {
-        // Convert to raw v8 coverage format
-        const entry: any =  {
-            source: it.text,
-            ...it.rawScriptCoverage
-        };
-        if (entry.url.endsWith('maplibre-gl-dev.js')) {
-            entry.sourceMap = JSON.parse(fs.readFileSync('node_modules/maplibre-gl/dist/maplibre-gl-dev.js.map').toString('utf-8'));
-        }
-        return entry;
-    });
-
-    const coverageReport = new CoverageReport({
-        name: 'MapLibre Coverage Report',
-        outputDir: './coverage/render',
-        reports: [['v8'], ['codecov']]
-    });
-    coverageReport.cleanCache();
-
-    await coverageReport.add(rawV8CoverageData);
-
-    await coverageReport.generate();
 }
 
 /**
@@ -703,63 +521,14 @@ async function executeRenderTests() {
             '--disable-web-security'
         ]});
 
-    // const mount = st({
-    //     path: 'test/integration/assets',
-    //     cors: true,
-    //     passthrough: true,
-    // });
-    // const server = http.createServer((req, res) => {
-    //     mount(req, res, () => {
-    //         if (req.url.includes('/sparse204/1-')) {
-    //             res.writeHead(204);
-    //             res.end('');
-    //         } else {
-    //             res.writeHead(404);
-    //             res.end('');
-    //         }
-    //     });
-    // });
-
-    const serverApp = express();
-    serverApp.use(cors());
-    serverApp.use(express.static('test/integration/assets'));
-    serverApp.use((req, res, next) => {
-        if (req.url.includes('/sparse204/1-')) {
-            res.status(204).end();
-        } else {
-            res.status(404).end();
-        }
-    });
-
-    // const mvtServer = http.createServer(
-    //     st({
-    //         path: 'node_modules/@mapbox/mvt-fixtures/real-world',
-    //         cors: true,
-    //     })
-    // );
-
-    const mvtServerApp = express();
-    mvtServerApp.use(cors());
-    mvtServerApp.use(express.static('node_modules/@mapbox/mvt-fixtures/real-world'));
-
-    // const pmtilesServer = http.createServer(
-    //     st({
-    //         path: 'pmtiles',
-    //         cors: true
-    //     })
-    // );
-
     const pmtilesServerApp = express();
     pmtilesServerApp.use(cors());
     pmtilesServerApp.use(express.static('pmtiles'));
 
-    const serverPort = 2900;
-    await new Promise<void>((resolve) => serverApp.listen(serverPort, '0.0.0.0', resolve));
-    await new Promise<void>((resolve) => mvtServerApp.listen(2901, '0.0.0.0', resolve));
-    await new Promise<void>((resolve) => pmtilesServerApp.listen(2902, '0.0.0.0', resolve));
+    await new Promise<void>((resolve) => pmtilesServerApp.listen(2900, '0.0.0.0', resolve));
 
     const directory = path.join(__dirname);
-    let testStyles = getTestStyles(options, directory, serverPort);
+    let testStyles = getTestStyles(options, directory);
 
     if (process.env.SPLIT_COUNT && process.env.CURRENT_SPLIT_INDEX) {
         const numberOfTestsForThisPart = Math.ceil(testStyles.length / +process.env.SPLIT_COUNT);
@@ -767,14 +536,7 @@ async function executeRenderTests() {
     }
 
     let page = await createPageAndStart(browser, testStyles, directory, options);
-    const failedTests = testStyles.filter(t => t.metadata.test.error || !t.metadata.test.ok);
-    await closePageAndFinish(page, failedTests.length === 0);
-    if (failedTests.length > 0 && failedTests.length < testStyles.length) {
-        console.log(`Re-running failed tests: ${failedTests.length}`);
-        options.debug = true;
-        page = await createPageAndStart(browser, failedTests, directory, options);
-        await closePageAndFinish(page, true);
-    }
+    await page.close();
 
     const tests = testStyles.map(s => s.metadata.test).filter(t => !!t);
     const testStats: TestStats = {
