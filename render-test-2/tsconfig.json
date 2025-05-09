@@ -10,7 +10,7 @@
       "esModuleInterop": true,
       "importHelpers": false,
       "module": "ESNext",
-      "moduleResolution": "Bundler",
+      "moduleResolution": "bundler",
       "resolveJsonModule": true,
       "skipLibCheck": false,
       "strict": false,

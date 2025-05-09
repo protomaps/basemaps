@@ -11,6 +11,7 @@ import type * as maplibreglModule from 'maplibre-gl';
 import * as pmtiles from 'pmtiles';
 import express from 'express';
 import cors from 'cors';
+import { layers, namedFlavor } from "@protomaps/basemaps";
 
 const __dirname = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 let maplibregl: typeof maplibreglModule;
@@ -20,6 +21,8 @@ type TestData = {
     width: number;
     height: number;
     pixelRatio: number;
+    flavor: string;
+    lang: string;
     recycleMap: boolean;
     allowed: number;
     /**
@@ -218,11 +221,17 @@ function getTestStyles(options: RenderOptions, directory: string): StyleWithTest
                 width: 512,
                 height: 512,
                 pixelRatio: 1,
+                flavor: 'light',
+                lang: 'en',
                 recycleMap: options.recycleMap || false,
                 allowed: 0.00025,
                 threshold: 0.1285,
                 ...style.metadata.test
             };
+
+            style.layers = layers("protomaps", namedFlavor(style.metadata.test.flavor), { lang: style.metadata.test.lang });
+            style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v4/${style.metadata.test.flavor}`;
+            style.glyphs = "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
 
             return style;
         })

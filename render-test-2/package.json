@@ -15,6 +15,7 @@
     },
     "type": "module",
     "devDependencies": {
+        "@protomaps/basemaps": "file:../styles",
         "@types/node": "^22.15.3",
         "@types/pixelmatch": "^5.2.6",
         "@types/pngjs": "^6.0.5",

@@ -3,7 +3,9 @@
   "metadata": {
     "test": {
       "width": 256,
-      "height": 256
+      "height": 256,
+      "flavor": "light",
+      "lang": "en"
     }
   },
   "center": [
@@ -16,13 +18,5 @@
       "type": "vector",
       "url": "pmtiles://http://localhost:2900/monaco.pmtiles"
     }
-  },
-  "layers": [
-    {
-      "type": "line",
-      "id": "roads",
-      "source": "protomaps",
-      "source-layer": "roads"
-    }
-  ]
+  }
 }
