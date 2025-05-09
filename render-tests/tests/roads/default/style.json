@@ -16,7 +16,7 @@
   "sources": {
     "protomaps": {
       "type": "vector",
-      "url": "pmtiles://http://localhost:2900/monaco.pmtiles"
+      "url": "pmtiles://http://localhost:2900/monaco-roads.pmtiles"
     }
   }
 }

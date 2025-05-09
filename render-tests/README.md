@@ -24,6 +24,14 @@ Then build the render test runner:
 npm run build
 ```
 
+The render test runner is now ready, but we still need to generate some pmtiles with:
+
+```
+./generate_pmtiles.sh
+```
+
+You should now have a folder `pmtiles`.
+
 Then run the render tests with:
 
 ```
