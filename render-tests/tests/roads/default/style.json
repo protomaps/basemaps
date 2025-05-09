@@ -1,0 +1,22 @@
+{
+  "version": 8,
+  "metadata": {
+    "test": {
+      "width": 256,
+      "height": 256,
+      "flavor": "light",
+      "lang": "en"
+    }
+  },
+  "center": [
+    7.420737,
+    43.736756
+  ],
+  "zoom": 15,
+  "sources": {
+    "protomaps": {
+      "type": "vector",
+      "url": "pmtiles://http://localhost:2900/monaco-roads.pmtiles"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "render-test",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc",
+        "test": "node dist/run_render_tests.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "puppeteer": "^24.7.2"
+    },
+    "type": "module",
+    "devDependencies": {
+        "@protomaps/basemaps": "file:../styles",
+        "@types/node": "^22.15.3",
+        "@types/pixelmatch": "^5.2.6",
+        "@types/pngjs": "^6.0.5",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "glob": "^11.0.2",
+        "junit-report-builder": "^5.1.1",
+        "maplibre-gl": "^5.5.0",
+        "pixelmatch": "^7.1.0",
+        "pmtiles": "^4.3.0",
+        "pngjs": "^7.0.0",
+        "typescript": "^5.8.3"
+    }
+}
