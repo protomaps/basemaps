@@ -173,9 +173,9 @@ export const LIGHT: Flavor = {
   bridges_major: "#f5f5f5",
   bridges_highway: "#ffffff",
 
-  roads_label_minor: "black",
+  roads_label_minor: "#91888b",
   roads_label_minor_halo: "#ffffff",
-  roads_label_major: "black",
+  roads_label_major: "#938a8d",
   roads_label_major_halo: "#ffffff",
   ocean_label: "#728dd4",
   subplace_label: "#8f8f8f",
