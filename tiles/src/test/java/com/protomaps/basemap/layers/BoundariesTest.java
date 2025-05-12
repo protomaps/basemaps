@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class BoundariesTest extends LayerTest {
   @Test
@@ -72,17 +74,22 @@ class BoundariesTest extends LayerTest {
       collector);
   }
 
-  @Test
-  void testDisputedOsmWay() {
+  @ParameterizedTest
+  @CsvSource(value = {
+    "disputed,yes",
+    "disputed_by,a",
+    "claimed_by,a",
+    "boundary,claim",
+    "boundary,disputed"
+  })
+  void testDisputedOsmWay(String key, String value) {
     var infos = profile.preprocessOsmRelation(
       new OsmElement.Relation(1, Map.of("type", "boundary", "boundary", "administrative", "admin_level", "2"),
         List.of(new OsmElement.Relation.Member(OsmElement.Type.WAY, 123, ""))));
 
     var way = SimpleFeature.createFakeOsmFeature(
       newLineString(0, 0, 1, 1),
-      new HashMap<>(Map.of(
-        "disputed", "yes"
-      )),
+      new HashMap<>(Map.of(key, value)),
       "osm",
       null,
       123,
