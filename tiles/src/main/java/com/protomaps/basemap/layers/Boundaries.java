@@ -223,8 +223,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
             .setMinZoom(themeMinZoom);
 
           // Core Tilezen schema properties (sometimes the disputed tag is not on the relation and only on the way, e.g. W542639562)
-          if (disputed.getAsInt() == 1 || sf.hasTag("boundary", "disputed") || sf.hasTag("disputed", "yes") ||
-            sf.hasTag("boundary", "claim") || sf.hasTag("disputed_by") || sf.hasTag("claimed_by")) {
+          if (disputed.getAsInt() == 1 || sf.hasTag("boundary", "disputed", "claim") || sf.hasTag("disputed", "yes") ||
+            sf.hasTag("disputed_by") || sf.hasTag("claimed_by")) {
             line.setAttr("disputed", true);
           }
         }
