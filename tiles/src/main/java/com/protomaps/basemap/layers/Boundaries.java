@@ -224,8 +224,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
 
           // Core Tilezen schema properties (sometimes the disputed tag is not on the relation and only on the way, e.g. W542639562)
           if (disputed.getAsInt() == 1 || sf.hasTag("boundary", "disputed") || sf.hasTag("disputed", "yes") ||
-            sf.hasTag("boundary", "claim") || sf.hasTag("dispute", "yes") || sf.hasTag("disputed_by") ||
-            sf.hasTag("claimed_by")) {
+            sf.hasTag("boundary", "claim") || sf.hasTag("disputed_by") || sf.hasTag("claimed_by")) {
             line.setAttr("disputed", true);
           }
         }
@@ -240,7 +239,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         relation.hasTag("boundary", "claim"))) {
       Integer adminLevel = Parse.parseIntOrNull(relation.getString("admin_level"));
       Integer disputed = relation.hasTag("boundary", "disputed") || relation.hasTag("disputed", "yes") ||
-        relation.hasTag("dispute", "yes") || relation.hasTag("disputed_by") || relation.hasTag("claimed_by") ? 1 : 0;
+        relation.hasTag("disputed_by") || relation.hasTag("claimed_by") ? 1 : 0;
 
       if (adminLevel == null || adminLevel > 8)
         return null;
