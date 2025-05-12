@@ -71,4 +71,29 @@ class BoundariesTest extends LayerTest {
       List.of(Map.of("disputed", true)),
       collector);
   }
+
+  @Test
+  void testDisputedOsmWay() {
+    var infos = profile.preprocessOsmRelation(
+      new OsmElement.Relation(1, Map.of("type", "boundary", "boundary", "administrative", "admin_level", "2"),
+        List.of(new OsmElement.Relation.Member(OsmElement.Type.WAY, 123, ""))));
+
+    var way = SimpleFeature.createFakeOsmFeature(
+      newLineString(0, 0, 1, 1),
+      new HashMap<>(Map.of(
+        "disputed", "yes"
+      )),
+      "osm",
+      null,
+      123,
+      infos.stream().map(r -> new OsmReader.RelationMember<>("", r)).toList()
+    );
+
+    var collector = featureCollectorFactory.get(way);
+    profile.processFeature(way, collector);
+
+    assertFeatures(12,
+      List.of(Map.of("disputed", true)),
+      collector);
+  }
 }
