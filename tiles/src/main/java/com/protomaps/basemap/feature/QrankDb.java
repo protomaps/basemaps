@@ -4,7 +4,6 @@ import com.carrotsearch.hppc.LongLongHashMap;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
-import javax.annotation.concurrent.Immutable;
 
 /**
  * An in-memory representation of the entire QRank database used for generalizing
@@ -13,7 +12,6 @@ import javax.annotation.concurrent.Immutable;
  * Parses a copy of the gzipped QRank dataset into a long->long hash map that can be efficiently queried when processing
  * POI features.
  **/
-@Immutable
 public final class QrankDb {
 
   private final LongLongHashMap db;

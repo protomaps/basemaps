@@ -6,7 +6,7 @@ public class Script {
   private Script() {}
 
   public static String getScript(String text) {
-    if (text == null || text.length() == 0) {
+    if (text == null || text.isEmpty()) {
       return "Generic";
     }
 
@@ -14,13 +14,7 @@ public class Script {
 
     for (int i = 0; i < text.length(); ++i) {
       String script = "" + Character.UnicodeScript.of(text.charAt(i));
-      if (script.equals("COMMON")) {
-        continue;
-      }
-      if (script.equals("UNKNOWN")) {
-        continue;
-      }
-      if (script.equals("INHERITED")) {
+      if (script.equals("COMMON") || script.equals("UNKNOWN") || script.equals("INHERITED")) {
         continue;
       }
       if (overallScript.equals("")) {
@@ -39,7 +33,7 @@ public class Script {
       }
     }
 
-    if (overallScript.equals("")) {
+    if (overallScript.isEmpty()) {
       // all characters are in COMMON or UNKNOWN or INHERITED
       return "Generic";
     }

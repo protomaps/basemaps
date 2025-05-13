@@ -10,6 +10,7 @@ import com.onthegomap.planetiler.reader.osm.OsmReader;
 import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 
@@ -229,10 +230,10 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         relation.hasTag("disputed_by") || relation.hasTag("claimed_by") ? 1 : 0;
 
       if (adminLevel == null || adminLevel > 8)
-        return null;
+        return new ArrayList<>();
       return List.of(new AdminRecord(relation.id(), adminLevel, disputed));
     }
-    return null;
+    return new ArrayList<>();
   }
 
   @Override

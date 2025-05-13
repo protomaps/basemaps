@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-public class TextEngineTest {
+class TextEngineTest {
   @Test
   void testEncode() {
     FontRegistry fontRegistry = FontRegistry.getInstance();
