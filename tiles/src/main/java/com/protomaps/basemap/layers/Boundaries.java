@@ -26,12 +26,12 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
   }
 
   public void processNe(SourceFeature sf, FeatureCollector features) {
-    var sourceLayer = sf.getSourceLayer();
-    var kind = "";
-    var adminLevel = 2;
-    var disputed = false;
-    var themeMinZoom = 0;
-    var themeMaxZoom = 0;
+    String sourceLayer = sf.getSourceLayer();
+    String kind = "";
+    int adminLevel = 2;
+    boolean disputed = false;
+    int themeMinZoom = 0;
+    int themeMaxZoom = 0;
 
     if (sourceLayer.equals("ne_10m_admin_0_boundary_lines_land") ||
       sourceLayer.equals("ne_10m_admin_0_boundary_lines_map_units") ||
@@ -132,28 +132,19 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
 
     if (sf.canBeLine() && sf.getString("min_zoom") != null && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
       var minZoom = Double.parseDouble(sf.getString("min_zoom")) - 1.0;
-
-      var line = features.line(this.name())
-        // Core Tilezen schema properties
+      int sortRank = 289 - (disputed ? 1 : 0);
+      features.line(this.name())
         .setAttr("kind", kind)
-        // Don't label lines to reduce file size (and they aren't shown in styles anyhow)
-        //.setAttr("name", sf.getString("name"))
-        //.setAttr("min_zoom", sf.getLong("min_zoom"))
         .setAttr("kind_detail", adminLevel)
-        .setAttr("sort_rank", 289)
-        // Reduce file size at low zooms
-        //.setAttr("ne_id", sf.getString("ne_id"))
+        .setAttr("sort_rank", sortRank)
+        .setSortKey(sortRank)
+        .setAttr("disputed", disputed ? true : null)
         .setAttr("brk_a3", sf.getString("brk_a3"))
         .setZoomRange(
           sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
           themeMaxZoom)
-        // Don't filter out short line segments (affects zooms 4 and 5)
         .setMinPixelSize(0)
         .setBufferPixels(8);
-
-      if (disputed) {
-        line.setAttr("disputed", disputed);
-      }
     }
   }
 
@@ -167,7 +158,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
       List<OsmReader.RelationMember<AdminRecord>> recs = sf.relationInfo(AdminRecord.class);
       if (!recs.isEmpty()) {
         OptionalInt minAdminLevel = recs.stream().mapToInt(r -> r.relation().adminLevel).min();
-        OptionalInt disputed = recs.stream().mapToInt(r -> r.relation().disputed).max();
+        OptionalInt disputedRelation = recs.stream().mapToInt(r -> r.relation().disputed).max();
 
         var kind = "";
 
@@ -212,21 +203,19 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         }
 
         if (!kind.isEmpty()) {
-          var line = features.line(this.name())
+          boolean disputed = disputedRelation.getAsInt() == 1 || sf.hasTag("boundary", "disputed", "claim") ||
+            sf.hasTag("disputed", "yes") ||
+            sf.hasTag("disputed_by") || sf.hasTag("claimed_by");
+          int sortRank = 289 - (disputed ? 1 : 0);
+          features.line(this.name())
             .setId(FeatureId.create(sf))
-            // Core Tilezen schema properties
             .setAttr("kind", kind)
             .setAttr("kind_detail", minAdminLevel.getAsInt())
-            .setAttr("sort_rank", 289)
+            .setAttr("sort_rank", sortRank)
+            .setSortKey(sortRank)
+            .setAttr("disputed", disputed ? true : null)
             .setMinPixelSize(0)
-            // Preview v4 schema (disabled)
-            //.setAttr("min_zoom", min_zoom)
             .setMinZoom(themeMinZoom);
-
-          // Core Tilezen schema properties
-          if (disputed.getAsInt() == 1) {
-            line.setAttr("disputed", true);
-          }
         }
       }
     }
@@ -235,9 +224,10 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
   @Override
   public List<OsmRelationInfo> preprocessOsmRelation(OsmElement.Relation relation) {
     if (relation.hasTag("type", "boundary") &&
-      (relation.hasTag("boundary", "administrative") || relation.hasTag("boundary", "disputed"))) {
+      relation.hasTag("boundary", "administrative", "disputed", "claim")) {
       Integer adminLevel = Parse.parseIntOrNull(relation.getString("admin_level"));
-      Integer disputed = relation.hasTag("boundary", "disputed") ? 1 : 0;
+      Integer disputed = relation.hasTag("boundary", "disputed") || relation.hasTag("disputed", "yes") ||
+        relation.hasTag("disputed_by") || relation.hasTag("claimed_by") ? 1 : 0;
 
       if (adminLevel == null || adminLevel > 8)
         return new ArrayList<>();
