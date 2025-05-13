@@ -216,7 +216,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
             // Core Tilezen schema properties
             .setAttr("kind", kind)
             .setAttr("kind_detail", minAdminLevel.getAsInt())
-            .setAttr("sort_rank", 289 - minAdminLevel.getAsInt() - disputed.getAsInt())
+            .setAttr("sort_rank", 289 - disputed.getAsInt())
             .setMinPixelSize(0)
             // Preview v4 schema (disabled)
             //.setAttr("min_zoom", min_zoom)
