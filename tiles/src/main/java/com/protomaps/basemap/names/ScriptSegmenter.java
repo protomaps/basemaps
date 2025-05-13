@@ -8,6 +8,8 @@ import java.util.Set;
 
 public class ScriptSegmenter {
 
+  private ScriptSegmenter() {}
+
   public static UnicodeScript getCharScript(char ch) {
     UnicodeScript script = Character.UnicodeScript.of(ch);
     if (script == UnicodeScript.COMMON || script == UnicodeScript.INHERITED || script == UnicodeScript.UNKNOWN) {
@@ -132,9 +134,9 @@ public class ScriptSegmenter {
         if (script == currentScript || script == null) {
           currentSegment.append(ch);
         } else {
-          if (currentSegment.length() > 0) {
+          if (!currentSegment.isEmpty()) {
             String segment = cleanEndsAndZWSP(currentSegment.toString());
-            if (segment.length() > 0) {
+            if (!segment.isEmpty()) {
               segments.add(segment);
             }
           }
@@ -145,9 +147,9 @@ public class ScriptSegmenter {
       }
     }
 
-    if (currentSegment.length() > 0) {
+    if (!currentSegment.isEmpty()) {
       String segment = cleanEndsAndZWSP(currentSegment.toString());
-      if (segment.length() > 0) {
+      if (!segment.isEmpty()) {
         segments.add(segment);
       }
     }
