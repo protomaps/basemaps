@@ -21,7 +21,7 @@ let spriteValue: string | undefined;
 
 let flavor: Flavor;
 if (flavorArg.endsWith(".json")) {
-  flavor = JSON.parse(fs.readFileSync(flavorArg, 'utf-8'));
+  flavor = JSON.parse(fs.readFileSync(flavorArg, "utf-8"));
 } else if (flavorArg.endsWith(".js") || flavorArg.endsWith(".ts")) {
   flavor = (await import(path.resolve(flavorArg))).default;
 } else {
@@ -32,7 +32,7 @@ if (flavorArg.endsWith(".json")) {
 }
 const lang = args[3];
 
-const style:StyleSpecification = {
+const style: StyleSpecification = {
   version: 8,
   sources: {
     protomaps: {
