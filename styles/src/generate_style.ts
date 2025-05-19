@@ -1,11 +1,10 @@
 #!/usr/bin/env tsx
 
-declare const process: unknown;
-
 import fs from "fs";
 import path from "path";
 import { writeFile } from "fs/promises";
 import { type Flavor, layers, namedFlavor } from "./index";
+import { type StyleSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 if (process.argv.length < 5) {
   console.error(
@@ -22,7 +21,7 @@ let spriteValue: string | undefined;
 
 let flavor: Flavor;
 if (flavorArg.endsWith(".json")) {
-  flavor = JSON.parse(fs.readFileSync(flavorArg));
+  flavor = JSON.parse(fs.readFileSync(flavorArg, 'utf-8'));
 } else if (flavorArg.endsWith(".js") || flavorArg.endsWith(".ts")) {
   flavor = (await import(path.resolve(flavorArg))).default;
 } else {
@@ -33,7 +32,7 @@ if (flavorArg.endsWith(".json")) {
 }
 const lang = args[3];
 
-const style = {
+const style:StyleSpecification = {
   version: 8,
   sources: {
     protomaps: {
