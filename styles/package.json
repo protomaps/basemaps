@@ -49,8 +49,8 @@
     "@biomejs/biome": "^1.5.3",
     "@maplibre/maplibre-gl-style-spec": "^19.3.1",
     "@types/node": "^22.15.19",
-    "tsup": "^8.4.0",
-    "typedoc": "^0.26.8",
+    "tsup": "^8.5.0",
+    "typedoc": "^0.28.4",
     "typescript": "^5.8.3"
   }
 }
