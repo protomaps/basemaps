@@ -2,9 +2,9 @@
 
 import fs from "fs";
 import path from "path";
+import { type StyleSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { writeFile } from "fs/promises";
 import { type Flavor, layers, namedFlavor } from "./index";
-import { type StyleSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 if (process.argv.length < 5) {
   console.error(

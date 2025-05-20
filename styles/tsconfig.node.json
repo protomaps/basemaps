@@ -22,5 +22,5 @@
 
     "types": ["node"]
   },
-  "include": ["src/generate_style.ts"]
+  "include": ["src/generate_style.ts", "test"]
 }
