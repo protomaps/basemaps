@@ -7,10 +7,6 @@ import {
 import { BLACK, DARK, GRAYSCALE, LIGHT, WHITE } from "../src/flavors";
 import { layers } from "../src/index";
 
-import "./base_layers.test";
-import "./custom_flavors.test";
-import "./flavors.test";
-
 const STUB: StyleSpecification = {
   version: 8,
   glyphs: "https://example.com/{fontstack}/{range}.pbf",

@@ -7,7 +7,7 @@
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "bin": {
-    "generate_style": "./src/generate_style.ts"
+    "generate_style": "./src/cli.ts"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -28,8 +28,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "generate-style": "tsx src/generate_style.ts",
-    "test": "tsx test/index.test.ts",
+    "generate_style": "tsx src/cli.ts",
+    "test": "tsx --test test/*.test.ts",
     "tsc-watch": "tsc --noEmit --watch",
     "tsc": "tsc --noEmit",
     "check": "biome check src test --javascript-formatter-indent-style=space --json-formatter-indent-style=space",
