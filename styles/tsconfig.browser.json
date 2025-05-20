@@ -21,5 +21,5 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["src"],
-  "exclude": ["src/generate_style.ts"]
+  "exclude": ["src/cli.ts", "src/generate_style.ts"]
 }
