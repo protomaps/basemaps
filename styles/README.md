@@ -14,5 +14,5 @@ npm ci
 To generate a style.json for a default flavor and language:
 
 ```
-npm run generate-style style.json https://example.com/tilejson.json light en
+npm run generate_style style.json https://example.com/tilejson.json light en
 ```
