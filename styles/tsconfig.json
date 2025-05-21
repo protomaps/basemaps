@@ -1,12 +1,7 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "lib": ["es2020", "dom"],
-    "strict": true,
-    "moduleResolution": "node",
-    "paths": {
-    },
-    "types": []
-  },
-  "include": ["src/*.ts"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.browser.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

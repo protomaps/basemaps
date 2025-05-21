@@ -20,7 +20,7 @@ jobs:
           node-version-file: 'app/.nvmrc'
       - run: echo "VITE_GIT_SHA=$(git rev-parse --short HEAD)" >> app/.env
       - name: Check styles
-        run: npm ci && npm run tsc && npm run check
+        run: npm ci && npm run tsc && npm run check && npm run test
         working-directory: styles
       - run: npm ci && npm run test && npm run check && npm run build
         working-directory: app

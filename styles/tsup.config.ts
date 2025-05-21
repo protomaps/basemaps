@@ -6,7 +6,7 @@ const baseOptions: Options = {
   skipNodeModulesBundle: true,
   sourcemap: true,
   target: "es6",
-  tsconfig: "./tsconfig.json",
+  tsconfig: "./tsconfig.browser.json",
   keepNames: true,
   cjsInterop: true,
   splitting: true,

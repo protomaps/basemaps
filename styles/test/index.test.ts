@@ -1,14 +1,13 @@
 import assert from "node:assert";
 import { test } from "node:test";
-import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
-import layers from "../src/index";
-import themes from "../src/themes";
+import {
+  type StyleSpecification,
+  validateStyleMin,
+} from "@maplibre/maplibre-gl-style-spec";
+import { BLACK, DARK, GRAYSCALE, LIGHT, WHITE } from "../src/flavors";
+import { layers } from "../src/index";
 
-import "./base_layers.test";
-import "./custom_themes.test";
-import "./themes.test";
-
-const STUB = {
+const STUB: StyleSpecification = {
   version: 8,
   glyphs: "https://example.com/{fontstack}/{range}.pbf",
   sources: {
@@ -16,11 +15,12 @@ const STUB = {
       type: "vector",
     },
   },
+  layers: [],
 };
 
 test("validate all final themes", () => {
-  for (const i in themes) {
-    STUB.layers = layers("sourcename", i);
+  for (const f of [LIGHT, DARK, WHITE, GRAYSCALE, BLACK]) {
+    STUB.layers = layers("sourcename", f, { lang: "en" });
     const errors = validateStyleMin(STUB);
     assert.deepStrictEqual([], errors);
   }

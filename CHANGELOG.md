@@ -1,4 +1,9 @@
-Main
+Styles 5.4.0
+------
+* add `generate_style` to CLI bin path
+* `generate_style` can take a `.ts` or `.js` ESM Flavor, or a `.json` Flavor
+
+Tiles 4.11.6
 ------
 - Fix disputed tag on boundaries with labels only on OSM ways [#475]
 
