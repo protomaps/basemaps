@@ -1,6 +1,6 @@
 package com.protomaps.basemap.names;
 
-// foo
+
 public class Script {
 
   private Script() {}
