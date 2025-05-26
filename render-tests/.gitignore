@@ -6,3 +6,5 @@ junit.xml
 results.html
 tests/**/diff.png
 tests/**/actual.png
+tests/**/input-sorted.osm.pbf
+merged.osm.pbf
