@@ -21,7 +21,7 @@ cd ../tiles
 mvn clean package -DskipTests
 java -Xmx2g -jar target/protomaps-basemap-HEAD-with-deps.jar \
     --osm_path=../render-tests/merged.osm.pbf \
-    --output=../render-tests/pmtiles/monaco-roads.pmtiles \
+    --output=../render-tests/pmtiles/tiles.pmtiles \
     --force \
     --download \
     --keep_unzipped \
