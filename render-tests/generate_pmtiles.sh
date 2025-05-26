@@ -1,7 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-mapfile -t input_files < <(find tests/ -type f -name "input.osm.pbf")
+target_subdir="${1:-}"
+
+if [[ -n "$target_subdir" ]]; then
+  echo "Processing only subfolder: $target_subdir"
+  mapfile -t input_files < <(find "$target_subdir" -type f -name "input.osm.pbf")
+else
+  echo "Processing all subfolders in tests/"
+  mapfile -t input_files < <(find tests/ -type f -name "input.osm.pbf")
+fi
 
 sorted_files=()
 
@@ -21,6 +29,8 @@ cd ../tiles
 mvn clean package -DskipTests
 java -Xmx2g -jar target/protomaps-basemap-HEAD-with-deps.jar \
     --osm_path=../render-tests/merged.osm.pbf \
+    --osm_water_path=../render-tests/fixtures/empty-water-polygons-split-3857.zip \
+    --osm_land_path=../render-tests/fixtures/empty-land-polygons-split-3857.zip \
     --output=../render-tests/pmtiles/tiles.pmtiles \
     --force \
     --download \
