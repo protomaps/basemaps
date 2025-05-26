@@ -65,7 +65,10 @@ cd tests/water/tunnel
 osmium tags-filter input-unfiletered.osm.pbf "nwr/waterway" -o input.osm.pbf
 ```
 
-The OpenStreetMap input data for the test is now ready. The `generate_pmtiles.sh` script will take `input.osm.pbf`, merge it with the other inputs, and generate `pmtiles/tiles.pmtiles`. Note that spatially overlapping inputs will influence eachother's outputs. 
+The OpenStreetMap input data for the test is now ready. The `generate_pmtiles.sh` script will take `input.osm.pbf`, merge it with the other inputs, and generate `pmtiles/tiles.pmtiles`. Note that spatially overlapping inputs will influence eachother's outputs. If you want to only work with a single test, use
+```
+./generate_pmtiles.sh tests/<layer-name>/<test-name>
+```
 
 Create a `tests/<layer-name>/<test-name>/style.json` file containing the center position, zoom, and pixel size. Optionally include a link to a GitHub Issue. Example: `tests/water/tunnel/style.json`:
 
