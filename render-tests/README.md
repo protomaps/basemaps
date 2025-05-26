@@ -88,13 +88,7 @@ Create a `tests/<layer-name>/<test-name>/style.json` file containing the center 
     6.088001,
     50.775976
   ],
-  "zoom": 16,
-  "sources": {
-    "protomaps": {
-      "type": "vector",
-      "url": "pmtiles://http://localhost:2900/tiles.pmtiles"
-    }
-  }
+  "zoom": 16
 }
 ```
 
