@@ -1,0 +1,23 @@
+{
+  "version": 8,
+  "metadata": {
+    "test": {
+      "width": 256,
+      "height": 256,
+      "flavor": "light",
+      "lang": "en"
+    },
+    "link": "https://github.com/protomaps/basemaps/issues/279"
+  },
+  "center": [
+    8.53999,
+    47.3669738
+  ],
+  "zoom": 19,
+  "sources": {
+    "protomaps": {
+      "type": "vector",
+      "url": "pmtiles://http://localhost:2900/tiles.pmtiles"
+    }
+  }
+}
