@@ -5,10 +5,16 @@ target_subdir="${1:-}"
 
 if [[ -n "$target_subdir" ]]; then
   echo "Processing only subfolder: $target_subdir"
-  mapfile -t input_files < <(find "$target_subdir" -type f -name "input.osm.pbf")
+  input_files=()
+  while IFS= read -r -d '' file; do
+    input_files+=("$file")
+  done < <(find "$target_subdir" -type f -name "input.osm.pbf" -print0)
 else
   echo "Processing all subfolders in tests/"
-  mapfile -t input_files < <(find tests/ -type f -name "input.osm.pbf")
+  input_files=()
+  while IFS= read -r -d '' file; do
+    input_files+=("$file")
+  done < <(find tests/ -type f -name "input.osm.pbf" -print0)
 fi
 
 sorted_files=()
