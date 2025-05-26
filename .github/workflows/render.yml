@@ -49,4 +49,3 @@ jobs:
       with:
         name: render-test-report
         path: ${{ github.workspace }}/render-tests/results.html
-
