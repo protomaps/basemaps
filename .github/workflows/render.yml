@@ -31,6 +31,10 @@ jobs:
       with:
         path: tiles/data/sources
         key: cache-data-sources
+    - name: Install Osmium Tool
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y osmium-tool
     - name: Generate PMTiles
       working-directory: render-tests
       run: ./generate_pmtiles.sh
