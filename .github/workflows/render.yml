@@ -25,6 +25,12 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version-file: 'render-tests/.nvmrc'
+    - name: Cache Data Sources
+      id: cache-data-sources
+      uses: actions/cache@v4
+      with:
+        path: tiles/data/sources
+        key: cache-data-sources
     - name: Generate PMTiles
       working-directory: render-tests
       run: ./generate_pmtiles.sh
