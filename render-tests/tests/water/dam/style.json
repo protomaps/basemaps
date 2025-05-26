@@ -13,11 +13,5 @@
     10.371135,
     51.833745
   ],
-  "zoom": 16,
-  "sources": {
-    "protomaps": {
-      "type": "vector",
-      "url": "pmtiles://http://localhost:2900/tiles.pmtiles"
-    }
-  }
+  "zoom": 16
 }
