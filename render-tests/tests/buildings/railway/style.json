@@ -4,7 +4,7 @@
     "test": {
       "width": 256,
       "height": 256,
-      "flavor": "light",
+      "flavor": "black",
       "lang": "en"
     },
     "link": "https://github.com/protomaps/basemaps/issues/249"
