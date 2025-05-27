@@ -1,0 +1,17 @@
+{
+  "version": 8,
+  "metadata": {
+    "test": {
+      "width": 256,
+      "height": 256,
+      "flavor": "light",
+      "lang": "en"
+    },
+    "link": "https://github.com/protomaps/basemaps/issues/210"
+  },
+  "center": [
+    12.936,
+    41.971
+  ],
+  "zoom": 5
+}

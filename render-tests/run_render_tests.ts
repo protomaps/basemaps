@@ -1,12 +1,12 @@
-import path, {dirname, resolve} from 'path';
-import fs from 'fs';
-import {PNG} from 'pngjs';
+import path, { dirname, resolve } from 'path';
+import fs, { promises as fsPromises } from 'fs';
+import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
-import {fileURLToPath} from 'url';
-import {globSync} from 'glob';
-import puppeteer, {type Page, type Browser} from 'puppeteer';
-import type {PointLike, StyleSpecification} from 'maplibre-gl';
-import junitReportBuilder, {type TestSuite} from 'junit-report-builder';
+import { fileURLToPath } from 'url';
+import { globSync } from 'glob';
+import puppeteer, { type Page, type Browser } from 'puppeteer';
+import type { PointLike, StyleSpecification } from 'maplibre-gl';
+import junitReportBuilder, { type TestSuite } from 'junit-report-builder';
 import type * as maplibreglModule from 'maplibre-gl';
 import * as pmtiles from 'pmtiles';
 import express from 'express';
@@ -69,7 +69,7 @@ type RenderOptions = {
 };
 
 type StyleWithTestData = StyleSpecification & {
-    metadata : {
+    metadata: {
         test: TestData;
     };
 };
@@ -133,7 +133,7 @@ function compareRenderResults(directory: string, testData: TestData, data: Uint8
 
     const width = Math.floor(testData.reportWidth ?? testData.width * testData.pixelRatio);
     const height = Math.floor(testData.reportHeight ?? testData.height * testData.pixelRatio);
-    const actualImg = new PNG({width, height});
+    const actualImg = new PNG({ width, height });
 
     // PNG data must be unassociated (not premultiplied)
     for (let i = 0; i < data.length; i++) {
@@ -145,7 +145,7 @@ function compareRenderResults(directory: string, testData: TestData, data: Uint8
         }
     }
     actualImg.data = data as any;
-    const actualBuf = PNG.sync.write(actualImg, {filterType: 4});
+    const actualBuf = PNG.sync.write(actualImg, { filterType: 4 });
     testData.actual = actualBuf.toString('base64');
 
     // there may be multiple expected images, covering different platforms
@@ -167,14 +167,14 @@ function compareRenderResults(directory: string, testData: TestData, data: Uint8
     for (const path of expectedPaths) {
         const expectedBuf = fs.readFileSync(path);
         const expectedImg = PNG.sync.read(expectedBuf);
-        const diffImg = new PNG({width, height});
+        const diffImg = new PNG({ width, height });
         if (!testData.expected) {
             testData.expected = expectedBuf.toString('base64'); // default expected image
         }
 
         const diff = pixelmatch(
             actualImg.data, expectedImg.data, diffImg.data,
-            width, height, {threshold: testData.threshold}) / (width * height);
+            width, height, { threshold: testData.threshold }) / (width * height);
 
         if (diff < minDiff) {
             minDiff = diff;
@@ -184,7 +184,7 @@ function compareRenderResults(directory: string, testData: TestData, data: Uint8
     }
 
     if (minDiffImg) {
-        const diffBuf = PNG.sync.write(minDiffImg, {filterType: 4});
+        const diffBuf = PNG.sync.write(minDiffImg, { filterType: 4 });
         fs.writeFileSync(diffPath, diffBuf);
         testData.diff = diffBuf.toString('base64');
         testData.expected = minExpectedBuf.toString('base64');
@@ -210,7 +210,7 @@ function compareRenderResults(directory: string, testData: TestData, data: Uint8
 function getTestStyles(options: RenderOptions, directory: string): StyleWithTestData[] {
     const tests = options.tests || [];
 
-    const sequence = globSync('**/style.json', {cwd: directory})
+    const sequence = globSync('**/style.json', { cwd: directory })
         .map(fixture => {
             const id = path.dirname(fixture);
             const style = JSON.parse(fs.readFileSync(path.join(directory, fixture), 'utf8')) as StyleWithTestData;
@@ -232,7 +232,12 @@ function getTestStyles(options: RenderOptions, directory: string): StyleWithTest
             style.layers = layers("protomaps", namedFlavor(style.metadata.test.flavor), { lang: style.metadata.test.lang });
             style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v4/${style.metadata.test.flavor}`;
             style.glyphs = "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf";
-
+            style.sources = {
+                "protomaps": {
+                    "type": "vector",
+                    "url": "pmtiles://http://localhost:2900/tiles.pmtiles"
+                }
+            };
             return style;
         })
         .filter(style => {
@@ -262,7 +267,7 @@ async function getImageFromStyle(styleForTest: StyleWithTestData, page: Page): P
     const width = styleForTest.metadata.test.width;
     const height = styleForTest.metadata.test.height;
 
-    await page.setViewport({width, height, deviceScaleFactor: 2});
+    await page.setViewport({ width, height, deviceScaleFactor: 2 });
 
     await page.setContent(`
 <!DOCTYPE html>
@@ -309,7 +314,7 @@ async function getImageFromStyle(styleForTest: StyleWithTestData, page: Page): P
                 attributionControl: false,
                 maxPitch: options.maxPitch,
                 pixelRatio: options.pixelRatio,
-                canvasContextAttributes: {preserveDrawingBuffer: true, powerPreference: 'default'},
+                canvasContextAttributes: { preserveDrawingBuffer: true, powerPreference: 'default' },
                 fadeDuration: options.fadeDuration || 0,
                 localIdeographFontFamily: options.localIdeographFontFamily || false as any,
                 crossSourceCollisions: typeof options.crossSourceCollisions === 'undefined' ? true : options.crossSourceCollisions,
@@ -456,7 +461,7 @@ function applyDebugParameter(options: RenderOptions, page: Page) {
             console.log(`${message.type().substring(0, 3).toUpperCase()} ${messages.filter(Boolean)}`);
         });
 
-        page.on('pageerror', ({message}) => console.error(message));
+        page.on('pageerror', ({ message }) => console.error(message));
 
         page.on('response', response =>
             console.log(`${response.status()} ${response.url()}`));
@@ -488,8 +493,8 @@ async function runTests(page: Page, testStyles: StyleWithTestData[], directory: 
 async function createPageAndStart(browser: Browser, testStyles: StyleWithTestData[], directory: string, options: RenderOptions) {
     const page = await browser.newPage();
     applyDebugParameter(options, page);
-    await page.addScriptTag({path: 'node_modules/maplibre-gl/dist/maplibre-gl-dev.js'});
-    await page.addScriptTag({path: 'node_modules/pmtiles/dist/pmtiles.js'});
+    await page.addScriptTag({ path: 'node_modules/maplibre-gl/dist/maplibre-gl-dev.js' });
+    await page.addScriptTag({ path: 'node_modules/pmtiles/dist/pmtiles.js' });
     await runTests(page, testStyles, directory);
     return page;
 }
@@ -528,12 +533,20 @@ async function executeRenderTests() {
             '--enable-webgl',
             '--no-sandbox',
             '--disable-web-security'
-        ]});
+        ]
+    });
 
+    const pmtilesFilePath = 'pmtiles/tiles.pmtiles';
+    try {
+        await fsPromises.access(pmtilesFilePath);
+    }
+    catch {
+        console.error(`The PMTiles file "${pmtilesFilePath}" does not exist. Try running "./generate_pmtiles.sh" first.`);
+        process.exit(1);
+    }
     const pmtilesServerApp = express();
     pmtilesServerApp.use(cors());
     pmtilesServerApp.use(express.static('pmtiles'));
-
     await new Promise<void>((resolve) => pmtilesServerApp.listen(2900, '0.0.0.0', resolve));
 
     const directory = path.join(__dirname);

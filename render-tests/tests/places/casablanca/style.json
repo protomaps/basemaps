@@ -1,0 +1,15 @@
+{
+  "version": 8,
+  "metadata": {
+    "test": {
+      "width": 256,
+      "height": 256,
+      "flavor": "light",
+      "lang": "ar"
+    }
+  },
+  "center": [
+    -7.599, 33.611
+  ],
+  "zoom": 7
+}
