@@ -1411,7 +1411,11 @@ export function labels_layers(
       source: source,
       "source-layer": "water",
       minzoom: 13,
-      filter: ["in", "kind", "river", "stream"],
+      filter: [
+        "all",
+        ["in", "kind", "river", "stream"],
+        ["!has", "tunnel"]
+      ],
       layout: {
         "symbol-placement": "line",
         "text-font": [t.italic || "Noto Sans Italic"],
