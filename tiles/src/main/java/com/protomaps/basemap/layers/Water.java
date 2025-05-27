@@ -202,6 +202,7 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
           name:en
           North Sea
           Alboran Sea
+          The Red Sea
         """),
       use("kind", null)
     ),
