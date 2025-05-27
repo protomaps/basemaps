@@ -86,16 +86,7 @@ export function nolabels_layers(
           [
             "in",
             ["get", "kind"],
-            [
-              "literal",
-              [
-                "park",
-                "cemetery",
-                "golf_course",
-                "wood",
-                "forest",
-              ],
-            ],
+            ["literal", ["park", "cemetery", "golf_course", "wood", "forest"]],
           ],
           t.park_b,
           ["in", ["get", "kind"], ["literal", ["scrub", "grassland", "grass"]]],
