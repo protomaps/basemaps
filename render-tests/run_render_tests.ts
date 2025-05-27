@@ -1,5 +1,5 @@
 import path, { dirname, resolve } from 'path';
-import fs from 'fs';
+import fs, { promises as fsPromises } from 'fs';
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 import { fileURLToPath } from 'url';
@@ -536,10 +536,17 @@ async function executeRenderTests() {
         ]
     });
 
+    const pmtilesFilePath = 'pmtiles/tiles.pmtiles';
+    try {
+        await fsPromises.access(pmtilesFilePath);
+    }
+    catch {
+        console.error(`The PMTiles file "${pmtilesFilePath}" does not exist. Try running "./generate_pmtiles.sh" first.`);
+        process.exit(1);
+    }
     const pmtilesServerApp = express();
     pmtilesServerApp.use(cors());
     pmtilesServerApp.use(express.static('pmtiles'));
-
     await new Promise<void>((resolve) => pmtilesServerApp.listen(2900, '0.0.0.0', resolve));
 
     const directory = path.join(__dirname);
