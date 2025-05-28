@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 CHANGED_FILES=$(git diff --name-only $1...HEAD)
 echo "$CHANGED_FILES"
