@@ -31,4 +31,6 @@ jobs:
       working-directory: tiles
       run: mvn spotless:check
     - name: Check for required version bump
-      run: sh .github/workflows/check-version-bump.sh
+      run: |
+        git fetch origin main:main
+        ./github/workflows/check-version-bump.sh
