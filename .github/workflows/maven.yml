@@ -31,4 +31,4 @@ jobs:
       working-directory: tiles
       run: mvn spotless:check
     - name: Check for required version bump
-      run: sh .github/workflows/check-version-bump.sh {{ github.event.pull_request.base.ref }}
+      run: sh .github/workflows/check-version-bump.sh
