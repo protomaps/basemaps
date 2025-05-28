@@ -355,6 +355,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     int minZoomShieldText = getInteger(sf, matches, "minZoomShieldText", 14);
     int minZoomNames = getInteger(sf, matches, "minZoomNames", 14);
 
+    if (sf.hasTag("access", "private", "no")) {
+      minZoom = Math.max(minZoom, 15);
+    }
+
     var feat = features.line("roads")
       .setId(FeatureId.create(sf))
       .setAttr("kind", kind)
@@ -364,6 +368,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setAttrWithMinzoom("shield_text_length", shieldTextLength, minZoomShieldText)
       .setAttrWithMinzoom("network", shield.network(), minZoomShieldText)
       .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
+      .setAttrWithMinzoom("access", sf.getTag("access"), 15)
       // `highway` is a temporary attribute that gets removed in the post-process step
       .setAttr("highway", highway)
       .setAttr("sort_rank", 400)

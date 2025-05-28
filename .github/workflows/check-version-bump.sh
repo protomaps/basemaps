@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-CHANGED_FILES=$(git diff --name-only $1...HEAD)
+CHANGED_FILES=$(git diff --name-only HEAD..main)
 echo "$CHANGED_FILES"
 TILES_SRC_CHANGED=$(echo "$CHANGED_FILES" | grep '^tiles/src/main' || true)
 VERSION_CHANGED=$(echo "$CHANGED_FILES" | grep '^tiles/src/main/java/com/protomaps/basemap/Basemap.java$' || true)
