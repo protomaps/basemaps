@@ -3,6 +3,7 @@
     "base":["#888888","#ffffff"]
   },
   "icons": {
-    "townspot":"base"
+    "townspot":"base",
+    "capital":"base"
   }
 }

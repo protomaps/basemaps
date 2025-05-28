@@ -146,6 +146,10 @@ fn extract_groups_from_svg(
                         substr = "townspot".to_string();
                     }
 
+                    if substr == "capital-s" {
+                        substr = "capital".to_string();
+                    }
+
                     if !shader.icons.contains_key(&substr) {
                         continue;
                     }

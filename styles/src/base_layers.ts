@@ -1770,7 +1770,13 @@ export function labels_layers(
       "source-layer": "places",
       filter: ["==", "kind", "locality"],
       layout: {
-        "icon-image": ["step", ["zoom"], "townspot", 8, ""],
+        "icon-image": [
+          "step",
+          ["zoom"],
+          ["case", ["==", ["get", "capital"], "yes"], "capital", "townspot"],
+          8,
+          "",
+        ],
         "icon-size": 0.7,
         "text-field": get_multiline_name(
           lang,
