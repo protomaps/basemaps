@@ -1663,7 +1663,7 @@ export function labels_layers(
       type: "symbol",
       source: source,
       "source-layer": "places",
-      filter: ["==", "kind", "neighbourhood"],
+      filter: ["in", "kind", "neighbourhood", "macrohood"],
       layout: {
         "symbol-sort-key": [
           "case",

@@ -1,7 +1,15 @@
+Tiles 4.11.7
+------
+- Render access=no,private roads only at zoom 15 [#491]()
+
+Styles 5.4.1
+------
+- Show macrohoods [#487]
+
 Styles 5.4.0
 ------
-* add `generate_style` to CLI bin path
-* `generate_style` can take a `.ts` or `.js` ESM Flavor, or a `.json` Flavor
+- add `generate_style` to CLI bin path
+- `generate_style` can take a `.ts` or `.js` ESM Flavor, or a `.json` Flavor
 
 Tiles 4.11.6
 ------
