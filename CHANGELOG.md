@@ -1,6 +1,6 @@
 Tiles 4.11.7
 ------
-- Render access=no,private roads only at zoom 15 [#491]()
+- Render access=no,private roads only at zoom 15 [#491]
 
 Styles 5.4.1
 ------
