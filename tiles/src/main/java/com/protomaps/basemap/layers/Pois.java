@@ -454,7 +454,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           // Extra OSM tags for certain kinds of places
           // These are duplicate of what's in the kind_detail tag
           .setZoomRange(Math.min(15, minZoom), 15);
-          // .setBufferPixels(128);
 
         // Core Tilezen schema properties
         if (!kindDetail.isEmpty()) {
@@ -469,11 +468,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
         // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
         // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-        polyLabelPosition.setPointLabelGridSizeAndLimit(14, 10, 1);
-
-        // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
-        // label grid squares will be the consistent between adjacent tiles
-        polyLabelPosition.setBufferPixelOverrides(ZoomFunction.maxZoom(14, 32));
+        polyLabelPosition.setPointLabelGridSizeAndLimit(14, 16, 1);
 
       } else if (sf.isPoint()) {
         var pointFeature = features.point(this.name())
@@ -489,7 +484,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
           .setZoomRange(Math.min(minZoom, 15), 15);
-          // .setBufferPixels(128);
 
         // Core Tilezen schema properties
         if (!kindDetail.isEmpty()) {
@@ -535,11 +529,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
         // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
         // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-        pointFeature.setPointLabelGridSizeAndLimit(14, 10, 1);
-
-        // and also whenever you set a label grid size limit, make sure you increase the buffer size so no
-        // label grid squares will be the consistent between adjacent tiles
-        pointFeature.setBufferPixelOverrides(ZoomFunction.maxZoom(14, 32));
+        pointFeature.setPointLabelGridSizeAndLimit(14, 16, 1);
       }
     }
   }
