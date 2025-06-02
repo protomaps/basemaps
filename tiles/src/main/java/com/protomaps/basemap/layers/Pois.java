@@ -453,8 +453,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           .setAttr("elevation", sf.getString("ele"))
           // Extra OSM tags for certain kinds of places
           // These are duplicate of what's in the kind_detail tag
-          .setZoomRange(Math.min(15, minZoom), 15)
-          .setBufferPixels(128);
+          .setZoomRange(Math.min(15, minZoom), 15);
+          // .setBufferPixels(128);
 
         // Core Tilezen schema properties
         if (!kindDetail.isEmpty()) {
@@ -488,8 +488,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           // Core OSM tags for different kinds of places
           // Special airport only tag (to indicate if it's an airport with regular commercial flights)
           .setAttr("iata", sf.getString("iata"))
-          .setZoomRange(Math.min(minZoom, 15), 15)
-          .setBufferPixels(128);
+          .setZoomRange(Math.min(minZoom, 15), 15);
+          // .setBufferPixels(128);
 
         // Core Tilezen schema properties
         if (!kindDetail.isEmpty()) {
