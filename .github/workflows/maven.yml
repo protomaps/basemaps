@@ -21,7 +21,6 @@ jobs:
     - name: Check for required version bump
       run: |
         git fetch origin main:main
-        ls -lah
         .github/workflows/check-version-bump.sh
     - name: Set up JDK 21
       uses: actions/setup-java@v3
