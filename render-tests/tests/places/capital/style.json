@@ -4,14 +4,14 @@
     "test": {
       "width": 256,
       "height": 256,
-      "flavor": "black",
+      "flavor": "light",
       "lang": "en"
     },
-    "link": "https://github.com/protomaps/basemaps/issues/249"
+    "link": "https://github.com/protomaps/basemaps/issues/439"
   },
   "center": [
-    5.904018,
-    51.984506
+    8.073,
+    47.021
   ],
-  "zoom": 18
+  "zoom": 6
 }

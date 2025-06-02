@@ -225,7 +225,7 @@ function getTestStyles(options: RenderOptions, directory: string): StyleWithTest
                 lang: 'en',
                 recycleMap: options.recycleMap || false,
                 allowed: 0.00025,
-                threshold: 0.1285,
+                threshold: 0.05,
                 ...style.metadata.test
             };
 
