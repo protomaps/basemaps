@@ -1,8 +1,8 @@
 ## Background
 
-There is no one-size-fits-all map. The **Protomaps Basemaps project is designed to offer an 80/20 solution**: Defaults that are appropriate for most general-purpose mapmaking use cases. The remaining use cases can be addressed by forks or more specialized map tile systems.
+There is no one-size-fits-all map. The **Protomaps Basemaps project is designed to offer an 80/20 solution**: a default cartographic product that's appropriate for most general-purpose mapping use cases. The remaining use cases can be addressed by forks or more specialized map tile systems.
 
-The tileset defined in `tiles` is designed to primarily work with the MapLibre GL styles in `styles`, and vice versa. All features included in the tileset ought to be visualized in the default styles, and the styles should not attempt to visualize any layers or features not included in the tiles. Visual customizations of the map, such as colors, are primarily controlled through `Flavor` TypeScript objects.
+The tileset defined in `tiles` is designed to primarily work with the [MapLibre GL styles](https://maplibre.org/maplibre-style-spec/) in `styles`, and vice versa. All features included in the tileset ought to be visualized in the default styles, and the styles should not attempt to visualize any layers or features not included in the tiles. Visual customizations of the map, such as colors, are primarily controlled through [`Flavor` TypeScript objects](https://maps.protomaps.com/typedoc/interfaces/Flavor.html).
 
 It is possible to build custom MapLibre GL styles (e.g. via the [Maputnik](http://maputnik.github.io) editor or hand-coded JSON) without using the `Flavor` interface, but **no special affordances or additions are made for custom styles.**
 
