@@ -95,13 +95,10 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
           cemetery
           commercial
           grass
-          farmland
-          residential
           military
           village_green
           allotments
           forest
-          meadow
           grass
         """),
       use("kind", fromTag("landuse"))
@@ -132,8 +129,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
           grassland
           scrub
           sand
-          wetland
-          bare_rock
         """),
       use("kind", fromTag("natural"))
     ),
@@ -166,10 +161,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
     rule(
       with("landuse", "brownfield"),
       use("kind", "industrial")
-    ),
-    rule(
-      with("landuse", "farmyard", "orchard"),
-      use("kind", "farmland")
     ),
     rule(
       with("man_made", "bridge"),
