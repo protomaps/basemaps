@@ -1,6 +1,14 @@
+Tiles 4.11.9
+------
+- Remove extra large buffer at z15 POIs to reduce tile size [#493]
+
+Tiles 4.11.8
+------
+- Fix aeroway polygons [#496]
+
 Tiles 4.11.7
 ------
-- Render access=no,private roads only at zoom 15 [#491]()
+- Render access=no,private roads only at zoom 15 [#491]
 
 Styles 5.4.1
 ------
