@@ -177,7 +177,7 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
     ),
     rule(
       with("area:aeroway", "taxiway", "runway"),
-      use("kind", "other")
+      use("kind", fromTag("area:aeroway"))
     ),
     rule(
       with("place", "neighbourhood"),
