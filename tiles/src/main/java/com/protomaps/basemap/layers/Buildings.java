@@ -70,23 +70,22 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
       (sf.hasTag("building:part") && !sf.hasTag("building:part", "no")))) {
 
       var height = parseHeight(sf.getString(HEIGHT_KEY), sf.getString("building:levels"), sf.getString(MIN_HEIGHT_KEY));
-      Integer minZoom = 11;
+      Integer minZoom = 15;
       String kind = "building";
 
       if (sf.hasTag("building:part")) {
         kind = "building_part";
-        minZoom = 14;
+        // minZoom = 14;
       }
 
       var feature = features.polygon(this.name())
-        .setId(FeatureId.create(sf))
+        .setId(1)
         // Core Tilezen schema properties
         .setAttr("kind", kind)
         // Core OSM tags for different kinds of places
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 13)
         // NOTE: Height is quantized by zoom in a post-process step
         .setAttr(HEIGHT_KEY, height.height())
-        .setAttr("sort_rank", 400)
         .setZoomRange(minZoom, 15);
 
       if (kind.equals("building_part")) {
@@ -105,7 +104,7 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
       }
       if (housenumberFeature != null) {
         housenumberFeature
-          .setId(FeatureId.create(sf))
+          .setId(1)
           .setAttr("addr_housenumber", sf.getString("addr:housenumber"))
           .setAttr("addr_street", sf.getString("addr:street"))
           .setAttr("kind", "address")
