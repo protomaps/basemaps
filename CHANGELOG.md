@@ -1,3 +1,7 @@
+Tiles 4.11.9
+------
+- Remove extra large buffer at z15 POIs to reduce tile size [#493]
+
 Tiles 4.11.8
 ------
 - Fix aeroway polygons [#496]
