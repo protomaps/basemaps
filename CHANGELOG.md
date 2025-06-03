@@ -1,3 +1,7 @@
+Tiles 4.11.8
+------
+- Fix aeroway polygons [#496]
+
 Tiles 4.11.7
 ------
 - Render access=no,private roads only at zoom 15 [#491]
