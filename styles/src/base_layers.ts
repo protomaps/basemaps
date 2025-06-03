@@ -251,16 +251,6 @@ export function nolabels_layers(
       },
     },
     {
-      id: "unused_landuse",
-      type: "fill",
-      source: source,
-      "source-layer": "landuse",
-      filter: ["in", "kind", "bare_rock"],
-      paint: {
-        "fill-color": "red",
-      },
-    },
-    {
       id: "water",
       type: "fill",
       filter: ["==", "$type", "Polygon"],
