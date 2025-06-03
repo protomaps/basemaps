@@ -39,6 +39,16 @@ class LanduseTest extends LayerTest {
       List.of(Map.of("kind", "runway")),
       processWith("aeroway", "runway")
     );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "runway")),
+      processWith("area:aeroway", "runway")
+    );
+
+    assertFeatures(15,
+      List.of(Map.of("kind", "taxiway")),
+      processWith("area:aeroway", "taxiway")
+    );
   }
 
   @Test
