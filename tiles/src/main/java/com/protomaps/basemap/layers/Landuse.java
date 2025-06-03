@@ -239,12 +239,9 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       String kind = getString(sf, matches, "kind", "other");
 
       features.polygon(this.name())
-        .setId(FeatureId.create(sf))
+        .setId(1)
         // Core Tilezen schema properties
         .setAttr("kind", kind)
-        .setAttr("sort_rank", 189)
-        // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
-        //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)
         .setMinPixelSize(2.0);
 
@@ -260,20 +257,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    if (zoom == 15)
-      return items;
-    int minArea = 400 / (4096 * 4096) * (256 * 256);
-    if (zoom == 6)
-      minArea = 600 / (4096 * 4096) * (256 * 256);
-    else if (zoom <= 5)
-      minArea = 800 / (4096 * 4096) * (256 * 256);
-    items = Area.filterArea(items, minArea);
-
-    // We only care about park boundaries inside groups of adjacent parks at higher zooms when they are labeled
-    // so at lower zooms we merge them to reduce file size
-    if (zoom <= 6) {
-      return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
-    }
-    return items;
+    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
   }
 }
