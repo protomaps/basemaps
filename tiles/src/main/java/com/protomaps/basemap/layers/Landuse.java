@@ -9,18 +9,16 @@ import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
-import com.onthegomap.planetiler.geo.VWSimplifier;
-import com.onthegomap.planetiler.geo.DouglasPeuckerSimplifier;
-import com.onthegomap.planetiler.geo.MidpointSmoother;
-import com.onthegomap.planetiler.geo.DualMidpointSmoother;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
+import com.onthegomap.planetiler.geo.DouglasPeuckerSimplifier;
+import com.onthegomap.planetiler.geo.DualMidpointSmoother;
 import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.MidpointSmoother;
+import com.onthegomap.planetiler.geo.VWSimplifier;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.stats.Stats;
-import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
 import java.util.Map;
 
@@ -279,6 +277,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
     if (zoom < 15) {
       return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5, Stats.inMemory(), vw.andThen(ms));
     }
-    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
+    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5, Stats.inMemory(), vw);
   }
 }
