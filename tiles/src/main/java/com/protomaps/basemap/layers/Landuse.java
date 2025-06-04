@@ -12,8 +12,6 @@ import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
-import com.onthegomap.planetiler.geo.DouglasPeuckerSimplifier;
-import com.onthegomap.planetiler.geo.DualMidpointSmoother;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.geo.MidpointSmoother;
 import com.onthegomap.planetiler.geo.VWSimplifier;
@@ -26,10 +24,8 @@ import java.util.Map;
 @SuppressWarnings("java:S1192")
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
-  private static final DouglasPeuckerSimplifier dp = new DouglasPeuckerSimplifier(10 * 0.0625);
   private static final VWSimplifier vw = new VWSimplifier().setTolerance(15 * 0.0625);
   private static final MidpointSmoother ms = new MidpointSmoother(0.5);
-  private static final DualMidpointSmoother dms = DualMidpointSmoother.chaikin(1);
 
   private static final String US_FOREST_OPERATORS = """
       operator
