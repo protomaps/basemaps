@@ -9,11 +9,16 @@ import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.FeatureMerge;
+import com.onthegomap.planetiler.geo.VWSimplifier;
+import com.onthegomap.planetiler.geo.DouglasPeuckerSimplifier;
+import com.onthegomap.planetiler.geo.MidpointSmoother;
+import com.onthegomap.planetiler.geo.DualMidpointSmoother;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.stats.Stats;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.postprocess.Area;
 import java.util.List;
@@ -22,6 +27,11 @@ import java.util.Map;
 
 @SuppressWarnings("java:S1192")
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
+
+  private static final DouglasPeuckerSimplifier dp = new DouglasPeuckerSimplifier(10 * 0.0625);
+  private static final VWSimplifier vw = new VWSimplifier().setTolerance(15 * 0.0625);
+  private static final MidpointSmoother ms = new MidpointSmoother(0.5);
+  private static final DualMidpointSmoother dms = DualMidpointSmoother.chaikin(1);
 
   private static final String US_FOREST_OPERATORS = """
       operator
@@ -249,13 +259,10 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
       features.polygon(this.name())
         .setId(1)
-        // Core Tilezen schema properties
         .setAttr("kind", kind)
-        // .setAttr("sort_rank", 189)
-        // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
-        //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)
-        .setMinPixelSize(2.0);
+        .setPixelTolerance(0.0)
+        .setMinPixelSize(1.0);
 
     }
   }
@@ -269,6 +276,9 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
+    if (zoom < 15) {
+      return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5, Stats.inMemory(), vw.andThen(ms));
+    }
     return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
   }
 }
