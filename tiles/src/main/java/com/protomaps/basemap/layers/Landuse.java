@@ -13,9 +13,9 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.VWSimplifier;
 import com.onthegomap.planetiler.reader.SourceFeature;
-import com.protomaps.basemap.feature.FeatureId;
-import com.protomaps.basemap.postprocess.Area;
+import com.onthegomap.planetiler.stats.Stats;
 import java.util.List;
 import java.util.Map;
 
@@ -248,14 +248,11 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       String kind = getString(sf, matches, "kind", "other");
 
       features.polygon(this.name())
-        .setId(FeatureId.create(sf))
-        // Core Tilezen schema properties
+        .setId(1)
         .setAttr("kind", kind)
-        .setAttr("sort_rank", 189)
-        // NOTE: (nvkelso 20230622) Consider zoom 5 instead...
-        //       But to match Protomaps v2 we do earlier
         .setZoomRange(2, 15)
-        .setMinPixelSize(2.0);
+        .setPixelTolerance(0.0)
+        .setMinPixelSize(1.0);
 
     }
   }
@@ -269,20 +266,13 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    if (zoom == 15)
-      return items;
-    int minArea = 400 / (4096 * 4096) * (256 * 256);
-    if (zoom == 6)
-      minArea = 600 / (4096 * 4096) * (256 * 256);
-    else if (zoom <= 5)
-      minArea = 800 / (4096 * 4096) * (256 * 256);
-    items = Area.filterArea(items, minArea);
-
-    // We only care about park boundaries inside groups of adjacent parks at higher zooms when they are labeled
-    // so at lower zooms we merge them to reduce file size
-    if (zoom <= 6) {
-      return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5);
-    }
-    return items;
+    double resolution = 0.0625;
+    double tolerance = switch (zoom) {
+      case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 -> 5 * resolution;
+      case 11 -> 10 * resolution;
+      default -> 15 * resolution;
+    };
+    var simplifier = new VWSimplifier().setTolerance(tolerance);
+    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5, Stats.inMemory(), simplifier);
   }
 }

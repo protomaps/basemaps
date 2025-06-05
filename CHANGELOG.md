@@ -1,3 +1,7 @@
+Tiles 4.11.10
+------
+- Landuse geometry simplification [#500]
+
 Tiles 4.11.9
 ------
 - Remove extra large buffer at z15 POIs to reduce tile size [#493]
