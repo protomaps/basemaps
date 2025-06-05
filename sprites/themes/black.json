@@ -1,9 +1,11 @@
 {
   "themes": {
-    "base":["#aaaaaa","#000000"]
+    "base":["#aaaaaa","#000000"],
+    "arrow":["#666666","#666666"]
   },
   "icons": {
     "townspot":"base",
-    "capital":"base"
+    "capital":"base",
+    "arrow":"arrow"
   }
 }

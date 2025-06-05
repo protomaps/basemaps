@@ -1430,6 +1430,21 @@ export function labels_layers(
       },
     },
     {
+      id: "roads_oneway",
+      type: "symbol",
+      source: source,
+      "source-layer": "roads",
+      minzoom: 16,
+      filter: ["==", ["get", "oneway"], "yes"],
+      layout: {
+        "symbol-placement": "line",
+        "icon-image": "arrow",
+        "icon-rotate": 90,
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 16, 0.3, 18, 0.5],
+        "symbol-spacing": 100
+      }
+    },
+    {
       id: "roads_labels_minor",
       type: "symbol",
       source: source,

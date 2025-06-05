@@ -1,6 +1,7 @@
 {
   "themes": {
     "base":["#555555","#ffffff"],
+    "arrow":["#cccccc","#cccccc"],
     "green":["#20834D", "#DEF7EA"],
     "lapis": ["#315BCF", "#DFEAF4"],
     "slategray": ["#6A5B8F", "#E1F2FF"]
@@ -8,6 +9,7 @@
   "icons": {
     "townspot":"base",
     "capital":"base",
+    "arrow": "arrow",
     "beach":"green",
     "forest":"green",
     "marina":"green",
