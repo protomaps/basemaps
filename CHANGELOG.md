@@ -1,3 +1,7 @@
+Tiles 4.14.12
+------
+- landuse geometry simplification via @wipfli [#500]
+
 Tiles 4.14.11
 ------
 - fix missing `elevation` values and numeric types for peaks via @candux [#619]
