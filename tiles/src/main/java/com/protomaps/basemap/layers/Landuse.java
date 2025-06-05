@@ -13,7 +13,6 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeometryException;
-import com.onthegomap.planetiler.geo.MidpointSmoother;
 import com.onthegomap.planetiler.geo.VWSimplifier;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.stats.Stats;
@@ -23,9 +22,6 @@ import java.util.Map;
 
 @SuppressWarnings("java:S1192")
 public class Landuse implements ForwardingProfile.LayerPostProcessor {
-
-  private static final VWSimplifier vw = new VWSimplifier().setTolerance(15 * 0.0625);
-  private static final MidpointSmoother ms = new MidpointSmoother(0.5);
 
   private static final String US_FOREST_OPERATORS = """
       operator
@@ -270,9 +266,13 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
 
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
-    if (zoom < 15) {
-      return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5, Stats.inMemory(), vw.andThen(ms));
-    }
-    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5, Stats.inMemory(), vw);
+    double resolution = 0.0625;
+    double tolerance = switch (zoom) {
+      case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 -> 5 * resolution;
+      case 11 -> 10 * resolution;
+      default -> 15 * resolution;
+    };
+    var simplifier = new VWSimplifier().setTolerance(tolerance);
+    return FeatureMerge.mergeNearbyPolygons(items, 3.125, 3.125, 0.5, 0.5, Stats.inMemory(), simplifier);
   }
 }
