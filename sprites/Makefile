@@ -1,6 +1,6 @@
 all:
-	./target/release/spritegen refill.svg themes/light.json dist/light
-	./target/release/spritegen refill.svg themes/dark.json dist/dark
-	./target/release/spritegen refill.svg themes/white.json dist/white
-	./target/release/spritegen refill.svg themes/grayscale.json dist/grayscale
-	./target/release/spritegen refill.svg themes/black.json dist/black
+	./target/release/spritegen refill.svg flavors/light.json dist/light
+	./target/release/spritegen refill.svg flavors/dark.json dist/dark
+	./target/release/spritegen refill.svg flavors/white.json dist/white
+	./target/release/spritegen refill.svg flavors/grayscale.json dist/grayscale
+	./target/release/spritegen refill.svg flavors/black.json dist/black
