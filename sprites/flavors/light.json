@@ -1,5 +1,5 @@
 {
-  "themes": {
+  "flavors": {
     "base":["#555555","#ffffff"],
     "arrow":["#cccccc","#cccccc"],
     "green":["#20834D", "#DEF7EA"],

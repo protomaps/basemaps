@@ -1,7 +1,7 @@
 {
-  "themes": {
-    "base":["#aaaaaa","#000000"],
-    "arrow":["#666666","#666666"]
+  "flavors": {
+    "base":["#888888","#ffffff"],
+    "arrow":["#bbbbbb","#bbbbbb"]
   },
   "icons": {
     "townspot":"base",

@@ -1440,7 +1440,6 @@ export function labels_layers(
         "symbol-placement": "line",
         "icon-image": "arrow",
         "icon-rotate": 90,
-        "icon-size": ["interpolate", ["linear"], ["zoom"], 16, 0.3, 18, 0.5],
         "symbol-spacing": 100
       }
     },
