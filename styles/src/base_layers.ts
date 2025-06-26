@@ -1440,8 +1440,8 @@ export function labels_layers(
         "symbol-placement": "line",
         "icon-image": "arrow",
         "icon-rotate": 90,
-        "symbol-spacing": 100
-      }
+        "symbol-spacing": 100,
+      },
     },
     {
       id: "roads_labels_minor",
