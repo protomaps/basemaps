@@ -1,3 +1,7 @@
+Styles 5.5.0
+------
+- Add oneway arrows to roads [#499]
+
 Tiles 4.11.9
 ------
 - Remove extra large buffer at z15 POIs to reduce tile size [#493]
