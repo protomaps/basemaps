@@ -1,0 +1,11 @@
+{
+  "flavors": {
+    "base":["#888888","#ffffff"],
+    "arrow":["#bbbbbb","#bbbbbb"]
+  },
+  "icons": {
+    "townspot":"base",
+    "capital":"base",
+    "arrow":"arrow"
+  }
+}

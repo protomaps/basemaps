@@ -226,13 +226,13 @@ fn extract_groups_from_svg(
 
                     if shader.icons.contains_key(&substr) {
                         let black = parse_color(
-                            shader.themes[&shader.icons[&substr]][0]
+                            shader.flavors[&shader.icons[&substr]][0]
                                 .strip_prefix("#")
                                 .unwrap(),
                         )
                         .unwrap();
                         let white = parse_color(
-                            shader.themes[&shader.icons[&substr]][1]
+                            shader.flavors[&shader.icons[&substr]][1]
                                 .strip_prefix("#")
                                 .unwrap(),
                         )
@@ -284,7 +284,7 @@ fn extract_groups_from_svg(
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Shader {
-    themes: HashMap<String, Vec<String>>,
+    flavors: HashMap<String, Vec<String>>,
     icons: HashMap<String, String>,
 }
 
