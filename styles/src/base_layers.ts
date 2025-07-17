@@ -1078,7 +1078,7 @@ export function nolabels_layers(
         "line-dasharray": [
           "step",
           ["zoom"],
-          ["literal", [2]],
+          ["literal", [2, 0]],
           4,
           ["literal", [2, 1]],
         ],
@@ -1096,7 +1096,7 @@ export function nolabels_layers(
         "line-dasharray": [
           "step",
           ["zoom"],
-          ["literal", [2]],
+          ["literal", [2, 0]],
           4,
           ["literal", [2, 1]],
         ],
