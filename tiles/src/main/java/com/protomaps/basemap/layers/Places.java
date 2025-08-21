@@ -90,7 +90,11 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     rule(
       with("place", "city"),
       without("population"),
-      use("population", 5000),
+      use("population", 50000),
+      use("minZoom", 8)
+    ),
+    rule(
+      with("place", "town"),
       use("minZoom", 8)
     ),
     rule(
