@@ -36,6 +36,8 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
 
   static final Pattern pattern = Pattern.compile("^\\d+(\\.\\d)?$");
 
+  static final Pattern COMMA_DECIMAL_PATTERN = Pattern.compile(",(?=\\d{1,2}(\\s*[a-zA-Z]*)?$)");
+
   /**
    * Sanitizes height values by fixing common OSM tagging mistakes.
    * Specifically handles commas used as decimal separators (e.g., "89,10" -> "89.10").
@@ -54,7 +56,7 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
     // - Match a comma followed by 1-2 digits
     // - Optionally followed by whitespace and/or unit characters (like 'm')
     // - Leave other commas unchanged (e.g., thousands separators like "1,000")
-    return value.replaceFirst(",(?=\\d{1,2}(\\s*[a-zA-Z]*)?$)", ".");
+    return COMMA_DECIMAL_PATTERN.matcher(value).replaceFirst(".");
   }
 
   static Double parseWellFormedDouble(String s) {
