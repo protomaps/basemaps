@@ -1,6 +1,6 @@
 {
   "name": "@protomaps/basemaps",
-  "version": "5.5.1",
+  "version": "5.5.2",
   "description": "Protomaps basemap style for MapLibre GL",
   "type": "module",
   "main": "dist/cjs/index.cjs",
@@ -42,14 +42,12 @@
   "author": "The Protomaps Authors",
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/protomaps/basemaps",
-  "dependencies": {
-    "tsx": "^4.19.4"
-  },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
     "@maplibre/maplibre-gl-style-spec": "^19.3.1",
     "@types/node": "^22.15.19",
     "tsup": "^8.5.0",
+    "tsx": "^4.19.4",
     "typedoc": "^0.28.4",
     "typescript": "^5.8.3"
   }
