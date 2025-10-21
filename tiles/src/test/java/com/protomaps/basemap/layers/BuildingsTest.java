@@ -52,6 +52,25 @@ class BuildingsTest extends LayerTest {
   }
 
   @Test
+  void parseBuildingHeightsWithCommaDecimalSeparator() {
+    var result = Buildings.parseHeight("89,10", null, "3,5");
+    assertEquals(89.10, result.height());
+    assertEquals(3.5, result.min_height());
+
+    result = Buildings.parseHeight("89,1 m", null, "3,5 m");
+    assertEquals(89.1, result.height());
+    assertEquals(3.5, result.min_height());
+
+    result = Buildings.parseHeight("89,100 m", null, "3,500");
+    assertEquals(89100, result.height());
+    assertEquals(3500, result.min_height());
+
+    result = Buildings.parseHeight("invalid", null, " ");
+    assertNull(result.height());
+    assertNull(result.min_height());
+  }
+
+  @Test
   void parseBuildingHeightsFromLevels() {
     var result = Buildings.parseHeight(null, "3", null);
     assertEquals(11, result.height());
@@ -59,6 +78,20 @@ class BuildingsTest extends LayerTest {
     assertEquals(5, result.height());
   }
 
+  @Test
+  void sanitizeHeightValue() {
+    assertEquals("89.1", Buildings.sanitizeHeightValue("89,1"));
+    assertEquals("89.10", Buildings.sanitizeHeightValue("89,10"));
+    assertEquals("89.1 m", Buildings.sanitizeHeightValue("89,1 m"));
+    assertEquals("89.1 meters", Buildings.sanitizeHeightValue("89,1 meters"));
+    assertEquals("89.1m", Buildings.sanitizeHeightValue("89,1m"));
+    assertEquals("89.10", Buildings.sanitizeHeightValue("89.10"));
+    assertNull(Buildings.sanitizeHeightValue(null));
+    assertEquals("", Buildings.sanitizeHeightValue(""));
+    assertEquals("1,234", Buildings.sanitizeHeightValue("1,234"));
+    assertEquals("3,500", Buildings.sanitizeHeightValue("3,500"));
+    assertEquals("89,100", Buildings.sanitizeHeightValue("89,100"));
+  }
 
   @Test
   void railwayTagIsBuilding() {

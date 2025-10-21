@@ -36,6 +36,27 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
 
   static final Pattern pattern = Pattern.compile("^\\d+(\\.\\d)?$");
 
+  /**
+   * Sanitizes height values by fixing common OSM tagging mistakes.
+   * Specifically handles commas used as decimal separators (e.g., "89,10" -> "89.10").
+   *
+   * @param value the raw height value from OSM
+   * @return sanitized value
+   */
+  static String sanitizeHeightValue(String value) {
+    if (value == null || value.isEmpty()) {
+      return value;
+    }
+
+    // Replace comma with period if followed by 1 or 2 digits (optional unit suffix)
+    // This handles cases like: "89,1", "89,10", "89,1 m", "89,1m"
+    // Pattern explanation:
+    // - Match a comma followed by 1-2 digits
+    // - Optionally followed by whitespace and/or unit characters (like 'm')
+    // - Leave other commas unchanged (e.g., thousands separators like "1,000")
+    return value.replaceFirst(",(?=\\d{1,2}(\\s*[a-zA-Z]*)?$)", ".");
+  }
+
   static Double parseWellFormedDouble(String s) {
     if (pattern.matcher(s).matches()) {
       return parseDoubleOrNull(s);
@@ -44,7 +65,7 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
   }
 
   static Height parseHeight(String osmHeight, String osmLevels, String osmMinHeight) {
-    var height = parseDoubleOrNull(osmHeight);
+    var height = parseDoubleOrNull(sanitizeHeightValue(osmHeight));
     if (height == null) {
       Double levels = parseDoubleOrNull(osmLevels);
       if (levels != null) {
@@ -52,7 +73,7 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
-    return new Height(height, parseDoubleOrNull(osmMinHeight));
+    return new Height(height, parseDoubleOrNull(sanitizeHeightValue(osmMinHeight)));
   }
 
   static int quantizeVal(double val, int step) {
