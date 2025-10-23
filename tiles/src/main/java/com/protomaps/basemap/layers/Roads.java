@@ -364,8 +364,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setAttr("kind", kind)
       // To power better client label collisions
       .setAttr("min_zoom", minZoom + 1)
-      .setAttrWithMinzoom("ref", shield.text(), minZoomShieldText)
-      .setAttrWithMinzoom("shield_text_length", shieldTextLength, minZoomShieldText)
+      .setAttrWithMinzoom("ref", sf.getString("ref"), minZoomShieldText)
+      .setAttrWithMinzoom("shield_text", shield.text(), minZoomShieldText)
       .setAttrWithMinzoom("network", shield.network(), minZoomShieldText)
       .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
       .setAttrWithMinzoom("access", sf.getTag("access"), 15)
