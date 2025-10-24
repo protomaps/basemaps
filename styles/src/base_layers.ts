@@ -1548,6 +1548,34 @@ export function labels_layers(
       },
     },
     {
+      id: "roads_shields",
+      type: "symbol",
+      source: source,
+      "source-layer":"roads",
+      filter: ["all",["in","kind","highway","major_road"],["has", "shield_text"]],
+      layout: {
+        "icon-image":[
+          "match",
+          ["get","network"],
+          "US:I",
+          ["concat", "US:I-",["length",["get","shield_text"]],"char"],
+          "NL:S-road",
+          ["concat", "NL:S-road-",["length",["get","shield_text"]],"char"],
+          ["concat", "generic_shield-",["length",["get","shield_text"]],"char"],
+        ],
+        "text-field": ["get","shield_text"],
+        "text-font": [t.bold || "Noto Sans Medium"],
+        "text-size": 8,
+        "icon-size": 0.8,
+        "symbol-placement": "line",
+        "icon-rotation-alignment": "viewport",
+        "text-rotation-alignment": "viewport"
+      },
+      paint: {
+        "text-color": t.roads_label_major
+      }
+    },
+    {
       id: "roads_labels_major",
       type: "symbol",
       source: source,
