@@ -20,14 +20,13 @@ import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.locales.CartographicLocale;
-import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
 @SuppressWarnings("java:S1192")
 public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingProfile.OsmRelationPreprocessor {
 
-  private CountryCoder countryCoder;
+  private final CountryCoder countryCoder;
 
   public Roads(CountryCoder countryCoder) {
     this.countryCoder = countryCoder;
@@ -295,7 +294,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   // Hardcoded to US for now
-  private CartographicLocale locale = new US();
+  private CartographicLocale locale = new CartographicLocale();
 
   private record RouteRelationInfo(
     @Override long id,
@@ -326,7 +325,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     String highway = sf.getString("highway");
 
     CartographicLocale.Shield shield = locale.getShield(sf);
-    Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
 
     for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
       RouteRelationInfo relation = routeInfo.relation();
@@ -336,10 +334,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     }
 
     try {
-      Optional<String> code = countryCoder.getCountryCode(sf.latLonGeometry());
-      if (code.isPresent()) {
-        sf.setTag("_country", code.get());
-      }
+      var code = countryCoder.getCountryCode(sf.latLonGeometry());
+      code.ifPresent(s -> sf.setTag("_country", s));
+      locale = CountryCoder.getLocale(code);
     } catch (GeometryException e) {
       // do nothing
     }
@@ -364,8 +361,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setAttr("kind", kind)
       // To power better client label collisions
       .setAttr("min_zoom", minZoom + 1)
-      .setAttrWithMinzoom("ref", shield.text(), minZoomShieldText)
-      .setAttrWithMinzoom("shield_text_length", shieldTextLength, minZoomShieldText)
+      .setAttrWithMinzoom("ref", sf.getString("ref"), minZoomShieldText)
+      .setAttrWithMinzoom("shield_text", shield.text(), minZoomShieldText)
       .setAttrWithMinzoom("network", shield.network(), minZoomShieldText)
       .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
       .setAttrWithMinzoom("access", sf.getTag("access"), 15)

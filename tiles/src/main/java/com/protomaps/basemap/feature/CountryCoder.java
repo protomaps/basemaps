@@ -1,6 +1,9 @@
 package com.protomaps.basemap.feature;
 
 import com.onthegomap.planetiler.reader.geojson.GeoJson;
+import com.protomaps.basemap.locales.CartographicLocale;
+import com.protomaps.basemap.locales.NL;
+import com.protomaps.basemap.locales.US;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -60,5 +63,18 @@ public class CountryCoder {
       return Optional.empty();
     }
     return Optional.of(filtered.getFirst().country);
+  }
+
+  public static CartographicLocale getLocale(Optional<String> code) {
+    if (code.isPresent()) {
+      if (code.get().equals("US")) {
+        return new US();
+      } else if (code.get().equals("NL")) {
+        return new NL();
+      } else {
+        return new CartographicLocale();
+      }
+    }
+    return new CartographicLocale();
   }
 }

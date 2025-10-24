@@ -65,9 +65,7 @@ class RoadsTest extends LayerTest {
     assertFeatures(12,
       List.of(Map.of("kind", "highway",
         "kind_detail", "motorway",
-        "ref", "1",
-        "network", "US:US",
-        "shield_text_length", 1
+        "ref", "US 1"
       )),
       processWith("layer", "1",
         "highway", "motorway",
