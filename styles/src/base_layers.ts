@@ -1554,9 +1554,9 @@ export function labels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["in", ["get","kind"], ["literal",["highway", "major_road"]]],
+        ["in", ["get", "kind"], ["literal", ["highway", "major_road"]]],
         ["has", "shield_text"],
-        ["<=",["length", ["get", "shield_text"]],5]
+        ["<=", ["length", ["get", "shield_text"]], 5],
       ],
       layout: {
         "icon-image": [
