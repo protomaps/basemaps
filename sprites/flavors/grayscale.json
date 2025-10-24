@@ -16,6 +16,11 @@
     "US:I-2char":"base",
     "US:I-3char":"base",
     "US:I-4char":"base",
-    "US:I-5char":"base"
+    "US:I-5char":"base",
+    "NL:S-road-1char":"base",
+    "NL:S-road-2char":"base",
+    "NL:S-road-3char":"base",
+    "NL:S-road-4char":"base",
+    "NL:S-road-5char":"base"
   }
 }

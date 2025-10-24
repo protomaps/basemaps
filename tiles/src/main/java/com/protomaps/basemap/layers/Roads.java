@@ -20,6 +20,7 @@ import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.locales.CartographicLocale;
+import com.protomaps.basemap.locales.NL;
 import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
@@ -295,7 +296,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   // Hardcoded to US for now
-  private CartographicLocale locale = new US();
+  private CartographicLocale locale = new CartographicLocale();
 
   private record RouteRelationInfo(
     @Override long id,
@@ -339,7 +340,15 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       Optional<String> code = countryCoder.getCountryCode(sf.latLonGeometry());
       if (code.isPresent()) {
         sf.setTag("_country", code.get());
+        if (code.get().equals("US")) {
+          locale = new US();
+        } else if (code.get().equals("NL")) {
+          locale = new NL();
+        } else {
+          locale = new CartographicLocale();
+        }
       }
+
     } catch (GeometryException e) {
       // do nothing
     }
