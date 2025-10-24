@@ -1,3 +1,11 @@
+Tiles 4.12.0, Styles 5.6.0
+------
+- addition of generic, US:I and NL:S-road highway shields [#238]
+- add NL and US CartographicLocales
+- add getLocale to CountryCoder
+- proper `shield_text` and `network` values in road features
+- limit `shield_text` display to 5 characters
+
 Styles 5.5.0
 ------
 - Add oneway arrows to roads [#499]
