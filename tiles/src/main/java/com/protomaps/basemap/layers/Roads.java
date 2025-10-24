@@ -20,15 +20,13 @@ import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.locales.CartographicLocale;
-import com.protomaps.basemap.locales.NL;
-import com.protomaps.basemap.locales.US;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
 
 @SuppressWarnings("java:S1192")
 public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingProfile.OsmRelationPreprocessor {
 
-  private CountryCoder countryCoder;
+  private final CountryCoder countryCoder;
 
   public Roads(CountryCoder countryCoder) {
     this.countryCoder = countryCoder;
@@ -327,7 +325,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     String highway = sf.getString("highway");
 
     CartographicLocale.Shield shield = locale.getShield(sf);
-    Integer shieldTextLength = shield.text() == null ? null : shield.text().length();
 
     for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
       RouteRelationInfo relation = routeInfo.relation();
@@ -337,18 +334,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     }
 
     try {
-      Optional<String> code = countryCoder.getCountryCode(sf.latLonGeometry());
-      if (code.isPresent()) {
-        sf.setTag("_country", code.get());
-        if (code.get().equals("US")) {
-          locale = new US();
-        } else if (code.get().equals("NL")) {
-          locale = new NL();
-        } else {
-          locale = new CartographicLocale();
-        }
-      }
-
+      var code = countryCoder.getCountryCode(sf.latLonGeometry());
+      code.ifPresent(s -> sf.setTag("_country", s));
+      locale = CountryCoder.getLocale(code);
     } catch (GeometryException e) {
       // do nothing
     }
