@@ -180,7 +180,7 @@ public class Basemap extends ForwardingProfile {
     Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
       .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
       .run();
-    var qrankDb = QrankDb.empty();
+    var qrankDb = QrankDb.fromCsv(sourcesDir.resolve("qrank.csv.gz"));
 
     FontRegistry fontRegistry = FontRegistry.getInstance();
     fontRegistry.setZipFilePath(pgfEncodingZip.toString());
