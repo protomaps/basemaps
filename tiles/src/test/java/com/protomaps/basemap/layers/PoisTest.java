@@ -78,4 +78,18 @@ class PoisTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void withQrank() {
+    assertFeatures(8,
+      List.of(Map.of("kind", "aerodrome"),
+        Map.of("kind", "aerodrome", "name", "SFO", "min_zoom", 11)),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 1, 0, 0, 0),
+        new HashMap<>(Map.of("aeroway", "aerodrome", "name", "SFO", "wikidata", "Q8888")),
+        "osm",
+        null,
+        0
+      )));
+  }
 }
