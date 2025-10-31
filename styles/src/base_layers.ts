@@ -1659,7 +1659,7 @@ export function labels_layers(
                     "attraction",
                     "museum",
                     "theatre",
-                    "artwork"
+                    "artwork",
                   ],
                 ],
               ],
@@ -1738,7 +1738,7 @@ export function labels_layers(
                       "drinking_water",
                       "post_office",
                       "building",
-                      "townhall"
+                      "townhall",
                     ],
                   ],
                 ],
@@ -1748,26 +1748,27 @@ export function labels_layers(
                   ["get", "kind"],
                   [
                     "literal",
-                    ["supermarket", "convenience", "books", "beauty", "electronics", "clothes"],
+                    [
+                      "supermarket",
+                      "convenience",
+                      "books",
+                      "beauty",
+                      "electronics",
+                      "clothes",
+                    ],
                   ],
                 ],
                 t.pois.blue,
                 [
                   "in",
                   ["get", "kind"],
-                  [
-                    "literal",
-                    ["restaurant", "fast_food", "cafe", "bar"],
-                  ],
+                  ["literal", ["restaurant", "fast_food", "cafe", "bar"]],
                 ],
                 t.pois.tangerine,
                 [
                   "in",
                   ["get", "kind"],
-                  [
-                    "literal",
-                    ["attraction", "museum", "theatre", "artwork"],
-                  ],
+                  ["literal", ["attraction", "museum", "theatre", "artwork"]],
                 ],
                 t.pois.pink,
                 t.earth,
