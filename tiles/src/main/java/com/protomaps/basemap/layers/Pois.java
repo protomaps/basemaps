@@ -12,9 +12,20 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
+import java.util.Map;
+
 
 @SuppressWarnings("java:S1192")
 public class Pois implements ForwardingProfile.LayerPostProcessor {
+
+  private Map<String, int[][]> qrankGrading = Map.of(
+    "station", new int[][]{{10, 50000}, {12, 20000}, {13, 10000}},
+    "aerodrome", new int[][]{{10, 50000}, {12, 20000}, {13, 5000}, {14, 2500}},
+    "park", new int[][]{{11, 20000}, {12, 10000}, {13, 5000}, {14, 2500}},
+    "peak", new int[][]{{11, 20000}, {12, 10000}, {13, 5000}, {14, 2500}},
+    "attraction", new int[][]{{12, 40000}, {13, 20000}, {14, 10000}},
+    "university", new int[][]{{12, 40000}, {13, 20000}, {14, 10000}}
+  );
 
   private QrankDb qrankDb;
 
@@ -51,10 +62,11 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       String kind = "other";
       String kindDetail = "";
       Integer minZoom = 15;
+      long qrank = 0;
 
       String wikidata = sf.getString("wikidata");
       if (wikidata != null) {
-        qrankDb.get(wikidata);
+        qrank = qrankDb.get(wikidata);
       }
 
       if (sf.hasTag("aeroway", "aerodrome")) {
@@ -433,6 +445,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           }
         }
 
+        var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
+        if (rankedZoom.isPresent())
+          minZoom = rankedZoom.get();
+
         var polyLabelPosition = features.pointOnSurface(this.name())
           // all POIs should receive their IDs at all zooms
           // (there is no merging of POIs like with lines and polygons in other layers)
@@ -471,6 +487,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         polyLabelPosition.setPointLabelGridSizeAndLimit(14, 8, 1);
 
       } else if (sf.isPoint()) {
+        var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
+        if (rankedZoom.isPresent())
+          minZoom = rankedZoom.get();
+
         var pointFeature = features.point(this.name())
           // all POIs should receive their IDs at all zooms
           // (there is no merging of POIs like with lines and polygons in other layers)
