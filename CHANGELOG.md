@@ -1,3 +1,8 @@
+Tiles 4.13.0, Styles 5.7.0
+------
+- addition of more sprites for POIs
+- certain POI `kinds` are boosted to lower zoom levels using QRank data
+
 Tiles 4.12.0, Styles 5.6.0
 ------
 - addition of generic, US:I and NL:S-road highway shields [#238]

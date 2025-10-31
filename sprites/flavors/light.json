@@ -4,7 +4,10 @@
     "arrow":["#cccccc","#cccccc"],
     "green":["#20834D", "#DEF7EA"],
     "lapis": ["#315BCF", "#DFEAF4"],
-    "slategray": ["#6A5B8F", "#E1F2FF"]
+    "slategray": ["#6A5B8F", "#E1F2FF"],
+    "blue": ["#1A8CBD", "#E5F5FB"],
+    "tangerine": ["#FA8209", "#FCF1E1"],
+    "pink": ["#EF56BA", "#F9EBFE"]
   },
   "icons": {
     "townspot":"base",
@@ -33,6 +36,7 @@
     "zoo":"green",
     "garden": "green",
     "bench": "green",
+    "nature_reserve": "green",
     "aerodrome": "lapis",
     "train_station": "lapis",
     "bus_stop": "lapis",
@@ -43,6 +47,22 @@
     "school": "slategray",
     "animal": "slategray",
     "toilets": "slategray",
-    "drinking_water": "slategray"
+    "drinking_water": "slategray",
+    "building": "slategray",
+    "post_office": "slategray",
+    "supermarket": "blue",
+    "convenience": "blue",
+    "books": "blue",
+    "beauty": "blue",
+    "electronics": "blue",
+    "clothes": "blue",
+    "restaurant": "tangerine",
+    "fast_food": "tangerine",
+    "cafe": "tangerine",
+    "bar": "tangerine",
+    "museum": "pink",
+    "attraction": "pink",
+    "theatre": "pink",
+    "artwork": "pink"
   }
 }

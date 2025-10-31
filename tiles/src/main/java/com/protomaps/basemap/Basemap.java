@@ -119,7 +119,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.12.0";
+    return "4.13.0";
   }
 
   @Override
@@ -177,10 +177,12 @@ public class Basemap extends ForwardingProfile {
         "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
 
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
+    Path qrankCsv = sourcesDir.resolve("qrank.csv.gz");
     Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
       .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
+      .add("qrank", "https://qrank.toolforge.org/download/qrank.csv.gz", qrankCsv)
       .run();
-    var qrankDb = QrankDb.empty();
+    var qrankDb = QrankDb.fromCsv(qrankCsv);
 
     FontRegistry fontRegistry = FontRegistry.getInstance();
     fontRegistry.setZipFilePath(pgfEncodingZip.toString());

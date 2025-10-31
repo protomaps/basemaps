@@ -3,6 +3,8 @@ package com.protomaps.basemap.feature;
 import com.carrotsearch.hppc.LongLongHashMap;
 import java.io.*;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -36,11 +38,6 @@ public final class QrankDb {
     }
   }
 
-  public static QrankDb empty() {
-    LongLongHashMap db = new LongLongHashMap();
-    return new QrankDb(db);
-  }
-
   public static QrankDb fromCsv(Path csvPath) throws IOException {
     GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(csvPath.toFile()));
     try (BufferedReader br = new BufferedReader(new InputStreamReader(gzip))) {
@@ -56,5 +53,16 @@ public final class QrankDb {
       }
       return new QrankDb(db);
     }
+  }
+
+  public static Optional<Integer> assignZoom(Map<String, int[][]> grading, String kind, long qrank) {
+    if (!grading.containsKey(kind)) {
+      return Optional.empty();
+    }
+    for (int[] grade : grading.get(kind)) {
+      if (qrank >= grade[1])
+        return Optional.of(grade[0]);
+    }
+    return Optional.empty();
   }
 }

@@ -3,6 +3,7 @@ package com.protomaps.basemap.layers;
 import static com.onthegomap.planetiler.TestUtils.assertSubmap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.carrotsearch.hppc.LongLongHashMap;
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.TestUtils;
 import com.onthegomap.planetiler.config.PlanetilerConfig;
@@ -10,6 +11,7 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.stats.Stats;
 import com.protomaps.basemap.Basemap;
 import com.protomaps.basemap.feature.CountryCoder;
+import com.protomaps.basemap.feature.QrankDb;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
@@ -23,7 +25,10 @@ abstract class LayerTest {
   final CountryCoder countryCoder = CountryCoder.fromJsonString(
     "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"US\",\"nameEn\":\"United States\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-124,47],[-124,25],[-71,25],[-71,47],[-124,47]]]]}}]}");
 
-  final Basemap profile = new Basemap(null, countryCoder, null, "");
+
+  final QrankDb qrankDb = new QrankDb(LongLongHashMap.from(new long[]{8888}, new long[]{100000}));
+
+  final Basemap profile = new Basemap(qrankDb, countryCoder, null, "");
 
   static void assertFeatures(int zoom, List<Map<String, Object>> expected, Iterable<FeatureCollector.Feature> actual) {
     var expectedList = expected.stream().toList();
