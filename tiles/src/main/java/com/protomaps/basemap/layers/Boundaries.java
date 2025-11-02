@@ -43,7 +43,7 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
     }
 
     if (!kind.isEmpty()) {
-      switch (sf.getString("featurecla")) {
+      switch (sf.getString("featurecla", "")) {
         case "Disputed (please verify)" -> {
           kind = "country";
           disputed = true;
