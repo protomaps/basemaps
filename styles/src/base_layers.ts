@@ -601,34 +601,22 @@ export function nolabels_layers(
       },
     },
     {
-      "id": "3d-buildings",
-      "source": "protomaps",
+      id: "3d-buildings",
+      source: "protomaps",
       "source-layer": "buildings",
-      "type": "fill-extrusion",
-      "paint": {
+      type: "fill-extrusion",
+      paint: {
         "fill-extrusion-color": t.buildings,
         "fill-extrusion-height": [
           "case",
-          [
-            "has",
-            "height"
-          ],
-          [
-            "get",
-            "height"
-          ],
-          [
-            "has",
-            "floors"
-          ],
+          ["has", "height"],
+          ["get", "height"],
+          ["has", "floors"],
           [
             "*",
             [
               "to-number",
-              [
-                "get",
-                "floors"
-              ]
+              ["get", "floors"]
             ],
             2
           ],
@@ -636,26 +624,14 @@ export function nolabels_layers(
         ],
         "fill-extrusion-base": [
           "case",
-          [
-            "has",
-            "min_height"
-          ],
-          [
-            "get",
-            "min_height"
-          ],
-          [
-            "has",
-            "min_floors"
-          ],
+          ["has", "min_height"],
+          ["get", "min_height"],
+          ["has", "min_floors"],
           [
             "*",
             [
               "to-number",
-              [
-                "get",
-                "min_floors"
-              ]
+              ["get", "min_floors"]
             ],
             2
           ],
