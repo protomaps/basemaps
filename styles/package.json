@@ -44,7 +44,7 @@
   "homepage": "https://github.com/protomaps/basemaps",
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "@maplibre/maplibre-gl-style-spec": "^19.3.1",
+    "@maplibre/maplibre-gl-style-spec": "^24.3.1",
     "@types/node": "^22.15.19",
     "tsup": "^8.5.0",
     "tsx": "^4.19.4",
