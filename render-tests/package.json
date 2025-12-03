@@ -23,7 +23,7 @@
         "express": "^5.1.0",
         "glob": "^11.0.2",
         "junit-report-builder": "^5.1.1",
-        "maplibre-gl": "^5.5.0",
+        "maplibre-gl": "^5.13.0",
         "pixelmatch": "^7.1.0",
         "pmtiles": "^4.3.0",
         "pngjs": "^7.0.0",
