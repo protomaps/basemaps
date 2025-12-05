@@ -1,3 +1,7 @@
+Tiles 4.13.1
+------
+- add in British Columbia label ranking to places.csv [#521]
+
 Tiles 4.13.0, Styles 5.7.0
 ------
 - addition of more sprites for POIs
