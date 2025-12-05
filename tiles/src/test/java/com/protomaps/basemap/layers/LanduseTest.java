@@ -52,6 +52,15 @@ class LanduseTest extends LayerTest {
   }
 
   @Test
+  void testAerodromeOverIndustrial() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "aerodrome")),
+      processWith("aeroway", "aerodrome", "landuse", "industrial")
+    );
+  }
+
+
+  @Test
   void testFromTagAmenity() {
     assertFeatures(15,
       List.of(Map.of("kind", "hospital")),

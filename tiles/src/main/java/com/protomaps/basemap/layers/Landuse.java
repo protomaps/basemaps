@@ -65,14 +65,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.ofOrdered(List.of(
     rule(
       with("""
-          aeroway
-          aerodrome
-          runway
-        """),
-      use("kind", fromTag("aeroway"))
-    ),
-    rule(
-      with("""
           amenity
           hospital
           school
@@ -105,6 +97,14 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
           grass
         """),
       use("kind", fromTag("landuse"))
+    ),
+    rule(
+      with("""
+          aeroway
+          aerodrome
+          runway
+        """),
+      use("kind", fromTag("aeroway"))
     ),
     rule(
       with("""
