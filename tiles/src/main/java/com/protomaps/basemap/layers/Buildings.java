@@ -39,8 +39,8 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
   static final Pattern COMMA_DECIMAL_PATTERN = Pattern.compile(",(?=\\d{1,2}(\\s*[a-zA-Z]*)?$)");
 
   /**
-   * Sanitizes height values by fixing common OSM tagging mistakes.
-   * Specifically handles commas used as decimal separators (e.g., "89,10" -> "89.10").
+   * Sanitizes height values by fixing common OSM tagging mistakes. Specifically handles commas used as decimal
+   * separators (e.g., "89,10" -> "89.10").
    *
    * @param value the raw height value from OSM
    * @return sanitized value

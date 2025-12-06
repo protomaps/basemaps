@@ -1,3 +1,11 @@
+Tiles 4.13.3
+------
+- sanitize commas in building height tags by @xDefcon [#517]
+
+Tiles 4.13.2
+------
+- prioritize aeroway=aerodrome over landuse=industrial [#526]
+
 Tiles 4.13.1
 ------
 - add in British Columbia label ranking to places.csv [#521]
