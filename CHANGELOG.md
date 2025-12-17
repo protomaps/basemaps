@@ -1,3 +1,7 @@
+Tiles 4.13.4
+------
+- remove kind=protected_area which made historical city centers appear as parks [#531]
+
 Tiles 4.13.3
 ------
 - sanitize commas in building height tags by @xDefcon [#517]
