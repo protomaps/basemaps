@@ -89,14 +89,6 @@ class LanduseTest extends LayerTest {
   }
 
   @Test
-  void testFromTagBoundary() {
-    assertFeatures(15,
-      List.of(Map.of("kind", "protected_area")),
-      processWith("boundary", "protected_area")
-    );
-  }
-
-  @Test
   void testFromTagLanduse() {
     assertFeatures(15,
       List.of(Map.of("kind", "recreation_ground")),

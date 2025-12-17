@@ -75,10 +75,6 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       use("kind", fromTag("amenity"))
     ),
     rule(
-      with("boundary", "protected_area"),
-      use("kind", "protected_area")
-    ),
-    rule(
       with("""
           landuse
           recreation_ground
