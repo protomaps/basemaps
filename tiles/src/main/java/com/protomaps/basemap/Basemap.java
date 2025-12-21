@@ -150,7 +150,44 @@ public class Basemap extends ForwardingProfile {
   }
 
   public static void main(String[] args) throws IOException {
+    // Check for help flag
+    for (String arg : args) {
+      if ("--help".equals(arg) || "-h".equals(arg)) {
+        printHelp();
+        System.exit(0);
+      }
+    }
     run(Arguments.fromArgsOrConfigFile(args));
+  }
+
+  private static void printHelp() {
+    Basemap basemap = new Basemap(null, null, null, "");
+    System.out.println(String.format("""
+      %s v%s
+      %s
+
+      Usage:
+        java -jar protomaps-basemap-HEAD-with-deps.jar [options]
+
+      Common Options:
+        --help, -h              Show this help message and exit
+        --area=<name>           Geofabrik area to download (default: monaco)
+        --maxzoom=<n>           Maximum zoom level (default: 15)
+        --layer=<name>          Process only a single layer (optional)
+                                Valid values: boundaries, buildings, landuse, landcover,
+                                              places, pois, roads, transit, water, earth
+        --clip=<path>           GeoJSON file path to clip tileset (optional)
+
+      Examples:
+        java -jar protomaps-basemap-HEAD-with-deps.jar --area=monaco
+        java -jar protomaps-basemap-HEAD-with-deps.jar --area=boston --maxzoom=14
+        java -jar protomaps-basemap-HEAD-with-deps.jar --layer=roads --area=seattle
+
+      Note: Many additional Planetiler configuration options are available.
+            Run without --help to see full argument list in the log output.
+
+      For more information: https://github.com/protomaps/basemaps
+      """, basemap.name(), basemap.version(), basemap.description()));
   }
 
   static void run(Arguments args) throws IOException {
