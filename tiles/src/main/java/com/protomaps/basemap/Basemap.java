@@ -169,22 +169,30 @@ public class Basemap extends ForwardingProfile {
       Usage:
         java -jar protomaps-basemap-HEAD-with-deps.jar [options]
 
-      Common Options:
+      Protomaps Basemap Options:
         --help, -h              Show this help message and exit
-        --area=<name>           Geofabrik area to download (default: monaco)
+        --area=<name>           Geofabrik area name to download, or filename in data/sources/
+                                (default: monaco, e.g., us/california, washington)
         --maxzoom=<n>           Maximum zoom level (default: 15)
         --layer=<name>          Process only a single layer (optional)
                                 Valid values: boundaries, buildings, landuse, landcover,
                                               places, pois, roads, transit, water, earth
         --clip=<path>           GeoJSON file path to clip tileset (optional)
 
+      Common Planetiler Options:
+        --output=<path>         Output file path and format (e.g., output.pmtiles)
+        --force                 Overwrite existing output file
+        --download              Automatically download input sources
+        --only-download         Exit after downloading sources
+        --osm-path=<path>       Path to existing OSM extract file
+
       Examples:
         java -jar protomaps-basemap-HEAD-with-deps.jar --area=monaco
-        java -jar protomaps-basemap-HEAD-with-deps.jar --area=boston --maxzoom=14
+        java -jar protomaps-basemap-HEAD-with-deps.jar --area=boston --maxzoom=14 --force
         java -jar protomaps-basemap-HEAD-with-deps.jar --layer=roads --area=seattle
 
-      Note: Many additional Planetiler configuration options are available.
-            Run without --help to see full argument list in the log output.
+      For a complete list of Planetiler options, see:
+        https://github.com/onthegomap/planetiler#usage
 
       For more information: https://github.com/protomaps/basemaps
       """, basemap.name(), basemap.version(), basemap.description()));
@@ -201,7 +209,7 @@ public class Basemap extends ForwardingProfile {
 
     var countryCoder = CountryCoder.fromJarResource();
 
-    String area = args.getString("area", "geofabrik area to download", "monaco");
+    String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "monaco");
 
     var planetiler = Planetiler.create(args)
       .addNaturalEarthSource("ne", nePath, neUrl)
