@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monaco Map - Protomaps Starter</title>
+    <title>Local Styles and Tiles - Protomaps Starter</title>
 
     <!-- MapLibre GL JS -->
     <script src="https://unpkg.com/maplibre-gl@5.15.0/dist/maplibre-gl.js"></script>
@@ -34,13 +34,13 @@
         maplibregl.addProtocol("pmtiles", protocol.tile);
 
         // Load and modify the style to use local PMTiles
-        fetch('styles/style.json')
+        fetch('../styles/style.json')
             .then(response => response.json())
             .then(style => {
                 // Replace the source URL with the local PMTiles file
                 style.sources.protomaps = {
                     type: "vector",
-                    url: "pmtiles://tiles/monaco.pmtiles",
+                    url: "pmtiles://../tiles/monaco.pmtiles",
                     attribution: style.sources.protomaps.attribution
                 };
 
