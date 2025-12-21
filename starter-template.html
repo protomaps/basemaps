@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monaco Map - Protomaps Starter</title>
+
+    <!-- MapLibre GL JS -->
+    <script src="https://unpkg.com/maplibre-gl@5.15.0/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@5.15.0/dist/maplibre-gl.css" rel="stylesheet">
+
+    <!-- PMTiles protocol -->
+    <script src="https://unpkg.com/pmtiles@4.3.0/dist/pmtiles.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        // Register PMTiles protocol
+        let protocol = new pmtiles.Protocol();
+        maplibregl.addProtocol("pmtiles", protocol.tile);
+
+        // Load and modify the style to use local PMTiles
+        fetch('styles/style.json')
+            .then(response => response.json())
+            .then(style => {
+                // Replace the source URL with the local PMTiles file
+                style.sources.protomaps = {
+                    type: "vector",
+                    url: "pmtiles://tiles/monaco.pmtiles",
+                    attribution: style.sources.protomaps.attribution
+                };
+
+                // Initialize map with modified style
+                const map = new maplibregl.Map({
+                    container: 'map',
+                    style: style,
+                    center: [7.41488, 43.73019], // Monaco [longitude, latitude]
+                    zoom: 16,
+                    hash: true // Allows sharing location via URL hash
+                });
+
+                // Add navigation controls
+                map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+                // Add scale control
+                map.addControl(new maplibregl.ScaleControl({
+                    maxWidth: 80,
+                    unit: 'metric'
+                }), 'bottom-left');
+            })
+            .catch(error => {
+                console.error('Error loading style:', error);
+            });
+    </script>
+</body>
+</html>
