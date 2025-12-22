@@ -1,4 +1,32 @@
 <!DOCTYPE html>
+<!--
+
+This example displays a map using Tiles and Styles generated locally.
+Use it to preview basemap changes made in this repository.
+
+Start by building tiles/data/monaco.pmtiles:
+
+    cd tiles
+    docker build -t protomaps/basemaps .
+    docker run -v ./data:/tiles/data --rm -it protomaps/basemaps --output=data/monaco.pmtiles --area=monaco --force
+    cd -
+
+Generate styles/style.json:
+
+    cd styles
+    npm run generate_style style.json https://example.com/tilejson.json light en
+    cd -
+
+Populate basemaps-assets submodule with fonts and sprite sheets:
+
+    git submodule init
+    git submodule update
+
+Run local web server to view http://localhost:8080/examples/local.html:
+
+    npx http-server -p 8080 -c-1
+
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
