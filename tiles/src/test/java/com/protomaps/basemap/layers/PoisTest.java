@@ -14,9 +14,9 @@ class PoisTest extends LayerTest {
   // Static polygon instances testing area thresholds in Pois.java
   private static final Geometry AREA_2K_SQ_KM = newPolygon(0, 0, 0, 0.4, 0.4, 0.4, 0.4, 0, 0, 0);
   private static final Geometry AREA_1K_SQ_KM = newPolygon(0, 0, 0, 0.3, 0.3, 0.3, 0.3, 0, 0, 0);
-  private static final Geometry AREA_3_SQ_KM = newPolygon(0, 0, 0, 0.015, 0.015, 0.015, 0.015, 0, 0, 0);
-  private static final Geometry AREA_5_SQ_KM = newPolygon(0, 0, 0, 0.020, 0.020, 0.020, 0.020, 0, 0, 0);
   private static final Geometry AREA_8_SQ_KM = newPolygon(0, 0, 0, 0.025, 0.025, 0.025, 0.025, 0, 0, 0);
+  private static final Geometry AREA_5_SQ_KM = newPolygon(0, 0, 0, 0.020, 0.020, 0.020, 0.020, 0, 0, 0);
+  private static final Geometry AREA_3_SQ_KM = newPolygon(0, 0, 0, 0.015, 0.015, 0.015, 0.015, 0, 0, 0);
   private static final Geometry AREA_12K_SQ_M = newPolygon(0, 0, 0, 0.001, 0.001, 0.001, 0.001, 0, 0, 0);
   private static final Geometry AREA_127_SQ_M = newPolygon(0, 0, 0, 0.0001, 0.0001, 0.0001, 0.0001, 0, 0, 0);
 
