@@ -810,4 +810,326 @@ class PoisTest extends LayerTest {
         "osm", null, 0
       )));
   }
+
+  // ========== Tests for kind assignments ==========
+
+  @Test
+  void kind_military_noSpecificType() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "military", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("landuse", "military")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_forest_fromLanduseForest() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest"),
+        Map.of("kind", "forest", "min_zoom", 8, "name", "Test Forest")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "landuse", "forest",
+          "name", "Test Forest"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_forest_fromBoundaryProtectedArea() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest"),
+        Map.of("kind", "forest", "min_zoom", 8, "name", "Protected Forest")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "boundary", "protected_area",
+          "protect_class", "6",
+          "operator", "United States Forest Service",
+          "name", "Protected Forest"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_park_fromNationalParkUSFS() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "park"),
+        Map.of("kind", "park", "min_zoom", 8, "name", "National Forest Area")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "boundary", "national_park",
+          "operator", "United States Forest Service",
+          "name", "National Forest Area"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_park_fromNationalParkProtectionTitle() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "park"),
+        Map.of("kind", "park", "min_zoom", 8, "name", "Test National Forest")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "boundary", "national_park",
+          "protect_class", "6",
+          "protection_title", "National Forest",
+          "name", "Test National Forest"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_forest_fromLanduseForestProtectClass6() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest"),
+        Map.of("kind", "forest", "min_zoom", 8, "name", "Protected Forest Area")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "landuse", "forest",
+          "protect_class", "6",
+          "name", "Protected Forest Area"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_forest_fromLanduseForestUSFS() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "forest"),
+        Map.of("kind", "forest", "min_zoom", 8, "name", "USFS Forest")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "landuse", "forest",
+          "operator", "US Forest Service",
+          "name", "USFS Forest"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_park_fromNationalParkBoundaryConservation() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "park"),
+        Map.of("kind", "park", "min_zoom", 8, "name", "Conservation Area")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "boundary", "national_park",
+          "protection_title", "Conservation Area",
+          "name", "Conservation Area"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_zoo_kindFromLeisure() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "zoo", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("tourism", "zoo")),
+        "osm", null, 0
+      )));
+  }
+
+  // ========== Generic kind assignments from "other" section ==========
+
+  @Test
+  void kind_pharmacy_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "pharmacy", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("amenity", "pharmacy")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_waterSlide_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "water_slide", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("attraction", "water_slide")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_brewery_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "brewery", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("craft", "brewery")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_quarry_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "quarry", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("landuse", "quarry")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_garden_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "garden", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("leisure", "garden")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_beach_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "beach", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("natural", "beach")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_station_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "station", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("railway", "station")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_bakery_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "bakery", "min_zoom", 17)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("shop", "bakery")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_museum_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "museum", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("tourism", "museum")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_castle_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "castle", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("historic", "castle")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_protectedArea_yesValue_skipToOther() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "protected_area", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("historic", "yes", "boundary", "protected_area")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_protectedArea_generic() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "protected_area", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("boundary", "protected_area")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_protectedArea_fromBoundary() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "protected_area", "min_zoom", 8, "name", "Protected Area")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "boundary", "protected_area",
+          "name", "Protected Area"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_natureReserve_fromLeisure() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "nature_reserve"),
+        Map.of("kind", "nature_reserve", "min_zoom", 8, "name", "Nature Reserve")),
+      process(SimpleFeature.create(
+        AREA_1K_SQ_KM,
+        new HashMap<>(Map.of(
+          "leisure", "nature_reserve",
+          "name", "Nature Reserve"
+        )),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_recreationGround_fromLanduse() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "recreation_ground", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("landuse", "recreation_ground")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void kind_winterSports_fromLanduse() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "winter_sports", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("landuse", "winter_sports")),
+        "osm", null, 0
+      )));
+  }
 }
