@@ -1,0 +1,3 @@
+[submodule "basemaps-assets"]
+	path = basemaps-assets
+	url = https://github.com/protomaps/basemaps-assets.git

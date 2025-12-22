@@ -44,6 +44,9 @@
                     attribution: style.sources.protomaps.attribution
                 };
 
+                style.glyphs = "http://localhost:8080/basemaps-assets/fonts/{fontstack}/{range}.pbf";
+                style.sprite = "http://localhost:8080/basemaps-assets/sprites/v4/light";
+
                 // Initialize map with modified style
                 const map = new maplibregl.Map({
                     container: 'map',
