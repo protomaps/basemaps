@@ -121,7 +121,7 @@ class PoisTest extends LayerTest {
   // ========== Representative MinZoom tests ==========
 
   @Test
-  void aerodrome_defaultMinZoom14() {
+  void zoom_14_aerodrome_default() {
     assertFeatures(14,
       List.of(Map.of("kind", "aerodrome", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -132,7 +132,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void aerodrome_withIATA_minZoom12() {
+  void zoom_12_aerodrome_withIATA() {
     assertFeatures(12,
       List.of(Map.of("kind", "aerodrome", "min_zoom", 12)),
       process(SimpleFeature.create(
@@ -143,7 +143,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void hospital_minZoom13() {
+  void zoom_13_hospital() {
     assertFeatures(13,
       List.of(Map.of("kind", "hospital", "min_zoom", 13)),
       process(SimpleFeature.create(
@@ -154,7 +154,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void library_minZoom14() {
+  void zoom_14_library() {
     assertFeatures(14,
       List.of(Map.of("kind", "library", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -165,7 +165,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void university_minZoom15() {
+  void zoom_15_university() {
     assertFeatures(15,
       List.of(Map.of("kind", "university", "min_zoom", 15)),
       process(SimpleFeature.create(
@@ -176,7 +176,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void cafe_minZoom16() {
+  void zoom_16_cafe() {
     assertFeatures(15,
       List.of(Map.of("kind", "cafe", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -187,7 +187,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void peak_minZoom14() {
+  void zoom_14_peak() {
     assertFeatures(14,
       List.of(Map.of("kind", "peak", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -198,7 +198,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void golfCourse_minZoom14() {
+  void zoom_14_golfCourse() {
     assertFeatures(14,
       List.of(Map.of("kind", "golf_course", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -209,7 +209,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void supermarket_minZoom15() {
+  void zoom_15_supermarket() {
     assertFeatures(15,
       List.of(Map.of("kind", "supermarket", "min_zoom", 15)),
       process(SimpleFeature.create(
@@ -220,7 +220,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void attraction_minZoom16() {
+  void zoom_16_attraction() {
     assertFeatures(15,
       List.of(Map.of("kind", "attraction", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -231,7 +231,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void parkPoint_minZoom15() {
+  void zoom_15_parkPoint() {
     assertFeatures(15,
       List.of(Map.of("kind", "park", "min_zoom", 15)),
       process(SimpleFeature.create(
@@ -242,7 +242,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void cemetery_minZoom15() {
+  void zoom_15_cemetery() {
     assertFeatures(15,
       List.of(Map.of("kind", "cemetery", "min_zoom", 15)),
       process(SimpleFeature.create(
@@ -253,7 +253,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void stadium_minZoom14() {
+  void zoom_14_stadium() {
     assertFeatures(14,
       List.of(Map.of("kind", "stadium", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -264,7 +264,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void marina_minZoom14() {
+  void zoom_14_marina() {
     assertFeatures(14,
       List.of(Map.of("kind", "marina", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -275,7 +275,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void campSite_minZoom16() {
+  void zoom_16_campSite() {
     assertFeatures(15,
       List.of(Map.of("kind", "camp_site", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -286,7 +286,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void hotel_minZoom16() {
+  void zoom_16_hotel() {
     assertFeatures(15,
       List.of(Map.of("kind", "hotel", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -297,7 +297,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void postOffice_minZoom14() {
+  void zoom_14_postOffice() {
     assertFeatures(14,
       List.of(Map.of("kind", "post_office", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -308,7 +308,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void townhall_minZoom14() {
+  void zoom_14_townhall() {
     assertFeatures(14,
       List.of(Map.of("kind", "townhall", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -319,7 +319,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void college_minZoom15() {
+  void zoom_15_college() {
     assertFeatures(15,
       List.of(Map.of("kind", "college", "min_zoom", 15)),
       process(SimpleFeature.create(
@@ -330,7 +330,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void grocery_unnamedMinZoom17() {
+  void zoom_17_grocery_unnamed() {
     assertFeatures(15,
       List.of(Map.of("kind", "grocery", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -343,7 +343,7 @@ class PoisTest extends LayerTest {
   // ========== Special cases and overrides ==========
 
   @Test
-  void nationalPark_defaultMinZoom7() {
+  void zoom_7_nationalPark_default() {
     assertFeatures(7,
       List.of(Map.of("kind", "national_park"),
         Map.of("kind", "national_park", "min_zoom", 7, "name", "Yosemite")),
@@ -359,7 +359,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void nationalForest_usfsOperator_minZoom8() {
+  void zoom_8_nationalForest_usfsOperator() {
     assertFeatures(8,
       List.of(Map.of("kind", "park"), // landuse layer
         Map.of("kind", "park", "min_zoom", 8, "name", "Angeles National Forest")), // pois layer shows as park with area-based zoom
@@ -375,7 +375,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void navalBase_minZoom16() {
+  void zoom_16_navalBase() {
     assertFeatures(15,
       List.of(Map.of("kind", "naval_base", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -386,7 +386,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void airfield_minZoom16() {
+  void zoom_16_airfield() {
     assertFeatures(15,
       List.of(Map.of("kind", "airfield", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -397,7 +397,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void kindDetail_cuisine() {
+  void zoom_16_kindDetail_cuisine() {
     assertFeatures(15,
       List.of(Map.of("kind", "cafe", "kind_detail", "italian", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -408,7 +408,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void kindDetail_religion() {
+  void zoom_16_kindDetail_religion() {
     assertFeatures(15,
       List.of(Map.of("kind", "place_of_worship", "kind_detail", "christian", "min_zoom", 16)),
       process(SimpleFeature.create(
@@ -419,7 +419,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void kindDetail_sport() {
+  void zoom_14_kindDetail_sport() {
     assertFeatures(15,
       List.of(Map.of("kind", "stadium", "kind_detail", "soccer", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -430,7 +430,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void aerodromeDetail() {
+  void zoom_14_aerodromeDetail() {
     assertFeatures(15,
       List.of(Map.of("kind", "aerodrome", "kind_detail", "international", "min_zoom", 14)),
       process(SimpleFeature.create(
@@ -443,7 +443,7 @@ class PoisTest extends LayerTest {
   // ========== Area-based zoom overrides ==========
 
   @Test
-  void nationalPark_largeArea_minZoom7() {
+  void zoom_7_nationalPark_largeArea() {
     assertFeatures(7,
       List.of(Map.of("kind", "national_park"),
         Map.of("kind", "national_park", "min_zoom", 7, "name", "Huge Park")),
@@ -459,7 +459,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void aerodrome_largePolygon_minZoom13() {
+  void zoom_13_aerodrome_largePolygon() {
     assertFeatures(13,
       List.of(Map.of("kind", "aerodrome"),
         Map.of("kind", "aerodrome", "min_zoom", 13, "name", "Big Airport")),
@@ -474,7 +474,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void aerodrome_polygonWithIATA_minZoom11() {
+  void zoom_11_aerodrome_polygonWithIATA() {
     assertFeatures(11,
       List.of(Map.of("kind", "aerodrome"),
         Map.of("kind", "aerodrome", "min_zoom", 11, "name", "JFK", "iata", "JFK")),
@@ -490,7 +490,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void aerodrome_smallPolygonNoIATA_minZoom13() {
+  void zoom_13_aerodrome_smallPolygonNoIATA() {
     assertFeatures(13,
       List.of(Map.of("kind", "aerodrome"),
         Map.of("kind", "aerodrome", "min_zoom", 13, "name", "Regional Airport")),
@@ -505,7 +505,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void university_largeArea_minZoom8() {
+  void zoom_8_university_largeArea() {
     assertFeatures(8,
       List.of(Map.of("kind", "university"),
         Map.of("kind", "university", "min_zoom", 8, "name", "Large State University")),
@@ -520,7 +520,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void university_academyOfArt_minZoom15() {
+  void zoom_15_university_academyOfArt() {
     assertFeatures(15,
       List.of(Map.of("kind", "university"),
         Map.of("kind", "university", "min_zoom", 15, "name", "Academy of Art University")),
@@ -535,7 +535,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void park_largeArea_minZoom8() {
+  void zoom_8_park_largeArea() {
     assertFeatures(8,
       List.of(Map.of("kind", "park"),
         Map.of("kind", "park", "min_zoom", 8, "name", "Giant City Park")),
@@ -550,7 +550,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void park_mediumArea_minZoom12() {
+  void zoom_12_park_mediumArea() {
     assertFeatures(12,
       List.of(Map.of("kind", "park"),
         Map.of("kind", "park", "min_zoom", 12, "name", "Medium Park")),
@@ -565,7 +565,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void cemetery_largeArea_minZoom13() {
+  void zoom_13_cemetery_largeArea() {
     assertFeatures(13,
       List.of(Map.of("kind", "cemetery"),
         Map.of("kind", "cemetery", "min_zoom", 13, "name", "Large Cemetery")),
@@ -580,7 +580,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void school_largeArea_minZoom13() {
+  void zoom_13_school_largeArea() {
     assertFeatures(13,
       List.of(Map.of("kind", "school"),
         Map.of("kind", "school", "min_zoom", 13, "name", "Large School")),
@@ -595,7 +595,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void natureReserve_wilderness_minZoom13() {
+  void zoom_13_natureReserve_wilderness() {
     assertFeatures(13,
       List.of(Map.of("kind", "nature_reserve"),
         Map.of("kind", "nature_reserve", "min_zoom", 13, "name", "Some Wilderness")),
@@ -610,7 +610,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void forest_largeArea_minZoom8() {
+  void zoom_8_forest_largeArea() {
     assertFeatures(8,
       List.of(Map.of("kind", "forest"),
         Map.of("kind", "forest", "min_zoom", 8, "name", "Big Forest")),
@@ -627,7 +627,7 @@ class PoisTest extends LayerTest {
   // ========== Height-based zoom boost ==========
 
   @Test
-  void tallBuilding_100mHeight_minZoom12() {
+  void zoom_12_tallBuilding_100mHeight() {
     assertFeatures(12,
       List.of(Map.of("kind", "office", "min_zoom", 12, "name", "Skyscraper", "elevation", "100")),
       process(SimpleFeature.create(
@@ -643,7 +643,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void tallHotel_clampedMinZoom14() {
+  void zoom_14_tallHotel_clamped() {
     assertFeatures(14,
       List.of(Map.of("kind", "hotel", "min_zoom", 14, "name", "Tall Hotel")),
       process(SimpleFeature.create(
@@ -658,7 +658,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void tallStorageRental_minZoom15() {
+  void zoom_15_tallStorageRental() {
     assertFeatures(15,
       List.of(Map.of("kind", "storage_rental", "min_zoom", 15, "name", "Self Storage")),
       process(SimpleFeature.create(
@@ -675,7 +675,7 @@ class PoisTest extends LayerTest {
   // ========== Long name penalty ==========
 
   @Test
-  void longName_46chars_minZoom10() {
+  void zoom_10_longName_46chars() {
     assertFeatures(10,
       List.of(Map.of("kind", "park"),
         Map.of("kind", "park", "min_zoom", 10, "name", "This Is A Very Long Name For A Park That Goes On Forever")),
@@ -690,7 +690,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void mediumLongName_31chars_minZoom8() {
+  void zoom_8_mediumLongName_31chars() {
     assertFeatures(8,
       List.of(Map.of("kind", "park"),
         Map.of("kind", "park", "min_zoom", 8, "name", "Medium Length Park Name Here")),
@@ -707,7 +707,7 @@ class PoisTest extends LayerTest {
   // ========== Unnamed amenities late zoom ==========
 
   @Test
-  void unnamedBench_minZoom17() {
+  void zoom_17_unnamedBench() {
     assertFeatures(15,
       List.of(Map.of("kind", "bench", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -718,7 +718,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void unnamedATM_minZoom17() {
+  void zoom_17_unnamedATM() {
     assertFeatures(15,
       List.of(Map.of("kind", "atm", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -729,7 +729,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void unnamedPlayground_minZoom17() {
+  void zoom_17_unnamedPlayground() {
     assertFeatures(15,
       List.of(Map.of("kind", "playground", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -740,7 +740,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void unnamedViewpoint_minZoom17() {
+  void zoom_17_unnamedViewpoint() {
     assertFeatures(15,
       List.of(Map.of("kind", "viewpoint", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -751,7 +751,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void namedPlaygroundPolygon_minZoom18() {
+  void zoom_18_namedPlaygroundPolygon() {
     assertFeatures(15,
       List.of(Map.of("kind", "playground"),
         Map.of("kind", "playground", "min_zoom", 18, "name", "Fun Playground")),
@@ -768,7 +768,7 @@ class PoisTest extends LayerTest {
   // ========== Other specific shop/tourism overrides ==========
 
   @Test
-  void unnamedCarRepair_minZoom17() {
+  void zoom_17_unnamedCarRepair() {
     assertFeatures(15,
       List.of(Map.of("kind", "car_repair", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -779,7 +779,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void memorial_minZoom17() {
+  void zoom_17_memorial() {
     assertFeatures(15,
       List.of(Map.of("kind", "memorial", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -790,7 +790,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void pitch_minZoom17() {
+  void zoom_17_pitch() {
     assertFeatures(15,
       List.of(Map.of("kind", "pitch", "min_zoom", 17)),
       process(SimpleFeature.create(
@@ -801,7 +801,7 @@ class PoisTest extends LayerTest {
   }
 
   @Test
-  void bedAndBreakfast_minZoom17() {
+  void zoom_17_bedAndBreakfast() {
     assertFeatures(15,
       List.of(Map.of("kind", "bed_and_breakfast", "min_zoom", 17)),
       process(SimpleFeature.create(
