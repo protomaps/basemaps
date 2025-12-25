@@ -50,6 +50,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with("aeroway", "aerodrome"),
       use("kind", "aerodrome"),
       use("kindDetail", fromTag("aerodrome"))
+    ),
+    rule(
+      with("amenity"),
+      use("kind", fromTag("amenity"))
     )
   )).index();
 
@@ -102,21 +106,16 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           minZoom -= 2;
         }
       } else if (sf.hasTag("amenity", "university", "college")) {
-        kind = sf.getString("amenity");
         // One would think University should be earlier, but there are lots of dinky node only places
         // So if the university has a large area, it'll naturally improve it's zoom in the next section...
         minZoom = 14;
       } else if (sf.hasTag("amenity", "hospital")) {
-        kind = sf.getString("amenity");
         minZoom = 12;
       } else if (sf.hasTag("amenity", "library", "post_office", "townhall")) {
-        kind = sf.getString("amenity");
         minZoom = 13;
       } else if (sf.hasTag("amenity", "school")) {
-        kind = sf.getString("amenity");
         minZoom = 15;
       } else if (sf.hasTag("amenity", "cafe")) {
-        kind = sf.getString("amenity");
         minZoom = 15;
       } else if (sf.hasTag("landuse", "cemetery")) {
         kind = sf.getString("landuse");
@@ -150,9 +149,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         // All these will default to min_zoom of 15
         // If a more specific min_zoom is needed (or sanitize kind values)
         // then add new logic in section above
-        if (sf.hasTag("amenity")) {
-          kind = sf.getString("amenity");
-        } else if (sf.hasTag("attraction")) {
+        if (sf.hasTag("attraction")) {
           kind = sf.getString("attraction");
         } else if (sf.hasTag("craft")) {
           kind = sf.getString("craft");
