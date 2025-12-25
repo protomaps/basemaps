@@ -1,10 +1,16 @@
 package com.protomaps.basemap.layers;
 
+import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getString;
+import static com.protomaps.basemap.feature.Matcher.rule;
+import static com.protomaps.basemap.feature.Matcher.use;
+import static com.protomaps.basemap.feature.Matcher.with;
 import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
@@ -35,15 +41,36 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "pois";
 
+  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
+    rule(
+      use("kind", "other"),
+      use("kindDetail", "")
+    ),
+    rule(
+      with("aeroway", "aerodrome"),
+      use("kind", "aerodrome"),
+      use("kindDetail", fromTag("aerodrome"))
+    )
+  )).index();
+
   @Override
   public String name() {
     return LAYER_NAME;
   }
 
+  // ~= pow((sqrt(70k) / (40m / 256)) / 256, 2) ~= 4.4e-11
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
+    var matches = index.getMatches(sf);
+    if (matches.isEmpty()) {
+      return;
+    }
+
+    String kind = getString(sf, matches, "kind", "undefined");
+    String kindDetail = getString(sf, matches, "kindDetail", "undefined");
+
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
       sf.hasTag("amenity") ||
       sf.hasTag("attraction") ||
@@ -59,8 +86,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
-      String kind = "other";
-      String kindDetail = "";
       Integer minZoom = 15;
       long qrank = 0;
 
@@ -70,16 +95,11 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       }
 
       if (sf.hasTag("aeroway", "aerodrome")) {
-        kind = sf.getString("aeroway");
         minZoom = 13;
 
         // Emphasize large international airports earlier
         if (kind.equals("aerodrome") && sf.hasTag("iata")) {
           minZoom -= 2;
-        }
-
-        if (sf.hasTag("aerodrome")) {
-          kindDetail = sf.getString("aerodrome");
         }
       } else if (sf.hasTag("amenity", "university", "college")) {
         kind = sf.getString("amenity");
