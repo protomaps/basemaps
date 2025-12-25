@@ -5,11 +5,13 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.without;
 import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.expression.Expression;
 import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
@@ -41,19 +43,95 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "pois";
 
+  private static final Expression with_operator_usfs = with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
+  private static final Expression without_operator_usfs = without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
+  private static final Expression without_protectionTitle_conservationEtc = without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary");
+
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
     rule(
       use("kind", "other"),
       use("kindDetail", "")
     ),
+
+    rule(
+      with("boundary", "national_park"),
+      with_operator_usfs,
+      use("kind", "forest")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      with("protect_class", "6"),
+      with("protection_title", "National Forest"),
+      use("kind", "forest")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      with("landuse", "forest"),
+      with("protect_class", "6"),
+      use("kind", "forest")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      with("boundary", "protected_area"),
+      with("protect_class", "6"),
+      with_operator_usfs,
+      use("kind", "forest")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      with("landuse", "forest"),
+      use("kind", "forest")
+    ),
+
+    rule(
+      with("boundary", "national_park"),
+      use("kind", "park")
+    ),
+
+    rule(
+      with("boundary", "national_park"),
+      without_operator_usfs,
+      without_protectionTitle_conservationEtc,
+      with("protect_class", "2", "3"),
+      use("kind", "national_park")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      without_operator_usfs,
+      without_protectionTitle_conservationEtc,
+      with("operator", "United States National Park Service", "National Park Service", "US National Park Service", "U.S. National Park Service", "US National Park service"),
+      use("kind", "national_park")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      without_operator_usfs,
+      without_protectionTitle_conservationEtc,
+      with("operator:en", "Parks Canada"),
+      use("kind", "national_park")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      without_operator_usfs,
+      without_protectionTitle_conservationEtc,
+      with("designation", "national_park"),
+      use("kind", "national_park")
+    ),
+    rule(
+      with("boundary", "national_park"),
+      without_operator_usfs,
+      without_protectionTitle_conservationEtc,
+      with("protection_title", "National Park"),
+      use("kind", "national_park")
+    ),
+
+    rule(
+      with("amenity"),
+      use("kind", fromTag("amenity"))
+    ),
     rule(
       with("aeroway", "aerodrome"),
       use("kind", "aerodrome"),
       use("kindDetail", fromTag("aerodrome"))
-    ),
-    rule(
-      with("amenity"),
-      use("kind", fromTag("amenity"))
     )
   )).index();
 
@@ -174,7 +252,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         } else if (sf.hasTag("historic") && !sf.hasTag("historic", "yes")) {
           kind = sf.getString("historic");
         } else if (sf.hasTag("boundary")) {
-          kind = sf.getString("boundary");
+          // kind = sf.getString("boundary");
         }
       }
 
@@ -183,27 +261,27 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
           "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
           "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
+        // kind = "forest";
       } else if (sf.hasTag("boundary", "national_park") &&
         sf.hasTag("protect_class", "6") &&
         sf.hasTag("protection_title", "National Forest")) {
-        kind = "forest";
+        // kind = "forest";
       } else if (sf.hasTag("landuse", "forest") &&
         sf.hasTag("protect_class", "6")) {
-        kind = "forest";
+        // kind = "forest";
       } else if (sf.hasTag("landuse", "forest") &&
         sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
           "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
           "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
+        // kind = "forest";
       } else if (sf.hasTag("landuse", "forest")) {
-        kind = "forest";
+        // kind = "forest";
       } else if (sf.hasTag("boundary", "protected_area") &&
         sf.hasTag("protect_class", "6") &&
         sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
           "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
           "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
+        //kind = "forest";
       }
 
       // National parks
@@ -222,10 +300,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
             sf.hasTag("operator:en", "Parks Canada") ||
             sf.hasTag("designation", "national_park") ||
             sf.hasTag("protection_title", "National Park"))) {
-          kind = "national_park";
+          // kind = "national_park";
           minZoom = 11;
         } else {
-          kind = "park";
+          // kind = "park";
         }
       }
 
