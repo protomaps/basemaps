@@ -148,7 +148,30 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   private static final MultiExpression.Index<Map<String, Object>> zoomsIndex = MultiExpression.of(List.of(
 
     // Everything is zoom=15 at first
-    rule(use("minZoom", 15))
+    rule(use("minZoom", 15)),
+
+    rule(with("protomaps-basemaps:kind", "national_park"), use("minZoom", 11)),
+    rule(with("natural", "peak"), use("minZoom", 13)),
+    rule(with("highway", "bus_stop"), use("minZoom", 17)),
+    rule(with("tourism", "attraction", "camp_site", "hotel"), use("minZoom", 15)),
+    rule(with("shop", "grocery", "supermarket"), use("minZoom", 14)),
+    rule(with("leisure", "golf_course", "marina", "stadium"), use("minZoom", 13)),
+    rule(with("leisure", "park"), use("minZoom", 14)), // Lots of pocket parks and NODE parks, show those later than rest of leisure
+    rule(with("landuse", "cemetery"), use("minZoom", 14)),
+    rule(with("amenity", "cafe"), use("minZoom", 15)),
+    rule(with("amenity", "school"), use("minZoom", 15)),
+    rule(with("amenity", "library", "post_office", "townhall"), use("minZoom", 13)),
+    rule(with("amenity", "hospital"), use("minZoom", 12)),
+    rule(with("amenity", "university", "college"), use("minZoom", 14)), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
+    rule(with("aeroway", "aerodrome"), use("minZoom", 13)),
+
+    // Emphasize large international airports earlier
+    rule(
+      with("aeroway", "aerodrome"),
+      with("protomaps-basemaps:kind", "aerodrome"),
+      with("iata"),
+      use("minZoom", 11)
+    )
 
   )).index();
 
@@ -157,9 +180,31 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     return LAYER_NAME;
   }
 
-  // ~= pow((sqrt(70k) / (40m / 256)) / 256, 2) ~= 4.4e-11
+  // ~= pow((sqrt(7e4) / (4e7 / 256)) / 256, 2) ~= 4.4e-11
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
+
+  public void calculateDimensions(SourceFeature sf) {
+    Double wayArea = 0.0;
+    Double height = 0.0;
+
+    if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
+      try {
+        wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
+      } catch (GeometryException e) {
+        e.log("Exception in POI way calculation");
+      }
+      if (sf.hasTag("height")) {
+        Double parsed = parseDoubleOrNull(sf.getString("height"));
+        if (parsed != null) {
+          height = parsed;
+        }
+      }
+    }
+
+    sf.setTag("protomaps-basemaps:wayArea", wayArea);
+    sf.setTag("protomaps-basemaps:height", height);
+  }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     var kindMatches = kindsIndex.getMatches(sf);
@@ -167,14 +212,15 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    String kind = getString(sf, kindMatches, "kind", "undefined");
-    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
-
+    calculateDimensions(sf);
+    sf.setTag("protomaps-basemaps:kind", getString(sf, kindMatches, "kind", "undefined"));
     var zoomMatches = zoomsIndex.getMatches(sf);
     if (zoomMatches.isEmpty()) {
       return;
     }
 
+    String kind = getString(sf, kindMatches, "kind", "undefined");
+    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
     Integer minZoom = getInteger(sf, zoomMatches, "minZoom", 99);
 
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
@@ -197,62 +243,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       String wikidata = sf.getString("wikidata");
       if (wikidata != null) {
         qrank = qrankDb.get(wikidata);
-      }
-
-      if (sf.hasTag("aeroway", "aerodrome")) {
-        minZoom = 13;
-
-        // Emphasize large international airports earlier
-        if (kind.equals("aerodrome") && sf.hasTag("iata")) {
-          minZoom -= 2;
-        }
-      } else if (sf.hasTag("amenity", "university", "college")) {
-        // One would think University should be earlier, but there are lots of dinky node only places
-        // So if the university has a large area, it'll naturally improve it's zoom in the next section...
-        minZoom = 14;
-      } else if (sf.hasTag("amenity", "hospital")) {
-        minZoom = 12;
-      } else if (sf.hasTag("amenity", "library", "post_office", "townhall")) {
-        minZoom = 13;
-      } else if (sf.hasTag("amenity", "school")) {
-        minZoom = 15;
-      } else if (sf.hasTag("amenity", "cafe")) {
-        minZoom = 15;
-      } else if (sf.hasTag("landuse", "cemetery")) {
-        minZoom = 14;
-      } else if (sf.hasTag("leisure", "park")) {
-        // Lots of pocket parks and NODE parks, show those later than rest of leisure
-        minZoom = 14;
-      } else if (sf.hasTag("leisure", "golf_course", "marina", "stadium")) {
-        minZoom = 13;
-      } else if (sf.hasTag("shop", "grocery", "supermarket")) {
-        minZoom = 14;
-      } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
-        minZoom = 15;
-      } else if (sf.hasTag("highway", "bus_stop")) {
-        minZoom = 17;
-      } else if (sf.hasTag("natural", "peak")) {
-        minZoom = 13;
-      }
-
-      // National parks
-      if (sf.hasTag("boundary", "national_park")) {
-        if (!(sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service") ||
-          sf.hasTag("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-            "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-            "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-            "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-            "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary")) &&
-          (sf.hasTag("protect_class", "2", "3") ||
-            sf.hasTag("operator", "United States National Park Service", "National Park Service",
-              "US National Park Service", "U.S. National Park Service", "US National Park service") ||
-            sf.hasTag("operator:en", "Parks Canada") ||
-            sf.hasTag("designation", "national_park") ||
-            sf.hasTag("protection_title", "National Park"))) {
-          minZoom = 11;
-        }
       }
 
       // try first for polygon -> point representations
