@@ -2,6 +2,7 @@ package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getInteger;
 import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
@@ -47,7 +48,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
     "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
 
-  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> kindsIndex = MultiExpression.of(List.of(
 
     // Everything is "other"/"" at first
     rule(use("kind", "other"), use("kindDetail", "")),
@@ -144,6 +145,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   )).index();
 
+  private static final MultiExpression.Index<Map<String, Object>> zoomsIndex = MultiExpression.of(List.of(
+
+    // Everything is zoom=15 at first
+    rule(use("minZoom", 15))
+
+  )).index();
+
   @Override
   public String name() {
     return LAYER_NAME;
@@ -154,13 +162,20 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    var matches = index.getMatches(sf);
-    if (matches.isEmpty()) {
+    var kindMatches = kindsIndex.getMatches(sf);
+    if (kindMatches.isEmpty()) {
       return;
     }
 
-    String kind = getString(sf, matches, "kind", "undefined");
-    String kindDetail = getString(sf, matches, "kindDetail", "undefined");
+    String kind = getString(sf, kindMatches, "kind", "undefined");
+    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
+
+    var zoomMatches = zoomsIndex.getMatches(sf);
+    if (zoomMatches.isEmpty()) {
+      return;
+    }
+
+    Integer minZoom = getInteger(sf, zoomMatches, "minZoom", 99);
 
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
       sf.hasTag("amenity") ||
@@ -177,7 +192,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
-      Integer minZoom = 15;
       long qrank = 0;
 
       String wikidata = sf.getString("wikidata");
