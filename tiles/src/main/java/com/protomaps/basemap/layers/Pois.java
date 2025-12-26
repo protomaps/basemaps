@@ -205,31 +205,19 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       } else if (sf.hasTag("amenity", "cafe")) {
         minZoom = 15;
       } else if (sf.hasTag("landuse", "cemetery")) {
-        // kind = sf.getString("landuse");
         minZoom = 14;
-      } else if (sf.hasTag("landuse", "military")) {
-        // kind = "military";
-        if (sf.hasTag("military", "naval_base", "airfield")) {
-          // kind = sf.getString("military");
-        }
       } else if (sf.hasTag("leisure", "park")) {
-        // kind = "park";
         // Lots of pocket parks and NODE parks, show those later than rest of leisure
         minZoom = 14;
       } else if (sf.hasTag("leisure", "golf_course", "marina", "stadium")) {
-        // kind = sf.getString("leisure");
         minZoom = 13;
       } else if (sf.hasTag("shop", "grocery", "supermarket")) {
-        // kind = sf.getString("shop");
         minZoom = 14;
       } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
-        // kind = sf.getString("tourism");
         minZoom = 15;
       } else if (sf.hasTag("highway", "bus_stop")) {
-        // kind = sf.getString("highway");
         minZoom = 17;
       } else if (sf.hasTag("natural", "peak")) {
-        // kind = sf.getString("natural");
         minZoom = 13;
       }
 
@@ -249,10 +237,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
             sf.hasTag("operator:en", "Parks Canada") ||
             sf.hasTag("designation", "national_park") ||
             sf.hasTag("protection_title", "National Park"))) {
-          // kind = "national_park";
           minZoom = 11;
-        } else {
-          // kind = "park";
         }
       }
 
