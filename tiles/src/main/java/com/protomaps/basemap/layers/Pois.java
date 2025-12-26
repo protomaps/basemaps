@@ -54,6 +54,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     ),
 
     rule(
+      with("boundary"),
+      use("kind", fromTag("boundary"))
+    ),
+
+    // National forests
+
+    rule(
       with("boundary", "national_park"),
       with_operator_usfs,
       use("kind", "forest")
@@ -65,13 +72,20 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       use("kind", "forest")
     ),
     rule(
-      with("boundary", "national_park"),
       with("landuse", "forest"),
       with("protect_class", "6"),
       use("kind", "forest")
     ),
     rule(
-      with("boundary", "national_park"),
+      with("landuse", "forest"),
+      with_operator_usfs,
+      use("kind", "forest")
+    ),
+    rule(
+      with("landuse", "forest"),
+      use("kind", "forest")
+    ),
+    rule(
       with("boundary", "protected_area"),
       with("protect_class", "6"),
       with_operator_usfs,
@@ -82,6 +96,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with("landuse", "forest"),
       use("kind", "forest")
     ),
+
+    // National parks
 
     rule(
       with("boundary", "national_park"),
@@ -123,6 +139,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with("protection_title", "National Park"),
       use("kind", "national_park")
     ),
+
+    // Remaining amenities
 
     rule(
       with("amenity"),
@@ -254,34 +272,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         } else if (sf.hasTag("boundary")) {
           // kind = sf.getString("boundary");
         }
-      }
-
-      // National forests
-      if (sf.hasTag("boundary", "national_park") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
-        // kind = "forest";
-      } else if (sf.hasTag("boundary", "national_park") &&
-        sf.hasTag("protect_class", "6") &&
-        sf.hasTag("protection_title", "National Forest")) {
-        // kind = "forest";
-      } else if (sf.hasTag("landuse", "forest") &&
-        sf.hasTag("protect_class", "6")) {
-        // kind = "forest";
-      } else if (sf.hasTag("landuse", "forest") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
-        // kind = "forest";
-      } else if (sf.hasTag("landuse", "forest")) {
-        // kind = "forest";
-      } else if (sf.hasTag("boundary", "protected_area") &&
-        sf.hasTag("protect_class", "6") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
-        //kind = "forest";
       }
 
       // National parks
