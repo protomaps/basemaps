@@ -11,6 +11,7 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.withAllOf;
 import static com.protomaps.basemap.feature.Matcher.withAnyOf;
 import static com.protomaps.basemap.feature.Matcher.withLine;
 import static com.protomaps.basemap.feature.Matcher.withPoint;
@@ -200,6 +201,176 @@ class MatcherTest {
     );
     matches = index.getMatches(sf);
     assertEquals("polygon", getString(sf, matches, "result", "default"));
+  }
+
+  @Test
+  void testWithAllOfEmpty() {
+    assertEquals(Expression.TRUE, withAllOf());
+  }
+
+  @Test
+  void testWithAllOfSingle() {
+    assertEquals(Expression.matchField("a"), withAllOf(with("a")));
+  }
+
+  @Test
+  void testWithAllOfMultiple() {
+    assertEquals(Expression.and(Expression.matchField("a"), Expression.matchField("b")),
+      withAllOf(with("a"), with("b")));
+
+    assertEquals(Expression.and(Expression.matchField("a"), Expression.matchField("b"), Expression.matchField("c")),
+      withAllOf(with("a"), with("b"), with("c")));
+  }
+
+  @Test
+  void testWithAllOfMatching() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withAllOf(with("a", "b"), with("c", "d")),
+        use("result", "matched")
+      )
+    )).index();
+
+    // Test first condition matches but not second (a=b, no c)
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "b"),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+
+    // Test second condition matches but not first (c=d, no a)
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("c", "d"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+
+    // Test both conditions match (a=b AND c=d)
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "b", "c", "d"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("matched", getString(sf, matches, "result", "default"));
+
+    // Test neither condition matches
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("e", "f"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+  }
+
+  @Test
+  void testWithAllOfPartialMatch() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withAllOf(with("a", "b"), with("c", "d"), with("e", "f")),
+        use("result", "matched")
+      )
+    )).index();
+
+    // Test only one condition matches
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "b"),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+
+    // Test two conditions match but not all three
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "b", "c", "d"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+
+    // Test all three conditions match
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "b", "c", "d", "e", "f"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("matched", getString(sf, matches, "result", "default"));
+  }
+
+  @Test
+  void testWithAllOfGeometryTypes() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withAllOf(withPoint(), with("name")),
+        use("result", "named_point")
+      )
+    )).index();
+
+    // Test point without name (should not match)
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+
+    // Test point with name (should match)
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("name", "Test Point"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("named_point", getString(sf, matches, "result", "default"));
+
+    // Test line with name (should not match - wrong geometry type)
+    sf = SimpleFeature.create(
+      newLineString(0, 0, 1, 1),
+      Map.of("name", "Test Line"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+
+    // Test polygon with name (should not match - wrong geometry type)
+    sf = SimpleFeature.create(
+      newPolygon(0, 0, 1, 1, 2, 2, 0, 0),
+      Map.of("name", "Test Polygon"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
   }
 
   @Test

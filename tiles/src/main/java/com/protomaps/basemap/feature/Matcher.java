@@ -201,6 +201,58 @@ public class Matcher {
     return Expression.or(Arrays.asList(expressions));
   }
 
+  /**
+   * Creates an {@link Expression} that evaluates to true if all of the provided expressions evaluate to true.
+   *
+   * <p>
+   * This method combines multiple expressions using logical AND. All expressions must match the source feature for the
+   * entire expression to evaluate to true.
+   * </p>
+   *
+   * <p>
+   * If no expressions are provided, returns {@link Expression#TRUE} (matches everything).
+   * </p>
+   *
+   * <p>
+   * If one expression is provided, returns that expression as-is.
+   * </p>
+   *
+   * <p>
+   * If multiple expressions are provided, they are combined with logical AND.
+   * </p>
+   *
+   * <p>
+   * Example usage:
+   *
+   * <pre>
+   * <code>
+   * // Match features that are both natural and protected
+   * withAllOf(
+   *   with("natural"),
+   *   with("boundary", "protected_area")
+   * )
+   *
+   * // Match features that are points with a name
+   * withAllOf(
+   *   withPoint(),
+   *   with("name")
+   * )
+   * </code>
+   * </pre>
+   * </p>
+   *
+   * @param expressions Variable number of {@link Expression} instances to combine with AND logic.
+   * @return An {@link Expression} that evaluates to true if all of the provided expressions are true.
+   */
+  public static Expression withAllOf(Expression... expressions) {
+    if (expressions.length == 0) {
+      return Expression.TRUE;
+    } else if (expressions.length == 1) {
+      return expressions[0];
+    }
+    return Expression.and(Arrays.asList(expressions));
+  }
+
   public static Expression withPoint() {
     return Expression.matchGeometryType(GeometryType.POINT);
   }

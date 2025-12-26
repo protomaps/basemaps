@@ -6,6 +6,7 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.withAllOf;
 import static com.protomaps.basemap.feature.Matcher.withAnyOf;
 import static com.protomaps.basemap.feature.Matcher.without;
 
@@ -84,36 +85,20 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     // National forests
 
     rule(
-      with("boundary", "national_park"),
-      with_operator_usfs,
-      use("kind", "forest")
-    ),
-    rule(
-      with("boundary", "national_park"),
-      with("protect_class", "6"),
-      with("protection_title", "National Forest"),
-      use("kind", "forest")
-    ),
-    rule(
-      with("landuse", "forest"),
-      with("protect_class", "6"),
-      use("kind", "forest")
-    ),
-    rule(
-      with("landuse", "forest"),
-      with_operator_usfs,
-      use("kind", "forest")
-    ),
-    rule(with("landuse", "forest"), use("kind", "forest")),
-    rule(
-      with("boundary", "protected_area"),
-      with("protect_class", "6"),
-      with_operator_usfs,
-      use("kind", "forest")
-    ),
-    rule(
-      with("boundary", "national_park"),
-      with("landuse", "forest"),
+      withAnyOf(
+        with("landuse", "forest"),
+        withAllOf(with("boundary", "national_park"), with_operator_usfs),
+        withAllOf(
+          with("boundary", "national_park"),
+          with("protect_class", "6"),
+          with("protection_title", "National Forest")
+        ),
+        withAllOf(
+          with("boundary", "protected_area"),
+          with("protect_class", "6"),
+          with_operator_usfs
+        )
+      ),
       use("kind", "forest")
     ),
 
