@@ -7,6 +7,7 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.withPoint;
 import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
@@ -171,6 +172,46 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with("protomaps-basemaps:kind", "aerodrome"),
       with("iata"),
       use("minZoom", 11)
+    ),
+
+    rule(
+      withPoint(),
+      Expression.or(
+        with("amenity", "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
+          "car_sharing", "bureau_de_change", "emergency_phone", "karaoke", "karaoke_box", "money_transfer", "car_wash",
+          "hunting_stand", "studio", "boat_storage", "gambling", "adult_gaming_centre", "sanitary_dump_station",
+          "attraction", "animal", "water_slide", "roller_coaster", "summer_toboggan", "carousel", "amusement_ride",
+          "maze"),
+        with("historic", "memorial", "district"),
+        with("leisure", "pitch", "playground", "slipway"),
+        with("shop", "scuba_diving", "atv", "motorcycle", "snowmobile", "art", "bakery", "beauty", "bookmaker",
+          "books", "butcher", "car", "car_parts", "car_repair", "clothes", "computer", "convenience", "fashion",
+          "florist", "garden_centre", "gift", "golf", "greengrocer", "grocery", "hairdresser", "hifi", "jewelry",
+          "lottery", "mobile_phone", "newsagent", "optician", "perfumery", "ship_chandler", "stationery", "tobacco",
+          "travel_agency"),
+        with("tourism", "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
+          "guest_house", "hostel")
+      ),
+      use("minZoom", 16)
+    ),
+
+    // Some features should only be visible at very late zooms when they don't have a name
+    rule(
+      withPoint(),
+      without("name"),
+      Expression.or(
+        with("amenity", "atm", "bbq", "bench", "bicycle_parking",
+          "bicycle_rental", "bicycle_repair_station", "boat_storage", "bureau_de_change", "car_rental", "car_sharing",
+          "car_wash", "charging_station", "customs", "drinking_water", "fuel", "harbourmaster", "hunting_stand",
+          "karaoke_box", "life_ring", "money_transfer", "motorcycle_parking", "parking", "picnic_table", "post_box",
+          "ranger_station", "recycling", "sanitary_dump_station", "shelter", "shower", "taxi", "telephone", "toilets",
+          "waste_basket", "waste_disposal", "water_point", "watering_place", "bicycle_rental", "motorcycle_parking",
+          "charging_station"),
+        with("historic", "landmark", "wayside_cross"),
+        with("leisure", "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area"),
+        with("tourism", "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut")
+      ),
+      use("minZoom", 16)
     )
 
   )).index();
@@ -187,8 +228,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   public void calculateDimensions(SourceFeature sf) {
     Double wayArea = 0.0;
     Double height = 0.0;
+    String namedPolygon = "no";
 
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
+      namedPolygon = "yes";
       try {
         wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
       } catch (GeometryException e) {
@@ -204,6 +247,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     sf.setTag("protomaps-basemaps:wayArea", wayArea);
     sf.setTag("protomaps-basemaps:height", height);
+    sf.setTag("protomaps-basemaps:namedPolygon", namedPolygon);
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
@@ -537,37 +581,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         }
 
         OsmNames.setOsmNames(pointFeature, sf, 0);
-
-        // Some features should only be visible at very late zooms when they don't have a name
-        if (!sf.hasTag("name") && (sf.hasTag("amenity", "atm", "bbq", "bench", "bicycle_parking",
-          "bicycle_rental", "bicycle_repair_station", "boat_storage", "bureau_de_change", "car_rental", "car_sharing",
-          "car_wash", "charging_station", "customs", "drinking_water", "fuel", "harbourmaster", "hunting_stand",
-          "karaoke_box", "life_ring", "money_transfer", "motorcycle_parking", "parking", "picnic_table", "post_box",
-          "ranger_station", "recycling", "sanitary_dump_station", "shelter", "shower", "taxi", "telephone", "toilets",
-          "waste_basket", "waste_disposal", "water_point", "watering_place", "bicycle_rental", "motorcycle_parking",
-          "charging_station") ||
-          sf.hasTag("historic", "landmark", "wayside_cross") ||
-          sf.hasTag("leisure", "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area") ||
-          sf.hasTag("tourism", "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut"))) {
-          pointFeature.setAttr("min_zoom", 17);
-        }
-
-        if (sf.hasTag("amenity", "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
-          "car_sharing", "bureau_de_change", "emergency_phone", "karaoke", "karaoke_box", "money_transfer", "car_wash",
-          "hunting_stand", "studio", "boat_storage", "gambling", "adult_gaming_centre", "sanitary_dump_station",
-          "attraction", "animal", "water_slide", "roller_coaster", "summer_toboggan", "carousel", "amusement_ride",
-          "maze") ||
-          sf.hasTag("historic", "memorial", "district") ||
-          sf.hasTag("leisure", "pitch", "playground", "slipway") ||
-          sf.hasTag("shop", "scuba_diving", "atv", "motorcycle", "snowmobile", "art", "bakery", "beauty", "bookmaker",
-            "books", "butcher", "car", "car_parts", "car_repair", "clothes", "computer", "convenience", "fashion",
-            "florist", "garden_centre", "gift", "golf", "greengrocer", "grocery", "hairdresser", "hifi", "jewelry",
-            "lottery", "mobile_phone", "newsagent", "optician", "perfumery", "ship_chandler", "stationery", "tobacco",
-            "travel_agency") ||
-          sf.hasTag("tourism", "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
-            "guest_house", "hostel")) {
-          pointFeature.setAttr("min_zoom", 17);
-        }
 
         // Server sort features so client label collisions are pre-sorted
         // NOTE: (nvkelso 20230627) This could also include other params like the name
