@@ -22,6 +22,7 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -213,6 +214,51 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         with("tourism", "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut")
       ),
       use("minZoom", 16)
+    ),
+
+    rule(
+      with("protomaps-basemaps:hasNamedPolygon"),
+      with("protomaps-basemaps:kind", "playground"),
+      use("minZoom", 17)
+    ),
+    rule(
+      with("protomaps-basemaps:hasNamedPolygon"),
+      with("protomaps-basemaps:kind", "allotments"),
+      use("minZoom", 16)
+    ),
+    rule(
+      with("protomaps-basemaps:hasNamedPolygon"),
+      Expression.or(with("protomaps-basemaps:kind", "cemetery"), with("protomaps-basemaps:kind", "school")),
+      use("minZoom", 16)
+    ),
+    rule(
+      with("protomaps-basemaps:hasNamedPolygon"),
+      Expression.or(
+        with("protomaps-basemaps:kind", "forest"),
+        with("protomaps-basemaps:kind", "park"),
+        with("protomaps-basemaps:kind", "protected_area"),
+        with("protomaps-basemaps:kind", "nature_reserve"),
+        with("protomaps-basemaps:kind", "village_green")
+      ),
+      use("minZoom", 17)
+    ),
+    rule(
+      with("protomaps-basemaps:hasNamedPolygon"),
+      Expression.or(with("protomaps-basemaps:kind", "college"), with("protomaps-basemaps:kind", "university")),
+      use("minZoom", 15)
+    ),
+    rule(
+      with("protomaps-basemaps:hasNamedPolygon"),
+      Expression.or(
+        with("protomaps-basemaps:kind", "national_park"),
+        with("protomaps-basemaps:kind", "aerodrome"),
+        with("protomaps-basemaps:kind", "golf_course"),
+        with("protomaps-basemaps:kind", "military"),
+        with("protomaps-basemaps:kind", "naval_base"),
+        with("protomaps-basemaps:kind", "stadium"),
+        with("protomaps-basemaps:kind", "zoo")
+      ),
+      use("minZoom", 14)
     )
 
   )).index();
@@ -227,34 +273,29 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public Matcher.SourceFeatureWithComputedTags computeExtraTags(SourceFeature sf, String kind) {
-    Double wayArea = 0.0;
-    Double height = 0.0;
-    Boolean hasNamedPolygon = false;
+    Map<String, Object> computedTags = new HashMap<>(Map.of(
+      "protomaps-basemaps:kind", kind,
+      "protomaps-basemaps:wayArea", 0.0,
+      "protomaps-basemaps:height", 0.0
+    ));
 
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
-      hasNamedPolygon = true;
+      computedTags.put("protomaps-basemaps:hasNamedPolygon", true);
       try {
-        wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
+        Double area = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
+        computedTags.put("protomaps-basemaps:wayArea", area);
       } catch (GeometryException e) {
         e.log("Exception in POI way calculation");
       }
       if (sf.hasTag("height")) {
         Double parsed = parseDoubleOrNull(sf.getString("height"));
         if (parsed != null) {
-          height = parsed;
+          computedTags.put("protomaps-basemaps:height", parsed);
         }
       }
     }
 
-    return new Matcher.SourceFeatureWithComputedTags(
-      sf,
-      Map.of(
-        "protomaps-basemaps:kind", kind,
-        "protomaps-basemaps:wayArea", wayArea,
-        "protomaps-basemaps:height", height,
-        "protomaps-basemaps:hasNamedPolygon", hasNamedPolygon
-      )
-    );
+    return new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
@@ -337,7 +378,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           } else if (wayArea > 1) {
             minZoom = 13;
           } else if (wayArea > 0.25) {
-            minZoom = 14;
+            //minZoom = 14;
           }
         } else if (kind.equals("aerodrome") ||
           kind.equals("golf_course") ||
@@ -360,7 +401,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           } else if (wayArea > 1) {
             minZoom = 13;
           } else if (wayArea > 0.25) {
-            minZoom = 14;
+            //minZoom = 14;
           }
 
           // Emphasize large international airports earlier
@@ -400,7 +441,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           } else if (wayArea > 5) {
             minZoom = 14;
           } else {
-            minZoom = 15;
+            //minZoom = 15;
           }
 
           // Hack for weird San Francisco university
@@ -433,7 +474,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           } else if (wayArea > 0.001) {
             minZoom = 16;
           } else {
-            minZoom = 17;
+            //minZoom = 17;
           }
 
           // Discount wilderness areas within US national forests and parks
@@ -451,17 +492,17 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           } else if (wayArea > 0.01) {
             minZoom = 15;
           } else {
-            minZoom = 16;
+            //minZoom = 16;
           }
           // Typically for "building" derived label placements for shops and other businesses
         } else if (kind.equals("allotments")) {
           if (wayArea > 0.01) {
             minZoom = 15;
           } else {
-            minZoom = 16;
+            //minZoom = 16;
           }
         } else if (kind.equals("playground")) {
-          minZoom = 17;
+          // minZoom = 17;
         } else {
           if (wayArea > 10) {
             minZoom = 11;
