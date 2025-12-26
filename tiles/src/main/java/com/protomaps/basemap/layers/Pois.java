@@ -1,12 +1,13 @@
 package com.protomaps.basemap.layers;
 
+import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.withAnyOf;
 import static com.protomaps.basemap.feature.Matcher.without;
-import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
@@ -43,16 +44,25 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "pois";
 
-  private static final Expression with_operator_usfs = with("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
-  private static final Expression without_operator_usfs = without("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
-  private static final Expression without_protectionTitle_conservationEtc = without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary");
+  private static final Expression with_operator_usfs = with("operator", "United States Forest Service",
+    "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
+    "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
+  private static final Expression without_operator_usfs = without("operator", "United States Forest Service",
+    "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
+    "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
+  private static final Expression without_protectionTitle_conservationEtc =
+    without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
+      "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
+      "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
+      "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
+      "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary");
 
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
 
     // Everything is "other"/"" at first
     rule(use("kind", "other"), use("kindDetail", "")),
 
-    // Boundary is most generic, so place first else we lose out
+    // Boundary is most generic, so place early else we lose out
     // on nature_reserve detail versus all the protected_area
     rule(with("boundary"), use("kind", fromTag("boundary"))),
 
@@ -114,35 +124,14 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with("boundary", "national_park"),
       without_operator_usfs,
       without_protectionTitle_conservationEtc,
-      with("protect_class", "2", "3"),
-      use("kind", "national_park")
-    ),
-    rule(
-      with("boundary", "national_park"),
-      without_operator_usfs,
-      without_protectionTitle_conservationEtc,
-      with("operator", "United States National Park Service", "National Park Service", "US National Park Service", "U.S. National Park Service", "US National Park service"),
-      use("kind", "national_park")
-    ),
-    rule(
-      with("boundary", "national_park"),
-      without_operator_usfs,
-      without_protectionTitle_conservationEtc,
-      with("operator:en", "Parks Canada"),
-      use("kind", "national_park")
-    ),
-    rule(
-      with("boundary", "national_park"),
-      without_operator_usfs,
-      without_protectionTitle_conservationEtc,
-      with("designation", "national_park"),
-      use("kind", "national_park")
-    ),
-    rule(
-      with("boundary", "national_park"),
-      without_operator_usfs,
-      without_protectionTitle_conservationEtc,
-      with("protection_title", "National Park"),
+      withAnyOf(
+        with("protect_class", "2", "3"),
+        with("operator", "United States National Park Service", "National Park Service", "US National Park Service",
+          "U.S. National Park Service", "US National Park service"),
+        with("operator:en", "Parks Canada"),
+        with("designation", "national_park"),
+        with("protection_title", "National Park")
+      ),
       use("kind", "national_park")
     ),
 

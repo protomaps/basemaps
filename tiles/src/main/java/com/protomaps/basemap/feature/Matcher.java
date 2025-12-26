@@ -149,6 +149,58 @@ public class Matcher {
     return Expression.not(with(arguments));
   }
 
+  /**
+   * Creates an {@link Expression} that evaluates to true if any of the provided expressions evaluate to true.
+   *
+   * <p>
+   * This method combines multiple expressions using logical OR. If any single expression matches the source feature,
+   * the entire expression evaluates to true.
+   * </p>
+   *
+   * <p>
+   * If no expressions are provided, returns {@link Expression#FALSE} (nothing matches).
+   * </p>
+   *
+   * <p>
+   * If one expression is provided, returns that expression as-is.
+   * </p>
+   *
+   * <p>
+   * If multiple expressions are provided, they are combined with logical OR.
+   * </p>
+   *
+   * <p>
+   * Example usage:
+   *
+   * <pre>
+   * <code>
+   * // Match features that are either parks or forests
+   * withAnyOf(
+   *   with("leisure", "park"),
+   *   with("natural", "forest")
+   * )
+   *
+   * // Match features that are either points or lines
+   * withAnyOf(
+   *   withPoint(),
+   *   withLine()
+   * )
+   * </code>
+   * </pre>
+   * </p>
+   *
+   * @param expressions Variable number of {@link Expression} instances to combine with OR logic.
+   * @return An {@link Expression} that evaluates to true if any of the provided expressions are true.
+   */
+  public static Expression withAnyOf(Expression... expressions) {
+    if (expressions.length == 0) {
+      return Expression.FALSE;
+    } else if (expressions.length == 1) {
+      return expressions[0];
+    }
+    return Expression.or(Arrays.asList(expressions));
+  }
+
   public static Expression withPoint() {
     return Expression.matchGeometryType(GeometryType.POINT);
   }

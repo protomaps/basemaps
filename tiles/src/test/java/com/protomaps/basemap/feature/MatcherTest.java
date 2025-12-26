@@ -11,6 +11,7 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.withAnyOf;
 import static com.protomaps.basemap.feature.Matcher.withLine;
 import static com.protomaps.basemap.feature.Matcher.withPoint;
 import static com.protomaps.basemap.feature.Matcher.withPolygon;
@@ -59,6 +60,146 @@ class MatcherTest {
 
     assertEquals(Expression.not(Expression.matchAny("a", "b", "c")),
       without("a", "b", "c"));
+  }
+
+  @Test
+  void testWithAnyOfEmpty() {
+    assertEquals(Expression.FALSE, withAnyOf());
+  }
+
+  @Test
+  void testWithAnyOfSingle() {
+    assertEquals(Expression.matchField("a"), withAnyOf(with("a")));
+  }
+
+  @Test
+  void testWithAnyOfMultiple() {
+    assertEquals(Expression.or(Expression.matchField("a"), Expression.matchField("b")),
+      withAnyOf(with("a"), with("b")));
+
+    assertEquals(Expression.or(Expression.matchField("a"), Expression.matchField("b"), Expression.matchField("c")),
+      withAnyOf(with("a"), with("b"), with("c")));
+  }
+
+  @Test
+  void testWithAnyOfMatching() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withAnyOf(with("a", "b"), with("c", "d")),
+        use("result", "matched")
+      )
+    )).index();
+
+    // Test first condition matches (a=b)
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "b"),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+    assertEquals("matched", getString(sf, matches, "result", "default"));
+
+    // Test second condition matches (c=d)
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("c", "d"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("matched", getString(sf, matches, "result", "default"));
+
+    // Test both conditions match
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("a", "b", "c", "d"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("matched", getString(sf, matches, "result", "default"));
+
+    // Test neither condition matches
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("e", "f"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+  }
+
+  @Test
+  void testWithAnyOfNoneMatch() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withAnyOf(with("a", "b"), with("c", "d"), with("e", "f")),
+        use("result", "matched")
+      )
+    )).index();
+
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("x", "y"),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+    assertEquals("default", getString(sf, matches, "result", "default"));
+  }
+
+  @Test
+  void testWithAnyOfGeometryTypes() {
+    var index = MultiExpression.ofOrdered(List.of(
+      rule(
+        withAnyOf(withPoint(), withLine()),
+        use("result", "point_or_line")
+      ),
+      rule(
+        withPolygon(),
+        use("result", "polygon")
+      )
+    )).index();
+
+    // Test point matches
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    var matches = index.getMatches(sf);
+    assertEquals("point_or_line", getString(sf, matches, "result", "default"));
+
+    // Test line matches
+    sf = SimpleFeature.create(
+      newLineString(0, 0, 1, 1),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("point_or_line", getString(sf, matches, "result", "default"));
+
+    // Test polygon doesn't match first rule but matches second
+    sf = SimpleFeature.create(
+      newPolygon(0, 0, 1, 1, 2, 2, 0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals("polygon", getString(sf, matches, "result", "default"));
   }
 
   @Test
