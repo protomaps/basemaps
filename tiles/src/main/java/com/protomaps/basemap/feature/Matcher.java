@@ -2,13 +2,17 @@ package com.protomaps.basemap.feature;
 
 import com.onthegomap.planetiler.expression.Expression;
 import com.onthegomap.planetiler.expression.MultiExpression;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.geo.GeometryType;
+import com.onthegomap.planetiler.geo.WithGeometry;
 import com.onthegomap.planetiler.reader.SourceFeature;
+import com.onthegomap.planetiler.reader.WithTags;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * A utility class for matching source feature properties to values.
@@ -203,14 +207,14 @@ public class Matcher {
     return new FromTag(key);
   }
 
-  public static String getString(SourceFeature sf, List<Map<String, Object>> matches, String key, String defaultValue) {
+  public static String getString(WithTags wt, List<Map<String, Object>> matches, String key, String defaultValue) {
     for (var match : matches.reversed()) {
       if (match.containsKey(key)) {
         Object value = match.get(key);
         if (value instanceof String stringValue) {
           return stringValue;
         } else if (value instanceof FromTag fromTag) {
-          return sf.getString(fromTag.key, defaultValue);
+          return wt.getString(fromTag.key, defaultValue);
         } else {
           return defaultValue;
         }
@@ -219,7 +223,7 @@ public class Matcher {
     return defaultValue;
   }
 
-  public static Integer getInteger(SourceFeature sf, List<Map<String, Object>> matches, String key,
+  public static Integer getInteger(WithTags wt, List<Map<String, Object>> matches, String key,
     Integer defaultValue) {
     for (var match : matches.reversed()) {
       if (match.containsKey(key)) {
@@ -228,7 +232,7 @@ public class Matcher {
           return integerValue;
         } else if (value instanceof FromTag fromTag) {
           try {
-            return sf.hasTag(fromTag.key) ? Integer.valueOf(sf.getString(fromTag.key)) : defaultValue;
+            return wt.hasTag(fromTag.key) ? Integer.valueOf(wt.getString(fromTag.key)) : defaultValue;
           } catch (NumberFormatException e) {
             return defaultValue;
           }
@@ -240,7 +244,7 @@ public class Matcher {
     return defaultValue;
   }
 
-  public static Double getDouble(SourceFeature sf, List<Map<String, Object>> matches, String key, Double defaultValue) {
+  public static Double getDouble(WithTags wt, List<Map<String, Object>> matches, String key, Double defaultValue) {
     for (var match : matches.reversed()) {
       if (match.containsKey(key)) {
         Object value = match.get(key);
@@ -248,7 +252,7 @@ public class Matcher {
           return doubleValue;
         } else if (value instanceof FromTag fromTag) {
           try {
-            return sf.hasTag(fromTag.key) ? Double.valueOf(sf.getString(fromTag.key)) : defaultValue;
+            return wt.hasTag(fromTag.key) ? Double.valueOf(wt.getString(fromTag.key)) : defaultValue;
           } catch (NumberFormatException e) {
             return defaultValue;
           }
@@ -260,7 +264,7 @@ public class Matcher {
     return defaultValue;
   }
 
-  public static Boolean getBoolean(SourceFeature sf, List<Map<String, Object>> matches, String key,
+  public static Boolean getBoolean(WithTags wt, List<Map<String, Object>> matches, String key,
     Boolean defaultValue) {
     for (var match : matches.reversed()) {
       if (match.containsKey(key)) {
@@ -268,13 +272,74 @@ public class Matcher {
         if (value instanceof Boolean booleanValue) {
           return booleanValue;
         } else if (value instanceof FromTag fromTag) {
-          return sf.hasTag(fromTag.key) ? sf.getBoolean(fromTag.key) : defaultValue;
+          return wt.hasTag(fromTag.key) ? wt.getBoolean(fromTag.key) : defaultValue;
         } else {
           return defaultValue;
         }
       }
     }
     return defaultValue;
+  }
+
+  /**
+   * Wrapper that combines a SourceFeature with computed tags without mutating the original. This allows MultiExpression
+   * matching to access both original and computed tags.
+   *
+   * <p>
+   * This is useful when you need to add computed tags (like area calculations or derived properties) that should be
+   * accessible to MultiExpression rules, but the original SourceFeature has immutable tags.
+   * </p>
+   */
+  public static class SourceFeatureWithComputedTags extends WithGeometry implements WithTags {
+    private final SourceFeature delegate;
+    private final Map<String, Object> combinedTags;
+
+    /**
+     * Creates a wrapper around a SourceFeature with additional computed tags.
+     *
+     * @param delegate     The original SourceFeature to wrap
+     * @param computedTags Additional computed tags to merge with the original tags
+     */
+    public SourceFeatureWithComputedTags(SourceFeature delegate, Map<String, Object> computedTags) {
+      this.delegate = delegate;
+      this.combinedTags = new HashMap<>(delegate.tags());
+      this.combinedTags.putAll(computedTags);
+    }
+
+    @Override
+    public Map<String, Object> tags() {
+      return combinedTags;
+    }
+
+    @Override
+    public Geometry worldGeometry() throws GeometryException {
+      return delegate.worldGeometry();
+    }
+
+    @Override
+    public Geometry latLonGeometry() throws GeometryException {
+      return delegate.latLonGeometry();
+    }
+
+    @Override
+    public boolean isPoint() {
+      return delegate.isPoint();
+    }
+
+    @Override
+    public boolean canBePolygon() {
+      return delegate.canBePolygon();
+    }
+
+    @Override
+    public boolean canBeLine() {
+      return delegate.canBeLine();
+    }
+
+    /** Returns the original SourceFeature being wrapped */
+    public SourceFeature getDelegate() {
+      return delegate;
+    }
   }
 
 }

@@ -19,8 +19,10 @@ import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -225,13 +227,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
-  public void calculateDimensions(SourceFeature sf) {
+  public Map<String, Object> calculateDimensions(SourceFeature sf) {
     Double wayArea = 0.0;
     Double height = 0.0;
-    String namedPolygon = "no";
+    Boolean hasNamedPolygon = false;
 
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
-      namedPolygon = "yes";
+      hasNamedPolygon = true;
       try {
         wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
       } catch (GeometryException e) {
@@ -245,9 +247,11 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
-    sf.setTag("protomaps-basemaps:wayArea", wayArea);
-    sf.setTag("protomaps-basemaps:height", height);
-    sf.setTag("protomaps-basemaps:namedPolygon", namedPolygon);
+    return Map.of(
+      "protomaps-basemaps:wayArea", wayArea,
+      "protomaps-basemaps:height", height,
+      "protomaps-basemaps:hasNamedPolygon", hasNamedPolygon
+    );
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
@@ -256,16 +260,20 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    calculateDimensions(sf);
-    sf.setTag("protomaps-basemaps:kind", getString(sf, kindMatches, "kind", "undefined"));
-    var zoomMatches = zoomsIndex.getMatches(sf);
+    String kind = getString(sf, kindMatches, "kind", "undefined");
+    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
+
+    // Calculate dimensions and create a wrapper with computed tags
+    Map<String, Object> computedTags = new HashMap<>(calculateDimensions(sf));
+    computedTags.put("protomaps-basemaps:kind", kind);
+
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
+    var zoomMatches = zoomsIndex.getMatches(sf2);
     if (zoomMatches.isEmpty()) {
       return;
     }
 
-    String kind = getString(sf, kindMatches, "kind", "undefined");
-    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
-    Integer minZoom = getInteger(sf, zoomMatches, "minZoom", 99);
+    Integer minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
 
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
       sf.hasTag("amenity") ||
