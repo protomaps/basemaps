@@ -12,23 +12,23 @@ import java.util.Map;
 
 /**
  * A utility class for matching source feature properties to values.
- * 
+ *
  * <p>
  * Use the {@link #rule} function to create entries for a Planetiler {@link MultiExpression}. A rule consists of
  * multiple contitions that get joined by a logical AND, and key-value pairs that should be used if all conditions of
  * the rule are true. The key-value pairs of rules that get added later override the key-value pairs of rules that were
  * added earlier.
  * </p>
- * 
+ *
  * <p>
  * The MultiExpression can be used on a source feature and the resulting list of matches can be used in
  * {@link #getString} and similar functions to retrieve a value.
  * </p>
- * 
+ *
  * <p>
  * Example usage:
  * </p>
- * 
+ *
  * <pre>
  * <code>
  *var index = MultiExpression.ofOrdered(List.of(rule(with("highway", "primary"), use("kind", "major_road")))).index();
@@ -42,16 +42,16 @@ public class Matcher {
 
   /**
    * Creates a matching rule with conditions and values.
-   * 
+   *
    * <p>
    * Create conditions by calling the {@link #with} or {@link #without} functions. All conditions are joined by a
    * logical AND.
    * </p>
-   * 
+   *
    * <p>
    * Create key-value pairs with the {@link #use} function.
    * </p>
-   * 
+   *
    * @param arguments A mix of {@link Use} instances for key-value pairs and {@link Expression} instances for
    *                  conditions.
    * @return A {@link MultiExpression.Entry} containing the rule definition.
@@ -71,13 +71,13 @@ public class Matcher {
 
   /**
    * Creates a {@link Use} instance representing a key-value pair to be supplied to the {@link #rule} function.
-   * 
+   *
    * <p>
    * While in principle any Object can be supplied as value, retrievalbe later on are only Strings with
    * {@link #getString}, Integers with {@link #getInteger}, Doubles with {@link #getDouble}, Booleans with
    * {@link #getBoolean}.
    * </p>
-   * 
+   *
    * @param key   The key.
    * @param value The value associated with the key.
    * @return A new {@link Use} instance.
@@ -88,30 +88,30 @@ public class Matcher {
 
   /**
    * Creates an {@link Expression} that matches any of the specified arguments.
-   * 
+   *
    * <p>
    * If no argument is supplied, matches everything.
    * </p>
-   * 
+   *
    * <p>
    * If one argument is supplied, matches all source features that have this tag, e.g., {@code with("highway")} matches
    * to all source features with a highway tag.
    * </p>
-   * 
+   *
    * <p>
    * If two arguments are supplied, matches to all source features that have this tag-value pair, e.g.,
    * {@code with("highway", "primary")} matches to all source features with highway=primary.
    * </p>
-   * 
+   *
    * <p>
    * If more than two arguments are supplied, matches to all source features that have the first argument as tag and the
    * later arguments as possible values, e.g., {@code with("highway", "primary", "secondary")} matches to all source
    * features that have highway=primary or highway=secondary.
    * </p>
-   * 
+   *
    * <p>
    * If an argument consists of multiple lines, it will be broken up into one argument per line. Example:
-   * 
+   *
    * <pre>
    * <code>
    * with("""
@@ -122,7 +122,7 @@ public class Matcher {
    * </code>
    * </pre>
    * </p>
-   * 
+   *
    * @param arguments Field names to match.
    * @return An {@link Expression} for the given field names.
    */
@@ -147,110 +147,6 @@ public class Matcher {
    */
   public static Expression without(String... arguments) {
     return Expression.not(with(arguments));
-  }
-
-  /**
-   * Creates an {@link Expression} that evaluates to true if any of the provided expressions evaluate to true.
-   *
-   * <p>
-   * This method combines multiple expressions using logical OR. If any single expression matches the source feature,
-   * the entire expression evaluates to true.
-   * </p>
-   *
-   * <p>
-   * If no expressions are provided, returns {@link Expression#FALSE} (nothing matches).
-   * </p>
-   *
-   * <p>
-   * If one expression is provided, returns that expression as-is.
-   * </p>
-   *
-   * <p>
-   * If multiple expressions are provided, they are combined with logical OR.
-   * </p>
-   *
-   * <p>
-   * Example usage:
-   *
-   * <pre>
-   * <code>
-   * // Match features that are either parks or forests
-   * withAnyOf(
-   *   with("leisure", "park"),
-   *   with("natural", "forest")
-   * )
-   *
-   * // Match features that are either points or lines
-   * withAnyOf(
-   *   withPoint(),
-   *   withLine()
-   * )
-   * </code>
-   * </pre>
-   * </p>
-   *
-   * @param expressions Variable number of {@link Expression} instances to combine with OR logic.
-   * @return An {@link Expression} that evaluates to true if any of the provided expressions are true.
-   */
-  public static Expression withAnyOf(Expression... expressions) {
-    if (expressions.length == 0) {
-      return Expression.FALSE;
-    } else if (expressions.length == 1) {
-      return expressions[0];
-    }
-    return Expression.or(Arrays.asList(expressions));
-  }
-
-  /**
-   * Creates an {@link Expression} that evaluates to true if all of the provided expressions evaluate to true.
-   *
-   * <p>
-   * This method combines multiple expressions using logical AND. All expressions must match the source feature for the
-   * entire expression to evaluate to true.
-   * </p>
-   *
-   * <p>
-   * If no expressions are provided, returns {@link Expression#TRUE} (matches everything).
-   * </p>
-   *
-   * <p>
-   * If one expression is provided, returns that expression as-is.
-   * </p>
-   *
-   * <p>
-   * If multiple expressions are provided, they are combined with logical AND.
-   * </p>
-   *
-   * <p>
-   * Example usage:
-   *
-   * <pre>
-   * <code>
-   * // Match features that are both natural and protected
-   * withAllOf(
-   *   with("natural"),
-   *   with("boundary", "protected_area")
-   * )
-   *
-   * // Match features that are points with a name
-   * withAllOf(
-   *   withPoint(),
-   *   with("name")
-   * )
-   * </code>
-   * </pre>
-   * </p>
-   *
-   * @param expressions Variable number of {@link Expression} instances to combine with AND logic.
-   * @return An {@link Expression} that evaluates to true if all of the provided expressions are true.
-   */
-  public static Expression withAllOf(Expression... expressions) {
-    if (expressions.length == 0) {
-      return Expression.TRUE;
-    } else if (expressions.length == 1) {
-      return expressions[0];
-    }
-    return Expression.and(Arrays.asList(expressions));
   }
 
   public static Expression withPoint() {
@@ -281,15 +177,15 @@ public class Matcher {
 
   /**
    * Creates a {@link FromTag} instance representing a tag reference.
-   * 
+   *
    * <p>
    * Use this function if to retrieve a value from a source feature when calling {@link #getString} and similar.
    * </p>
-   * 
+   *
    * <p>
    * Example usage:
    * </p>
-   * 
+   *
    * <pre>
    * <code>
    *var index = MultiExpression.ofOrdered(List.of(rule(with("highway", "primary", "secondary"), use("kind", fromTag("highway"))))).index();
@@ -299,7 +195,7 @@ public class Matcher {
    * </pre>
    * <p>
    * On a source feature with highway=primary the above will result in kind=primary.
-   * 
+   *
    * @param key The key of the tag.
    * @return A new {@link FromTag} instance.
    */

@@ -6,8 +6,6 @@ import static com.protomaps.basemap.feature.Matcher.getString;
 import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
-import static com.protomaps.basemap.feature.Matcher.withAllOf;
-import static com.protomaps.basemap.feature.Matcher.withAnyOf;
 import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
@@ -48,15 +46,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   private static final Expression with_operator_usfs = with("operator", "United States Forest Service",
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
     "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
-  private static final Expression without_operator_usfs = without("operator", "United States Forest Service",
-    "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
-    "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
-  private static final Expression without_protectionTitle_conservationEtc =
-    without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
-      "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
-      "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
-      "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
-      "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary");
 
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
 
@@ -85,15 +74,15 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     // National forests
 
     rule(
-      withAnyOf(
+      Expression.or(
         with("landuse", "forest"),
-        withAllOf(with("boundary", "national_park"), with_operator_usfs),
-        withAllOf(
+        Expression.and(with("boundary", "national_park"), with_operator_usfs),
+        Expression.and(
           with("boundary", "national_park"),
           with("protect_class", "6"),
           with("protection_title", "National Forest")
         ),
-        withAllOf(
+        Expression.and(
           with("boundary", "protected_area"),
           with("protect_class", "6"),
           with_operator_usfs
@@ -107,9 +96,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with("boundary", "national_park"), use("kind", "park")),
     rule(
       with("boundary", "national_park"),
-      without_operator_usfs,
-      without_protectionTitle_conservationEtc,
-      withAnyOf(
+      Expression.not(with_operator_usfs),
+      without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
+        "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
+        "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
+        "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
+        "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary"),
+      Expression.or(
         with("protect_class", "2", "3"),
         with("operator", "United States National Park Service", "National Park Service", "US National Park Service",
           "U.S. National Park Service", "US National Park service"),
