@@ -53,10 +53,23 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       use("kindDetail", "")
     ),
 
-    rule(
-      with("boundary"),
-      use("kind", fromTag("boundary"))
-    ),
+    // Avoid problem of too many "other" kinds
+
+    // Boundary is most generic, so place first else we lose out
+    // on nature_reserve detail versus all the protected_area
+    rule(with("boundary"), use("kind", fromTag("boundary"))),
+    rule(with("historic"), without("historic", "yes"), use("kind", fromTag("historic"))),
+    rule(with("tourism"), use("kind", fromTag("tourism"))),
+    rule(with("shop"), use("kind", fromTag("shop"))),
+    rule(with("highway"), use("kind", fromTag("highway"))),
+    rule(with("railway"), use("kind", fromTag("railway"))),
+    rule(with("natural"), use("kind", fromTag("natural"))),
+    rule(with("leisure"), use("kind", fromTag("leisure"))),
+    rule(with("landuse"), use("kind", fromTag("landuse"))),
+    rule(with("aeroway"), use("kind", fromTag("aeroway"))),
+    rule(with("craft"), use("kind", fromTag("craft"))),
+    rule(with("attraction"), use("kind", fromTag("attraction"))),
+    rule(with("amenity"), use("kind", fromTag("amenity"))),
 
     // National forests
 
@@ -140,12 +153,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       use("kind", "national_park")
     ),
 
-    // Remaining amenities
+    // Remaining things
 
-    rule(
-      with("amenity"),
-      use("kind", fromTag("amenity"))
-    ),
     rule(
       with("aeroway", "aerodrome"),
       use("kind", "aerodrome"),
@@ -240,38 +249,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       } else if (sf.hasTag("natural", "peak")) {
         kind = sf.getString("natural");
         minZoom = 13;
-      } else {
-        // Avoid problem of too many "other" kinds
-        // All these will default to min_zoom of 15
-        // If a more specific min_zoom is needed (or sanitize kind values)
-        // then add new logic in section above
-        if (sf.hasTag("attraction")) {
-          kind = sf.getString("attraction");
-        } else if (sf.hasTag("craft")) {
-          kind = sf.getString("craft");
-        } else if (sf.hasTag("aeroway")) {
-          kind = sf.getString("aeroway");
-        } else if (sf.hasTag("landuse")) {
-          kind = sf.getString("landuse");
-        } else if (sf.hasTag("leisure")) {
-          kind = sf.getString("leisure");
-        } else if (sf.hasTag("natural")) {
-          kind = sf.getString("natural");
-        } else if (sf.hasTag("railway")) {
-          kind = sf.getString("railway");
-        } else if (sf.hasTag("highway")) {
-          kind = sf.getString("highway");
-        } else if (sf.hasTag("shop")) {
-          kind = sf.getString("shop");
-        } else if (sf.hasTag("tourism")) {
-          kind = sf.getString("tourism");
-          // Boundary is most generic, so place last else we loose out
-          // on nature_reserve detail versus all the protected_area
-        } else if (sf.hasTag("historic") && !sf.hasTag("historic", "yes")) {
-          kind = sf.getString("historic");
-        } else if (sf.hasTag("boundary")) {
-          // kind = sf.getString("boundary");
-        }
       }
 
       // National parks
