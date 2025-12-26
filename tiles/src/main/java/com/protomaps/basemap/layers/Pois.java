@@ -22,7 +22,6 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -227,7 +226,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
-  public Map<String, Object> calculateDimensions(SourceFeature sf) {
+  public Matcher.SourceFeatureWithComputedTags computeExtraTags(SourceFeature sf, String kind) {
     Double wayArea = 0.0;
     Double height = 0.0;
     Boolean hasNamedPolygon = false;
@@ -247,10 +246,14 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
-    return Map.of(
-      "protomaps-basemaps:wayArea", wayArea,
-      "protomaps-basemaps:height", height,
-      "protomaps-basemaps:hasNamedPolygon", hasNamedPolygon
+    return new Matcher.SourceFeatureWithComputedTags(
+      sf,
+      Map.of(
+        "protomaps-basemaps:kind", kind,
+        "protomaps-basemaps:wayArea", wayArea,
+        "protomaps-basemaps:height", height,
+        "protomaps-basemaps:hasNamedPolygon", hasNamedPolygon
+      )
     );
   }
 
@@ -260,19 +263,15 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    String kind = getString(sf, kindMatches, "kind", "undefined");
-    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
-
     // Calculate dimensions and create a wrapper with computed tags
-    Map<String, Object> computedTags = new HashMap<>(calculateDimensions(sf));
-    computedTags.put("protomaps-basemaps:kind", kind);
-
-    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
+    var sf2 = computeExtraTags(sf, getString(sf, kindMatches, "kind", "undefined"));
     var zoomMatches = zoomsIndex.getMatches(sf2);
     if (zoomMatches.isEmpty()) {
       return;
     }
 
+    String kind = getString(sf2, kindMatches, "kind", "undefined");
+    String kindDetail = getString(sf2, kindMatches, "kindDetail", "undefined");
     Integer minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
 
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
