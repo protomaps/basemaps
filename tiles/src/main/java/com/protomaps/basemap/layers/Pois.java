@@ -48,16 +48,16 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   private static final Expression without_protectionTitle_conservationEtc = without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve", "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site", "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest", "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area", "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary");
 
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
-    rule(
-      use("kind", "other"),
-      use("kindDetail", "")
-    ),
 
-    // Avoid problem of too many "other" kinds
+    // Everything is "other" at first
+    rule(use("kind", "other"), use("kindDetail", "")),
 
     // Boundary is most generic, so place first else we lose out
     // on nature_reserve detail versus all the protected_area
     rule(with("boundary"), use("kind", fromTag("boundary"))),
+
+    // More specific kinds
+
     rule(with("historic"), without("historic", "yes"), use("kind", fromTag("historic"))),
     rule(with("tourism"), use("kind", fromTag("tourism"))),
     rule(with("shop"), use("kind", fromTag("shop"))),
@@ -94,10 +94,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with_operator_usfs,
       use("kind", "forest")
     ),
-    rule(
-      with("landuse", "forest"),
-      use("kind", "forest")
-    ),
+    rule(with("landuse", "forest"), use("kind", "forest")),
     rule(
       with("boundary", "protected_area"),
       with("protect_class", "6"),
@@ -112,11 +109,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // National parks
 
-    rule(
-      with("boundary", "national_park"),
-      use("kind", "park")
-    ),
-
+    rule(with("boundary", "national_park"), use("kind", "park")),
     rule(
       with("boundary", "national_park"),
       without_operator_usfs,
@@ -154,6 +147,21 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     ),
 
     // Remaining things
+
+    rule(with("natural", "peak"), use("kind", fromTag("natural"))),
+    rule(with("highway", "bus_stop"), use("kind", fromTag("highway"))),
+    rule(with("tourism", "attraction", "camp_site", "hotel"), use("kind", fromTag("tourism"))),
+    rule(with("shop", "grocery", "supermarket"), use("kind", fromTag("shop"))),
+    rule(with("leisure", "golf_course", "marina", "stadium", "park"), use("kind", fromTag("leisure"))),
+
+    rule(with("landuse", "military"), use("kind", "military")),
+    rule(
+      with("landuse", "military"),
+      with("military", "naval_base", "airfield"),
+      use("kind", fromTag("military"))
+    ),
+
+    rule(with("landuse", "cemetery"), use("kind", fromTag("landuse"))),
 
     rule(
       with("aeroway", "aerodrome"),
@@ -223,31 +231,31 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       } else if (sf.hasTag("amenity", "cafe")) {
         minZoom = 15;
       } else if (sf.hasTag("landuse", "cemetery")) {
-        kind = sf.getString("landuse");
+        // kind = sf.getString("landuse");
         minZoom = 14;
       } else if (sf.hasTag("landuse", "military")) {
-        kind = "military";
+        // kind = "military";
         if (sf.hasTag("military", "naval_base", "airfield")) {
-          kind = sf.getString("military");
+          // kind = sf.getString("military");
         }
       } else if (sf.hasTag("leisure", "park")) {
-        kind = "park";
+        // kind = "park";
         // Lots of pocket parks and NODE parks, show those later than rest of leisure
         minZoom = 14;
       } else if (sf.hasTag("leisure", "golf_course", "marina", "stadium")) {
-        kind = sf.getString("leisure");
+        // kind = sf.getString("leisure");
         minZoom = 13;
       } else if (sf.hasTag("shop", "grocery", "supermarket")) {
-        kind = sf.getString("shop");
+        // kind = sf.getString("shop");
         minZoom = 14;
       } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
-        kind = sf.getString("tourism");
+        // kind = sf.getString("tourism");
         minZoom = 15;
       } else if (sf.hasTag("highway", "bus_stop")) {
-        kind = sf.getString("highway");
+        // kind = sf.getString("highway");
         minZoom = 17;
       } else if (sf.hasTag("natural", "peak")) {
-        kind = sf.getString("natural");
+        // kind = sf.getString("natural");
         minZoom = 13;
       }
 
