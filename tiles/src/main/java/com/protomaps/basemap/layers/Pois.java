@@ -47,6 +47,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "pois";
 
+  // Internal tags used to reference calculated values between matchers
+  private static final String KIND_ATTR = "protomaps-basemaps:kind";
+  private static final String HAS_NAMED_POLYGON = "protomaps-basemaps:hasNamedPolygon";
+
   private static final Expression WITH_OPERATOR_USFS = with("operator", "United States Forest Service",
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
     "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
@@ -153,7 +157,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     // Everything is zoom=15 at first
     rule(use("minZoom", 15)),
 
-    rule(with("protomaps-basemaps:kind", "national_park"), use("minZoom", 11)),
+    rule(with(KIND_ATTR, "national_park"), use("minZoom", 11)),
     rule(with("natural", "peak"), use("minZoom", 13)),
     rule(with("highway", "bus_stop"), use("minZoom", 17)),
     rule(with("tourism", "attraction", "camp_site", "hotel"), use("minZoom", 15)),
@@ -171,7 +175,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     // Emphasize large international airports earlier
     rule(
       with("aeroway", "aerodrome"),
-      with("protomaps-basemaps:kind", "aerodrome"),
+      with(KIND_ATTR, "aerodrome"),
       with("iata"),
       use("minZoom", 11)
     ),
@@ -217,47 +221,33 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     ),
 
     rule(
-      with("protomaps-basemaps:hasNamedPolygon"),
-      with("protomaps-basemaps:kind", "playground"),
+      with(HAS_NAMED_POLYGON),
+      with(KIND_ATTR, "playground"),
       use("minZoom", 17)
     ),
     rule(
-      with("protomaps-basemaps:hasNamedPolygon"),
-      with("protomaps-basemaps:kind", "allotments"),
+      with(HAS_NAMED_POLYGON),
+      with(KIND_ATTR, "allotments"),
       use("minZoom", 16)
     ),
     rule(
-      with("protomaps-basemaps:hasNamedPolygon"),
-      Expression.or(with("protomaps-basemaps:kind", "cemetery"), with("protomaps-basemaps:kind", "school")),
+      with(HAS_NAMED_POLYGON),
+      with(KIND_ATTR, "cemetery", "school"),
       use("minZoom", 16)
     ),
     rule(
-      with("protomaps-basemaps:hasNamedPolygon"),
-      Expression.or(
-        with("protomaps-basemaps:kind", "forest"),
-        with("protomaps-basemaps:kind", "park"),
-        with("protomaps-basemaps:kind", "protected_area"),
-        with("protomaps-basemaps:kind", "nature_reserve"),
-        with("protomaps-basemaps:kind", "village_green")
-      ),
+      with(HAS_NAMED_POLYGON),
+      with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"),
       use("minZoom", 17)
     ),
     rule(
-      with("protomaps-basemaps:hasNamedPolygon"),
-      Expression.or(with("protomaps-basemaps:kind", "college"), with("protomaps-basemaps:kind", "university")),
+      with(HAS_NAMED_POLYGON),
+      with(KIND_ATTR, "college", "university"),
       use("minZoom", 15)
     ),
     rule(
-      with("protomaps-basemaps:hasNamedPolygon"),
-      Expression.or(
-        with("protomaps-basemaps:kind", "national_park"),
-        with("protomaps-basemaps:kind", "aerodrome"),
-        with("protomaps-basemaps:kind", "golf_course"),
-        with("protomaps-basemaps:kind", "military"),
-        with("protomaps-basemaps:kind", "naval_base"),
-        with("protomaps-basemaps:kind", "stadium"),
-        with("protomaps-basemaps:kind", "zoo")
-      ),
+      with(HAS_NAMED_POLYGON),
+      with(KIND_ATTR, "national_park", "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"),
       use("minZoom", 14)
     )
 
@@ -274,13 +264,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   public Matcher.SourceFeatureWithComputedTags computeExtraTags(SourceFeature sf, String kind) {
     Map<String, Object> computedTags = new HashMap<>(Map.of(
-      "protomaps-basemaps:kind", kind,
+      KIND_ATTR, kind,
       "protomaps-basemaps:wayArea", 0.0,
       "protomaps-basemaps:height", 0.0
     ));
 
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
-      computedTags.put("protomaps-basemaps:hasNamedPolygon", true);
+      computedTags.put(HAS_NAMED_POLYGON, true);
       try {
         Double area = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
         computedTags.put("protomaps-basemaps:wayArea", area);
