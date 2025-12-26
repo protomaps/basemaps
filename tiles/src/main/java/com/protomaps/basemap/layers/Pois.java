@@ -49,7 +49,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
 
-    // Everything is "other" at first
+    // Everything is "other"/"" at first
     rule(use("kind", "other"), use("kindDetail", "")),
 
     // Boundary is most generic, so place first else we lose out
@@ -167,7 +167,14 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with("aeroway", "aerodrome"),
       use("kind", "aerodrome"),
       use("kindDetail", fromTag("aerodrome"))
-    )
+    ),
+
+    // Additional details for certain classes of POI
+
+    rule(with("sport"), use("kindDetail", fromTag("sport"))),
+    rule(with("religion"), use("kindDetail", fromTag("religion"))),
+    rule(with("cuisine"), use("kindDetail", fromTag("cuisine")))
+
   )).index();
 
   @Override
@@ -280,14 +287,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         } else {
           // kind = "park";
         }
-      }
-
-      if (sf.hasTag("cuisine")) {
-        kindDetail = sf.getString("cuisine");
-      } else if (sf.hasTag("religion")) {
-        kindDetail = sf.getString("religion");
-      } else if (sf.hasTag("sport")) {
-        kindDetail = sf.getString("sport");
       }
 
       // try first for polygon -> point representations
