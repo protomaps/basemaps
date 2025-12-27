@@ -14,11 +14,14 @@ import static com.protomaps.basemap.feature.Matcher.with;
 import static com.protomaps.basemap.feature.Matcher.withLine;
 import static com.protomaps.basemap.feature.Matcher.withPoint;
 import static com.protomaps.basemap.feature.Matcher.withPolygon;
+import static com.protomaps.basemap.feature.Matcher.withinRange;
 import static com.protomaps.basemap.feature.Matcher.without;
 import static com.protomaps.basemap.feature.Matcher.withoutLine;
 import static com.protomaps.basemap.feature.Matcher.withoutPoint;
 import static com.protomaps.basemap.feature.Matcher.withoutPolygon;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.onthegomap.planetiler.expression.Expression;
 import com.onthegomap.planetiler.expression.MultiExpression;
@@ -698,6 +701,209 @@ class MatcherTest {
     );
     matches = index.getMatches(sf);
     assertEquals(true, getBoolean(sf, matches, "a", false));
+  }
+
+  @Test
+  void testWithinRangeWithUpperBound() {
+    var expression = withinRange("population", 5, 10);
+
+    // Value within range (5 < 7 <= 10)
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "7"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+
+    // Value at lower bound (not > 5)
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "5"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+
+    // Value at upper bound (10 <= 10)
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "10"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+
+    // Value below range
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "3"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+
+    // Value above range
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "15"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+  }
+
+  @Test
+  void testWithinRangeWithoutUpperBound() {
+    var expression = withinRange("population", 5, null);
+
+    // Value above lower bound
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "10"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+
+    // Value at lower bound
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "5"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+
+    // Value below lower bound
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "3"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+
+    // Very large value
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "1000000"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+  }
+
+  @Test
+  void testWithinRangeMissingTag() {
+    var expression = withinRange("population", 5, 10);
+
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of(),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+  }
+
+  @Test
+  void testWithinRangeNonNumericValue() {
+    var expression = withinRange("population", 5, 10);
+
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("population", "hello"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+  }
+
+  @Test
+  void testWithinRangeNegativeNumbers() {
+    var expression = withinRange("temperature", -10, 5);
+
+    // Value within range (-10 < -5 <= 5)
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("temperature", "-5"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+
+    // Value at lower bound
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("temperature", "-10"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
+
+    // Value at upper bound
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("temperature", "5"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+  }
+
+  @Test
+  void testWithinRangeZeroValue() {
+    var expression = withinRange("value", -5, 5);
+
+    // Zero within range (-5 < 0 <= 5)
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("value", "0"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+  }
+
+  @Test
+  void testWithinRangeZeroAsBound() {
+    var expression = withinRange("value", 0, 10);
+
+    // Value above zero bound
+    var sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("value", "5"),
+      "osm",
+      null,
+      0
+    );
+    assertTrue(expression.evaluate(sf, List.of()));
+
+    // Value at zero bound
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("value", "0"),
+      "osm",
+      null,
+      0
+    );
+    assertFalse(expression.evaluate(sf, List.of()));
   }
 
 }

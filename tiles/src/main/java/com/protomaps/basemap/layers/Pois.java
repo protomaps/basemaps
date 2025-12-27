@@ -8,6 +8,7 @@ import static com.protomaps.basemap.feature.Matcher.rule;
 import static com.protomaps.basemap.feature.Matcher.use;
 import static com.protomaps.basemap.feature.Matcher.with;
 import static com.protomaps.basemap.feature.Matcher.withPoint;
+import static com.protomaps.basemap.feature.Matcher.withinRange;
 import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
@@ -48,6 +49,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   // Internal tags used to reference calculated values between matchers
   private static final String KIND_ATTR = "protomaps-basemaps:kind";
+  private static final String WAYAREA_ATTR = "protomaps-basemaps:wayArea";
+  private static final String HEIGHT_ATTR = "protomaps-basemaps:height";
   private static final String HAS_NAMED_POLYGON = "protomaps-basemaps:hasNamedPolygon";
 
   private static final Expression WITH_OPERATOR_USFS = with("operator", "United States Forest Service",
@@ -239,11 +242,20 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"),
       use("minZoom", 17)
     ),
-    rule(
-      with(HAS_NAMED_POLYGON),
-      with(KIND_ATTR, "college", "university"),
-      use("minZoom", 15)
-    ),
+
+    // College and university polygons
+
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 0, 5), use("minZoom", 15)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 5, 20), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 20, 50), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 50, 100), use("minZoom", 12)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 100, 150), use("minZoom", 11)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 150, 250), use("minZoom", 10)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 250, 5000), use("minZoom", 9)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 8)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 20000, null), use("minZoom", 7)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), with("name", "Academy of Art University"), use("minZoom", 14)), // Hack for weird San Francisco university
+
     rule(
       with(HAS_NAMED_POLYGON),
       with(KIND_ATTR, "national_park", "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"),
@@ -287,14 +299,14 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       computedTags = Map.of(
         KIND_ATTR, kind,
         HAS_NAMED_POLYGON, true,
-        "protomaps-basemaps:wayArea", wayArea,
-        "protomaps-basemaps:height", height
+        WAYAREA_ATTR, wayArea,
+        HEIGHT_ATTR, height
       );
     } else {
       computedTags = Map.of(
         KIND_ATTR, kind,
-        "protomaps-basemaps:wayArea", wayArea,
-        "protomaps-basemaps:height", height
+        WAYAREA_ATTR, wayArea,
+        HEIGHT_ATTR, height
       );
     }
 
@@ -424,32 +436,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
                 minZoom = 12;
               }
             }
-          }
-        } else if (kind.equals("college") ||
-          kind.equals("university")) {
-          if (wayArea > 20000) {
-            minZoom = 7;
-          } else if (wayArea > 5000) {
-            minZoom = 8;
-          } else if (wayArea > 250) {
-            minZoom = 9;
-          } else if (wayArea > 150) {
-            minZoom = 10;
-          } else if (wayArea > 100) {
-            minZoom = 11;
-          } else if (wayArea > 50) {
-            minZoom = 12;
-          } else if (wayArea > 20) {
-            minZoom = 13;
-          } else if (wayArea > 5) {
-            minZoom = 14;
-          } else {
-            //minZoom = 15;
-          }
-
-          // Hack for weird San Francisco university
-          if (sf.getString("name").equals("Academy of Art University")) {
-            minZoom = 14;
           }
         } else if (kind.equals("forest") ||
           kind.equals("park") ||

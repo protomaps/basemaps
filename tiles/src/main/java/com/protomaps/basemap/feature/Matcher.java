@@ -151,6 +151,62 @@ public class Matcher {
     return Expression.not(with(arguments));
   }
 
+  /**
+   * Creates an {@link Expression} that matches when a numeric tag value is within a specified range.
+   *
+   * <p>
+   * The lower bound is exclusive (value must be greater than the lower bound). The upper bound, if provided, is
+   * inclusive (value must be less than or equal to the upper bound).
+   * </p>
+   *
+   * <p>
+   * If the upper bound is null, only the lower bound is checked (value > lowerBound).
+   * </p>
+   *
+   * <p>
+   * Tag values that cannot be parsed as numbers or missing tags will not match.
+   * </p>
+   *
+   * @param tagName    The name of the tag to check.
+   * @param lowerBound The exclusive lower bound (value must be greater than this).
+   * @param upperBound The inclusive upper bound (value must be less than or equal to this), or null to check only the
+   *                   lower bound.
+   * @return An {@link Expression} for the numeric range check.
+   */
+  public static Expression withinRange(String tagName, Integer lowerBound, Integer upperBound) {
+    return new WithinRangeExpression(
+      tagName,
+      new Long(lowerBound),
+      (upperBound == null ? null : new Long(upperBound))
+    );
+  }
+
+  /**
+   * Expression implementation for numeric range matching.
+   */
+  private record WithinRangeExpression(String tagName, long lowerBound, Long upperBound) implements Expression {
+
+    @Override
+    public boolean evaluate(com.onthegomap.planetiler.reader.WithTags input, List<String> matchKeys) {
+      if (!input.hasTag(tagName)) {
+        return false;
+      }
+      long value = input.getLong(tagName);
+      // getLong returns 0 for invalid values, so we need to check if 0 is actually the tag value
+      if (value == 0 && !"0".equals(input.getString(tagName))) {
+        // getLong returned 0 because parsing failed
+        return false;
+      }
+      return value > lowerBound && (upperBound == null || value <= upperBound);
+    }
+
+    @Override
+    public String generateJavaCode() {
+      return "withinRange(" + com.onthegomap.planetiler.util.Format.quote(tagName) + ", " + lowerBound + "L, " +
+        (upperBound == null ? "null" : upperBound + "L") + ")";
+    }
+  }
+
   public static Expression withPoint() {
     return Expression.matchGeometryType(GeometryType.POINT);
   }
