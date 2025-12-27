@@ -51,6 +51,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   private static final String WAYAREA = "protomaps-basemaps:wayArea";
   private static final String HEIGHT = "protomaps-basemaps:height";
   private static final String HAS_NAMED_POLYGON = "protomaps-basemaps:hasNamedPolygon";
+  private static final String UNDEFINED = "protomaps-basemaps:undefined";
 
   private static final Expression WITH_OPERATOR_USFS = with("operator", "United States Forest Service",
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
@@ -58,8 +59,29 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   private static final MultiExpression.Index<Map<String, Object>> kindsIndex = MultiExpression.ofOrdered(List.of(
 
-    // Everything is "other"/"" at first
-    rule(use("kind", "other"), use("kindDetail", "")),
+    // Everything is undefined at first
+    rule(use("kind", UNDEFINED), use("kindDetail", UNDEFINED)),
+
+    // An initial set of tags we like
+    rule(
+      Expression.or(
+        with("aeroway", "aerodrome"),
+        with("amenity"),
+        with("attraction"),
+        with("boundary", "national_park", "protected_area"),
+        with("craft"),
+        with("highway", "bus_stop"),
+        with("historic"),
+        with("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
+          "village_green", "allotments"),
+        with("leisure"),
+        with("natural", "beach", "peak"),
+        with("railway", "station"),
+        with("shop"),
+        Expression.and(with("tourism"), without("historic", "district"))
+      ),
+      use("kind", "other")
+    ),
 
     // Boundary is most generic, so place early else we lose out
     // on nature_reserve detail versus all the protected_area
@@ -153,20 +175,9 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   )).index();
 
-  // Shorthand expressions to save space below
-
-  private static final Expression with_s_c = with(KIND, "cemetery", "school");
-  private static final Expression with_n_p = with(KIND, "national_park");
-  private static final Expression with_c_u = with(KIND, "college", "university");
-  private static final Expression with_b_g =
-    with(KIND, "forest", "park", "protected_area", "nature_reserve", "village_green");
-  private static final Expression with_etc =
-    with(KIND, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo");
-
   private static final MultiExpression.Index<Map<String, Object>> pointZoomsIndex = MultiExpression.ofOrdered(List.of(
 
     // Every point is zoom=15 at first
-
     rule(use("minZoom", 15)),
 
     // Promote important point categories to earlier zooms
@@ -237,29 +248,21 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   )).index();
 
+  // Shorthand expressions to save space below
+
+  private static final Expression with_s_c = with(KIND, "cemetery", "school");
+  private static final Expression with_n_p = with(KIND, "national_park");
+  private static final Expression with_c_u = with(KIND, "college", "university");
+  private static final Expression with_b_g =
+    with(KIND, "forest", "park", "protected_area", "nature_reserve", "village_green");
+  private static final Expression with_etc =
+    with(KIND, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo");
+
   private static final MultiExpression.Index<Map<String, Object>> namedPolygonZoomsIndex =
     MultiExpression.ofOrdered(List.of(
 
-      // Every named polygon with a valid tag is zoom=15 at first
-      rule(
-        Expression.or(
-          with("aeroway", "aerodrome"),
-          with("amenity"),
-          with("attraction"),
-          with("boundary", "national_park", "protected_area"),
-          with("craft"),
-          with("highway", "bus_stop"),
-          with("historic"),
-          with("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
-            "village_green", "allotments"),
-          with("leisure"),
-          with("natural", "beach", "peak"),
-          with("railway", "station"),
-          with("shop"),
-          Expression.and(with("tourism"), without("historic", "district"))
-        ),
-        use("minZoom", 15)
-      ),
+      // Every named polygon is zoom=15 at first
+      rule(use("minZoom", 15)),
 
       // Size-graded polygons, generic at first then per-kind adjustments
 
@@ -404,14 +407,16 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // Map the Protomaps "kind" classification to incoming tags
     var kindMatches = kindsIndex.getMatches(sf);
-    if (kindMatches.isEmpty())
-      return;
 
     // Output feature and its basic values to assign
     FeatureCollector.Feature outputFeature;
-    String kind = getString(sf, kindMatches, "kind", "undefined");
-    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
+    String kind = getString(sf, kindMatches, "kind", UNDEFINED);
+    String kindDetail = getString(sf, kindMatches, "kindDetail", UNDEFINED);
     Integer minZoom;
+
+    // Quickly eliminate any features with non-matching tags
+    if (kind == UNDEFINED)
+      return;
 
     // QRank may override minZoom entirely
     String wikidata = sf.getString("wikidata");
@@ -423,7 +428,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       minZoom = qrankedZoom.get();
     } else {
       // Calculate minZoom using zooms indexes
-      var sf2 = computeExtraTags(sf, getString(sf, kindMatches, "kind", "undefined"));
+      var sf2 = computeExtraTags(sf, getString(sf, kindMatches, "kind", UNDEFINED));
       var zoomMatches = sf.canBePolygon() ? namedPolygonZoomsIndex.getMatches(sf2) : pointZoomsIndex.getMatches(sf2);
       if (zoomMatches.isEmpty())
         return;
@@ -499,7 +504,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       .setAttr("iata", sf.getString("iata"));
 
     // Core Tilezen schema properties
-    if (!kindDetail.isEmpty())
+    if (kindDetail != UNDEFINED)
       outputFeature.setAttr("kind_detail", kindDetail);
 
     OsmNames.setOsmNames(outputFeature, sf, 0);
