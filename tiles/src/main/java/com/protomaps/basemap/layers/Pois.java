@@ -237,30 +237,47 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with(KIND_ATTR, "cemetery", "school"),
       use("minZoom", 16)
     ),
-    rule(
-      with(HAS_NAMED_POLYGON),
-      with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"),
-      use("minZoom", 17)
-    ),
+
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), use("minZoom", 17)),
 
     // College and university polygons
 
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 0, 5), use("minZoom", 15)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 5, 20), use("minZoom", 14)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 20, 50), use("minZoom", 13)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 50, 100), use("minZoom", 12)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 100, 150), use("minZoom", 11)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 150, 250), use("minZoom", 10)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 250, 5000), use("minZoom", 9)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 8)),
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 20000, null), use("minZoom", 7)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 0, 5000), use("minZoom", 15)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 20000, 50000), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 50000, 100000), use("minZoom", 12)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 100000, 150000), use("minZoom", 11)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 150000, 250000), use("minZoom", 10)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 250000, 5000000), use("minZoom", 9)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 5000000, 20000000), use("minZoom", 8)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), withinRange(WAYAREA_ATTR, 20000000, null), use("minZoom", 7)),
     rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "college", "university"), with("name", "Academy of Art University"), use("minZoom", 14)), // Hack for weird San Francisco university
 
-    rule(
-      with(HAS_NAMED_POLYGON),
-      with(KIND_ATTR, "national_park", "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"),
-      use("minZoom", 14)
-    )
+    // Big green polygons
+
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 0, 1), use("minZoom", 17)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 1, 10), use("minZoom", 16)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 10, 250), use("minZoom", 15)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 5000, 15000), use("minZoom", 12)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 15000, 250000), use("minZoom", 11)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 250000, 1000000), use("minZoom", 10)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 1000000, 4000000), use("minZoom", 9)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 4000000, 10000000), use("minZoom", 8)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"), withinRange(WAYAREA_ATTR, 10000000, null), use("minZoom", 7)),
+
+    // How are these similar?
+
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 12)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 20000, 100000), use("minZoom", 11)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 100000, 250000), use("minZoom", 10)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 250000, 5000000), use("minZoom", 9)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 5000000, 20000000), use("minZoom", 8)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 20000000, null), use("minZoom", 7))
 
   )).index();
 
@@ -268,6 +285,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   public String name() {
     return LAYER_NAME;
   }
+
+  // ~= pow((sqrt(70) / (4e7 / 256)) / 256, 2) ~= 4.4e-14
+  private static final double WORLD_AREA_FOR_70_SQUARE_METERS =
+    Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70)) / 256d, 2);
 
   // ~= pow((sqrt(7e4) / (4e7 / 256)) / 256, 2) ~= 4.4e-11
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
@@ -281,7 +302,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
       hasNamedPolygon = true;
       try {
-        wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
+        wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70_SQUARE_METERS;
       } catch (GeometryException e) {
         e.log("Exception in POI way calculation");
       }
@@ -401,23 +422,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           kind.equals("naval_base") ||
           kind.equals("stadium") ||
           kind.equals("zoo")) {
-          if (wayArea > 20000) { // 500000000
-            minZoom = 7;
-          } else if (wayArea > 5000) { // 200000000
-            minZoom = 8;
-          } else if (wayArea > 250) { //  40000000
-            minZoom = 9;
-          } else if (wayArea > 100) { //   8000000
-            minZoom = 10;
-          } else if (wayArea > 20) { //    500000
-            minZoom = 11;
-          } else if (wayArea > 5) {
-            minZoom = 12;
-          } else if (wayArea > 1) {
-            minZoom = 13;
-          } else if (wayArea > 0.25) {
-            //minZoom = 14;
-          }
 
           // Emphasize large international airports earlier
           // Because the area grading resets the earlier dispensation
@@ -445,30 +449,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           kind.equals("protected_area") ||
           kind.equals("nature_reserve") ||
           kind.equals("village_green")) {
-          if (wayArea > 10000) {
-            minZoom = 7;
-          } else if (wayArea > 4000) {
-            minZoom = 8;
-          } else if (wayArea > 1000) {
-            minZoom = 9;
-          } else if (wayArea > 250) {
-            minZoom = 10;
-          } else if (wayArea > 15) {
-            minZoom = 11;
-          } else if (wayArea > 5) {
-            minZoom = 12;
-          } else if (wayArea > 1) {
-            minZoom = 13;
-          } else if (wayArea > 0.25) {
-            minZoom = 14;
-          } else if (wayArea > 0.01) {
-            minZoom = 15;
-          } else if (wayArea > 0.001) {
-            minZoom = 16;
-          } else {
-            //minZoom = 17;
-          }
-
           // Discount wilderness areas within US national forests and parks
           if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
             minZoom = minZoom + 1;
