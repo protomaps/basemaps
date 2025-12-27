@@ -57,7 +57,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
     "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
 
-  private static final MultiExpression.Index<Map<String, Object>> kindsIndex = MultiExpression.of(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> kindsIndex = MultiExpression.ofOrdered(List.of(
 
     // Everything is "other"/"" at first
     rule(use("kind", "other"), use("kindDetail", "")),
@@ -154,7 +154,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   )).index();
 
-  private static final MultiExpression.Index<Map<String, Object>> zoomsIndex = MultiExpression.of(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> zoomsIndex = MultiExpression.ofOrdered(List.of(
 
     // Everything is zoom=15 at first
     rule(use("minZoom", 15)),
@@ -437,6 +437,9 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
               }
             }
           }
+        } else if (kind.equals("college") ||
+          kind.equals("university")) {
+          // do nothing
         } else if (kind.equals("forest") ||
           kind.equals("park") ||
           kind.equals("protected_area") ||
