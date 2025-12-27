@@ -232,13 +232,28 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       with(KIND_ATTR, "allotments"),
       use("minZoom", 16)
     ),
-    rule(
-      with(HAS_NAMED_POLYGON),
-      with(KIND_ATTR, "cemetery", "school"),
-      use("minZoom", 16)
-    ),
 
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), use("minZoom", 17)),
+    // Schools & Cemeteries
+
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "cemetery", "school"), withinRange(WAYAREA_ATTR, 0, 10), use("minZoom", 16)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "cemetery", "school"), withinRange(WAYAREA_ATTR, 10, 100), use("minZoom", 15)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "cemetery", "school"), withinRange(WAYAREA_ATTR, 100, 1000), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "cemetery", "school"), withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "cemetery", "school"), withinRange(WAYAREA_ATTR, 5000, null), use("minZoom", 12)),
+
+    // National parks
+
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 0, 250), use("minZoom", 17)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 12)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 20000, 100000), use("minZoom", 11)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 100000, 250000), use("minZoom", 10)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 250000, 2000000), use("minZoom", 9)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 2000000, 10000000), use("minZoom", 8)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 10000000, 25000000), use("minZoom", 7)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 25000000, 300000000), use("minZoom", 6)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "national_park"), withinRange(WAYAREA_ATTR, 300000000, null), use("minZoom", 5)),
 
     // College and university polygons
 
@@ -269,7 +284,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // How are these similar?
 
-    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), use("minZoom", 14)),
     rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
     rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
     rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"), withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 12)),
@@ -395,27 +409,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         //
         // Allowlist of kind values eligible for early zoom point labels
         if (kind.equals("national_park")) {
-          if (wayArea > 300000) { // 500000000 sq meters (web mercator proj)
-            minZoom = 5;
-          } else if (wayArea > 25000) { // 500000000 sq meters (web mercator proj)
-            minZoom = 6;
-          } else if (wayArea > 10000) { // 500000000
-            minZoom = 7;
-          } else if (wayArea > 2000) { // 200000000
-            minZoom = 8;
-          } else if (wayArea > 250) { //  40000000
-            minZoom = 9;
-          } else if (wayArea > 100) { //   8000000
-            minZoom = 10;
-          } else if (wayArea > 20) { //    500000
-            minZoom = 11;
-          } else if (wayArea > 5) {
-            minZoom = 12;
-          } else if (wayArea > 1) {
-            minZoom = 13;
-          } else if (wayArea > 0.25) {
-            //minZoom = 14;
-          }
+
         } else if (kind.equals("aerodrome") ||
           kind.equals("golf_course") ||
           kind.equals("military") ||
@@ -455,17 +449,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           }
         } else if (kind.equals("cemetery") ||
           kind.equals("school")) {
-          if (wayArea > 5) {
-            minZoom = 12;
-          } else if (wayArea > 1) {
-            minZoom = 13;
-          } else if (wayArea > 0.1) {
-            minZoom = 14;
-          } else if (wayArea > 0.01) {
-            minZoom = 15;
-          } else {
-            //minZoom = 16;
-          }
           // Typically for "building" derived label placements for shops and other businesses
         } else if (kind.equals("allotments")) {
           if (wayArea > 0.01) {
