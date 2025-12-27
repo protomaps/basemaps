@@ -412,85 +412,39 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
       // try first for polygon -> point representations
       if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
-        Double wayArea = 0.0;
-        try {
-          wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
-        } catch (GeometryException e) {
-          e.log("Exception in POI way calculation");
-        }
 
-        double height = 0.0;
-        if (sf.hasTag("height")) {
-          Double parsed = parseDoubleOrNull(sf.getString("height"));
-          if (parsed != null) {
-            height = parsed;
-          }
-        }
+        // Emphasize large international airports earlier
+        // Because the area grading resets the earlier dispensation
+        if (kind.equals("aerodrome")) {
+          if (sf.hasTag("iata")) {
+            // prioritize international airports over regional airports
+            minZoom -= 2;
 
-        // Area zoom grading overrides the kind zoom grading in the section above.
-        // Roughly shared with the water label area zoom grading in physical points layer
-        //
-        // Allowlist of kind values eligible for early zoom point labels
-        if (kind.equals("national_park")) {
-
-        } else if (kind.equals("aerodrome") ||
-          kind.equals("golf_course") ||
-          kind.equals("military") ||
-          kind.equals("naval_base") ||
-          kind.equals("stadium") ||
-          kind.equals("zoo")) {
-
-          // Emphasize large international airports earlier
-          // Because the area grading resets the earlier dispensation
-          if (kind.equals("aerodrome")) {
-            if (sf.hasTag("iata")) {
-              // prioritize international airports over regional airports
-              minZoom -= 2;
-
-              // but don't show international airports tooooo early
-              if (minZoom < 10) {
-                minZoom = 10;
-              }
-            } else {
-              // and show other airports only once their polygon begins to be visible
-              if (minZoom < 12) {
-                minZoom = 12;
-              }
+            // but don't show international airports tooooo early
+            if (minZoom < 10) {
+              minZoom = 10;
+            }
+          } else {
+            // and show other airports only once their polygon begins to be visible
+            if (minZoom < 12) {
+              minZoom = 12;
             }
           }
-        } else if (kind.equals("college") ||
-          kind.equals("university")) {
-          // do nothing
-        } else if (kind.equals("forest") ||
-          kind.equals("park") ||
-          kind.equals("protected_area") ||
-          kind.equals("nature_reserve") ||
-          kind.equals("village_green")) {
-          // Discount wilderness areas within US national forests and parks
-          if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
-            minZoom = minZoom + 1;
-          }
-        } else if (kind.equals("cemetery") ||
-          kind.equals("school")) {
-          // Typically for "building" derived label placements for shops and other businesses
-        } else if (kind.equals("allotments")) {
-          //
-        } else if (kind.equals("playground")) {
-          // minZoom = 17;
-        } else {
-          //
+        }
+
+        // Discount wilderness areas within US national forests and parks
+        if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
+          minZoom += 1;
         }
 
         // very long text names should only be shown at later zooms
         if (minZoom < 14) {
           var nameLength = sf.getString("name").length();
 
-          if (nameLength > 30) {
-            if (nameLength > 45) {
-              minZoom += 2;
-            } else {
-              minZoom += 1;
-            }
+          if (nameLength > 45) {
+            minZoom += 2;
+          } else if (nameLength > 30) {
+            minZoom += 1;
           }
         }
 
