@@ -48,9 +48,9 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   public static final String LAYER_NAME = "pois";
 
   // Internal tags used to reference calculated values between matchers
-  private static final String KIND_ATTR = "protomaps-basemaps:kind";
-  private static final String WAYAREA_ATTR = "protomaps-basemaps:wayArea";
-  private static final String HEIGHT_ATTR = "protomaps-basemaps:height";
+  private static final String KIND = "protomaps-basemaps:kind";
+  private static final String WAYAREA = "protomaps-basemaps:wayArea";
+  private static final String HEIGHT = "protomaps-basemaps:height";
   private static final String HAS_NAMED_POLYGON = "protomaps-basemaps:hasNamedPolygon";
 
   private static final Expression WITH_OPERATOR_USFS = with("operator", "United States Forest Service",
@@ -154,17 +154,19 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   )).index();
 
+  // Shorthand expressions to save space below
+
   private static final Expression with_named_polygon = with(HAS_NAMED_POLYGON);
   private static final Expression with_s_c_named_poly =
-    Expression.and(with_named_polygon, with(KIND_ATTR, "cemetery", "school"));
+    Expression.and(with_named_polygon, with(KIND, "cemetery", "school"));
   private static final Expression with_n_p_named_poly =
-    Expression.and(with_named_polygon, with(KIND_ATTR, "national_park"));
+    Expression.and(with_named_polygon, with(KIND, "national_park"));
   private static final Expression with_c_u_named_poly =
-    Expression.and(with_named_polygon, with(KIND_ATTR, "college", "university"));
+    Expression.and(with_named_polygon, with(KIND, "college", "university"));
   private static final Expression with_b_g_named_poly = Expression.and(with_named_polygon,
-    with(KIND_ATTR, "forest", "park", "protected_area", "nature_reserve", "village_green"));
+    with(KIND, "forest", "park", "protected_area", "nature_reserve", "village_green"));
   private static final Expression with_etc_named_poly = Expression.and(with_named_polygon,
-    with(KIND_ATTR, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"));
+    with(KIND, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo"));
 
   private static final MultiExpression.Index<Map<String, Object>> zoomsIndex = MultiExpression.ofOrdered(List.of(
 
@@ -190,24 +192,35 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       use("minZoom", 15)
     ),
 
-    // Fine-tune lots of specific categories
+    // Promote important point categories to earlier zooms
 
-    rule(with(KIND_ATTR, "national_park"), use("minZoom", 11)),
-    rule(with("natural", "peak"), use("minZoom", 13)),
+    rule(
+      withPoint(),
+      Expression.or(
+        with("amenity", "university", "college"), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
+        with("landuse", "cemetery"),
+        with("leisure", "park"), // Lots of pocket parks and NODE parks, show those later than rest of leisure
+        with("shop", "grocery", "supermarket")
+      ),
+      use("minZoom", 14)
+    ),
+    rule(
+      withPoint(),
+      Expression.or(
+        with("aeroway", "aerodrome"),
+        with("amenity", "library", "post_office", "townhall"),
+        with("leisure", "golf_course", "marina", "stadium"),
+        with("natural", "peak")
+      ),
+      use("minZoom", 13)
+    ),
+    rule(withPoint(), with("amenity", "hospital"), use("minZoom", 12)),
+    rule(withPoint(), with(KIND, "national_park"), use("minZoom", 11)),
+    rule(withPoint(), with("aeroway", "aerodrome"), with(KIND, "aerodrome"), with("iata"), use("minZoom", 11)), // Emphasize large international airports earlier
+
+    // Demote some unimportant point categories to very late zooms
+
     rule(with("highway", "bus_stop"), use("minZoom", 17)),
-    rule(with("tourism", "attraction", "camp_site", "hotel"), use("minZoom", 15)),
-    rule(with("shop", "grocery", "supermarket"), use("minZoom", 14)),
-    rule(with("leisure", "golf_course", "marina", "stadium"), use("minZoom", 13)),
-    rule(with("leisure", "park"), use("minZoom", 14)), // Lots of pocket parks and NODE parks, show those later than rest of leisure
-    rule(with("landuse", "cemetery"), use("minZoom", 14)),
-    rule(with("amenity", "cafe"), use("minZoom", 15)),
-    rule(with("amenity", "school"), use("minZoom", 15)),
-    rule(with("amenity", "library", "post_office", "townhall"), use("minZoom", 13)),
-    rule(with("amenity", "hospital"), use("minZoom", 12)),
-    rule(with("amenity", "university", "college"), use("minZoom", 14)), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
-    rule(with("aeroway", "aerodrome"), use("minZoom", 13)),
-    rule(with("aeroway", "aerodrome"), with(KIND_ATTR, "aerodrome"), with("iata"), use("minZoom", 11)), // Emphasize large international airports earlier
-
     rule(
       withPoint(),
       Expression.or(
@@ -229,7 +242,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       use("minZoom", 16)
     ),
 
-    // Some features should only be visible at very late zooms when they don't have a name
+    // Demote some unnamed point categories to very late zooms
 
     rule(
       withPoint(),
@@ -251,101 +264,98 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // Size-graded polygons, generic at first then per-kind adjustments
 
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 500), use("minZoom", 14)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 500, 2000), use("minZoom", 13)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 2000, 1e4), use("minZoom", 12)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 1e4), use("minZoom", 11)),
+    rule(with_named_polygon, withinRange(WAYAREA, 10, 500), use("minZoom", 14)),
+    rule(with_named_polygon, withinRange(WAYAREA, 500, 2000), use("minZoom", 13)),
+    rule(with_named_polygon, withinRange(WAYAREA, 2000, 1e4), use("minZoom", 12)),
+    rule(with_named_polygon, withinRange(WAYAREA, 1e4), use("minZoom", 11)),
 
-    rule(with_named_polygon, with(KIND_ATTR, "playground"), use("minZoom", 17)),
-    rule(with_named_polygon, with(KIND_ATTR, "allotments"), withinRange(WAYAREA_ATTR, 0, 10), use("minZoom", 16)),
-    rule(with_named_polygon, with(KIND_ATTR, "allotments"), withinRange(WAYAREA_ATTR, 10), use("minZoom", 15)),
+    rule(with_named_polygon, with(KIND, "playground"), use("minZoom", 17)),
+    rule(with_named_polygon, with(KIND, "allotments"), withinRange(WAYAREA, 0, 10), use("minZoom", 16)),
+    rule(with_named_polygon, with(KIND, "allotments"), withinRange(WAYAREA, 10), use("minZoom", 15)),
 
     // Height-graded polygons, generic at first then per-kind adjustments
-    // Small but tall features should show up early as they have regional prominance.
+    // Small but tall features should show up early as they have regional prominence.
     // Height measured in meters
 
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 10, 20), use("minZoom", 13)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 20, 100),
-      use("minZoom", 12)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 100),
-      use("minZoom", 11)),
+    rule(with_named_polygon, withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 10, 20), use("minZoom", 13)),
+    rule(with_named_polygon, withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 20, 100), use("minZoom", 12)),
+    rule(with_named_polygon, withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 100), use("minZoom", 11)),
 
     // Clamp certain kind values so medium tall buildings don't crowd downtown areas
     // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
     // NOTE: (nvkelso 20230624) Turn this into an allowlist instead of a blocklist
     rule(
       with_named_polygon,
-      with(KIND_ATTR, "hotel", "hostel", "parking", "bank", "place_of_worship", "jewelry", "yes", "restaurant",
+      with(KIND, "hotel", "hostel", "parking", "bank", "place_of_worship", "jewelry", "yes", "restaurant",
         "coworking_space", "clothes", "art", "school"),
-      withinRange(WAYAREA_ATTR, 10, 2000),
-      withinRange(HEIGHT_ATTR, 20, 100),
+      withinRange(WAYAREA, 10, 2000),
+      withinRange(HEIGHT, 20, 100),
       use("minZoom", 13)
     ),
     // Discount tall self storage buildings
-    rule(with_named_polygon, with(KIND_ATTR, "storage_rental"), withinRange(WAYAREA_ATTR, 10, 2000),
-      use("minZoom", 14)),
+    rule(with_named_polygon, with(KIND, "storage_rental"), withinRange(WAYAREA, 10, 2000), use("minZoom", 14)),
     // Discount tall university buildings, require a related university landuse AOI
-    rule(with_named_polygon, with(KIND_ATTR, "university"), withinRange(WAYAREA_ATTR, 10, 2000), use("minZoom", 13)),
+    rule(with_named_polygon, with(KIND, "university"), withinRange(WAYAREA, 10, 2000), use("minZoom", 13)),
 
     // Schools & Cemeteries
 
-    rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 0, 10), use("minZoom", 16)),
-    rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 10, 100), use("minZoom", 15)),
-    rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 100, 1000), use("minZoom", 14)),
-    rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 5000), use("minZoom", 12)),
+    rule(with_s_c_named_poly, withinRange(WAYAREA, 0, 10), use("minZoom", 16)),
+    rule(with_s_c_named_poly, withinRange(WAYAREA, 10, 100), use("minZoom", 15)),
+    rule(with_s_c_named_poly, withinRange(WAYAREA, 100, 1000), use("minZoom", 14)),
+    rule(with_s_c_named_poly, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
+    rule(with_s_c_named_poly, withinRange(WAYAREA, 5000), use("minZoom", 12)),
 
     // National parks
 
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 0, 250), use("minZoom", 17)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 5000, 2e4), use("minZoom", 12)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2e4, 1e5), use("minZoom", 11)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 1e5, 2.5e5), use("minZoom", 10)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 2e6), use("minZoom", 9)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2e6, 1e7), use("minZoom", 8)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 1e7, 2.5e7), use("minZoom", 7)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2.5e7, 3e8), use("minZoom", 6)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 3e8), use("minZoom", 5)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 0, 250), use("minZoom", 17)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 250, 1000), use("minZoom", 14)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 5000, 2e4), use("minZoom", 12)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 2e4, 1e5), use("minZoom", 11)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 1e5, 2.5e5), use("minZoom", 10)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 2.5e5, 2e6), use("minZoom", 9)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 2e6, 1e7), use("minZoom", 8)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 1e7, 2.5e7), use("minZoom", 7)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 2.5e7, 3e8), use("minZoom", 6)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA, 3e8), use("minZoom", 5)),
 
     // College and university polygons
 
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 0, 5000), use("minZoom", 15)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5000, 2e4), use("minZoom", 14)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 2e4, 5e4), use("minZoom", 13)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5e4, 1e5), use("minZoom", 12)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 1e5, 1.5e5), use("minZoom", 11)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 1.5e5, 2.5e5), use("minZoom", 10)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 5e6), use("minZoom", 9)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5e6, 2e7), use("minZoom", 8)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 2e7), use("minZoom", 7)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 0, 5000), use("minZoom", 15)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 5000, 2e4), use("minZoom", 14)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 2e4, 5e4), use("minZoom", 13)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 5e4, 1e5), use("minZoom", 12)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 1e5, 1.5e5), use("minZoom", 11)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 1.5e5, 2.5e5), use("minZoom", 10)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 2.5e5, 5e6), use("minZoom", 9)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 5e6, 2e7), use("minZoom", 8)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA, 2e7), use("minZoom", 7)),
     rule(with_c_u_named_poly, with("name", "Academy of Art University"), use("minZoom", 14)), // Hack for weird San Francisco university
 
     // Big green polygons
 
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 0, 1), use("minZoom", 17)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1, 10), use("minZoom", 16)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 10, 250), use("minZoom", 15)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 5000, 1.5e4), use("minZoom", 12)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1.5e4, 2.5e5), use("minZoom", 11)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 1e6), use("minZoom", 10)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1e6, 4e6), use("minZoom", 9)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 4e6, 1e7), use("minZoom", 8)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1e7), use("minZoom", 7)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 0, 1), use("minZoom", 17)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 1, 10), use("minZoom", 16)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 10, 250), use("minZoom", 15)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 250, 1000), use("minZoom", 14)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 5000, 1.5e4), use("minZoom", 12)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 1.5e4, 2.5e5), use("minZoom", 11)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 2.5e5, 1e6), use("minZoom", 10)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 1e6, 4e6), use("minZoom", 9)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 4e6, 1e7), use("minZoom", 8)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA, 1e7), use("minZoom", 7)),
 
     // Remaining grab-bag of scaled kinds
 
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 5000, 2e4), use("minZoom", 12)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 2e4, 1e5), use("minZoom", 11)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 1e5, 2.5e5), use("minZoom", 10)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 5e6), use("minZoom", 9)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 5e6, 2e7), use("minZoom", 8)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 2e7), use("minZoom", 7))
+    rule(with_etc_named_poly, withinRange(WAYAREA, 250, 1000), use("minZoom", 14)),
+    rule(with_etc_named_poly, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
+    rule(with_etc_named_poly, withinRange(WAYAREA, 5000, 2e4), use("minZoom", 12)),
+    rule(with_etc_named_poly, withinRange(WAYAREA, 2e4, 1e5), use("minZoom", 11)),
+    rule(with_etc_named_poly, withinRange(WAYAREA, 1e5, 2.5e5), use("minZoom", 10)),
+    rule(with_etc_named_poly, withinRange(WAYAREA, 2.5e5, 5e6), use("minZoom", 9)),
+    rule(with_etc_named_poly, withinRange(WAYAREA, 5e6, 2e7), use("minZoom", 8)),
+    rule(with_etc_named_poly, withinRange(WAYAREA, 2e7), use("minZoom", 7))
 
   )).index();
 
@@ -381,9 +391,9 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     Map<String, Object> computedTags;
 
     if (hasNamedPolygon) {
-      computedTags = Map.of(KIND_ATTR, kind, WAYAREA_ATTR, wayArea, HEIGHT_ATTR, height, HAS_NAMED_POLYGON, true);
+      computedTags = Map.of(KIND, kind, WAYAREA, wayArea, HEIGHT, height, HAS_NAMED_POLYGON, true);
     } else {
-      computedTags = Map.of(KIND_ATTR, kind, WAYAREA_ATTR, wayArea, HEIGHT_ATTR, height);
+      computedTags = Map.of(KIND, kind, WAYAREA, wayArea, HEIGHT, height);
     }
 
     return new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
