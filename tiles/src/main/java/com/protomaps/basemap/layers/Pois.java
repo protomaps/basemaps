@@ -405,19 +405,20 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     if (zoomMatches.isEmpty())
       return;
 
+    // Output feature and its basic values to assign
+    FeatureCollector.Feature pointFeature = null;
     String kind = getString(sf2, kindMatches, "kind", "undefined");
     String kindDetail = getString(sf2, kindMatches, "kindDetail", "undefined");
     Integer minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
 
-    long qrank = 0;
-
+    // QRank may override minZoom entirely
     String wikidata = sf.getString("wikidata");
-    if (wikidata != null) {
-      qrank = qrankDb.get(wikidata);
-    }
+    long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
+    var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
 
     // try first for polygon -> point representations
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
+
       // Emphasize large international airports earlier
       // Because the area grading resets the earlier dispensation
       if (kind.equals("aerodrome")) {
@@ -453,53 +454,21 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         }
       }
 
-      var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
-      if (rankedZoom.isPresent())
-        minZoom = rankedZoom.get();
-
-      var polyLabelPosition = features.pointOnSurface(this.name())
-        // all POIs should receive their IDs at all zooms
-        // (there is no merging of POIs like with lines and polygons in other layers)
-        .setId(FeatureId.create(sf))
-        // Core Tilezen schema properties
-        .setAttr("kind", kind)
-        // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
-        // 512 px zooms versus 256 px logical zooms
-        .setAttr("min_zoom", minZoom + 1)
-        //
+      pointFeature = features.pointOnSurface(this.name())
         // DEBUG
         //.setAttr("area_debug", wayArea)
-        //
-        // Core OSM tags for different kinds of places
-        // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-        .setAttr("iata", sf.getString("iata"))
-        .setAttr("elevation", sf.getString("ele"))
-        // Extra OSM tags for certain kinds of places
-        // These are duplicate of what's in the kind_detail tag
-        .setBufferPixels(8)
-        .setZoomRange(Math.min(15, minZoom), 15);
-
-      // Core Tilezen schema properties
-      if (!kindDetail.isEmpty()) {
-        polyLabelPosition.setAttr("kind_detail", kindDetail);
-      }
-
-      OsmNames.setOsmNames(polyLabelPosition, sf, 0);
-
-      // Server sort features so client label collisions are pre-sorted
-      // NOTE: (nvkelso 20230627) This could also include other params like the name
-      polyLabelPosition.setSortKey(minZoom * 1000);
-
-      // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
-      // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-      polyLabelPosition.setPointLabelGridSizeAndLimit(14, 8, 1);
+        .setAttr("elevation", sf.getString("ele"));
 
     } else if (sf.isPoint()) {
-      var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
-      if (rankedZoom.isPresent())
-        minZoom = rankedZoom.get();
+      pointFeature = features.point(this.name());
+    }
 
-      var pointFeature = features.point(this.name())
+    if (pointFeature != null) {
+      // Override minZoom with QRank entirely
+      if (qrankedZoom.isPresent())
+        minZoom = qrankedZoom.get();
+
+      pointFeature
         // all POIs should receive their IDs at all zooms
         // (there is no merging of POIs like with lines and polygons in other layers)
         .setId(FeatureId.create(sf))
@@ -508,11 +477,12 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
         // 512 px zooms versus 256 px logical zooms
         .setAttr("min_zoom", minZoom + 1)
+        //
+        .setBufferPixels(8)
+        .setZoomRange(Math.min(minZoom, 15), 15)
         // Core OSM tags for different kinds of places
         // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-        .setAttr("iata", sf.getString("iata"))
-        .setBufferPixels(8)
-        .setZoomRange(Math.min(minZoom, 15), 15);
+        .setAttr("iata", sf.getString("iata"));
 
       // Core Tilezen schema properties
       if (!kindDetail.isEmpty())
