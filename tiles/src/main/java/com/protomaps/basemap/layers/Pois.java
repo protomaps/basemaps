@@ -400,8 +400,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    // We only do POI display for points and polygons
-    if (!sf.isPoint() && !sf.canBePolygon())
+    // We only do POI display for points and named polygons
+    if (!(sf.isPoint() || sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null))
       return;
 
     // Map the Protomaps "kind" classification to incoming tags
@@ -409,73 +409,79 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     if (kindMatches.isEmpty())
       return;
 
-    // Calculate dimensions and create a wrapper with computed tags
-    var sf2 = computeExtraTags(sf, getString(sf, kindMatches, "kind", "undefined"));
-    var zoomMatches = zoomsIndex.getMatches(sf2);
-    if (zoomMatches.isEmpty())
-      return;
-
     // Output feature and its basic values to assign
-    FeatureCollector.Feature outputFeature = null;
-    String kind = getString(sf2, kindMatches, "kind", "undefined");
-    String kindDetail = getString(sf2, kindMatches, "kindDetail", "undefined");
-    Integer minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
+    FeatureCollector.Feature outputFeature;
+    String kind = getString(sf, kindMatches, "kind", "undefined");
+    String kindDetail = getString(sf, kindMatches, "kindDetail", "undefined");
+    Integer minZoom;
 
     // QRank may override minZoom entirely
     String wikidata = sf.getString("wikidata");
     long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
     var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
 
-    if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
+    if (qrankedZoom.isPresent()) {
+      // Set minZoom from QRank
+      minZoom = qrankedZoom.get();
+    } else {
+      // Calculate minZoom using zoomsIndex
+      var sf2 = computeExtraTags(sf, getString(sf, kindMatches, "kind", "undefined"));
+      var zoomMatches = zoomsIndex.getMatches(sf2);
+      if (zoomMatches.isEmpty())
+        return;
 
-      // Emphasize large international airports earlier
-      // Because the area grading resets the earlier dispensation
-      if (kind.equals("aerodrome")) {
-        if (sf.hasTag("iata")) {
-          // prioritize international airports over regional airports
-          minZoom -= 2;
+      // Initial minZoom
+      minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
 
-          // but don't show international airports tooooo early
-          if (minZoom < 10) {
-            minZoom = 10;
-          }
-        } else {
-          // and show other airports only once their polygon begins to be visible
-          if (minZoom < 12) {
-            minZoom = 12;
+      // Adjusted minZoom
+      if (sf.canBePolygon()) {
+        // Emphasize large international airports earlier
+        // Because the area grading resets the earlier dispensation
+        if (kind.equals("aerodrome")) {
+          if (sf.hasTag("iata")) {
+            // prioritize international airports over regional airports
+            minZoom -= 2;
+
+            // but don't show international airports tooooo early
+            if (minZoom < 10) {
+              minZoom = 10;
+            }
+          } else {
+            // and show other airports only once their polygon begins to be visible
+            if (minZoom < 12) {
+              minZoom = 12;
+            }
           }
         }
-      }
 
-      // Discount wilderness areas within US national forests and parks
-      if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
-        minZoom += 1;
-      }
-
-      // very long text names should only be shown at later zooms
-      if (minZoom < 14) {
-        var nameLength = sf.getString("name").length();
-
-        if (nameLength > 45) {
-          minZoom += 2;
-        } else if (nameLength > 30) {
+        // Discount wilderness areas within US national forests and parks
+        if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
           minZoom += 1;
         }
-      }
 
+        // very long text names should only be shown at later zooms
+        if (minZoom < 14) {
+          var nameLength = sf.getString("name").length();
+
+          if (nameLength > 45) {
+            minZoom += 2;
+          } else if (nameLength > 30) {
+            minZoom += 1;
+          }
+        }
+      }
+    }
+
+    // Assign outputFeature
+    if (sf.canBePolygon()) {
       outputFeature = features.pointOnSurface(this.name())
         //.setAttr("area_debug", wayArea) // DEBUG
         .setAttr("elevation", sf.getString("ele"));
-
     } else if (sf.isPoint()) {
       outputFeature = features.point(this.name());
     } else {
       return;
     }
-
-    // Override minZoom with QRank entirely
-    if (qrankedZoom.isPresent())
-      minZoom = qrankedZoom.get();
 
     // Populate final outputFeature attributes
     outputFeature
