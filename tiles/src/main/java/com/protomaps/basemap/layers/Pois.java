@@ -22,7 +22,6 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -263,26 +262,40 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public Matcher.SourceFeatureWithComputedTags computeExtraTags(SourceFeature sf, String kind) {
-    Map<String, Object> computedTags = new HashMap<>(Map.of(
-      KIND_ATTR, kind,
-      "protomaps-basemaps:wayArea", 0.0,
-      "protomaps-basemaps:height", 0.0
-    ));
+    Double wayArea = 0.0;
+    Double height = 0.0;
+    Boolean hasNamedPolygon = false;
 
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
-      computedTags.put(HAS_NAMED_POLYGON, true);
+      hasNamedPolygon = true;
       try {
-        Double area = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
-        computedTags.put("protomaps-basemaps:wayArea", area);
+        wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70K_SQUARE_METERS;
       } catch (GeometryException e) {
         e.log("Exception in POI way calculation");
       }
       if (sf.hasTag("height")) {
         Double parsed = parseDoubleOrNull(sf.getString("height"));
         if (parsed != null) {
-          computedTags.put("protomaps-basemaps:height", parsed);
+          height = parsed;
         }
       }
+    }
+
+    Map<String, Object> computedTags;
+
+    if (hasNamedPolygon) {
+      computedTags = Map.of(
+        KIND_ATTR, kind,
+        HAS_NAMED_POLYGON, true,
+        "protomaps-basemaps:wayArea", wayArea,
+        "protomaps-basemaps:height", height
+      );
+    } else {
+      computedTags = Map.of(
+        KIND_ATTR, kind,
+        "protomaps-basemaps:wayArea", wayArea,
+        "protomaps-basemaps:height", height
+      );
     }
 
     return new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
