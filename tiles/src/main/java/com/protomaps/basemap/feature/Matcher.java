@@ -222,12 +222,6 @@ public class Matcher {
       }
       return value >= lowerBound && (upperBound == null || value < upperBound);
     }
-
-    @Override
-    public String generateJavaCode() {
-      return "withinRange(" + com.onthegomap.planetiler.util.Format.quote(tagName) + ", " + lowerBound + "L, " +
-        (upperBound == null ? "null" : upperBound + "L") + ")";
-    }
   }
 
   public static Expression withPoint() {
