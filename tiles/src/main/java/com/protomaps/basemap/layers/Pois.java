@@ -400,7 +400,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    // We only do points and polygons for POI labels
+    // We only do POI display for points and polygons
     if (!sf.isPoint() && !sf.canBePolygon())
       return;
 
@@ -416,7 +416,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
 
     // Output feature and its basic values to assign
-    FeatureCollector.Feature pointFeature = null;
+    FeatureCollector.Feature outputFeature = null;
     String kind = getString(sf2, kindMatches, "kind", "undefined");
     String kindDetail = getString(sf2, kindMatches, "kindDetail", "undefined");
     Integer minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
@@ -426,7 +426,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
     var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
 
-    // try first for polygon -> point representations
     if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
 
       // Emphasize large international airports earlier
@@ -464,50 +463,50 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         }
       }
 
-      pointFeature = features.pointOnSurface(this.name())
-        // DEBUG
-        //.setAttr("area_debug", wayArea)
+      outputFeature = features.pointOnSurface(this.name())
+        //.setAttr("area_debug", wayArea) // DEBUG
         .setAttr("elevation", sf.getString("ele"));
 
     } else if (sf.isPoint()) {
-      pointFeature = features.point(this.name());
+      outputFeature = features.point(this.name());
+    } else {
+      return;
     }
 
-    if (pointFeature != null) {
-      // Override minZoom with QRank entirely
-      if (qrankedZoom.isPresent())
-        minZoom = qrankedZoom.get();
+    // Override minZoom with QRank entirely
+    if (qrankedZoom.isPresent())
+      minZoom = qrankedZoom.get();
 
-      pointFeature
-        // all POIs should receive their IDs at all zooms
-        // (there is no merging of POIs like with lines and polygons in other layers)
-        .setId(FeatureId.create(sf))
-        // Core Tilezen schema properties
-        .setAttr("kind", kind)
-        // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
-        // 512 px zooms versus 256 px logical zooms
-        .setAttr("min_zoom", minZoom + 1)
-        //
-        .setBufferPixels(8)
-        .setZoomRange(Math.min(minZoom, 15), 15)
-        // Core OSM tags for different kinds of places
-        // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-        .setAttr("iata", sf.getString("iata"));
-
+    // Populate final outputFeature attributes
+    outputFeature
+      // all POIs should receive their IDs at all zooms
+      // (there is no merging of POIs like with lines and polygons in other layers)
+      .setId(FeatureId.create(sf))
       // Core Tilezen schema properties
-      if (!kindDetail.isEmpty())
-        pointFeature.setAttr("kind_detail", kindDetail);
+      .setAttr("kind", kind)
+      // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
+      // 512 px zooms versus 256 px logical zooms
+      .setAttr("min_zoom", minZoom + 1)
+      //
+      .setBufferPixels(8)
+      .setZoomRange(Math.min(minZoom, 15), 15)
+      // Core OSM tags for different kinds of places
+      // Special airport only tag (to indicate if it's an airport with regular commercial flights)
+      .setAttr("iata", sf.getString("iata"));
 
-      OsmNames.setOsmNames(pointFeature, sf, 0);
+    // Core Tilezen schema properties
+    if (!kindDetail.isEmpty())
+      outputFeature.setAttr("kind_detail", kindDetail);
 
-      // Server sort features so client label collisions are pre-sorted
-      // NOTE: (nvkelso 20230627) This could also include other params like the name
-      pointFeature.setSortKey(minZoom * 1000);
+    OsmNames.setOsmNames(outputFeature, sf, 0);
 
-      // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
-      // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-      pointFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
-    }
+    // Server sort features so client label collisions are pre-sorted
+    // NOTE: (nvkelso 20230627) This could also include other params like the name
+    outputFeature.setSortKey(minZoom * 1000);
+
+    // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
+    // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
+    outputFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
   }
 
   @Override
