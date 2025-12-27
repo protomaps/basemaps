@@ -197,7 +197,7 @@ public class Matcher {
         // getLong returned 0 because parsing failed
         return false;
       }
-      return value > lowerBound && (upperBound == null || value <= upperBound);
+      return value >= lowerBound && (upperBound == null || value < upperBound);
     }
 
     @Override

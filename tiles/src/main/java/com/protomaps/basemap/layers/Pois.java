@@ -222,16 +222,39 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       use("minZoom", 16)
     ),
 
+    // Size-graded polygons, generic at first then per-kind adjustments
+
+    rule(with(HAS_NAMED_POLYGON), withinRange(WAYAREA_ATTR, 10, 500), use("minZoom", 14)),
+    rule(with(HAS_NAMED_POLYGON), withinRange(WAYAREA_ATTR, 500, 2000), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), withinRange(WAYAREA_ATTR, 2000, 10000), use("minZoom", 12)),
+    rule(with(HAS_NAMED_POLYGON), withinRange(WAYAREA_ATTR, 10000, null), use("minZoom", 11)),
+
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "playground"), use("minZoom", 17)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "allotments"), withinRange(WAYAREA_ATTR, 0, 10), use("minZoom", 16)),
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "allotments"), withinRange(WAYAREA_ATTR, 10, null), use("minZoom", 15)),
+
+    // Height-graded polygons, generic at first then per-kind adjustments
+    // Small but tall features should show up early as they have regional prominance.
+    // Height measured in meters
+
+    rule(with(HAS_NAMED_POLYGON), withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 10, 20), use("minZoom", 13)),
+    rule(with(HAS_NAMED_POLYGON), withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 20, 100), use("minZoom", 12)),
+    rule(with(HAS_NAMED_POLYGON), withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 100, null), use("minZoom", 11)),
+
+    // Clamp certain kind values so medium tall buildings don't crowd downtown areas
+    // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
+    // NOTE: (nvkelso 20230624) Turn this into an allowlist instead of a blocklist
     rule(
       with(HAS_NAMED_POLYGON),
-      with(KIND_ATTR, "playground"),
-      use("minZoom", 17)
+      with(KIND_ATTR, "hotel", "hostel", "parking", "bank", "place_of_worship", "jewelry", "yes", "restaurant", "coworking_space", "clothes", "art", "school"),
+      withinRange(WAYAREA_ATTR, 10, 2000),
+      withinRange(HEIGHT_ATTR, 20, 100),
+      use("minZoom", 13)
     ),
-    rule(
-      with(HAS_NAMED_POLYGON),
-      with(KIND_ATTR, "allotments"),
-      use("minZoom", 16)
-    ),
+    // Discount tall self storage buildings
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "storage_rental"), withinRange(WAYAREA_ATTR, 10, 2000), use("minZoom", 14)),
+    // Discount tall university buildings, require a related university landuse AOI
+    rule(with(HAS_NAMED_POLYGON), with(KIND_ATTR, "university"), withinRange(WAYAREA_ATTR, 10, 2000), use("minZoom", 13)),
 
     // Schools & Cemeteries
 
@@ -451,57 +474,11 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           kind.equals("school")) {
           // Typically for "building" derived label placements for shops and other businesses
         } else if (kind.equals("allotments")) {
-          if (wayArea > 0.01) {
-            minZoom = 15;
-          } else {
-            //minZoom = 16;
-          }
+          //
         } else if (kind.equals("playground")) {
           // minZoom = 17;
         } else {
-          if (wayArea > 10) {
-            minZoom = 11;
-          } else if (wayArea > 2) {
-            minZoom = 12;
-          } else if (wayArea > 0.5) {
-            minZoom = 13;
-          } else if (wayArea > 0.01) {
-            minZoom = 14;
-          }
-
-          // Small but tall features should show up early as they have regional prominance.
-          // Height measured in meters
-          if (minZoom >= 13 && height > 0.0) {
-            if (height >= 100) {
-              minZoom = 11;
-            } else if (height >= 20) {
-              minZoom = 12;
-            } else if (height >= 10) {
-              minZoom = 13;
-            }
-
-            // Clamp certain kind values so medium tall buildings don't crowd downtown areas
-            // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
-            // NOTE: (nvkelso 20230624) Turn this into an allowlist instead of a blocklist
-            if (kind.equals("hotel") || kind.equals("hostel") || kind.equals("parking") || kind.equals("bank") ||
-              kind.equals("place_of_worship") || kind.equals("jewelry") || kind.equals("yes") ||
-              kind.equals("restaurant") || kind.equals("coworking_space") || kind.equals("clothes") ||
-              kind.equals("art") || kind.equals("school")) {
-              if (minZoom == 12) {
-                minZoom = 13;
-              }
-            }
-
-            // Discount tall self storage buildings
-            if (kind.equals("storage_rental")) {
-              minZoom = 14;
-            }
-
-            // Discount tall university buildings, require a related university landuse AOI
-            if (kind.equals("university")) {
-              minZoom = 13;
-            }
-          }
+          //
         }
 
         // very long text names should only be shown at later zooms

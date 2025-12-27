@@ -725,7 +725,7 @@ class MatcherTest {
       null,
       0
     );
-    assertFalse(expression.evaluate(sf, List.of()));
+    assertTrue(expression.evaluate(sf, List.of()));
 
     // Value at upper bound (10 <= 10)
     sf = SimpleFeature.create(
@@ -735,7 +735,7 @@ class MatcherTest {
       null,
       0
     );
-    assertTrue(expression.evaluate(sf, List.of()));
+    assertFalse(expression.evaluate(sf, List.of()));
 
     // Value below range
     sf = SimpleFeature.create(
@@ -780,7 +780,7 @@ class MatcherTest {
       null,
       0
     );
-    assertFalse(expression.evaluate(sf, List.of()));
+    assertTrue(expression.evaluate(sf, List.of()));
 
     // Value below lower bound
     sf = SimpleFeature.create(
@@ -853,7 +853,7 @@ class MatcherTest {
       null,
       0
     );
-    assertFalse(expression.evaluate(sf, List.of()));
+    assertTrue(expression.evaluate(sf, List.of()));
 
     // Value at upper bound
     sf = SimpleFeature.create(
@@ -863,7 +863,7 @@ class MatcherTest {
       null,
       0
     );
-    assertTrue(expression.evaluate(sf, List.of()));
+    assertFalse(expression.evaluate(sf, List.of()));
   }
 
   @Test
@@ -903,7 +903,7 @@ class MatcherTest {
       null,
       0
     );
-    assertFalse(expression.evaluate(sf, List.of()));
+    assertTrue(expression.evaluate(sf, List.of()));
   }
 
 }
