@@ -168,8 +168,29 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   private static final MultiExpression.Index<Map<String, Object>> zoomsIndex = MultiExpression.ofOrdered(List.of(
 
-    // Everything is zoom=15 at first
-    rule(use("minZoom", 15)),
+    // Everything with a point or a valid tag is zoom=15 at first
+    rule(
+      Expression.or(
+        withPoint(),
+        with("aeroway", "aerodrome"),
+        with("amenity"),
+        with("attraction"),
+        with("boundary", "national_park", "protected_area"),
+        with("craft"),
+        with("highway", "bus_stop"),
+        with("historic"),
+        with("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
+          "village_green", "allotments"),
+        with("leisure"),
+        with("natural", "beach", "peak"),
+        with("railway", "station"),
+        with("shop"),
+        Expression.and(with("tourism"), without("historic", "district"))
+      ),
+      use("minZoom", 15)
+    ),
+
+    // Fine-tune lots of specific categories
 
     rule(with(KIND_ATTR, "national_park"), use("minZoom", 11)),
     rule(with("natural", "peak"), use("minZoom", 13)),
@@ -185,14 +206,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with("amenity", "hospital"), use("minZoom", 12)),
     rule(with("amenity", "university", "college"), use("minZoom", 14)), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
     rule(with("aeroway", "aerodrome"), use("minZoom", 13)),
-
-    // Emphasize large international airports earlier
-    rule(
-      with("aeroway", "aerodrome"),
-      with(KIND_ATTR, "aerodrome"),
-      with("iata"),
-      use("minZoom", 11)
-    ),
+    rule(with("aeroway", "aerodrome"), with(KIND_ATTR, "aerodrome"), with("iata"), use("minZoom", 11)), // Emphasize large international airports earlier
 
     rule(
       withPoint(),
@@ -216,6 +230,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     ),
 
     // Some features should only be visible at very late zooms when they don't have a name
+
     rule(
       withPoint(),
       without("name"),
@@ -321,7 +336,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 4e6, 1e7), use("minZoom", 8)),
     rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1e7), use("minZoom", 7)),
 
-    // How are these similar?
+    // Remaining grab-bag of scaled kinds
 
     rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
     rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
@@ -366,176 +381,152 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     Map<String, Object> computedTags;
 
     if (hasNamedPolygon) {
-      computedTags = Map.of(
-        KIND_ATTR, kind,
-        HAS_NAMED_POLYGON, true,
-        WAYAREA_ATTR, wayArea,
-        HEIGHT_ATTR, height
-      );
+      computedTags = Map.of(KIND_ATTR, kind, WAYAREA_ATTR, wayArea, HEIGHT_ATTR, height, HAS_NAMED_POLYGON, true);
     } else {
-      computedTags = Map.of(
-        KIND_ATTR, kind,
-        WAYAREA_ATTR, wayArea,
-        HEIGHT_ATTR, height
-      );
+      computedTags = Map.of(KIND_ATTR, kind, WAYAREA_ATTR, wayArea, HEIGHT_ATTR, height);
     }
 
     return new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    var kindMatches = kindsIndex.getMatches(sf);
-    if (kindMatches.isEmpty()) {
+    // We only do points and polygons for POI labels
+    if (!sf.isPoint() && !sf.canBePolygon())
       return;
-    }
+
+    // Map the Protomaps "kind" classification to incoming tags
+    var kindMatches = kindsIndex.getMatches(sf);
+    if (kindMatches.isEmpty())
+      return;
 
     // Calculate dimensions and create a wrapper with computed tags
     var sf2 = computeExtraTags(sf, getString(sf, kindMatches, "kind", "undefined"));
     var zoomMatches = zoomsIndex.getMatches(sf2);
-    if (zoomMatches.isEmpty()) {
+    if (zoomMatches.isEmpty())
       return;
-    }
 
     String kind = getString(sf2, kindMatches, "kind", "undefined");
     String kindDetail = getString(sf2, kindMatches, "kindDetail", "undefined");
     Integer minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
 
-    if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
-      sf.hasTag("amenity") ||
-      sf.hasTag("attraction") ||
-      sf.hasTag("boundary", "national_park", "protected_area") ||
-      sf.hasTag("craft") ||
-      sf.hasTag("historic") ||
-      sf.hasTag("landuse", "cemetery", "recreation_ground", "winter_sports", "quarry", "park", "forest", "military",
-        "village_green", "allotments") ||
-      sf.hasTag("leisure") ||
-      sf.hasTag("natural", "beach", "peak") ||
-      sf.hasTag("railway", "station") ||
-      sf.hasTag("highway", "bus_stop") ||
-      sf.hasTag("shop") ||
-      sf.hasTag("tourism") &&
-        (!sf.hasTag("historic", "district")))) {
-      long qrank = 0;
+    long qrank = 0;
 
-      String wikidata = sf.getString("wikidata");
-      if (wikidata != null) {
-        qrank = qrankDb.get(wikidata);
-      }
+    String wikidata = sf.getString("wikidata");
+    if (wikidata != null) {
+      qrank = qrankDb.get(wikidata);
+    }
 
-      // try first for polygon -> point representations
-      if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
+    // try first for polygon -> point representations
+    if (sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null) {
+      // Emphasize large international airports earlier
+      // Because the area grading resets the earlier dispensation
+      if (kind.equals("aerodrome")) {
+        if (sf.hasTag("iata")) {
+          // prioritize international airports over regional airports
+          minZoom -= 2;
 
-        // Emphasize large international airports earlier
-        // Because the area grading resets the earlier dispensation
-        if (kind.equals("aerodrome")) {
-          if (sf.hasTag("iata")) {
-            // prioritize international airports over regional airports
-            minZoom -= 2;
-
-            // but don't show international airports tooooo early
-            if (minZoom < 10) {
-              minZoom = 10;
-            }
-          } else {
-            // and show other airports only once their polygon begins to be visible
-            if (minZoom < 12) {
-              minZoom = 12;
-            }
+          // but don't show international airports tooooo early
+          if (minZoom < 10) {
+            minZoom = 10;
+          }
+        } else {
+          // and show other airports only once their polygon begins to be visible
+          if (minZoom < 12) {
+            minZoom = 12;
           }
         }
+      }
 
-        // Discount wilderness areas within US national forests and parks
-        if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
+      // Discount wilderness areas within US national forests and parks
+      if (kind.equals("nature_reserve") && sf.getString("name").contains("Wilderness")) {
+        minZoom += 1;
+      }
+
+      // very long text names should only be shown at later zooms
+      if (minZoom < 14) {
+        var nameLength = sf.getString("name").length();
+
+        if (nameLength > 45) {
+          minZoom += 2;
+        } else if (nameLength > 30) {
           minZoom += 1;
         }
-
-        // very long text names should only be shown at later zooms
-        if (minZoom < 14) {
-          var nameLength = sf.getString("name").length();
-
-          if (nameLength > 45) {
-            minZoom += 2;
-          } else if (nameLength > 30) {
-            minZoom += 1;
-          }
-        }
-
-        var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
-        if (rankedZoom.isPresent())
-          minZoom = rankedZoom.get();
-
-        var polyLabelPosition = features.pointOnSurface(this.name())
-          // all POIs should receive their IDs at all zooms
-          // (there is no merging of POIs like with lines and polygons in other layers)
-          .setId(FeatureId.create(sf))
-          // Core Tilezen schema properties
-          .setAttr("kind", kind)
-          // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
-          // 512 px zooms versus 256 px logical zooms
-          .setAttr("min_zoom", minZoom + 1)
-          //
-          // DEBUG
-          //.setAttr("area_debug", wayArea)
-          //
-          // Core OSM tags for different kinds of places
-          // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-          .setAttr("iata", sf.getString("iata"))
-          .setAttr("elevation", sf.getString("ele"))
-          // Extra OSM tags for certain kinds of places
-          // These are duplicate of what's in the kind_detail tag
-          .setBufferPixels(8)
-          .setZoomRange(Math.min(15, minZoom), 15);
-
-        // Core Tilezen schema properties
-        if (!kindDetail.isEmpty()) {
-          polyLabelPosition.setAttr("kind_detail", kindDetail);
-        }
-
-        OsmNames.setOsmNames(polyLabelPosition, sf, 0);
-
-        // Server sort features so client label collisions are pre-sorted
-        // NOTE: (nvkelso 20230627) This could also include other params like the name
-        polyLabelPosition.setSortKey(minZoom * 1000);
-
-        // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
-        // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-        polyLabelPosition.setPointLabelGridSizeAndLimit(14, 8, 1);
-
-      } else if (sf.isPoint()) {
-        var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
-        if (rankedZoom.isPresent())
-          minZoom = rankedZoom.get();
-
-        var pointFeature = features.point(this.name())
-          // all POIs should receive their IDs at all zooms
-          // (there is no merging of POIs like with lines and polygons in other layers)
-          .setId(FeatureId.create(sf))
-          // Core Tilezen schema properties
-          .setAttr("kind", kind)
-          // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
-          // 512 px zooms versus 256 px logical zooms
-          .setAttr("min_zoom", minZoom + 1)
-          // Core OSM tags for different kinds of places
-          // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-          .setAttr("iata", sf.getString("iata"))
-          .setBufferPixels(8)
-          .setZoomRange(Math.min(minZoom, 15), 15);
-
-        // Core Tilezen schema properties
-        if (!kindDetail.isEmpty()) {
-          pointFeature.setAttr("kind_detail", kindDetail);
-        }
-
-        OsmNames.setOsmNames(pointFeature, sf, 0);
-
-        // Server sort features so client label collisions are pre-sorted
-        // NOTE: (nvkelso 20230627) This could also include other params like the name
-        pointFeature.setSortKey(minZoom * 1000);
-
-        // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
-        // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
-        pointFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
       }
+
+      var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
+      if (rankedZoom.isPresent())
+        minZoom = rankedZoom.get();
+
+      var polyLabelPosition = features.pointOnSurface(this.name())
+        // all POIs should receive their IDs at all zooms
+        // (there is no merging of POIs like with lines and polygons in other layers)
+        .setId(FeatureId.create(sf))
+        // Core Tilezen schema properties
+        .setAttr("kind", kind)
+        // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
+        // 512 px zooms versus 256 px logical zooms
+        .setAttr("min_zoom", minZoom + 1)
+        //
+        // DEBUG
+        //.setAttr("area_debug", wayArea)
+        //
+        // Core OSM tags for different kinds of places
+        // Special airport only tag (to indicate if it's an airport with regular commercial flights)
+        .setAttr("iata", sf.getString("iata"))
+        .setAttr("elevation", sf.getString("ele"))
+        // Extra OSM tags for certain kinds of places
+        // These are duplicate of what's in the kind_detail tag
+        .setBufferPixels(8)
+        .setZoomRange(Math.min(15, minZoom), 15);
+
+      // Core Tilezen schema properties
+      if (!kindDetail.isEmpty()) {
+        polyLabelPosition.setAttr("kind_detail", kindDetail);
+      }
+
+      OsmNames.setOsmNames(polyLabelPosition, sf, 0);
+
+      // Server sort features so client label collisions are pre-sorted
+      // NOTE: (nvkelso 20230627) This could also include other params like the name
+      polyLabelPosition.setSortKey(minZoom * 1000);
+
+      // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
+      // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
+      polyLabelPosition.setPointLabelGridSizeAndLimit(14, 8, 1);
+
+    } else if (sf.isPoint()) {
+      var rankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
+      if (rankedZoom.isPresent())
+        minZoom = rankedZoom.get();
+
+      var pointFeature = features.point(this.name())
+        // all POIs should receive their IDs at all zooms
+        // (there is no merging of POIs like with lines and polygons in other layers)
+        .setId(FeatureId.create(sf))
+        // Core Tilezen schema properties
+        .setAttr("kind", kind)
+        // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
+        // 512 px zooms versus 256 px logical zooms
+        .setAttr("min_zoom", minZoom + 1)
+        // Core OSM tags for different kinds of places
+        // Special airport only tag (to indicate if it's an airport with regular commercial flights)
+        .setAttr("iata", sf.getString("iata"))
+        .setBufferPixels(8)
+        .setZoomRange(Math.min(minZoom, 15), 15);
+
+      // Core Tilezen schema properties
+      if (!kindDetail.isEmpty())
+        pointFeature.setAttr("kind_detail", kindDetail);
+
+      OsmNames.setOsmNames(pointFeature, sf, 0);
+
+      // Server sort features so client label collisions are pre-sorted
+      // NOTE: (nvkelso 20230627) This could also include other params like the name
+      pointFeature.setSortKey(minZoom * 1000);
+
+      // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
+      // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
+      pointFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
     }
   }
 
