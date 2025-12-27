@@ -48,6 +48,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   // Internal tags used to reference calculated values between matchers
   private static final String KIND = "protomaps-basemaps:kind";
+  private static final String KIND_DETAIL = "protomaps-basemaps:kindDetail";
+  private static final String MINZOOM = "protomaps-basemaps:minZoom";
   private static final String WAYAREA = "protomaps-basemaps:wayArea";
   private static final String HEIGHT = "protomaps-basemaps:height";
   private static final String HAS_NAMED_POLYGON = "protomaps-basemaps:hasNamedPolygon";
@@ -60,7 +62,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   private static final MultiExpression.Index<Map<String, Object>> kindsIndex = MultiExpression.ofOrdered(List.of(
 
     // Everything is undefined at first
-    rule(use("kind", UNDEFINED), use("kindDetail", UNDEFINED)),
+    rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
 
     // An initial set of tags we like
     rule(
@@ -80,27 +82,27 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         with("shop"),
         Expression.and(with("tourism"), without("historic", "district"))
       ),
-      use("kind", "other")
+      use(KIND, "other")
     ),
 
     // Boundary is most generic, so place early else we lose out
     // on nature_reserve detail versus all the protected_area
-    rule(with("boundary"), use("kind", fromTag("boundary"))),
+    rule(with("boundary"), use(KIND, fromTag("boundary"))),
 
     // More specific kinds
 
-    rule(with("historic"), without("historic", "yes"), use("kind", fromTag("historic"))),
-    rule(with("tourism"), use("kind", fromTag("tourism"))),
-    rule(with("shop"), use("kind", fromTag("shop"))),
-    rule(with("highway"), use("kind", fromTag("highway"))),
-    rule(with("railway"), use("kind", fromTag("railway"))),
-    rule(with("natural"), use("kind", fromTag("natural"))),
-    rule(with("leisure"), use("kind", fromTag("leisure"))),
-    rule(with("landuse"), use("kind", fromTag("landuse"))),
-    rule(with("aeroway"), use("kind", fromTag("aeroway"))),
-    rule(with("craft"), use("kind", fromTag("craft"))),
-    rule(with("attraction"), use("kind", fromTag("attraction"))),
-    rule(with("amenity"), use("kind", fromTag("amenity"))),
+    rule(with("historic"), without("historic", "yes"), use(KIND, fromTag("historic"))),
+    rule(with("tourism"), use(KIND, fromTag("tourism"))),
+    rule(with("shop"), use(KIND, fromTag("shop"))),
+    rule(with("highway"), use(KIND, fromTag("highway"))),
+    rule(with("railway"), use(KIND, fromTag("railway"))),
+    rule(with("natural"), use(KIND, fromTag("natural"))),
+    rule(with("leisure"), use(KIND, fromTag("leisure"))),
+    rule(with("landuse"), use(KIND, fromTag("landuse"))),
+    rule(with("aeroway"), use(KIND, fromTag("aeroway"))),
+    rule(with("craft"), use(KIND, fromTag("craft"))),
+    rule(with("attraction"), use(KIND, fromTag("attraction"))),
+    rule(with("amenity"), use(KIND, fromTag("amenity"))),
 
     // National forests
 
@@ -119,12 +121,12 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           WITH_OPERATOR_USFS
         )
       ),
-      use("kind", "forest")
+      use(KIND, "forest")
     ),
 
     // National parks
 
-    rule(with("boundary", "national_park"), use("kind", "park")),
+    rule(with("boundary", "national_park"), use(KIND, "park")),
     rule(
       with("boundary", "national_park"),
       Expression.not(WITH_OPERATOR_USFS),
@@ -141,44 +143,44 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         with("designation", "national_park"),
         with("protection_title", "National Park")
       ),
-      use("kind", "national_park")
+      use(KIND, "national_park")
     ),
 
     // Remaining things
 
-    rule(with("natural", "peak"), use("kind", fromTag("natural"))),
-    rule(with("highway", "bus_stop"), use("kind", fromTag("highway"))),
-    rule(with("tourism", "attraction", "camp_site", "hotel"), use("kind", fromTag("tourism"))),
-    rule(with("shop", "grocery", "supermarket"), use("kind", fromTag("shop"))),
-    rule(with("leisure", "golf_course", "marina", "stadium", "park"), use("kind", fromTag("leisure"))),
+    rule(with("natural", "peak"), use(KIND, fromTag("natural"))),
+    rule(with("highway", "bus_stop"), use(KIND, fromTag("highway"))),
+    rule(with("tourism", "attraction", "camp_site", "hotel"), use(KIND, fromTag("tourism"))),
+    rule(with("shop", "grocery", "supermarket"), use(KIND, fromTag("shop"))),
+    rule(with("leisure", "golf_course", "marina", "stadium", "park"), use(KIND, fromTag("leisure"))),
 
-    rule(with("landuse", "military"), use("kind", "military")),
+    rule(with("landuse", "military"), use(KIND, "military")),
     rule(
       with("landuse", "military"),
       with("military", "naval_base", "airfield"),
-      use("kind", fromTag("military"))
+      use(KIND, fromTag("military"))
     ),
 
-    rule(with("landuse", "cemetery"), use("kind", fromTag("landuse"))),
+    rule(with("landuse", "cemetery"), use(KIND, fromTag("landuse"))),
 
     rule(
       with("aeroway", "aerodrome"),
-      use("kind", "aerodrome"),
-      use("kindDetail", fromTag("aerodrome"))
+      use(KIND, "aerodrome"),
+      use(KIND_DETAIL, fromTag("aerodrome"))
     ),
 
     // Additional details for certain classes of POI
 
-    rule(with("sport"), use("kindDetail", fromTag("sport"))),
-    rule(with("religion"), use("kindDetail", fromTag("religion"))),
-    rule(with("cuisine"), use("kindDetail", fromTag("cuisine")))
+    rule(with("sport"), use(KIND_DETAIL, fromTag("sport"))),
+    rule(with("religion"), use(KIND_DETAIL, fromTag("religion"))),
+    rule(with("cuisine"), use(KIND_DETAIL, fromTag("cuisine")))
 
   )).index();
 
   private static final MultiExpression.Index<Map<String, Object>> pointZoomsIndex = MultiExpression.ofOrdered(List.of(
 
     // Every point is zoom=15 at first
-    rule(use("minZoom", 15)),
+    rule(use(MINZOOM, 15)),
 
     // Promote important point categories to earlier zooms
 
@@ -189,7 +191,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         with("leisure", "park"), // Lots of pocket parks and NODE parks, show those later than rest of leisure
         with("shop", "grocery", "supermarket")
       ),
-      use("minZoom", 14)
+      use(MINZOOM, 14)
     ),
     rule(
       Expression.or(
@@ -198,15 +200,15 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         with("leisure", "golf_course", "marina", "stadium"),
         with("natural", "peak")
       ),
-      use("minZoom", 13)
+      use(MINZOOM, 13)
     ),
-    rule(with("amenity", "hospital"), use("minZoom", 12)),
-    rule(with(KIND, "national_park"), use("minZoom", 11)),
-    rule(with("aeroway", "aerodrome"), with(KIND, "aerodrome"), with("iata"), use("minZoom", 11)), // Emphasize large international airports earlier
+    rule(with("amenity", "hospital"), use(MINZOOM, 12)),
+    rule(with(KIND, "national_park"), use(MINZOOM, 11)),
+    rule(with("aeroway", "aerodrome"), with(KIND, "aerodrome"), with("iata"), use(MINZOOM, 11)), // Emphasize large international airports earlier
 
     // Demote some unimportant point categories to very late zooms
 
-    rule(with("highway", "bus_stop"), use("minZoom", 17)),
+    rule(with("highway", "bus_stop"), use(MINZOOM, 17)),
     rule(
       Expression.or(
         with("amenity", "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
@@ -224,7 +226,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         with("tourism", "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
           "guest_house", "hostel")
       ),
-      use("minZoom", 16)
+      use(MINZOOM, 16)
     ),
 
     // Demote some unnamed point categories to very late zooms
@@ -243,7 +245,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         with("leisure", "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area"),
         with("tourism", "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut")
       ),
-      use("minZoom", 16)
+      use(MINZOOM, 16)
     )
 
   )).index();
@@ -262,26 +264,26 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     MultiExpression.ofOrdered(List.of(
 
       // Every named polygon is zoom=15 at first
-      rule(use("minZoom", 15)),
+      rule(use(MINZOOM, 15)),
 
       // Size-graded polygons, generic at first then per-kind adjustments
 
-      rule(withinRange(WAYAREA, 10, 500), use("minZoom", 14)),
-      rule(withinRange(WAYAREA, 500, 2000), use("minZoom", 13)),
-      rule(withinRange(WAYAREA, 2000, 1e4), use("minZoom", 12)),
-      rule(withinRange(WAYAREA, 1e4), use("minZoom", 11)),
+      rule(withinRange(WAYAREA, 10, 500), use(MINZOOM, 14)),
+      rule(withinRange(WAYAREA, 500, 2000), use(MINZOOM, 13)),
+      rule(withinRange(WAYAREA, 2000, 1e4), use(MINZOOM, 12)),
+      rule(withinRange(WAYAREA, 1e4), use(MINZOOM, 11)),
 
-      rule(with(KIND, "playground"), use("minZoom", 17)),
-      rule(with(KIND, "allotments"), withinRange(WAYAREA, 0, 10), use("minZoom", 16)),
-      rule(with(KIND, "allotments"), withinRange(WAYAREA, 10), use("minZoom", 15)),
+      rule(with(KIND, "playground"), use(MINZOOM, 17)),
+      rule(with(KIND, "allotments"), withinRange(WAYAREA, 0, 10), use(MINZOOM, 16)),
+      rule(with(KIND, "allotments"), withinRange(WAYAREA, 10), use(MINZOOM, 15)),
 
       // Height-graded polygons, generic at first then per-kind adjustments
       // Small but tall features should show up early as they have regional prominence.
       // Height measured in meters
 
-      rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 10, 20), use("minZoom", 13)),
-      rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 20, 100), use("minZoom", 12)),
-      rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 100), use("minZoom", 11)),
+      rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 10, 20), use(MINZOOM, 13)),
+      rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 20, 100), use(MINZOOM, 12)),
+      rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 100), use(MINZOOM, 11)),
 
       // Clamp certain kind values so medium tall buildings don't crowd downtown areas
       // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
@@ -291,72 +293,72 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
           "coworking_space", "clothes", "art", "school"),
         withinRange(WAYAREA, 10, 2000),
         withinRange(HEIGHT, 20, 100),
-        use("minZoom", 13)
+        use(MINZOOM, 13)
       ),
       // Discount tall self storage buildings
-      rule(with(KIND, "storage_rental"), withinRange(WAYAREA, 10, 2000), use("minZoom", 14)),
+      rule(with(KIND, "storage_rental"), withinRange(WAYAREA, 10, 2000), use(MINZOOM, 14)),
       // Discount tall university buildings, require a related university landuse AOI
-      rule(with(KIND, "university"), withinRange(WAYAREA, 10, 2000), use("minZoom", 13)),
+      rule(with(KIND, "university"), withinRange(WAYAREA, 10, 2000), use(MINZOOM, 13)),
 
       // Schools & Cemeteries
 
-      rule(with_s_c, withinRange(WAYAREA, 0, 10), use("minZoom", 16)),
-      rule(with_s_c, withinRange(WAYAREA, 10, 100), use("minZoom", 15)),
-      rule(with_s_c, withinRange(WAYAREA, 100, 1000), use("minZoom", 14)),
-      rule(with_s_c, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
-      rule(with_s_c, withinRange(WAYAREA, 5000), use("minZoom", 12)),
+      rule(with_s_c, withinRange(WAYAREA, 0, 10), use(MINZOOM, 16)),
+      rule(with_s_c, withinRange(WAYAREA, 10, 100), use(MINZOOM, 15)),
+      rule(with_s_c, withinRange(WAYAREA, 100, 1000), use(MINZOOM, 14)),
+      rule(with_s_c, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(with_s_c, withinRange(WAYAREA, 5000), use(MINZOOM, 12)),
 
       // National parks
 
-      rule(with_n_p, withinRange(WAYAREA, 0, 250), use("minZoom", 17)),
-      rule(with_n_p, withinRange(WAYAREA, 250, 1000), use("minZoom", 14)),
-      rule(with_n_p, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
-      rule(with_n_p, withinRange(WAYAREA, 5000, 2e4), use("minZoom", 12)),
-      rule(with_n_p, withinRange(WAYAREA, 2e4, 1e5), use("minZoom", 11)),
-      rule(with_n_p, withinRange(WAYAREA, 1e5, 2.5e5), use("minZoom", 10)),
-      rule(with_n_p, withinRange(WAYAREA, 2.5e5, 2e6), use("minZoom", 9)),
-      rule(with_n_p, withinRange(WAYAREA, 2e6, 1e7), use("minZoom", 8)),
-      rule(with_n_p, withinRange(WAYAREA, 1e7, 2.5e7), use("minZoom", 7)),
-      rule(with_n_p, withinRange(WAYAREA, 2.5e7, 3e8), use("minZoom", 6)),
-      rule(with_n_p, withinRange(WAYAREA, 3e8), use("minZoom", 5)),
+      rule(with_n_p, withinRange(WAYAREA, 0, 250), use(MINZOOM, 17)),
+      rule(with_n_p, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
+      rule(with_n_p, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(with_n_p, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 12)),
+      rule(with_n_p, withinRange(WAYAREA, 2e4, 1e5), use(MINZOOM, 11)),
+      rule(with_n_p, withinRange(WAYAREA, 1e5, 2.5e5), use(MINZOOM, 10)),
+      rule(with_n_p, withinRange(WAYAREA, 2.5e5, 2e6), use(MINZOOM, 9)),
+      rule(with_n_p, withinRange(WAYAREA, 2e6, 1e7), use(MINZOOM, 8)),
+      rule(with_n_p, withinRange(WAYAREA, 1e7, 2.5e7), use(MINZOOM, 7)),
+      rule(with_n_p, withinRange(WAYAREA, 2.5e7, 3e8), use(MINZOOM, 6)),
+      rule(with_n_p, withinRange(WAYAREA, 3e8), use(MINZOOM, 5)),
 
       // College and university polygons
 
-      rule(with_c_u, withinRange(WAYAREA, 0, 5000), use("minZoom", 15)),
-      rule(with_c_u, withinRange(WAYAREA, 5000, 2e4), use("minZoom", 14)),
-      rule(with_c_u, withinRange(WAYAREA, 2e4, 5e4), use("minZoom", 13)),
-      rule(with_c_u, withinRange(WAYAREA, 5e4, 1e5), use("minZoom", 12)),
-      rule(with_c_u, withinRange(WAYAREA, 1e5, 1.5e5), use("minZoom", 11)),
-      rule(with_c_u, withinRange(WAYAREA, 1.5e5, 2.5e5), use("minZoom", 10)),
-      rule(with_c_u, withinRange(WAYAREA, 2.5e5, 5e6), use("minZoom", 9)),
-      rule(with_c_u, withinRange(WAYAREA, 5e6, 2e7), use("minZoom", 8)),
-      rule(with_c_u, withinRange(WAYAREA, 2e7), use("minZoom", 7)),
-      rule(with_c_u, with("name", "Academy of Art University"), use("minZoom", 14)), // Hack for weird San Francisco university
+      rule(with_c_u, withinRange(WAYAREA, 0, 5000), use(MINZOOM, 15)),
+      rule(with_c_u, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 14)),
+      rule(with_c_u, withinRange(WAYAREA, 2e4, 5e4), use(MINZOOM, 13)),
+      rule(with_c_u, withinRange(WAYAREA, 5e4, 1e5), use(MINZOOM, 12)),
+      rule(with_c_u, withinRange(WAYAREA, 1e5, 1.5e5), use(MINZOOM, 11)),
+      rule(with_c_u, withinRange(WAYAREA, 1.5e5, 2.5e5), use(MINZOOM, 10)),
+      rule(with_c_u, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
+      rule(with_c_u, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
+      rule(with_c_u, withinRange(WAYAREA, 2e7), use(MINZOOM, 7)),
+      rule(with_c_u, with("name", "Academy of Art University"), use(MINZOOM, 14)), // Hack for weird San Francisco university
 
       // Big green polygons
 
-      rule(with_b_g, withinRange(WAYAREA, 0, 1), use("minZoom", 17)),
-      rule(with_b_g, withinRange(WAYAREA, 1, 10), use("minZoom", 16)),
-      rule(with_b_g, withinRange(WAYAREA, 10, 250), use("minZoom", 15)),
-      rule(with_b_g, withinRange(WAYAREA, 250, 1000), use("minZoom", 14)),
-      rule(with_b_g, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
-      rule(with_b_g, withinRange(WAYAREA, 5000, 1.5e4), use("minZoom", 12)),
-      rule(with_b_g, withinRange(WAYAREA, 1.5e4, 2.5e5), use("minZoom", 11)),
-      rule(with_b_g, withinRange(WAYAREA, 2.5e5, 1e6), use("minZoom", 10)),
-      rule(with_b_g, withinRange(WAYAREA, 1e6, 4e6), use("minZoom", 9)),
-      rule(with_b_g, withinRange(WAYAREA, 4e6, 1e7), use("minZoom", 8)),
-      rule(with_b_g, withinRange(WAYAREA, 1e7), use("minZoom", 7)),
+      rule(with_b_g, withinRange(WAYAREA, 0, 1), use(MINZOOM, 17)),
+      rule(with_b_g, withinRange(WAYAREA, 1, 10), use(MINZOOM, 16)),
+      rule(with_b_g, withinRange(WAYAREA, 10, 250), use(MINZOOM, 15)),
+      rule(with_b_g, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
+      rule(with_b_g, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(with_b_g, withinRange(WAYAREA, 5000, 1.5e4), use(MINZOOM, 12)),
+      rule(with_b_g, withinRange(WAYAREA, 1.5e4, 2.5e5), use(MINZOOM, 11)),
+      rule(with_b_g, withinRange(WAYAREA, 2.5e5, 1e6), use(MINZOOM, 10)),
+      rule(with_b_g, withinRange(WAYAREA, 1e6, 4e6), use(MINZOOM, 9)),
+      rule(with_b_g, withinRange(WAYAREA, 4e6, 1e7), use(MINZOOM, 8)),
+      rule(with_b_g, withinRange(WAYAREA, 1e7), use(MINZOOM, 7)),
 
       // Remaining grab-bag of scaled kinds
 
-      rule(with_etc, withinRange(WAYAREA, 250, 1000), use("minZoom", 14)),
-      rule(with_etc, withinRange(WAYAREA, 1000, 5000), use("minZoom", 13)),
-      rule(with_etc, withinRange(WAYAREA, 5000, 2e4), use("minZoom", 12)),
-      rule(with_etc, withinRange(WAYAREA, 2e4, 1e5), use("minZoom", 11)),
-      rule(with_etc, withinRange(WAYAREA, 1e5, 2.5e5), use("minZoom", 10)),
-      rule(with_etc, withinRange(WAYAREA, 2.5e5, 5e6), use("minZoom", 9)),
-      rule(with_etc, withinRange(WAYAREA, 5e6, 2e7), use("minZoom", 8)),
-      rule(with_etc, withinRange(WAYAREA, 2e7), use("minZoom", 7))
+      rule(with_etc, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
+      rule(with_etc, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(with_etc, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 12)),
+      rule(with_etc, withinRange(WAYAREA, 2e4, 1e5), use(MINZOOM, 11)),
+      rule(with_etc, withinRange(WAYAREA, 1e5, 2.5e5), use(MINZOOM, 10)),
+      rule(with_etc, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
+      rule(with_etc, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
+      rule(with_etc, withinRange(WAYAREA, 2e7), use(MINZOOM, 7))
 
     )).index();
 
@@ -405,13 +407,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     if (!(sf.isPoint() || sf.canBePolygon() && sf.hasTag("name") && sf.getString("name") != null))
       return;
 
-    // Map the Protomaps "kind" classification to incoming tags
+    // Map the Protomaps KIND classification to incoming tags
     var kindMatches = kindsIndex.getMatches(sf);
 
     // Output feature and its basic values to assign
     FeatureCollector.Feature outputFeature;
-    String kind = getString(sf, kindMatches, "kind", UNDEFINED);
-    String kindDetail = getString(sf, kindMatches, "kindDetail", UNDEFINED);
+    String kind = getString(sf, kindMatches, KIND, UNDEFINED);
+    String kindDetail = getString(sf, kindMatches, KIND_DETAIL, UNDEFINED);
     Integer minZoom;
 
     // Quickly eliminate any features with non-matching tags
@@ -428,13 +430,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       minZoom = qrankedZoom.get();
     } else {
       // Calculate minZoom using zooms indexes
-      var sf2 = computeExtraTags(sf, getString(sf, kindMatches, "kind", UNDEFINED));
+      var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
       var zoomMatches = sf.canBePolygon() ? namedPolygonZoomsIndex.getMatches(sf2) : pointZoomsIndex.getMatches(sf2);
       if (zoomMatches.isEmpty())
         return;
 
       // Initial minZoom
-      minZoom = getInteger(sf2, zoomMatches, "minZoom", 99);
+      minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
 
       // Adjusted minZoom
       if (sf.canBePolygon()) {
