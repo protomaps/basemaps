@@ -155,12 +155,11 @@ public class Matcher {
    * Creates an {@link Expression} that matches when a numeric tag value is within a specified range.
    *
    * <p>
-   * The lower bound is exclusive (value must be greater than the lower bound). The upper bound, if provided, is
-   * inclusive (value must be less than or equal to the upper bound).
+   * The lower bound is inclusive. The upper bound, if provided, is exclusive.
    * </p>
    *
    * <p>
-   * If the upper bound is null, only the lower bound is checked (value > lowerBound).
+   * If the upper bound is null, only the lower bound is checked (value >= lowerBound).
    * </p>
    *
    * <p>
@@ -168,17 +167,41 @@ public class Matcher {
    * </p>
    *
    * @param tagName    The name of the tag to check.
-   * @param lowerBound The exclusive lower bound (value must be greater than this).
-   * @param upperBound The inclusive upper bound (value must be less than or equal to this), or null to check only the
-   *                   lower bound.
+   * @param lowerBound The inclusive lower bound.
+   * @param upperBound The exclusive upper bound, or null to check only the lower bound.
    * @return An {@link Expression} for the numeric range check.
    */
   public static Expression withinRange(String tagName, Integer lowerBound, Integer upperBound) {
-    return new WithinRangeExpression(
-      tagName,
-      new Long(lowerBound),
-      (upperBound == null ? null : new Long(upperBound))
-    );
+    return new WithinRangeExpression(tagName, new Long(lowerBound), new Long(upperBound));
+  }
+
+  /**
+   * Overload withinRange to accept just lower bound integer
+   */
+  public static Expression withinRange(String tagName, Integer lowerBound) {
+    return new WithinRangeExpression(tagName, new Long(lowerBound), null);
+  }
+
+  /**
+   * Overload withinRange to accept lower bound integer and upper bound double
+   */
+  public static Expression withinRange(String tagName, Integer lowerBound, Double upperBound) {
+    return new WithinRangeExpression(tagName, new Long(lowerBound), Double.valueOf(upperBound).longValue());
+  }
+
+  /**
+   * Overload withinRange to accept bounds as doubles
+   */
+  public static Expression withinRange(String tagName, Double lowerBound, Double upperBound) {
+    return new WithinRangeExpression(tagName, Double.valueOf(lowerBound).longValue(),
+      Double.valueOf(upperBound).longValue());
+  }
+
+  /**
+   * Overload withinRange to accept just lower bound double
+   */
+  public static Expression withinRange(String tagName, Double lowerBound) {
+    return new WithinRangeExpression(tagName, Double.valueOf(lowerBound).longValue(), null);
   }
 
   /**

@@ -238,12 +238,12 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 500), use("minZoom", 14)),
     rule(with_named_polygon, withinRange(WAYAREA_ATTR, 500, 2000), use("minZoom", 13)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 2000, 10000), use("minZoom", 12)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10000, null), use("minZoom", 11)),
+    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 2000, 1e4), use("minZoom", 12)),
+    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 1e4), use("minZoom", 11)),
 
     rule(with_named_polygon, with(KIND_ATTR, "playground"), use("minZoom", 17)),
     rule(with_named_polygon, with(KIND_ATTR, "allotments"), withinRange(WAYAREA_ATTR, 0, 10), use("minZoom", 16)),
-    rule(with_named_polygon, with(KIND_ATTR, "allotments"), withinRange(WAYAREA_ATTR, 10, null), use("minZoom", 15)),
+    rule(with_named_polygon, with(KIND_ATTR, "allotments"), withinRange(WAYAREA_ATTR, 10), use("minZoom", 15)),
 
     // Height-graded polygons, generic at first then per-kind adjustments
     // Small but tall features should show up early as they have regional prominance.
@@ -252,7 +252,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 10, 20), use("minZoom", 13)),
     rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 20, 100),
       use("minZoom", 12)),
-    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 100, null),
+    rule(with_named_polygon, withinRange(WAYAREA_ATTR, 10, 2000), withinRange(HEIGHT_ATTR, 100),
       use("minZoom", 11)),
 
     // Clamp certain kind values so medium tall buildings don't crowd downtown areas
@@ -278,33 +278,33 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 10, 100), use("minZoom", 15)),
     rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 100, 1000), use("minZoom", 14)),
     rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 5000, null), use("minZoom", 12)),
+    rule(with_s_c_named_poly, withinRange(WAYAREA_ATTR, 5000), use("minZoom", 12)),
 
     // National parks
 
     rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 0, 250), use("minZoom", 17)),
     rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
     rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 12)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 20000, 100000), use("minZoom", 11)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 100000, 250000), use("minZoom", 10)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 250000, 2000000), use("minZoom", 9)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2000000, 10000000), use("minZoom", 8)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 10000000, 25000000), use("minZoom", 7)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 25000000, 300000000), use("minZoom", 6)),
-    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 300000000, null), use("minZoom", 5)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 5000, 2e4), use("minZoom", 12)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2e4, 1e5), use("minZoom", 11)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 1e5, 2.5e5), use("minZoom", 10)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 2e6), use("minZoom", 9)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2e6, 1e7), use("minZoom", 8)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 1e7, 2.5e7), use("minZoom", 7)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 2.5e7, 3e8), use("minZoom", 6)),
+    rule(with_n_p_named_poly, withinRange(WAYAREA_ATTR, 3e8), use("minZoom", 5)),
 
     // College and university polygons
 
     rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 0, 5000), use("minZoom", 15)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 14)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 20000, 50000), use("minZoom", 13)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 50000, 100000), use("minZoom", 12)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 100000, 150000), use("minZoom", 11)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 150000, 250000), use("minZoom", 10)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 250000, 5000000), use("minZoom", 9)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5000000, 20000000), use("minZoom", 8)),
-    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 20000000, null), use("minZoom", 7)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5000, 2e4), use("minZoom", 14)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 2e4, 5e4), use("minZoom", 13)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5e4, 1e5), use("minZoom", 12)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 1e5, 1.5e5), use("minZoom", 11)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 1.5e5, 2.5e5), use("minZoom", 10)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 5e6), use("minZoom", 9)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 5e6, 2e7), use("minZoom", 8)),
+    rule(with_c_u_named_poly, withinRange(WAYAREA_ATTR, 2e7), use("minZoom", 7)),
     rule(with_c_u_named_poly, with("name", "Academy of Art University"), use("minZoom", 14)), // Hack for weird San Francisco university
 
     // Big green polygons
@@ -314,23 +314,23 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 10, 250), use("minZoom", 15)),
     rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
     rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 5000, 15000), use("minZoom", 12)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 15000, 250000), use("minZoom", 11)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 250000, 1000000), use("minZoom", 10)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1000000, 4000000), use("minZoom", 9)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 4000000, 10000000), use("minZoom", 8)),
-    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 10000000, null), use("minZoom", 7)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 5000, 1.5e4), use("minZoom", 12)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1.5e4, 2.5e5), use("minZoom", 11)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 1e6), use("minZoom", 10)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1e6, 4e6), use("minZoom", 9)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 4e6, 1e7), use("minZoom", 8)),
+    rule(with_b_g_named_poly, withinRange(WAYAREA_ATTR, 1e7), use("minZoom", 7)),
 
     // How are these similar?
 
     rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 250, 1000), use("minZoom", 14)),
     rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 1000, 5000), use("minZoom", 13)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 5000, 20000), use("minZoom", 12)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 20000, 100000), use("minZoom", 11)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 100000, 250000), use("minZoom", 10)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 250000, 5000000), use("minZoom", 9)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 5000000, 20000000), use("minZoom", 8)),
-    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 20000000, null), use("minZoom", 7))
+    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 5000, 2e4), use("minZoom", 12)),
+    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 2e4, 1e5), use("minZoom", 11)),
+    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 1e5, 2.5e5), use("minZoom", 10)),
+    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 2.5e5, 5e6), use("minZoom", 9)),
+    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 5e6, 2e7), use("minZoom", 8)),
+    rule(with_etc_named_poly, withinRange(WAYAREA_ATTR, 2e7), use("minZoom", 7))
 
   )).index();
 
@@ -342,10 +342,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   // ~= pow((sqrt(70) / (4e7 / 256)) / 256, 2) ~= 4.4e-14
   private static final double WORLD_AREA_FOR_70_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70)) / 256d, 2);
-
-  // ~= pow((sqrt(7e4) / (4e7 / 256)) / 256, 2) ~= 4.4e-11
-  private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
-    Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public Matcher.SourceFeatureWithComputedTags computeExtraTags(SourceFeature sf, String kind) {
     Double wayArea = 0.0;

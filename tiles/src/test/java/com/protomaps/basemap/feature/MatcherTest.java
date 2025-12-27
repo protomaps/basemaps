@@ -760,7 +760,7 @@ class MatcherTest {
 
   @Test
   void testWithinRangeWithoutUpperBound() {
-    var expression = withinRange("population", 5, null);
+    var expression = withinRange("population", 5);
 
     // Value above lower bound
     var sf = SimpleFeature.create(
