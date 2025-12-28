@@ -43,7 +43,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "pois";
 
-  private static final Expression with_operator_usfs = with("operator", "United States Forest Service",
+  private static final Expression WITH_OPERATOR_USFS = with("operator", "United States Forest Service",
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
     "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
 
@@ -76,7 +76,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(
       Expression.or(
         with("landuse", "forest"),
-        Expression.and(with("boundary", "national_park"), with_operator_usfs),
+        Expression.and(with("boundary", "national_park"), WITH_OPERATOR_USFS),
         Expression.and(
           with("boundary", "national_park"),
           with("protect_class", "6"),
@@ -85,7 +85,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
         Expression.and(
           with("boundary", "protected_area"),
           with("protect_class", "6"),
-          with_operator_usfs
+          WITH_OPERATOR_USFS
         )
       ),
       use("kind", "forest")
@@ -96,7 +96,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with("boundary", "national_park"), use("kind", "park")),
     rule(
       with("boundary", "national_park"),
-      Expression.not(with_operator_usfs),
+      Expression.not(WITH_OPERATOR_USFS),
       without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
         "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
         "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
