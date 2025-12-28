@@ -252,12 +252,12 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   // Shorthand expressions to save space below
 
-  private static final Expression with_s_c = with(KIND, "cemetery", "school");
-  private static final Expression with_n_p = with(KIND, "national_park");
-  private static final Expression with_c_u = with(KIND, "college", "university");
-  private static final Expression with_b_g =
+  private static final Expression WITH_S_C = with(KIND, "cemetery", "school");
+  private static final Expression WITH_N_P = with(KIND, "national_park");
+  private static final Expression WITH_C_U = with(KIND, "college", "university");
+  private static final Expression WITH_B_G =
     with(KIND, "forest", "park", "protected_area", "nature_reserve", "village_green");
-  private static final Expression with_etc =
+  private static final Expression WITH_ETC =
     with(KIND, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo");
 
   private static final MultiExpression.Index<Map<String, Object>> namedPolygonZoomsIndex =
@@ -302,63 +302,63 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
       // Schools & Cemeteries
 
-      rule(with_s_c, withinRange(WAYAREA, 0, 10), use(MINZOOM, 16)),
-      rule(with_s_c, withinRange(WAYAREA, 10, 100), use(MINZOOM, 15)),
-      rule(with_s_c, withinRange(WAYAREA, 100, 1000), use(MINZOOM, 14)),
-      rule(with_s_c, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
-      rule(with_s_c, withinRange(WAYAREA, 5000), use(MINZOOM, 12)),
+      rule(WITH_S_C, withinRange(WAYAREA, 0, 10), use(MINZOOM, 16)),
+      rule(WITH_S_C, withinRange(WAYAREA, 10, 100), use(MINZOOM, 15)),
+      rule(WITH_S_C, withinRange(WAYAREA, 100, 1000), use(MINZOOM, 14)),
+      rule(WITH_S_C, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(WITH_S_C, withinRange(WAYAREA, 5000), use(MINZOOM, 12)),
 
       // National parks
 
-      rule(with_n_p, withinRange(WAYAREA, 0, 250), use(MINZOOM, 17)),
-      rule(with_n_p, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
-      rule(with_n_p, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
-      rule(with_n_p, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 12)),
-      rule(with_n_p, withinRange(WAYAREA, 2e4, 1e5), use(MINZOOM, 11)),
-      rule(with_n_p, withinRange(WAYAREA, 1e5, 2.5e5), use(MINZOOM, 10)),
-      rule(with_n_p, withinRange(WAYAREA, 2.5e5, 2e6), use(MINZOOM, 9)),
-      rule(with_n_p, withinRange(WAYAREA, 2e6, 1e7), use(MINZOOM, 8)),
-      rule(with_n_p, withinRange(WAYAREA, 1e7, 2.5e7), use(MINZOOM, 7)),
-      rule(with_n_p, withinRange(WAYAREA, 2.5e7, 3e8), use(MINZOOM, 6)),
-      rule(with_n_p, withinRange(WAYAREA, 3e8), use(MINZOOM, 5)),
+      rule(WITH_N_P, withinRange(WAYAREA, 0, 250), use(MINZOOM, 17)),
+      rule(WITH_N_P, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
+      rule(WITH_N_P, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(WITH_N_P, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 12)),
+      rule(WITH_N_P, withinRange(WAYAREA, 2e4, 1e5), use(MINZOOM, 11)),
+      rule(WITH_N_P, withinRange(WAYAREA, 1e5, 2.5e5), use(MINZOOM, 10)),
+      rule(WITH_N_P, withinRange(WAYAREA, 2.5e5, 2e6), use(MINZOOM, 9)),
+      rule(WITH_N_P, withinRange(WAYAREA, 2e6, 1e7), use(MINZOOM, 8)),
+      rule(WITH_N_P, withinRange(WAYAREA, 1e7, 2.5e7), use(MINZOOM, 7)),
+      rule(WITH_N_P, withinRange(WAYAREA, 2.5e7, 3e8), use(MINZOOM, 6)),
+      rule(WITH_N_P, withinRange(WAYAREA, 3e8), use(MINZOOM, 5)),
 
       // College and university polygons
 
-      rule(with_c_u, withinRange(WAYAREA, 0, 5000), use(MINZOOM, 15)),
-      rule(with_c_u, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 14)),
-      rule(with_c_u, withinRange(WAYAREA, 2e4, 5e4), use(MINZOOM, 13)),
-      rule(with_c_u, withinRange(WAYAREA, 5e4, 1e5), use(MINZOOM, 12)),
-      rule(with_c_u, withinRange(WAYAREA, 1e5, 1.5e5), use(MINZOOM, 11)),
-      rule(with_c_u, withinRange(WAYAREA, 1.5e5, 2.5e5), use(MINZOOM, 10)),
-      rule(with_c_u, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
-      rule(with_c_u, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
-      rule(with_c_u, withinRange(WAYAREA, 2e7), use(MINZOOM, 7)),
-      rule(with_c_u, with("name", "Academy of Art University"), use(MINZOOM, 14)), // Hack for weird San Francisco university
+      rule(WITH_C_U, withinRange(WAYAREA, 0, 5000), use(MINZOOM, 15)),
+      rule(WITH_C_U, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 14)),
+      rule(WITH_C_U, withinRange(WAYAREA, 2e4, 5e4), use(MINZOOM, 13)),
+      rule(WITH_C_U, withinRange(WAYAREA, 5e4, 1e5), use(MINZOOM, 12)),
+      rule(WITH_C_U, withinRange(WAYAREA, 1e5, 1.5e5), use(MINZOOM, 11)),
+      rule(WITH_C_U, withinRange(WAYAREA, 1.5e5, 2.5e5), use(MINZOOM, 10)),
+      rule(WITH_C_U, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
+      rule(WITH_C_U, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
+      rule(WITH_C_U, withinRange(WAYAREA, 2e7), use(MINZOOM, 7)),
+      rule(WITH_C_U, with("name", "Academy of Art University"), use(MINZOOM, 14)), // Hack for weird San Francisco university
 
       // Big green polygons
 
-      rule(with_b_g, withinRange(WAYAREA, 0, 1), use(MINZOOM, 17)),
-      rule(with_b_g, withinRange(WAYAREA, 1, 10), use(MINZOOM, 16)),
-      rule(with_b_g, withinRange(WAYAREA, 10, 250), use(MINZOOM, 15)),
-      rule(with_b_g, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
-      rule(with_b_g, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
-      rule(with_b_g, withinRange(WAYAREA, 5000, 1.5e4), use(MINZOOM, 12)),
-      rule(with_b_g, withinRange(WAYAREA, 1.5e4, 2.5e5), use(MINZOOM, 11)),
-      rule(with_b_g, withinRange(WAYAREA, 2.5e5, 1e6), use(MINZOOM, 10)),
-      rule(with_b_g, withinRange(WAYAREA, 1e6, 4e6), use(MINZOOM, 9)),
-      rule(with_b_g, withinRange(WAYAREA, 4e6, 1e7), use(MINZOOM, 8)),
-      rule(with_b_g, withinRange(WAYAREA, 1e7), use(MINZOOM, 7)),
+      rule(WITH_B_G, withinRange(WAYAREA, 0, 1), use(MINZOOM, 17)),
+      rule(WITH_B_G, withinRange(WAYAREA, 1, 10), use(MINZOOM, 16)),
+      rule(WITH_B_G, withinRange(WAYAREA, 10, 250), use(MINZOOM, 15)),
+      rule(WITH_B_G, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
+      rule(WITH_B_G, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(WITH_B_G, withinRange(WAYAREA, 5000, 1.5e4), use(MINZOOM, 12)),
+      rule(WITH_B_G, withinRange(WAYAREA, 1.5e4, 2.5e5), use(MINZOOM, 11)),
+      rule(WITH_B_G, withinRange(WAYAREA, 2.5e5, 1e6), use(MINZOOM, 10)),
+      rule(WITH_B_G, withinRange(WAYAREA, 1e6, 4e6), use(MINZOOM, 9)),
+      rule(WITH_B_G, withinRange(WAYAREA, 4e6, 1e7), use(MINZOOM, 8)),
+      rule(WITH_B_G, withinRange(WAYAREA, 1e7), use(MINZOOM, 7)),
 
       // Remaining grab-bag of scaled kinds
 
-      rule(with_etc, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
-      rule(with_etc, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
-      rule(with_etc, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 12)),
-      rule(with_etc, withinRange(WAYAREA, 2e4, 1e5), use(MINZOOM, 11)),
-      rule(with_etc, withinRange(WAYAREA, 1e5, 2.5e5), use(MINZOOM, 10)),
-      rule(with_etc, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
-      rule(with_etc, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
-      rule(with_etc, withinRange(WAYAREA, 2e7), use(MINZOOM, 7))
+      rule(WITH_ETC, withinRange(WAYAREA, 250, 1000), use(MINZOOM, 14)),
+      rule(WITH_ETC, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
+      rule(WITH_ETC, withinRange(WAYAREA, 5000, 2e4), use(MINZOOM, 12)),
+      rule(WITH_ETC, withinRange(WAYAREA, 2e4, 1e5), use(MINZOOM, 11)),
+      rule(WITH_ETC, withinRange(WAYAREA, 1e5, 2.5e5), use(MINZOOM, 10)),
+      rule(WITH_ETC, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
+      rule(WITH_ETC, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
+      rule(WITH_ETC, withinRange(WAYAREA, 2e7), use(MINZOOM, 7))
 
     )).index();
 
