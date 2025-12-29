@@ -8,7 +8,7 @@ Add `--overture` argument to accept Overture Maps Geoparquet data as an alternat
 
 ## Overture Data Structure
 
-Overture Maps data is organized in Hive-partitioned Geoparquet files:
+Overture Maps data is organized in Geoparquet files, sometimes Hive-partitioned but not always:
 ```
 theme=buildings/type=building/*.parquet
 theme=buildings/type=building_part/*.parquet
@@ -57,84 +57,21 @@ if (area.isEmpty() && overtureBase.isEmpty()) {
 
 **Location:** `Basemap.java:214-222`
 
-Add multiple `.addParquetSource()` calls for different Overture themes when `--overture` is specified.
+Add a `.addParquetSource()` call for all Overture data when `--overture` is specified.
 
 ```java
 if (!overtureBase.isEmpty()) {
-  Path base = Path.of(overtureBase);
-
-  // Buildings
+  // All Overture themes together - untested code, hopefully this works okay
   planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=buildings", "type=building", "*.parquet").find(),
-    true, // hive-partitioning
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
-  // Building parts
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=buildings", "type=building_part", "*.parquet").find(),
+    Glob.of(Path.of(overtureBase)).resolve("*.parquet").find(),
     true,
     fields -> fields.get("id"),
+    // This specifically is uncertain, since type and subtype work differently for different themes, e.g.:
+    // - theme=buildings in its entirety with multiple types
+    // - theme=transportation + type=segment for roads, rails, other lines
+    // - theme=base will split up into type=land, type=land_cover, and type=water
     fields -> fields.get("type")
   );
-
-  // Places
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=places", "type=place", "*.parquet").find(),
-    true,
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
-  // Transportation segments (roads)
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=transportation", "type=segment", "*.parquet").find(),
-    true,
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
-  // Transportation connectors
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=transportation", "type=connector", "*.parquet").find(),
-    true,
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
-  // Water
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=base", "type=water", "*.parquet").find(),
-    true,
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
-  // Land
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=base", "type=land", "*.parquet").find(),
-    true,
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
-  // Land use
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=base", "type=land_use", "*.parquet").find(),
-    true,
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
-  // Divisions (boundaries)
-  planetiler.addParquetSource("overture",
-    Glob.of(base).resolve("theme=divisions", "type=division", "*.parquet").find(),
-    true,
-    fields -> fields.get("id"),
-    fields -> fields.get("type")
-  );
-
 } else {
   // Add OSM source (existing code)
   planetiler.addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area);
@@ -351,11 +288,25 @@ public void processOverture(SourceFeature feature, FeatureCollector features) {
 Overture Maps uses a different schema than OSM:
 
 **Overture structure:**
-- `names` object with `primary`, `common`, etc. subfields
-- `addresses` object for structured address data
-- `categories` object with `primary` and `alternate` fields
-- `subtype` field for classification (instead of OSM tags)
-- Organized by theme/type in Hive partitions
+
+Overture features are primarily organized by "theme" and "type", these are the most important things to know about them:
+- "id" and "geometry" always exist
+- "level_rules" designates rendering z-order sections
+- "names"."primary" holds the most important name
+- theme=transportation and type=segment includes highways, railways, and waterways
+    - Highways have subtype=road, OSM-like "motorway", "residential", etc. class values, and "road_flags" to designate e.g. bridge or tunnel sections
+    - Railways have subtype=rail, "standard_gauge", "subway", etc. class values, and "rail_flags" to designate e.g. bridge or tunnel sections
+    - Waterways have subtype=water
+- theme=base includes land, land_cover, and water
+    - General land has type=land
+    - Bodies of water have type=water, "subtype" with type of water body, and "class" with further description
+    - Areas of land have type=land_cover and "subtype" with type of land cover
+- theme=buildings includes representations of buildings and building parts
+    - All buildings and building parts can have height in meters
+    - Whole buildings have type=building, and optionally boolean "has_parts"
+    - Parts of buildings have type=building_part and can show higher-detail parts (like towers vs. bases) instead a generic whole building
+
+Complete Overture schema reference is at https://docs.overturemaps.org/schema/reference/
 
 **Mapping examples:**
 - OSM `building=yes` → Overture `theme=buildings` + `type=building`
