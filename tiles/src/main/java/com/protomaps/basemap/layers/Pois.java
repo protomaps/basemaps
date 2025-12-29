@@ -1,10 +1,18 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
+import static com.protomaps.basemap.feature.Matcher.fromTag;
+import static com.protomaps.basemap.feature.Matcher.getString;
+import static com.protomaps.basemap.feature.Matcher.rule;
+import static com.protomaps.basemap.feature.Matcher.use;
+import static com.protomaps.basemap.feature.Matcher.with;
+import static com.protomaps.basemap.feature.Matcher.without;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.expression.Expression;
+import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
@@ -35,15 +43,125 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "pois";
 
+  private static final Expression WITH_OPERATOR_USFS = with("operator", "United States Forest Service",
+    "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
+    "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
+
+  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.of(List.of(
+
+    // Everything is "other"/"" at first
+    rule(use("kind", "other"), use("kindDetail", "")),
+
+    // Boundary is most generic, so place early else we lose out
+    // on nature_reserve detail versus all the protected_area
+    rule(with("boundary"), use("kind", fromTag("boundary"))),
+
+    // More specific kinds
+
+    rule(with("historic"), without("historic", "yes"), use("kind", fromTag("historic"))),
+    rule(with("tourism"), use("kind", fromTag("tourism"))),
+    rule(with("shop"), use("kind", fromTag("shop"))),
+    rule(with("highway"), use("kind", fromTag("highway"))),
+    rule(with("railway"), use("kind", fromTag("railway"))),
+    rule(with("natural"), use("kind", fromTag("natural"))),
+    rule(with("leisure"), use("kind", fromTag("leisure"))),
+    rule(with("landuse"), use("kind", fromTag("landuse"))),
+    rule(with("aeroway"), use("kind", fromTag("aeroway"))),
+    rule(with("craft"), use("kind", fromTag("craft"))),
+    rule(with("attraction"), use("kind", fromTag("attraction"))),
+    rule(with("amenity"), use("kind", fromTag("amenity"))),
+
+    // National forests
+
+    rule(
+      Expression.or(
+        with("landuse", "forest"),
+        Expression.and(with("boundary", "national_park"), WITH_OPERATOR_USFS),
+        Expression.and(
+          with("boundary", "national_park"),
+          with("protect_class", "6"),
+          with("protection_title", "National Forest")
+        ),
+        Expression.and(
+          with("boundary", "protected_area"),
+          with("protect_class", "6"),
+          WITH_OPERATOR_USFS
+        )
+      ),
+      use("kind", "forest")
+    ),
+
+    // National parks
+
+    rule(with("boundary", "national_park"), use("kind", "park")),
+    rule(
+      with("boundary", "national_park"),
+      Expression.not(WITH_OPERATOR_USFS),
+      without("protection_title", "Conservation Area", "Conservation Park", "Environmental use", "Forest Reserve",
+        "National Forest", "National Wildlife Refuge", "Nature Refuge", "Nature Reserve", "Protected Site",
+        "Provincial Park", "Public Access Land", "Regional Reserve", "Resources Reserve", "State Forest",
+        "State Game Land", "State Park", "Watershed Recreation Unit", "Wild Forest", "Wilderness Area",
+        "Wilderness Study Area", "Wildlife Management", "Wildlife Management Area", "Wildlife Sanctuary"),
+      Expression.or(
+        with("protect_class", "2", "3"),
+        with("operator", "United States National Park Service", "National Park Service", "US National Park Service",
+          "U.S. National Park Service", "US National Park service"),
+        with("operator:en", "Parks Canada"),
+        with("designation", "national_park"),
+        with("protection_title", "National Park")
+      ),
+      use("kind", "national_park")
+    ),
+
+    // Remaining things
+
+    rule(with("natural", "peak"), use("kind", fromTag("natural"))),
+    rule(with("highway", "bus_stop"), use("kind", fromTag("highway"))),
+    rule(with("tourism", "attraction", "camp_site", "hotel"), use("kind", fromTag("tourism"))),
+    rule(with("shop", "grocery", "supermarket"), use("kind", fromTag("shop"))),
+    rule(with("leisure", "golf_course", "marina", "stadium", "park"), use("kind", fromTag("leisure"))),
+
+    rule(with("landuse", "military"), use("kind", "military")),
+    rule(
+      with("landuse", "military"),
+      with("military", "naval_base", "airfield"),
+      use("kind", fromTag("military"))
+    ),
+
+    rule(with("landuse", "cemetery"), use("kind", fromTag("landuse"))),
+
+    rule(
+      with("aeroway", "aerodrome"),
+      use("kind", "aerodrome"),
+      use("kindDetail", fromTag("aerodrome"))
+    ),
+
+    // Additional details for certain classes of POI
+
+    rule(with("sport"), use("kindDetail", fromTag("sport"))),
+    rule(with("religion"), use("kindDetail", fromTag("religion"))),
+    rule(with("cuisine"), use("kindDetail", fromTag("cuisine")))
+
+  )).index();
+
   @Override
   public String name() {
     return LAYER_NAME;
   }
 
+  // ~= pow((sqrt(70k) / (40m / 256)) / 256, 2) ~= 4.4e-11
   private static final double WORLD_AREA_FOR_70K_SQUARE_METERS =
     Math.pow(GeoUtils.metersToPixelAtEquator(0, Math.sqrt(70_000)) / 256d, 2);
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
+    var matches = index.getMatches(sf);
+    if (matches.isEmpty()) {
+      return;
+    }
+
+    String kind = getString(sf, matches, "kind", "undefined");
+    String kindDetail = getString(sf, matches, "kindDetail", "undefined");
+
     if ((sf.isPoint() || sf.canBePolygon()) && (sf.hasTag("aeroway", "aerodrome") ||
       sf.hasTag("amenity") ||
       sf.hasTag("attraction") ||
@@ -59,8 +177,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       sf.hasTag("shop") ||
       sf.hasTag("tourism") &&
         (!sf.hasTag("historic", "district")))) {
-      String kind = "other";
-      String kindDetail = "";
       Integer minZoom = 15;
       long qrank = 0;
 
@@ -70,123 +186,39 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       }
 
       if (sf.hasTag("aeroway", "aerodrome")) {
-        kind = sf.getString("aeroway");
         minZoom = 13;
 
         // Emphasize large international airports earlier
         if (kind.equals("aerodrome") && sf.hasTag("iata")) {
           minZoom -= 2;
         }
-
-        if (sf.hasTag("aerodrome")) {
-          kindDetail = sf.getString("aerodrome");
-        }
       } else if (sf.hasTag("amenity", "university", "college")) {
-        kind = sf.getString("amenity");
         // One would think University should be earlier, but there are lots of dinky node only places
         // So if the university has a large area, it'll naturally improve it's zoom in the next section...
         minZoom = 14;
       } else if (sf.hasTag("amenity", "hospital")) {
-        kind = sf.getString("amenity");
         minZoom = 12;
       } else if (sf.hasTag("amenity", "library", "post_office", "townhall")) {
-        kind = sf.getString("amenity");
         minZoom = 13;
       } else if (sf.hasTag("amenity", "school")) {
-        kind = sf.getString("amenity");
         minZoom = 15;
       } else if (sf.hasTag("amenity", "cafe")) {
-        kind = sf.getString("amenity");
         minZoom = 15;
       } else if (sf.hasTag("landuse", "cemetery")) {
-        kind = sf.getString("landuse");
         minZoom = 14;
-      } else if (sf.hasTag("landuse", "military")) {
-        kind = "military";
-        if (sf.hasTag("military", "naval_base", "airfield")) {
-          kind = sf.getString("military");
-        }
       } else if (sf.hasTag("leisure", "park")) {
-        kind = "park";
         // Lots of pocket parks and NODE parks, show those later than rest of leisure
         minZoom = 14;
       } else if (sf.hasTag("leisure", "golf_course", "marina", "stadium")) {
-        kind = sf.getString("leisure");
         minZoom = 13;
       } else if (sf.hasTag("shop", "grocery", "supermarket")) {
-        kind = sf.getString("shop");
         minZoom = 14;
       } else if (sf.hasTag("tourism", "attraction", "camp_site", "hotel")) {
-        kind = sf.getString("tourism");
         minZoom = 15;
       } else if (sf.hasTag("highway", "bus_stop")) {
-        kind = sf.getString("highway");
         minZoom = 17;
       } else if (sf.hasTag("natural", "peak")) {
-        kind = sf.getString("natural");
         minZoom = 13;
-      } else {
-        // Avoid problem of too many "other" kinds
-        // All these will default to min_zoom of 15
-        // If a more specific min_zoom is needed (or sanitize kind values)
-        // then add new logic in section above
-        if (sf.hasTag("amenity")) {
-          kind = sf.getString("amenity");
-        } else if (sf.hasTag("attraction")) {
-          kind = sf.getString("attraction");
-        } else if (sf.hasTag("craft")) {
-          kind = sf.getString("craft");
-        } else if (sf.hasTag("aeroway")) {
-          kind = sf.getString("aeroway");
-        } else if (sf.hasTag("landuse")) {
-          kind = sf.getString("landuse");
-        } else if (sf.hasTag("leisure")) {
-          kind = sf.getString("leisure");
-        } else if (sf.hasTag("natural")) {
-          kind = sf.getString("natural");
-        } else if (sf.hasTag("railway")) {
-          kind = sf.getString("railway");
-        } else if (sf.hasTag("highway")) {
-          kind = sf.getString("highway");
-        } else if (sf.hasTag("shop")) {
-          kind = sf.getString("shop");
-        } else if (sf.hasTag("tourism")) {
-          kind = sf.getString("tourism");
-          // Boundary is most generic, so place last else we loose out
-          // on nature_reserve detail versus all the protected_area
-        } else if (sf.hasTag("historic") && !sf.hasTag("historic", "yes")) {
-          kind = sf.getString("historic");
-        } else if (sf.hasTag("boundary")) {
-          kind = sf.getString("boundary");
-        }
-      }
-
-      // National forests
-      if (sf.hasTag("boundary", "national_park") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
-      } else if (sf.hasTag("boundary", "national_park") &&
-        sf.hasTag("protect_class", "6") &&
-        sf.hasTag("protection_title", "National Forest")) {
-        kind = "forest";
-      } else if (sf.hasTag("landuse", "forest") &&
-        sf.hasTag("protect_class", "6")) {
-        kind = "forest";
-      } else if (sf.hasTag("landuse", "forest") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
-      } else if (sf.hasTag("landuse", "forest")) {
-        kind = "forest";
-      } else if (sf.hasTag("boundary", "protected_area") &&
-        sf.hasTag("protect_class", "6") &&
-        sf.hasTag("operator", "United States Forest Service", "US Forest Service", "U.S. Forest Service",
-          "USDA Forest Service", "United States Department of Agriculture", "US National Forest Service",
-          "United State Forest Service", "U.S. National Forest Service")) {
-        kind = "forest";
       }
 
       // National parks
@@ -205,19 +237,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
             sf.hasTag("operator:en", "Parks Canada") ||
             sf.hasTag("designation", "national_park") ||
             sf.hasTag("protection_title", "National Park"))) {
-          kind = "national_park";
           minZoom = 11;
-        } else {
-          kind = "park";
         }
-      }
-
-      if (sf.hasTag("cuisine")) {
-        kindDetail = sf.getString("cuisine");
-      } else if (sf.hasTag("religion")) {
-        kindDetail = sf.getString("religion");
-      } else if (sf.hasTag("sport")) {
-        kindDetail = sf.getString("sport");
       }
 
       // try first for polygon -> point representations

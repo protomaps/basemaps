@@ -1,3 +1,7 @@
+Tiles 4.13.5
+------
+- Translate POI kind= assignments to MultiExpression rules [#537]
+
 Tiles 4.13.4
 ------
 - remove kind=protected_area which made historical city centers appear as parks [#531]
