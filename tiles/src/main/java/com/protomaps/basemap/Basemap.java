@@ -91,6 +91,7 @@ public class Basemap extends ForwardingProfile {
       registerSourceHandler("osm", water::processOsm);
       registerSourceHandler("osm_water", water::processPreparedOsm);
       registerSourceHandler("ne", water::processNe);
+      registerSourceHandler("overture", water::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Earth.LAYER_NAME)) {
@@ -100,6 +101,7 @@ public class Basemap extends ForwardingProfile {
       registerSourceHandler("osm", earth::processOsm);
       registerSourceHandler("osm_land", earth::processPreparedOsm);
       registerSourceHandler("ne", earth::processNe);
+      registerSourceHandler("overture", earth::processOverture);
     }
 
     if (clip != null) {
@@ -173,6 +175,7 @@ public class Basemap extends ForwardingProfile {
         --help, -h              Show this help message and exit
         --area=<name>           Geofabrik area name to download, or filename in data/sources/
                                 (default: monaco, e.g., us/california, washington)
+        --overture=<path>       Path to Overture Maps Parquet file (mutually exclusive with --area)
         --maxzoom=<n>           Maximum zoom level (default: 15)
         --layer=<name>          Process only a single layer (optional)
                                 Valid values: boundaries, buildings, landuse, landcover,
@@ -209,17 +212,39 @@ public class Basemap extends ForwardingProfile {
 
     var countryCoder = CountryCoder.fromJarResource();
 
-    String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "monaco");
+    String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "");
+    String overtureFile = args.getString("overture", "Path to Overture Maps Parquet file", "");
+
+    if (!area.isEmpty() && !overtureFile.isEmpty()) {
+      LOGGER.error("Error: Cannot specify both --area and --overture");
+      System.exit(1);
+    }
+    if (area.isEmpty() && overtureFile.isEmpty()) {
+      area = "monaco"; // default
+    }
 
     var planetiler = Planetiler.create(args)
-      .addNaturalEarthSource("ne", nePath, neUrl)
-      .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
-      .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
-        "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
-      .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
-        "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
-        "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
+      .addNaturalEarthSource("ne", nePath, neUrl);
+
+    if (!overtureFile.isEmpty()) {
+      // Add Overture Parquet source
+      planetiler.addParquetSource("overture",
+        List.of(Path.of(overtureFile)),
+        false, // not Hive partitioned dirname, just a single file
+        fields -> fields.get("id"),
+        fields -> fields.get("type") // source layer
+      );
+    } else {
+      // Add OSM and GeoPackage sources
+      planetiler
+        .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
+        .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
+          "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
+        .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
+          "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
+        .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
+          "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
+    }
 
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
     Path qrankCsv = sourcesDir.resolve("qrank.csv.gz");
@@ -263,8 +288,20 @@ public class Basemap extends ForwardingProfile {
 
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
+    String outputName;
+    if (!overtureFile.isEmpty()) {
+      String filename = Path.of(overtureFile).getFileName().toString();
+      if (filename.endsWith(".parquet")) {
+        outputName = filename.substring(0, filename.length() - ".parquet".length());
+      } else {
+        outputName = filename;
+      }
+    } else {
+      outputName = area;
+    }
+
     planetiler.setProfile(new Basemap(qrankDb, countryCoder, clip, layer))
-      .setOutput(Path.of(area + ".pmtiles"))
+      .setOutput(Path.of(outputName + ".pmtiles"))
       .run();
   }
 }

@@ -431,6 +431,31 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
     }
   }
 
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    String type = sf.getString("type");
+
+    // Filter by type field - Overture base theme water
+    if (!"water".equals(type)) {
+      return;
+    }
+
+    // Read Overture water attributes
+    String subtype = sf.getString("subtype"); // e.g., "lake", "river", "ocean"
+    // Access nested struct field: names.primary
+    String primaryName = sf.getString("names.primary");
+
+    if (sf.canBePolygon()) {
+      features.polygon(LAYER_NAME)
+        .setAttr("kind", subtype != null ? subtype : "water")
+        .setAttr("name", primaryName)
+        .setAttr("sort_rank", 200)
+        .setPixelTolerance(Earth.PIXEL_TOLERANCE)
+        .setMinZoom(6)
+        .setMinPixelSize(1.0)
+        .setBufferPixels(8);
+    }
+  }
+
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     items = FeatureMerge.mergeLineStrings(items, 0.5, Earth.PIXEL_TOLERANCE, 4.0);

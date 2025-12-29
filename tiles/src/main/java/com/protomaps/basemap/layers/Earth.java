@@ -75,6 +75,21 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
     }
   }
 
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    String type = sf.getString("type");
+
+    // Filter by type field - Overture base theme land
+    if (!"land".equals(type)) {
+      return;
+    }
+
+    features.polygon(LAYER_NAME)
+      .setAttr("kind", "earth")
+      .setPixelTolerance(PIXEL_TOLERANCE)
+      .setMinZoom(6)
+      .setBufferPixels(8);
+  }
+
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     return FeatureMerge.mergeNearbyPolygons(items, MIN_AREA, MIN_AREA, 0.5, BUFFER);
