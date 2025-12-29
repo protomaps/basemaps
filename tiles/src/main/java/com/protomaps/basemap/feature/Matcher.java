@@ -172,36 +172,35 @@ public class Matcher {
    * @return An {@link Expression} for the numeric range check.
    */
   public static Expression withinRange(String tagName, Integer lowerBound, Integer upperBound) {
-    return new WithinRangeExpression(tagName, new Long(lowerBound), new Long(upperBound));
+    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), Long.valueOf(upperBound));
   }
 
   /**
    * Overload withinRange to accept just lower bound integer
    */
   public static Expression withinRange(String tagName, Integer lowerBound) {
-    return new WithinRangeExpression(tagName, new Long(lowerBound), null);
+    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), null);
   }
 
   /**
    * Overload withinRange to accept lower bound integer and upper bound double
    */
   public static Expression withinRange(String tagName, Integer lowerBound, Double upperBound) {
-    return new WithinRangeExpression(tagName, new Long(lowerBound), Double.valueOf(upperBound).longValue());
+    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), upperBound.longValue());
   }
 
   /**
    * Overload withinRange to accept bounds as doubles
    */
   public static Expression withinRange(String tagName, Double lowerBound, Double upperBound) {
-    return new WithinRangeExpression(tagName, Double.valueOf(lowerBound).longValue(),
-      Double.valueOf(upperBound).longValue());
+    return new WithinRangeExpression(tagName, lowerBound.longValue(), upperBound.longValue());
   }
 
   /**
    * Overload withinRange to accept just lower bound double
    */
   public static Expression withinRange(String tagName, Double lowerBound) {
-    return new WithinRangeExpression(tagName, Double.valueOf(lowerBound).longValue(), null);
+    return new WithinRangeExpression(tagName, lowerBound.longValue(), null);
   }
 
   /**

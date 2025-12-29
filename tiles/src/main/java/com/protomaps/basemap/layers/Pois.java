@@ -378,9 +378,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   public Matcher.SourceFeatureWithComputedTags computeExtraTags(SourceFeature sf, String kind) {
     Double wayArea = 0.0;
     Double height = 0.0;
-    Boolean hasNamedPolygon = isNamedPolygon(sf);
 
-    if (hasNamedPolygon) {
+    if (isNamedPolygon(sf)) {
       try {
         wayArea = sf.worldGeometry().getEnvelopeInternal().getArea() / WORLD_AREA_FOR_70_SQUARE_METERS;
       } catch (GeometryException e) {
@@ -396,7 +395,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     Map<String, Object> computedTags;
 
-    if (hasNamedPolygon) {
+    if (isNamedPolygon(sf)) {
       computedTags = Map.of(KIND, kind, WAYAREA, wayArea, HEIGHT, height, HAS_NAMED_POLYGON, true);
     } else {
       computedTags = Map.of(KIND, kind, WAYAREA, wayArea, HEIGHT, height);
@@ -406,10 +405,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    Boolean hasNamedPolygon = isNamedPolygon(sf);
-
     // We only do POI display for points and named polygons
-    if (!sf.isPoint() && !hasNamedPolygon)
+    if (!sf.isPoint() && !isNamedPolygon(sf))
       return;
 
     // Map the Protomaps KIND classification to incoming tags
@@ -422,7 +419,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     Integer minZoom;
 
     // Quickly eliminate any features with non-matching tags
-    if (kind == UNDEFINED)
+    if (kind.equals(UNDEFINED))
       return;
 
     // QRank may override minZoom entirely
@@ -436,7 +433,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     } else {
       // Calculate minZoom using zooms indexes
       var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
-      var zoomMatches = hasNamedPolygon ? namedPolygonZoomsIndex.getMatches(sf2) : pointZoomsIndex.getMatches(sf2);
+      var zoomMatches = isNamedPolygon(sf) ? namedPolygonZoomsIndex.getMatches(sf2) : pointZoomsIndex.getMatches(sf2);
       if (zoomMatches.isEmpty())
         return;
 
@@ -444,7 +441,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
 
       // Adjusted minZoom
-      if (hasNamedPolygon) {
+      if (isNamedPolygon(sf)) {
         // Emphasize large international airports earlier
         // Because the area grading resets the earlier dispensation
         if (kind.equals("aerodrome")) {
@@ -483,7 +480,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     }
 
     // Assign outputFeature
-    if (hasNamedPolygon) {
+    if (isNamedPolygon(sf)) {
       outputFeature = features.pointOnSurface(this.name())
         //.setAttr("area_debug", wayArea) // DEBUG
         .setAttr("elevation", sf.getString("ele"));
@@ -511,7 +508,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       .setAttr("iata", sf.getString("iata"));
 
     // Core Tilezen schema properties
-    if (kindDetail != UNDEFINED)
+    if (!kindDetail.equals(UNDEFINED))
       outputFeature.setAttr("kind_detail", kindDetail);
 
     OsmNames.setOsmNames(outputFeature, sf, 0);
