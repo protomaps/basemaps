@@ -1315,4 +1315,22 @@ class PoisOvertureTest extends LayerTest {
         "overture", null, 0
       )));
   }
+
+  @Test
+  void kind_dentist_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "dentist", "min_zoom", 17, "name", "高橋歯科クリニック")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "37183e35-9c5f-43c2-b7b1-4a0cbafe70ae", // https://www.openstreetmap.org/way/609840343/history/2
+          "theme", "places",
+          "type", "place",
+          "basic_category", "dentist",
+          "names.primary", "高橋歯科クリニック",
+          "confidence", 0.95
+        )),
+        "overture", null, 0
+      )));
+  }
 }
