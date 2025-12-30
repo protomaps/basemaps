@@ -46,6 +46,7 @@ public class Basemap extends ForwardingProfile {
       var buildings = new Buildings();
       registerHandler(buildings);
       registerSourceHandler("osm", buildings::processOsm);
+      registerSourceHandler("overture", buildings::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Landuse.LAYER_NAME)) {
