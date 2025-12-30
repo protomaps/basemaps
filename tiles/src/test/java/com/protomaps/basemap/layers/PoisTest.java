@@ -1143,7 +1143,7 @@ class PoisOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newPoint(1, 1),
         new HashMap<>(Map.of(
-          "id", "814b8a78-161f-4273-a4bb-7d686d0e3be4",
+          "id", "814b8a78-161f-4273-a4bb-7d686d0e3be4", // https://www.openstreetmap.org/way/295140461/history/15
           "theme", "places",
           "type", "place",
           "basic_category", "national_park",
@@ -1161,12 +1161,12 @@ class PoisOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newPoint(1, 1),
         new HashMap<>(Map.of(
-          "id", "58a71696-1d7d-4160-9947-b51ae7967881",
+          "id", "408fa8fa-bd35-43a9-ac4d-a87b0b1a8760", // https://www.openstreetmap.org/way/256633745/history/4
           "theme", "places",
           "type", "place",
           "basic_category", "hospital",
           "names.primary", "UCSF Medical Center",
-          "confidence", 0.99
+          "confidence", 0.95
         )),
         "overture", null, 0
       )));
@@ -1185,6 +1185,114 @@ class PoisOvertureTest extends LayerTest {
           "basic_category", "airport",
           "names.primary", "San Francisco Bay Oakland International Airport (OAK)",
           "confidence", 0.77
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_library_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "library", "min_zoom", 14, "name", "West Oakland Branch")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "7566afef-3e91-4c59-86e9-78649016f442", // https://www.openstreetmap.org/way/43919891/history/9
+          "theme", "places",
+          "type", "place",
+          "basic_category", "library",
+          "names.primary", "West Oakland Branch",
+          "confidence", 0.99
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_postOffice_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "post_office", "min_zoom", 14, "name", "郵便局")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "6fc2403b-7dcd-4376-8406-81e7b7c91d4e", // https://www.openstreetmap.org/way/1327222659/history/1
+          "theme", "places",
+          "type", "place",
+          "basic_category", "post_office",
+          "names.primary", "郵便局",
+          "confidence", 0.95
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_stadium_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "stadium", "min_zoom", 14, "name", "Oracle Park")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "b62c1105-5cf5-47ab-b6d8-b0e4f4677f91", // https://www.openstreetmap.org/relation/7325085/history/15
+          "theme", "places",
+          "type", "place",
+          "basic_category", "sport_stadium",
+          "names.primary", "Oracle Park",
+          "confidence", 0.99
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_college_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "college", "min_zoom", 15, "name", "Laney College")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "3dd5485c-ff72-4ebe-b367-879cd02f3227", // https://www.openstreetmap.org/way/23597202/history/14
+          "theme", "places",
+          "type", "place",
+          "basic_category", "college_university",
+          "names.primary", "Laney College",
+          "confidence", 0.99
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_cemetery_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "cemetery", "min_zoom", 15, "name", "Mountain View Cemetery")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "90ba6f53-a6df-4f58-9db8-f56101524df2", // https://www.openstreetmap.org/way/25207152/history/29
+          "theme", "places",
+          "type", "place",
+          "basic_category", "cemetery",
+          "names.primary", "Mountain View Cemetery",
+          "confidence", 0.96
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_park_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "park", "min_zoom", 15, "name", "Snow Park")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "729357b1-f6c3-4d72-83d8-5c0357bcd89c", // https://www.openstreetmap.org/way/22672037/history/19
+          "theme", "places",
+          "type", "place",
+          "basic_category", "park",
+          "names.primary", "Snow Park",
+          "confidence", 0.96
         )),
         "overture", null, 0
       )));
