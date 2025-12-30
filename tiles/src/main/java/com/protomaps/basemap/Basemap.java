@@ -73,6 +73,7 @@ public class Basemap extends ForwardingProfile {
       var poi = new Pois(qrankDb);
       registerHandler(poi);
       registerSourceHandler("osm", poi::processOsm);
+      registerSourceHandler("overture", poi::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Roads.LAYER_NAME)) {

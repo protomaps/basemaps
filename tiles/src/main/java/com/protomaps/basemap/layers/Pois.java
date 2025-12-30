@@ -525,6 +525,34 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     outputFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
   }
 
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    // Filter by type field - Overture transportation theme
+    if (!"places".equals(sf.getString("theme"))) {
+      return;
+    }
+
+    if (!"place".equals(sf.getString("type"))) {
+      return;
+    }
+
+    String kind = sf.getString("basic_category");
+    String name = sf.getString("names.primary");
+
+    features.point(this.name())
+      // all POIs should receive their IDs at all zooms
+      // (there is no merging of POIs like with lines and polygons in other layers)
+      //.setId(FeatureId.create(sf))
+      // Core Tilezen schema properties
+      .setAttr("kind", kind)
+      .setAttr("name", name)
+      // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
+      // 512 px zooms versus 256 px logical zooms
+      .setAttr("min_zoom", 15 + 1)
+      //
+      .setBufferPixels(8)
+      .setZoomRange(Math.min(15, 15), 15);
+  }
+
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     return items;
