@@ -79,6 +79,7 @@ public class Basemap extends ForwardingProfile {
       var roads = new Roads(countryCoder);
       registerHandler(roads);
       registerSourceHandler("osm", roads::processOsm);
+      registerSourceHandler("overture", roads::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Transit.LAYER_NAME)) {
