@@ -15,7 +15,7 @@ This document outlines how to expand Basemap.java to accept Overture Maps data f
 - Successfully tested with lake-merritt-slice-overture.parquet
 
 **Remaining Work:**
-- Implement processOverture() methods for other layers (Buildings, Places, Roads, Transit, Landuse, Landcover, Boundaries, Pois)
+- Implement processOverture() methods for other layers (Buildings, Places, Roads, Transit, Boundaries, Pois)
 - Handle nested JSON fields properly (currently warnings for `names.primary` access)
 - Support for additional Overture themes beyond base theme
 
@@ -325,26 +325,6 @@ public void processOverture(SourceFeature feature, FeatureCollector features) {
 }
 ```
 
-**Example for Landcover.java:**
-
-```java
-public void processOverture(SourceFeature feature, FeatureCollector features) {
-  String sourceLayer = feature.getSourceLayer();
-
-  // Filter by source layer - Overture base theme land_cover
-  if (!"land_cover".equals(sourceLayer)) {
-    return;
-  }
-
-  // Read Overture land cover attributes
-  String subtype = feature.getString("subtype"); // e.g., "forest", "grass", "wetland"
-
-  features.polygon(LAYER_NAME)
-    .setAttr("kind", subtype)
-    .setZoomRange(calculateMinZoom(subtype), 15);
-}
-```
-
 **Key differences from OSM processing:**
 - Use `feature.getSourceLayer()` for routing, NOT tag checking
 - Source layer comes from Hive partition path (e.g., `type=building`)
@@ -418,7 +398,7 @@ planetiler.setOutput(Path.of(outputName + ".pmtiles"));
 | `Places.java` | **TODO** | Need to add `processOverture()` method for theme=places |
 | `Roads.java` | **TODO** | Need to add `processOverture()` method for theme=transportation/type=segment |
 | `Transit.java` | **TODO** | Need to add `processOverture()` method for theme=transportation |
-| `Landuse.java` | **TODO** | Need to add `processOverture()` method for theme=base/type=land_use |
+| `Landuse.java` | **Complete** | Added `processOverture()` method for theme=base/type=land_cover|land_use |
 | `Landcover.java` | **TODO** | Need to add `processOverture()` method for theme=base/type=land_cover |
 | `Boundaries.java` | **TODO** | Need to add `processOverture()` method for theme=divisions |
 | `Pois.java` | **TODO** | Need to add `processOverture()` method for theme=places |
