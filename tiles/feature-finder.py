@@ -51,7 +51,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def find_osm_features(pbf_path: str, tags: list[str], name_filter: str | None = None) -> list[dict]:
+def find_osm_features(pbf_path: str, layer_name: str, tags: list[str], name_filter: str | None = None) -> list[dict]:
     """
     Query OSM PBF file for features matching any of the given tags.
 
@@ -59,66 +59,64 @@ def find_osm_features(pbf_path: str, tags: list[str], name_filter: str | None = 
     """
     features = []
 
-    # Search across all three geometry layers
-    for layer_name in ['points', 'lines', 'multipolygons']:
-        try:
-            # Load layer into GeoPandas
-            gdf = geopandas.read_file(pbf_path, layer=layer_name)
-        except Exception as e:
-            logging.debug(f"Could not read layer {layer_name} from {pbf_path}: {e}")
+    try:
+        # Load layer into GeoPandas
+        gdf = geopandas.read_file(pbf_path, layer=layer_name)
+    except Exception as e:
+        logging.debug(f"Could not read layer {layer_name} from {pbf_path}: {e}")
+        return features
+
+    if gdf.empty:
+        return features
+
+    # Apply name filter first if provided
+    if name_filter:
+        if 'name' in gdf.columns:
+            gdf = gdf[gdf['name'].notna() & gdf['name'].str.contains(name_filter, case=False, na=False)]
+        else:
+            return features
+
+    if gdf.empty:
+        return features
+
+    # Check which OSM tag columns are available
+    available_tag_cols = [col for col in OSM_TAG_COLUMNS if col in gdf.columns]
+
+    # For each row, check if any of the tag columns matches any of our search tags
+    for idx, row in gdf.iterrows():
+        matched_tag = None
+        matched_value = None
+
+        # Check each available tag column
+        for col in available_tag_cols:
+            val = row[col]
+            if val and (val in tags or any(f'"{tag}"' in val for tag in tags)):
+                matched_tag = col
+                matched_value = val
+                break
+
+        if not matched_tag:
             continue
 
-        if gdf.empty:
+        # Get OSM ID
+        osm_id = row.get('osm_id')
+        if not osm_id:
+            osm_id = row.get('osm_way_id')
+
+        # Get geometry
+        geom = row['geometry']
+        if geom is None or geom.is_empty:
             continue
 
-        # Apply name filter first if provided
-        if name_filter:
-            if 'name' in gdf.columns:
-                gdf = gdf[gdf['name'].notna() & gdf['name'].str.contains(name_filter, case=False, na=False)]
-            else:
-                continue
-
-        if gdf.empty:
-            continue
-
-        # Check which OSM tag columns are available
-        available_tag_cols = [col for col in OSM_TAG_COLUMNS if col in gdf.columns]
-
-        # For each row, check if any of the tag columns matches any of our search tags
-        for idx, row in gdf.iterrows():
-            matched_tag = None
-            matched_value = None
-
-            # Check each available tag column
-            for col in available_tag_cols:
-                val = row[col]
-                if val and val in tags:
-                    matched_tag = col
-                    matched_value = val
-                    break
-
-            if not matched_tag:
-                continue
-
-            # Get OSM ID
-            osm_id = row.get('osm_id')
-            if not osm_id:
-                osm_id = row.get('osm_way_id')
-
-            # Get geometry
-            geom = row['geometry']
-            if geom is None or geom.is_empty:
-                continue
-
-            features.append({
-                'osm_id': osm_id,
-                'layer': layer_name,
-                'name': row.get('name'),
-                'matched_tag': matched_tag,
-                'matched_value': matched_value,
-                'geometry': geom,
-                'other_tags': row.get('other_tags')
-            })
+        features.append({
+            'osm_id': osm_id,
+            'layer': layer_name,
+            'name': row.get('name'),
+            'matched_tag': matched_tag,
+            'matched_value': matched_value,
+            'geometry': geom,
+            'other_tags': row.get('other_tags')
+        })
 
     return features
 
@@ -348,7 +346,11 @@ def main():
 
     # Process OSM files in parallel using multiprocessing
     with multiprocessing.Pool() as pool:
-        osm_args = [(str(osm_file), args.tags, args.name) for osm_file in osm_files]
+        osm_args = [
+          (str(osm_file), layer_name, args.tags, args.name)
+          for osm_file in osm_files
+          for layer_name in ['points', 'lines', 'multipolygons']
+        ]
         osm_results = pool.starmap(find_osm_features, osm_args)
         for osm_features in osm_results:
             all_osm_features.extend(osm_features)
@@ -369,9 +371,9 @@ def main():
     if len(matches) > MAX_RESULTS:
         # Calculate weights as inverse of log distance (closer = higher weight)
         weights = [
-          (min(len(osm['name']), len(ov['name'])) / max(len(osm['name']), len(ov['name'])))
+          (min(len(osm['name'] or ''), len(ov['name'] or '')) / max(len(osm['name'] or ''), len(ov['name'] or '')))
           * ov['confidence']
-          / math.log(dist_m + 2.0)
+          / (dist_m + 1)
           for osm, ov, dist_m in matches
         ]
         matches = random.choices(matches, weights=weights, k=MAX_RESULTS)
