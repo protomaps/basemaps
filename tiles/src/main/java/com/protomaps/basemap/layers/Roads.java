@@ -472,6 +472,33 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   }
 
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    // Filter by type field - Overture transportation theme
+    if (!"transportation".equals(sf.getString("theme"))) {
+      return;
+    }
+
+    if (!"segment".equals(sf.getString("type"))) {
+      return;
+    }
+
+    if (!"road".equals(sf.getString("subtype"))) {
+      return;
+    }
+
+    features.line("roads")
+      .setId(FeatureId.create(sf))
+      .setAttr("kind", "minor_road") // sf.getString("class"))
+      // To power better client label collisions
+      .setMinZoom(6)
+      // `highway` is a temporary attribute that gets removed in the post-process step
+      .setAttr("highway", sf.getString("class"))
+      .setAttr("sort_rank", 400)
+      .setMinPixelSize(0)
+      .setPixelTolerance(0)
+      .setMinZoom(6);
+  }
+
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     // limit the application of LinkSimplify to where cloverleafs are unlikely to be at tile edges.
