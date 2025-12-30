@@ -1133,3 +1133,60 @@ class PoisTest extends LayerTest {
       )));
   }
 }
+
+class PoisOvertureTest extends LayerTest {
+
+  @Test
+  void kind_nationalPark_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "national_park", "min_zoom", 12, "name", "Alcatraz National Park")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "814b8a78-161f-4273-a4bb-7d686d0e3be4",
+          "theme", "places",
+          "type", "place",
+          "basic_category", "national_park",
+          "names.primary", "Alcatraz National Park",
+          "confidence", 0.64
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_hospital_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "hospital", "min_zoom", 13, "name", "UCSF Medical Center")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "58a71696-1d7d-4160-9947-b51ae7967881",
+          "theme", "places",
+          "type", "place",
+          "basic_category", "hospital",
+          "names.primary", "UCSF Medical Center",
+          "confidence", 0.99
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_aerodrome_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "aerodrome", "min_zoom", 14, "name", "San Francisco Bay Oakland International Airport (OAK)")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "d9d88226-ac41-429f-a554-b16aefddffc7",
+          "theme", "places",
+          "type", "place",
+          "basic_category", "airport",
+          "names.primary", "San Francisco Bay Oakland International Airport (OAK)",
+          "confidence", 0.77
+        )),
+        "overture", null, 0
+      )));
+  }
+}
