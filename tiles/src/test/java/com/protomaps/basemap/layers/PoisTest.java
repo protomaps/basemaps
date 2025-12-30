@@ -1297,4 +1297,22 @@ class PoisOvertureTest extends LayerTest {
         "overture", null, 0
       )));
   }
+
+  @Test
+  void kind_supermarket_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "supermarket", "min_zoom", 15, "name", "Piedmont Grocery")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "57217644-ca78-4060-9580-f008f7dc9f01", // https://www.openstreetmap.org/way/221073981/history/5
+          "theme", "places",
+          "type", "place",
+          "basic_category", "grocery_store",
+          "names.primary", "Piedmont Grocery",
+          "confidence", 0.96
+        )),
+        "overture", null, 0
+      )));
+  }
 }
