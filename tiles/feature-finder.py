@@ -15,16 +15,16 @@ import pathlib
 import logging
 import multiprocessing
 import math
+
 import duckdb
 import geopandas
-import osgeo.ogr
 import shapely.wkb
 import shapely.geometry
 
 
 DISTANCE_THRESHOLD_KM = 2.0
 DISTANCE_THRESHOLD_METERS = DISTANCE_THRESHOLD_KM * 1000
-MAX_RESULTS = 5
+MAX_RESULTS = 3
 
 # Common OSM tag columns to check
 OSM_TAG_COLUMNS = [
@@ -58,55 +58,40 @@ def find_osm_features(pbf_path: str, tags: list[str], name_filter: str | None = 
     Returns list of dicts with: osm_id, layer, name, matched_tag, matched_value, geometry
     """
     features = []
-    datasource = osgeo.ogr.Open(pbf_path)
 
-    if not datasource:
-        return features
-
-    # Search across all three geometry layers using SQL
+    # Search across all three geometry layers
     for layer_name in ['points', 'lines', 'multipolygons']:
-        # First, get available columns for this layer
-        temp_layer = datasource.GetLayerByName(layer_name)
-        if not temp_layer:
+        try:
+            # Load layer into GeoPandas
+            gdf = geopandas.read_file(pbf_path, layer=layer_name)
+        except Exception as e:
+            logging.debug(f"Could not read layer {layer_name} from {pbf_path}: {e}")
             continue
 
-        layer_defn = temp_layer.GetLayerDefn()
-        available_columns = set()
-        for i in range(layer_defn.GetFieldCount()):
-            field_defn = layer_defn.GetFieldDefn(i)
-            available_columns.add(field_defn.GetName())
-
-        # Build WHERE clause for SQL
-        conditions = []
-        for tag in tags:
-            for col in OSM_TAG_COLUMNS:
-                if col in available_columns:
-                    conditions.append(f"{col} = '{tag}'")
-
-        if not conditions:
+        if gdf.empty:
             continue
 
-        where_clause = ' OR '.join(conditions)
+        # Apply name filter first if provided
         if name_filter:
-            where_clause = f"({where_clause}) AND (name LIKE '%{name_filter}%')"
+            if 'name' in gdf.columns:
+                gdf = gdf[gdf['name'].notna() & gdf['name'].str.contains(name_filter, case=False, na=False)]
+            else:
+                continue
 
-        sql = f"SELECT * FROM {layer_name} WHERE {where_clause}"
-        result_layer = datasource.ExecuteSQL(sql)
-        if not result_layer:
+        if gdf.empty:
             continue
 
-        # Process results
-        for feature in result_layer:
-            name = feature.GetField('name')
+        # Check which OSM tag columns are available
+        available_tag_cols = [col for col in OSM_TAG_COLUMNS if col in gdf.columns]
 
-            # Check which tag matched
+        # For each row, check if any of the tag columns matches any of our search tags
+        for idx, row in gdf.iterrows():
             matched_tag = None
             matched_value = None
 
-            for col in OSM_TAG_COLUMNS:
-                if col not in available_columns:
-                    continue
-                val = feature.GetField(col)
+            # Check each available tag column
+            for col in available_tag_cols:
+                val = row[col]
                 if val and val in tags:
                     matched_tag = col
                     matched_value = val
@@ -115,31 +100,25 @@ def find_osm_features(pbf_path: str, tags: list[str], name_filter: str | None = 
             if not matched_tag:
                 continue
 
+            # Get OSM ID
+            osm_id = row.get('osm_id')
+            if not osm_id:
+                osm_id = row.get('osm_way_id')
+
             # Get geometry
-            geom = feature.GetGeometryRef()
-            if not geom:
+            geom = row['geometry']
+            if geom is None or geom.is_empty:
                 continue
-
-            # Convert geometry to shapely
-            geom_wkb = geom.ExportToWkb()
-            shapely_geom = shapely.wkb.loads(geom_wkb)
-
-            # Get OSM ID - try osm_id first, fallback to osm_way_id for multipolygons
-            osm_id = feature.GetField('osm_id')
-            if not osm_id and 'osm_way_id' in available_columns:
-                osm_id = feature.GetField('osm_way_id')
 
             features.append({
                 'osm_id': osm_id,
                 'layer': layer_name,
-                'name': name,
+                'name': row.get('name'),
                 'matched_tag': matched_tag,
                 'matched_value': matched_value,
-                'geometry': shapely_geom,
-                'other_tags': feature.GetField('other_tags') if 'other_tags' in available_columns else None
+                'geometry': geom,
+                'other_tags': row.get('other_tags')
             })
-
-        datasource.ReleaseResultSet(result_layer)
 
     return features
 
