@@ -137,6 +137,29 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
     }
   }
 
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    // Filter by type field - Overture theme
+    if (!"buildings".equals(sf.getString("theme"))) {
+      return;
+    }
+
+    // Ignore type=building_part for now
+    if (!"building".equals(sf.getString("type"))) {
+      return;
+    }
+
+    features.polygon(this.name())
+      //.setId(FeatureId.create(sf))
+      // Core Tilezen schema properties
+      .setAttr("kind", "building")
+      // Core OSM tags for different kinds of places
+      //.setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), 13)
+      // NOTE: Height is quantized by zoom in a post-process step
+      //.setAttr(HEIGHT_KEY, height.height())
+      .setAttr("sort_rank", 400)
+      .setZoomRange(11, 15);
+  }
+
   @Override
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     if (zoom == 15) {
