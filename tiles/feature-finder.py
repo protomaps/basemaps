@@ -24,7 +24,7 @@ import shapely.geometry
 
 DISTANCE_THRESHOLD_KM = 2.0
 DISTANCE_THRESHOLD_METERS = DISTANCE_THRESHOLD_KM * 1000
-MAX_RESULTS = 3
+MAX_RESULTS = 5
 
 # Common OSM tag columns to check
 OSM_TAG_COLUMNS = [
@@ -124,7 +124,11 @@ def find_osm_features(pbf_path: str, tags: list[str], name_filter: str | None = 
             geom_wkb = geom.ExportToWkb()
             shapely_geom = shapely.wkb.loads(geom_wkb)
 
+            # Get OSM ID - try osm_id first, fallback to osm_way_id for multipolygons
             osm_id = feature.GetField('osm_id')
+            if not osm_id and 'osm_way_id' in available_columns:
+                osm_id = feature.GetField('osm_way_id')
+
             features.append({
                 'osm_id': osm_id,
                 'layer': layer_name,
@@ -245,14 +249,68 @@ def find_matches(osm_features: list[dict], overture_features: list[dict]) -> lis
 
     Returns list of tuples: (osm_feature, overture_feature, distance_meters)
     """
+    if not osm_features or not overture_features:
+        return []
+
+    # Create GeoDataFrames from the feature lists
+    osm_gdf = geopandas.GeoDataFrame([
+        {
+            'osm_id': f['osm_id'],
+            'layer': f['layer'],
+            'name': f['name'],
+            'matched_tag': f['matched_tag'],
+            'matched_value': f['matched_value'],
+            'other_tags': f['other_tags'],
+            'geometry': f['geometry'],
+            'index': i
+        }
+        for i, f in enumerate(osm_features)
+    ], crs='EPSG:4326')
+
+    overture_gdf = geopandas.GeoDataFrame([
+        {
+            'id': f['id'],
+            'name': f['name'],
+            'basic_category': f['basic_category'],
+            'categories_primary': f['categories_primary'],
+            'confidence': f['confidence'],
+            'geometry': f['geometry'],
+            'index': i
+        }
+        for i, f in enumerate(overture_features)
+    ], crs='EPSG:4326')
+
+    # Project both to EPSG:3857 (Web Mercator) for distance calculations
+    osm_gdf_proj = osm_gdf.to_crs('EPSG:3857')
+    overture_gdf_proj = overture_gdf.to_crs('EPSG:3857')
+
+    # Use spatial join with a buffer to find potential matches
+    # Buffer by 1.5x the threshold for a conservative search area
+    buffer_distance = DISTANCE_THRESHOLD_METERS * 2
+    osm_buffered = osm_gdf_proj.copy()
+    osm_buffered['geometry'] = osm_buffered.geometry.buffer(buffer_distance)
+
+    # Spatial join to find candidates within buffer distance
+    joined = osm_buffered.sjoin(overture_gdf_proj, how='inner', predicate='intersects')
+
+    # Now calculate precise distances only for candidates
     matches = []
+    for _, row in joined.iterrows():
+        osm_idx = row['index_left']
+        ov_idx = row['index_right']
 
-    for osm_feat in osm_features:
-        for ov_feat in overture_features:
-            distance_m = calculate_distance_meters(osm_feat['geometry'], ov_feat['geometry'])
+        # Get the original (unbuffered) geometries
+        osm_geom = osm_gdf_proj.iloc[osm_idx].geometry
+        ov_geom = overture_gdf_proj.iloc[ov_idx].geometry
 
-            if distance_m <= DISTANCE_THRESHOLD_METERS:
-                matches.append((osm_feat, ov_feat, distance_m))
+        # Calculate distance between centroids in EPSG:3857
+        distance_m = osm_geom.centroid.distance(ov_geom.centroid)
+
+        if distance_m <= DISTANCE_THRESHOLD_METERS:
+            # Reconstruct feature dicts from original lists
+            osm_feat = osm_features[osm_idx]
+            ov_feat = overture_features[ov_idx]
+            matches.append((osm_feat, ov_feat, distance_m))
 
     return matches
 
@@ -279,9 +337,9 @@ def format_output(matches: list[tuple[dict, dict, float]]) -> str:
         output_lines.append(f"    Name: {ov['name']}")
         output_lines.append(f"    Basic Category: {ov['basic_category']}")
         output_lines.append(f"    Primary Category: {ov['categories_primary']}")
-        output_lines.append(f"    Confidence: {ov['confidence']:.3f}")
+        output_lines.append(f"    Confidence: {ov['confidence']:.2f}")
 
-        output_lines.append(f"  Distance: {dist_m:.1f} meters ({dist_km:.3f} km)")
+        output_lines.append(f"  Distance: {dist_km:.2f} km")
         output_lines.append("")
 
     return '\n'.join(output_lines)
@@ -331,7 +389,12 @@ def main():
     # Select up to MAX_RESULTS with weighted random selection (prefer closer matches)
     if len(matches) > MAX_RESULTS:
         # Calculate weights as inverse of log distance (closer = higher weight)
-        weights = [1.0 / math.log(dist_m + 2.0) for _, _, dist_m in matches]
+        weights = [
+          (min(len(osm['name']), len(ov['name'])) / max(len(osm['name']), len(ov['name'])))
+          * ov['confidence']
+          / math.log(dist_m + 2.0)
+          for osm, ov, dist_m in matches
+        ]
         matches = random.choices(matches, weights=weights, k=MAX_RESULTS)
 
     # Display results
