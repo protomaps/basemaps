@@ -87,7 +87,7 @@ def query_overture_data(bbox, output_path):
                          hive_partitioning=1,
                          filename=1,
                          union_by_name=1)
-        WHERE theme IN ('transportation', 'places', 'base')
+        WHERE theme IN ('transportation', 'places', 'base', 'buildings')
           AND bbox.xmin <= {bbox['xmax']}
           AND bbox.xmax >= {bbox['xmin']}
           AND bbox.ymin <= {bbox['ymax']}
