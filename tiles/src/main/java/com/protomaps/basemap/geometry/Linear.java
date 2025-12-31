@@ -24,8 +24,8 @@ public class Linear {
   }
 
   /**
-   * Split a LineString at fractional positions and return list of split LineStrings.
-   * Preserves all intermediate vertices between split points to maintain curve geometry.
+   * Split a LineString at fractional positions and return list of split LineStrings. Preserves all intermediate
+   * vertices between split points to maintain curve geometry.
    *
    * @param line        The LineString to split
    * @param splitPoints List of fractional positions (0.0-1.0) where to split
