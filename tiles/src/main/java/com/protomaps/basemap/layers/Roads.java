@@ -22,7 +22,9 @@ import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.locales.CartographicLocale;
 import com.protomaps.basemap.names.OsmNames;
+import com.protomaps.basemap.geometry.Linear;
 import java.util.*;
+import org.locationtech.jts.geom.LineString;
 
 @SuppressWarnings("java:S1192")
 public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingProfile.OsmRelationPreprocessor {
@@ -539,6 +541,25 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   }
 
+  /**
+   * Represents properties that can apply to a segment of a road
+   */
+  private static class SegmentProperties {
+    boolean isBridge;
+    boolean isTunnel;
+    boolean isOneway;
+    boolean isLink;
+    Integer level;
+
+    SegmentProperties() {
+      this.isBridge = false;
+      this.isTunnel = false;
+      this.isOneway = false;
+      this.isLink = false;
+      this.level = null;
+    }
+  }
+
   public void processOverture(SourceFeature sf, FeatureCollector features) {
     // Filter by type field - Overture transportation theme
     if (!"transportation".equals(sf.getString("theme"))) {
@@ -580,19 +601,278 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // Initial minZoom
     minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
 
-    features.line(this.name())
+    // Collect all split points from all property arrays
+    List<Double> splitPoints = new ArrayList<>();
+    collectSplitPoints(sf, splitPoints);
+
+    // Get the original geometry - use latLonGeometry for consistency with test infrastructure
+    try {
+      LineString originalLine = (LineString) sf.latLonGeometry();
+
+      // If no split points, process as single feature
+      if (splitPoints.isEmpty()) {
+        emitRoadFeature(features, sf, originalLine, kind, kindDetail, name, highway, minZoom,
+          extractSegmentProperties(sf, 0.0, 1.0));
+        return;
+      }
+
+      // Split the line and emit features for each segment
+      List<LineString> splitGeometries = Linear.splitAtFractions(originalLine, splitPoints);
+      List<Linear.Segment> segments = Linear.createSegments(splitPoints);
+
+      for (int i = 0; i < segments.size() && i < splitGeometries.size(); i++) {
+        Linear.Segment seg = segments.get(i);
+        LineString segmentGeom = splitGeometries.get(i);
+        SegmentProperties props = extractSegmentProperties(sf, seg.start, seg.end);
+
+        emitRoadFeature(features, sf, segmentGeom, kind, kindDetail, name, highway, minZoom, props);
+      }
+
+    } catch (GeometryException e) {
+      // Skip features with geometry problems
+    }
+  }
+
+  /**
+   * Emit a road feature with given geometry and properties
+   */
+  private void emitRoadFeature(FeatureCollector features, SourceFeature sf, LineString geometry,
+    String kind, String kindDetail, String name, String highway, int minZoom,
+    SegmentProperties props) {
+
+    var feat = features.geometry(this.name(), geometry)
       .setId(FeatureId.create(sf))
       .setAttr("kind", kind)
       .setAttr("kind_detail", kindDetail)
       .setAttr("name", name)
-      // To power better client label collisions
       .setAttr("min_zoom", minZoom + 1)
-      // `highway` is a temporary attribute that gets removed in the post-process step
-      .setAttr("highway", kind)
+      .setAttr("highway", highway)
       .setAttr("sort_rank", 400)
       .setMinPixelSize(0)
       .setPixelTolerance(0)
       .setZoomRange(Math.min(minZoom, 15), 15);
+
+    if (props.isOneway) {
+      feat.setAttrWithMinzoom("oneway", true, 14);
+    }
+
+    if (props.isLink) {
+      feat.setAttr("is_link", true);
+    }
+
+    if (props.isBridge) {
+      feat.setAttrWithMinzoom("is_bridge", true, 12);
+    }
+
+    if (props.isTunnel) {
+      feat.setAttrWithMinzoom("is_tunnel", true, 12);
+    }
+
+    if (props.level != null) {
+      feat.setAttr("level", props.level);
+    }
+  }
+
+  /**
+   * Collect all split points from road_flags, access_restrictions, and level_rules
+   */
+  private void collectSplitPoints(SourceFeature sf, List<Double> splitPoints) {
+    // From road_flags
+    Object roadFlagsObj = sf.getTag("road_flags");
+    if (roadFlagsObj instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<Object> roadFlags = (List<Object>) roadFlagsObj;
+      for (Object flagObj : roadFlags) {
+        if (flagObj instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> flag = (Map<String, Object>) flagObj;
+          Object betweenObj = flag.get("between");
+          if (betweenObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<?> between = (List<?>) betweenObj;
+            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+              splitPoints.add(((Number) between.get(0)).doubleValue());
+              splitPoints.add(((Number) between.get(1)).doubleValue());
+            }
+          }
+        }
+      }
+    }
+
+    // From access_restrictions
+    Object accessRestrictionsObj = sf.getTag("access_restrictions");
+    if (accessRestrictionsObj instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
+      for (Object restrictionObj : accessRestrictions) {
+        if (restrictionObj instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
+          Object betweenObj = restriction.get("between");
+          if (betweenObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<?> between = (List<?>) betweenObj;
+            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+              splitPoints.add(((Number) between.get(0)).doubleValue());
+              splitPoints.add(((Number) between.get(1)).doubleValue());
+            }
+          }
+        }
+      }
+    }
+
+    // From level_rules
+    Object levelRulesObj = sf.getTag("level_rules");
+    if (levelRulesObj instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<Object> levelRules = (List<Object>) levelRulesObj;
+      for (Object ruleObj : levelRules) {
+        if (ruleObj instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> rule = (Map<String, Object>) ruleObj;
+          Object betweenObj = rule.get("between");
+          if (betweenObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<?> between = (List<?>) betweenObj;
+            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+              splitPoints.add(((Number) between.get(0)).doubleValue());
+              splitPoints.add(((Number) between.get(1)).doubleValue());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Extract properties that apply to a segment defined by [start, end] fractional positions
+   */
+  private SegmentProperties extractSegmentProperties(SourceFeature sf, double start, double end) {
+    SegmentProperties props = new SegmentProperties();
+
+    // Check road_flags for is_bridge, is_tunnel, is_link
+    Object roadFlagsObj = sf.getTag("road_flags");
+    if (roadFlagsObj instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<Object> roadFlags = (List<Object>) roadFlagsObj;
+      for (Object flagObj : roadFlags) {
+        if (flagObj instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> flag = (Map<String, Object>) flagObj;
+
+          Object valuesObj = flag.get("values");
+          Object betweenObj = flag.get("between");
+
+          // Determine the range this flag applies to
+          double rangeStart = 0.0;
+          double rangeEnd = 1.0;
+          if (betweenObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<?> between = (List<?>) betweenObj;
+            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+              rangeStart = ((Number) between.get(0)).doubleValue();
+              rangeEnd = ((Number) between.get(1)).doubleValue();
+            }
+          }
+
+          // Check if this segment overlaps with the flag's range
+          if (Linear.overlaps(start, end, rangeStart, rangeEnd) && valuesObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<String> values = (List<String>) valuesObj;
+            if (values.contains("is_bridge")) {
+              props.isBridge = true;
+            }
+            if (values.contains("is_tunnel")) {
+              props.isTunnel = true;
+            }
+            if (values.contains("is_link")) {
+              props.isLink = true;
+            }
+          }
+        }
+      }
+    }
+
+    // Check access_restrictions for oneway
+    Object accessRestrictionsObj = sf.getTag("access_restrictions");
+    if (accessRestrictionsObj instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
+      for (Object restrictionObj : accessRestrictions) {
+        if (restrictionObj instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
+
+          String accessType = (String) restriction.get("access_type");
+          if (!"denied".equals(accessType)) {
+            continue;
+          }
+
+          Object whenObj = restriction.get("when");
+          if (whenObj instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> when = (Map<String, Object>) whenObj;
+            String heading = (String) when.get("heading");
+
+            if ("backward".equals(heading)) {
+              // Determine the range this restriction applies to
+              double rangeStart = 0.0;
+              double rangeEnd = 1.0;
+              Object betweenObj = restriction.get("between");
+              if (betweenObj instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<?> between = (List<?>) betweenObj;
+                if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+                  rangeStart = ((Number) between.get(0)).doubleValue();
+                  rangeEnd = ((Number) between.get(1)).doubleValue();
+                }
+              }
+
+              if (Linear.overlaps(start, end, rangeStart, rangeEnd)) {
+                props.isOneway = true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Check level_rules
+    Object levelRulesObj = sf.getTag("level_rules");
+    if (levelRulesObj instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<Object> levelRules = (List<Object>) levelRulesObj;
+      for (Object ruleObj : levelRules) {
+        if (ruleObj instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> rule = (Map<String, Object>) ruleObj;
+
+          Object valueObj = rule.get("value");
+          if (valueObj instanceof Number) {
+            Integer levelValue = ((Number) valueObj).intValue();
+
+            // Determine the range this level applies to
+            double rangeStart = 0.0;
+            double rangeEnd = 1.0;
+            Object betweenObj = rule.get("between");
+            if (betweenObj instanceof List) {
+              @SuppressWarnings("unchecked")
+              List<?> between = (List<?>) betweenObj;
+              if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+                rangeStart = ((Number) between.get(0)).doubleValue();
+                rangeEnd = ((Number) between.get(1)).doubleValue();
+              }
+            }
+
+            if (Linear.overlaps(start, end, rangeStart, rangeEnd)) {
+              props.level = levelValue;
+            }
+          }
+        }
+      }
+    }
+
+    return props;
   }
 
   @Override
