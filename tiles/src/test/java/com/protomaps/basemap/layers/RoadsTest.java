@@ -765,17 +765,17 @@ class RoadsOvertureTest extends LayerTest {
       )));
   }
 
-  // ===== Line Splitting Tests =====
   // Tests for partial application of properties (bridge, tunnel, oneway, level) requiring line splitting
 
   @Test
   void split_partialBridge_middleSection() {
     // Test: Single bridge section in the middle of a line
-    // Geometry: (0,0) to (1,0) - length=1 for easy math
+    // Geometry: (0,0) to (144,0) - Input treated as lat/lon, output transformed to world coords
     // Bridge from 0.25 to 0.75
     // Expected: 3 output features with correct geometries and is_bridge attribute
+    // After transformation: lon 0->0.5, lon 0.25->0.5006944, lon 0.75->0.5020833, lon 1->0.5027777
     var results = process(SimpleFeature.create(
-      newLineString(0, 0, 1, 0),
+      newLineString(0, 0, 144, 0),
       new HashMap<>(Map.of(
         "id", "test-bridge-middle",
         "theme", "transportation",
@@ -793,19 +793,19 @@ class RoadsOvertureTest extends LayerTest {
       Map.of(
         "kind", "major_road",
         "kind_detail", "primary",
-        "_geom", new TestUtils.NormGeometry(newLineString(0, 0, 0.25, 0))
+        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
         // No is_bridge attribute
       ),
       Map.of(
         "kind", "major_road",
         "kind_detail", "primary",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.25, 0, 0.75, 0)),
+        "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.8, 0.5)),
         "is_bridge", true
       ),
       Map.of(
         "kind", "major_road",
         "kind_detail", "primary",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.75, 0, 1, 0))
+        "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5))
         // No is_bridge attribute
       )
     ), results);
@@ -814,13 +814,13 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void split_partialBridge_twoSections() {
     // Test: Two separate bridge sections
-    // Geometry: (0,0) to (1,0)
-    // Bridges from 0.1-0.3 and 0.6-0.8
+    // Geometry: (0,0) to (180,0) - Input treated as lat/lon, output transformed to world coords
+    // Bridges from 0.2-0.4 and 0.6-0.8
     // Expected: 5 output features
     // Based on Overture c3b55f85-220c-4d00-8419-be3f2c795729 (footway with 2 bridge sections)
     // OSM ways: 999763975, 999763974, 22989089, 999763972, 999763973
     var results = process(SimpleFeature.create(
-      newLineString(0, 0, 1, 0),
+      newLineString(0, 0, 180, 0),
       new HashMap<>(Map.of(
         "id", "c3b55f85-220c-4d00-8419-be3f2c795729",
         "theme", "transportation",
@@ -828,7 +828,7 @@ class RoadsOvertureTest extends LayerTest {
         "subtype", "road",
         "class", "footway",
         "road_flags", List.of(
-          Map.of("values", List.of("is_bridge"), "between", List.of(0.1, 0.3)),
+          Map.of("values", List.of("is_bridge"), "between", List.of(0.2, 0.4)),
           Map.of("values", List.of("is_bridge"), "between", List.of(0.6, 0.8))
         )
       )),
@@ -836,24 +836,24 @@ class RoadsOvertureTest extends LayerTest {
     ));
 
     assertFeatures(15, List.of(
-      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0, 0, 0.1, 0))),
-      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.1, 0, 0.3, 0)), "is_bridge", true),
-      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.3, 0, 0.6, 0))),
-      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0, 0.8, 0)), "is_bridge", true),
-      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0, 1, 0)))
+      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))),
+      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5)), "is_bridge", true),
+      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.7, 0.5, 0.8, 0.5))),
+      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5)), "is_bridge", true),
+      Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.9, 0.5, 1.0, 0.5)))
     ), results);
   }
 
   @Test
   void split_partialTunnel_fromStart() {
     // Test: Tunnel from start to middle
-    // Geometry: (0,0) to (1,0)
+    // Geometry: (0,0) to (72,0) - Input treated as lat/lon, output transformed to world coords
     // Tunnel from 0.0 to 0.5
     // Expected: 2 output features
     // Based on Overture 6c52a051-7433-470a-aa89-935be681c967 (primary with tunnel)
     // OSM ways: 659613394, 25966237
     var results = process(SimpleFeature.create(
-      newLineString(0, 0, 1, 0),
+      newLineString(0, 0, 72, 0),
       new HashMap<>(Map.of(
         "id", "6c52a051-7433-470a-aa89-935be681c967",
         "theme", "transportation",
@@ -871,13 +871,13 @@ class RoadsOvertureTest extends LayerTest {
       Map.of(
         "kind", "major_road",
         "kind_detail", "primary",
-        "_geom", new TestUtils.NormGeometry(newLineString(0, 0, 0.5, 0)),
+        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5)),
         "is_tunnel", true
       ),
       Map.of(
         "kind", "major_road",
         "kind_detail", "primary",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0, 1, 0))
+        "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5))
         // No is_tunnel attribute
       )
     ), results);
@@ -886,13 +886,13 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void split_partialLevel_elevatedSection() {
     // Test: Elevated/bridge section with level=1
-    // Geometry: (0,0) to (1,0)
+    // Geometry: (0,0) to (144,0) - Input treated as lat/lon, output transformed to world coords
     // Level 1 from 0.25 to 0.75
     // Expected: 3 output features with different level values
     // Based on Overture 8d70a823-6584-459d-999d-cabf3b9672f6 (motorway with elevated section)
     // OSM ways: 41168616, 931029707, 41168617
     var results = process(SimpleFeature.create(
-      newLineString(0, 0, 1, 0),
+      newLineString(0, 0, 144, 0),
       new HashMap<>(Map.of(
         "id", "8d70a823-6584-459d-999d-cabf3b9672f6",
         "theme", "transportation",
@@ -910,19 +910,19 @@ class RoadsOvertureTest extends LayerTest {
       Map.of(
         "kind", "highway",
         "kind_detail", "motorway",
-        "_geom", new TestUtils.NormGeometry(newLineString(0, 0, 0.25, 0))
+        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
         // level=0 or no level attribute
       ),
       Map.of(
         "kind", "highway",
         "kind_detail", "motorway",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.25, 0, 0.75, 0)),
+        "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.8, 0.5)),
         "level", 1
       ),
       Map.of(
         "kind", "highway",
         "kind_detail", "motorway",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.75, 0, 1, 0))
+        "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5))
         // level=0 or no level attribute
       )
     ), results);
@@ -931,13 +931,13 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void split_partialOneway_secondHalf() {
     // Test: Oneway restriction on second half of line
-    // Geometry: (0,0) to (1,0)
+    // Geometry: (0,0) to (72,0) - Input treated as lat/lon, output transformed to world coords
     // Oneway (access denied backward) from 0.5 to 1.0
     // Expected: 2 output features
     // Based on Overture 10536347-2a89-4f05-9a3d-92d365931bc4 (secondary with partial oneway)
     // OSM ways: 394110740, 59689569
     var results = process(SimpleFeature.create(
-      newLineString(0, 0, 1, 0),
+      newLineString(0, 0, 72, 0),
       new HashMap<>(Map.of(
         "id", "10536347-2a89-4f05-9a3d-92d365931bc4",
         "theme", "transportation",
@@ -959,13 +959,13 @@ class RoadsOvertureTest extends LayerTest {
       Map.of(
         "kind", "major_road",
         "kind_detail", "secondary",
-        "_geom", new TestUtils.NormGeometry(newLineString(0, 0, 0.5, 0))
+        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
         // No oneway attribute
       ),
       Map.of(
         "kind", "major_road",
         "kind_detail", "secondary",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0, 1, 0)),
+        "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5)),
         "oneway", true
       )
     ), results);
@@ -974,12 +974,12 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void split_overlapping_bridgeAndOneway() {
     // Test: Overlapping bridge and oneway restrictions
-    // Geometry: (0,0) to (1,0)
+    // Geometry: (0,0) to (144,0) - Input treated as lat/lon, output transformed to world coords
     // Bridge from 0.25 to 0.75
     // Oneway from 0.5 to 1.0
     // Expected: 4 output features with different combinations
     var results = process(SimpleFeature.create(
-      newLineString(0, 0, 1, 0),
+      newLineString(0, 0, 144, 0),
       new HashMap<>(Map.of(
         "id", "test-overlap",
         "theme", "transportation",
@@ -1003,25 +1003,25 @@ class RoadsOvertureTest extends LayerTest {
     assertFeatures(15, List.of(
       Map.of(
         "kind", "major_road",
-        "_geom", new TestUtils.NormGeometry(newLineString(0, 0, 0.25, 0))
+        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
         // Neither is_bridge nor oneway
       ),
       Map.of(
         "kind", "major_road",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.25, 0, 0.5, 0)),
+        "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5)),
         "is_bridge", true
         // is_bridge only, no oneway
       ),
       Map.of(
         "kind", "major_road",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0, 0.75, 0)),
+        "_geom", new TestUtils.NormGeometry(newLineString(0.7, 0.5, 0.8, 0.5)),
         "is_bridge", true,
         "oneway", true
         // Both is_bridge AND oneway
       ),
       Map.of(
         "kind", "major_road",
-        "_geom", new TestUtils.NormGeometry(newLineString(0.75, 0, 1, 0)),
+        "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5)),
         "oneway", true
         // oneway only, no is_bridge
       )
