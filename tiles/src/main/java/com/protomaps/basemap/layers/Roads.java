@@ -13,8 +13,8 @@ import com.onthegomap.planetiler.FeatureMerge;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
-import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.geo.GeoUtils;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
@@ -340,6 +340,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     )).index();
 
+  // Protomaps kind/kind_detail to min_zoom mapping
+
   private static final MultiExpression.Index<Map<String, Object>> highwayZoomsIndex = MultiExpression.ofOrdered(List.of(
 
     rule(use(MINZOOM, 99)),
@@ -545,14 +547,14 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   /**
    * Represents properties that can apply to a segment of a road
    */
-  private static class SegmentProperties {
+  private static class OvertureSegmentProperties {
     boolean isBridge;
     boolean isTunnel;
     boolean isOneway;
     boolean isLink;
     Integer level;
 
-    SegmentProperties() {
+    OvertureSegmentProperties() {
       this.isBridge = false;
       this.isTunnel = false;
       this.isOneway = false;
@@ -604,7 +606,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     // Collect all split points from all property arrays
     List<Double> splitPoints = new ArrayList<>();
-    collectSplitPoints(sf, splitPoints);
+    collectOvertureSplitPoints(sf, splitPoints);
 
     // Get the original geometry - use latLonGeometry for consistency with test infrastructure
     try {
@@ -612,8 +614,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
       // If no split points, process as single feature
       if (splitPoints.isEmpty()) {
-        emitRoadFeature(features, sf, originalLine, kind, kindDetail, name, highway, minZoom,
-          extractSegmentProperties(sf, 0.0, 1.0));
+        emitOvertureFeature(features, sf, originalLine, kind, kindDetail, name, highway, minZoom,
+          extractOvertureSegmentProperties(sf, 0.0, 1.0));
         return;
       }
 
@@ -624,9 +626,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       for (int i = 0; i < segments.size() && i < splitGeometries.size(); i++) {
         Linear.Segment seg = segments.get(i);
         LineString segmentGeom = splitGeometries.get(i);
-        SegmentProperties props = extractSegmentProperties(sf, seg.start, seg.end);
+        OvertureSegmentProperties props = extractOvertureSegmentProperties(sf, seg.start, seg.end);
 
-        emitRoadFeature(features, sf, segmentGeom, kind, kindDetail, name, highway, minZoom, props);
+        emitOvertureFeature(features, sf, segmentGeom, kind, kindDetail, name, highway, minZoom, props);
       }
 
     } catch (GeometryException e) {
@@ -637,9 +639,9 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   /**
    * Emit a road feature with given geometry and properties
    */
-  private void emitRoadFeature(FeatureCollector features, SourceFeature sf, LineString geometry,
+  private void emitOvertureFeature(FeatureCollector features, SourceFeature sf, LineString geometry,
     String kind, String kindDetail, String name, String highway, int minZoom,
-    SegmentProperties props) {
+    OvertureSegmentProperties props) {
 
     // Transform geometry from lat/lon to world coordinates for rendering
     LineString worldGeometry = (LineString) GeoUtils.latLonToWorldCoords(geometry);
@@ -680,7 +682,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   /**
    * Collect all split points from road_flags, access_restrictions, and level_rules
    */
-  private void collectSplitPoints(SourceFeature sf, List<Double> splitPoints) {
+  private void collectOvertureSplitPoints(SourceFeature sf, List<Double> splitPoints) {
     // From road_flags
     Object roadFlagsObj = sf.getTag("road_flags");
     if (roadFlagsObj instanceof List) {
@@ -742,8 +744,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   /**
    * Extract properties that apply to a segment defined by [start, end] fractional positions
    */
-  private SegmentProperties extractSegmentProperties(SourceFeature sf, double start, double end) {
-    SegmentProperties props = new SegmentProperties();
+  private OvertureSegmentProperties extractOvertureSegmentProperties(SourceFeature sf, double start, double end) {
+    OvertureSegmentProperties props = new OvertureSegmentProperties();
 
     // Check road_flags for is_bridge, is_tunnel, is_link
     Object roadFlagsObj = sf.getTag("road_flags");

@@ -794,7 +794,6 @@ class RoadsOvertureTest extends LayerTest {
         "kind", "major_road",
         "kind_detail", "primary",
         "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
-        // No is_bridge attribute
       ),
       Map.of(
         "kind", "major_road",
@@ -806,7 +805,6 @@ class RoadsOvertureTest extends LayerTest {
         "kind", "major_road",
         "kind_detail", "primary",
         "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5))
-        // No is_bridge attribute
       )
     ), results);
   }
@@ -1000,13 +998,11 @@ class RoadsOvertureTest extends LayerTest {
       Map.of(
         "kind", "major_road",
         "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
-        // Neither is_bridge nor oneway
       ),
       Map.of(
         "kind", "major_road",
         "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5)),
         "is_bridge", true
-        // is_bridge only, no oneway
       ),
       Map.of(
         "kind", "major_road",
