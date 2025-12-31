@@ -467,3 +467,151 @@ class RoadsTest extends LayerTest {
   }
 
 }
+
+
+class RoadsOvertureTest extends LayerTest {
+
+  @Test
+  void kind_majorRoad_fromPrimaryClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 8, "name", "Ashby Avenue")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "7189cf1b-a235-463d-8871-5e6ffe0c8c3d", // https://www.openstreetmap.org/way/202317700/history/16
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "primary",
+          "names.primary", "Ashby Avenue"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_majorRoad_fromSecondaryClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 10, "name", "40th Street")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "6dc28d02-5b57-4091-9db2-30462f4e2273", // https://www.openstreetmap.org/way/36982937/history/14
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "secondary",
+          "names.primary", "40th Street"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_majorRoad_fromTertiaryClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 10, "name", "West Street")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "e3046f27-df36-4aaa-97f5-7c12eee4310d", // https://www.openstreetmap.org/way/6346756/history/24
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "tertiary",
+          "names.primary", "West Street"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_path_fromPedestrianClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "path", "min_zoom", 13, "name", "13th Street")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "c7a5a72b-cb51-40a9-899c-4ecb2d3fa809", // https://www.openstreetmap.org/way/513726605/history/4
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "pedestrian",
+          "names.primary", "13th Street"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_minorRoad_fromResidentialClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "minor_road", "min_zoom", 13, "name", "17th Street")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "1314012e-c948-4812-b9bd-cb9cfd9c2b63", // https://www.openstreetmap.org/way/1033706847/history/3
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "residential",
+          "names.primary", "17th Street"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_minorRoad_fromServiceClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "minor_road", "min_zoom", 14, "name", "Derby Street")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "4651ca6a-16e7-4f97-99b5-5dad4228f146", // https://www.openstreetmap.org/way/8917186/history/6
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "service",
+          "names.primary", "Derby Street"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_path_fromCyclewayClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "path", "min_zoom", 14, "name", "Ohlone Greenway")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "96154d80-f268-4b2d-99da-7bb411cf1718", // https://www.openstreetmap.org/way/164658210/history/11
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "cycleway",
+          "names.primary", "Ohlone Greenway"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_sidewalk_fromFootwayClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "path", "kind_detail", "sidewalk", "min_zoom", 15)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "5cdc43ee-68d2-416f-9b50-4b9058415f51", // https://www.openstreetmap.org/way/1040431008/history/2
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "footway",
+          "subclass", "sidewalk"
+        )),
+        "overture", null, 0
+      )));
+  }
+}

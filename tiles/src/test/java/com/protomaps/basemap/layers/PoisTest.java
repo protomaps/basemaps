@@ -1134,6 +1134,7 @@ class PoisTest extends LayerTest {
   }
 }
 
+
 class PoisOvertureTest extends LayerTest {
 
   @Test
@@ -1175,7 +1176,8 @@ class PoisOvertureTest extends LayerTest {
   @Test
   void kind_aerodrome_fromBasicCategory() {
     assertFeatures(15,
-      List.of(Map.of("kind", "aerodrome", "min_zoom", 14, "name", "San Francisco Bay Oakland International Airport (OAK)")),
+      List.of(
+        Map.of("kind", "aerodrome", "min_zoom", 14, "name", "San Francisco Bay Oakland International Airport (OAK)")),
       process(SimpleFeature.create(
         newPoint(1, 1),
         new HashMap<>(Map.of(
@@ -1329,6 +1331,43 @@ class PoisOvertureTest extends LayerTest {
           "basic_category", "dentist",
           "names.primary", "高橋歯科クリニック",
           "confidence", 0.95
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_bakery_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "bakery", "min_zoom", 17, "name", "Boulangerie Rougès | Paris")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "c180100c-3cb7-4b36-a112-339ba238b632", // https://www.openstreetmap.org/way/75747993/history/9
+          "theme", "places",
+          "type", "place",
+          "basic_category", "bakery",
+          "names.primary", "Boulangerie Rougès | Paris",
+          "confidence", 0.95
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_hostel_fromBasicCategory() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "hostel", "min_zoom", 17, "name", "CITAN")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of(
+          "id", "70888a32-51c4-4201-9e57-68e6bbdb581b", // https://www.openstreetmap.org/way/466646992/history/3
+          "theme", "places",
+          "type", "place",
+          "basic_category", "accommodation",
+          "categories.primary", "hostel",
+          "names.primary", "CITAN",
+          "confidence", 1.00
         )),
         "overture", null, 0
       )));
