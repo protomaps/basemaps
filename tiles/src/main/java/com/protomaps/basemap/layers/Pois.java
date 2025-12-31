@@ -59,7 +59,9 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
     "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
 
-  private static final MultiExpression.Index<Map<String, Object>> kindsIndex = MultiExpression.ofOrdered(List.of(
+  // OSM tags to Protomaps kind/kind_detail mapping
+
+  private static final MultiExpression.Index<Map<String, Object>> osmKindsIndex = MultiExpression.ofOrdered(List.of(
 
     // Everything is undefined at first
     rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
@@ -177,6 +179,28 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   )).index();
 
+
+  // Overture properties to Protomaps kind/kind_detail mapping
+
+  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex = MultiExpression.ofOrdered(List.of(
+
+    // Everything is undefined at first
+    rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
+
+    // Pull from basic_category
+    rule(with("basic_category"), use(KIND, fromTag("basic_category"))),
+
+    // Some basic categories don't match OSM-style expectations
+    rule(with("basic_category", "accommodation"), with("categories.primary", "hostel"), use(KIND, "hostel")),
+    rule(with("basic_category", "airport"), use(KIND, "aerodrome")),
+    rule(with("basic_category", "college_university"), use(KIND, "college")),
+    rule(with("basic_category", "grocery_store"), use(KIND, "supermarket")),
+    rule(with("basic_category", "sport_stadium"), use(KIND, "stadium"))
+
+  )).index();
+
+  // Protomaps kind/kind_detail to min_zoom mapping for points
+
   private static final MultiExpression.Index<Map<String, Object>> pointZoomsIndex = MultiExpression.ofOrdered(List.of(
 
     // Every point is zoom=15 at first
@@ -259,6 +283,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     with(KIND, "forest", "park", "protected_area", "nature_reserve", "village_green");
   private static final Expression WITH_ETC =
     with(KIND, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo");
+
+  // Protomaps kind/kind_detail to min_zoom mapping for named polygons
 
   private static final MultiExpression.Index<Map<String, Object>> namedPolygonZoomsIndex =
     MultiExpression.ofOrdered(List.of(
@@ -413,7 +439,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
 
     // Map the Protomaps KIND classification to incoming tags
-    var kindMatches = kindsIndex.getMatches(sf);
+    var kindMatches = osmKindsIndex.getMatches(sf);
 
     // Output feature and its basic values to assign
     FeatureCollector.Feature outputFeature;
@@ -535,7 +561,22 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    String kind = sf.getString("basic_category");
+    // Map the Protomaps KIND classification to incoming tags
+    var kindMatches = overtureKindsIndex.getMatches(sf);
+
+    String kind = getString(sf, kindMatches, KIND, UNDEFINED);
+    String kindDetail = getString(sf, kindMatches, KIND_DETAIL, UNDEFINED);
+    Integer minZoom;
+
+    // Calculate minZoom using zooms indexes
+    var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
+    var zoomMatches = pointZoomsIndex.getMatches(sf2);
+    if (zoomMatches.isEmpty())
+      return;
+
+    // Initial minZoom
+    minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
+
     String name = sf.getString("names.primary");
 
     features.point(this.name())
@@ -547,7 +588,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       .setAttr("name", name)
       // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
       // 512 px zooms versus 256 px logical zooms
-      .setAttr("min_zoom", 15 + 1)
+      .setAttr("min_zoom", minZoom + 1)
       //
       .setBufferPixels(8)
       .setZoomRange(Math.min(15, 15), 15);
