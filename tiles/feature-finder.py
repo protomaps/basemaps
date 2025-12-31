@@ -24,7 +24,6 @@ import shapely.geometry
 
 DISTANCE_THRESHOLD_KM = 2.0
 DISTANCE_THRESHOLD_METERS = DISTANCE_THRESHOLD_KM * 1000
-MAX_RESULTS = 3
 
 # Common OSM tag columns to check
 OSM_TAG_COLUMNS = [
@@ -47,6 +46,14 @@ def parse_args():
     parser.add_argument(
         '--name',
         help='Optional name filter (case-insensitive substring match)'
+    )
+    parser.add_argument(
+        '--10x',
+        dest='max_results',
+        action='store_const',
+        const=30,
+        default=3,
+        help='10x the result count'
     )
     return parser.parse_args()
 
@@ -134,6 +141,8 @@ def find_overture_features(parquet_path: str, tags: list[str], name_filter: str 
     for tag in tags:
         category_conditions.append(f"categories.primary = '{tag}'")
         category_conditions.append(f"basic_category = '{tag}'")
+        category_conditions.append(f"subtype = '{tag}'")
+        category_conditions.append(f"class = '{tag}'")
 
     where_clause = ' OR '.join(category_conditions)
 
@@ -144,6 +153,10 @@ def find_overture_features(parquet_path: str, tags: list[str], name_filter: str 
         SELECT
             id,
             names.primary as name,
+            theme,
+            type,
+            subtype,
+            class,
             basic_category,
             categories.primary as categories_primary,
             geometry,
@@ -157,7 +170,7 @@ def find_overture_features(parquet_path: str, tags: list[str], name_filter: str 
         features = []
 
         for row in result:
-            overture_id, name, basic_cat, cat_primary, geom_blob, confidence = row
+            overture_id, name, theme, type_, subtype, class_, basic_cat, cat_primary, geom_blob, confidence = row
 
             # Convert geometry blob to shapely
             if geom_blob:
@@ -166,6 +179,10 @@ def find_overture_features(parquet_path: str, tags: list[str], name_filter: str 
                 features.append({
                     'id': overture_id,
                     'name': name,
+                    'theme': theme,
+                    'type': type_,
+                    'subtype': subtype,
+                    'class': class_,
                     'basic_category': basic_cat,
                     'categories_primary': cat_primary,
                     'geometry': shapely_geom,
@@ -248,6 +265,10 @@ def find_matches(osm_features: list[dict], overture_features: list[dict]) -> lis
         {
             'id': f['id'],
             'name': f['name'],
+            'theme': f['theme'],
+            'type': f['type'],
+            'subtype': f['subtype'],
+            'class': f['class'],
             'basic_category': f['basic_category'],
             'categories_primary': f['categories_primary'],
             'confidence': f['confidence'],
@@ -312,9 +333,14 @@ def format_output(matches: list[tuple[dict, dict, float]]) -> str:
         output_lines.append(f"  Overture:")
         output_lines.append(f"    ID: {ov['id']}")
         output_lines.append(f"    Name: {ov['name']}")
+        output_lines.append(f"    Theme: {ov['theme']}")
+        output_lines.append(f"    Type: {ov['type']}")
+        output_lines.append(f"    Subtype: {ov['subtype']}")
+        output_lines.append(f"    Class: {ov['class']}")
         output_lines.append(f"    Basic Category: {ov['basic_category']}")
         output_lines.append(f"    Primary Category: {ov['categories_primary']}")
-        output_lines.append(f"    Confidence: {ov['confidence']:.2f}")
+        if ov['confidence'] is not None:
+          output_lines.append(f"    Confidence: {ov['confidence']:.2f}")
 
         output_lines.append(f"  Distance: {dist_km:.2f} km")
         output_lines.append("")
@@ -367,16 +393,18 @@ def main():
     # Find matches
     matches = find_matches(all_osm_features, all_overture_features)
 
-    # Select up to MAX_RESULTS with weighted random selection (prefer closer matches)
-    if len(matches) > MAX_RESULTS:
-        # Calculate weights as inverse of log distance (closer = higher weight)
-        weights = [
-          (min(len(osm['name'] or ''), len(ov['name'] or '')) / max(len(osm['name'] or ''), len(ov['name'] or '')))
-          * ov['confidence']
-          / (dist_m + 1)
-          for osm, ov, dist_m in matches
-        ]
-        matches = random.choices(matches, weights=weights, k=MAX_RESULTS)
+    # Select up to args.max_results with weighted random selection (prefer closer matches)
+    if len(matches) > args.max_results:
+        # Calculate weights as inverse of distance (closer = higher weight)
+        weights = [(ov.get('confidence') or 1.0) / (dist_m + 1) for osm, ov, dist_m in matches]
+        try:
+          weights = [
+            (min(len(osm['name']), len(ov['name'])) / max(len(osm['name']), len(ov['name'])))
+            * weight for weight in weights
+          ]
+        except:
+          pass
+        matches = random.choices(matches, weights=weights, k=args.max_results)
 
     # Display results
     print(format_output(matches))
