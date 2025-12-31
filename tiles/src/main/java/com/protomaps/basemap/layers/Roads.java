@@ -34,6 +34,11 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   public static final String LAYER_NAME = "roads";
 
+  // Internal tags used to reference calculated values between matchers
+  private static final String KIND = "protomaps-basemaps:kind";
+  private static final String KIND_DETAIL = "protomaps-basemaps:kindDetail";
+  private static final String UNDEFINED = "protomaps-basemaps:undefined";
+
   private static final MultiExpression.Index<Map<String, Object>> indexHighways = MultiExpression.of(List.of(
     rule(
       with(),
@@ -288,6 +293,27 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     )
   )).index();
 
+  // Overture properties to Protomaps kind mapping
+
+  private static final MultiExpression.Index<Map<String, Object>> overtureHighwaysIndex = MultiExpression.ofOrdered(List.of(
+
+    // Everything is undefined at first
+    rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
+
+    // Pull from road class by default?
+    rule(with("class"), use(KIND, fromTag("class")), use(KIND_DETAIL, "")),
+
+    // Assign HighRoad kinds
+    rule(with("class", "motorway", "motorway_link"), use(KIND, "highway")),
+    rule(with("class", "trunk", "trunk_link", "primary", "primary_link", "secondary", "secondary_link", "tertiary", "tertiary_link"), use(KIND, "major_road")),
+    rule(with("class", "residential", "unclassified", "road", "raceway", "service"), use(KIND, "minor_road")),
+    rule(with("class", "pedestrian", "track", "corridor", "path", "cycleway", "bridleway", "footway", "steps"), use(KIND, "path")),
+
+    // Assign kind_detail
+    rule(with("class", "service"), use(KIND_DETAIL, "service"))
+
+  )).index();
+
   @Override
   public String name() {
     return LAYER_NAME;
@@ -486,13 +512,28 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    features.line("roads")
+    var matches = overtureHighwaysIndex.getMatches(sf);
+    if (matches.isEmpty()) {
+      return;
+    }
+
+    String kind = getString(sf, matches, KIND, UNDEFINED);
+    String kindDetail = getString(sf, matches, KIND_DETAIL, UNDEFINED);
+    String name = sf.getString("names.primary");
+
+    // Quickly eliminate any features with non-matching tags
+    if (kind.equals(UNDEFINED))
+      return;
+
+    features.line(this.name())
       .setId(FeatureId.create(sf))
-      .setAttr("kind", "minor_road") // sf.getString("class"))
+      .setAttr("kind", kind)
+      .setAttr("kind_detail", kindDetail)
+      .setAttr("name", name)
       // To power better client label collisions
       .setMinZoom(6)
       // `highway` is a temporary attribute that gets removed in the post-process step
-      .setAttr("highway", sf.getString("class"))
+      .setAttr("highway", kind)
       .setAttr("sort_rank", 400)
       .setMinPixelSize(0)
       .setPixelTolerance(0)
