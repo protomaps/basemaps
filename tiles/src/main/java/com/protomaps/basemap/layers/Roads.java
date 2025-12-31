@@ -657,7 +657,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setZoomRange(Math.min(minZoom, 15), 15);
 
     if (props.isOneway) {
-      feat.setAttrWithMinzoom("oneway", true, 14);
+      feat.setAttrWithMinzoom("oneway", "yes", 14);
     }
 
     if (props.isLink) {

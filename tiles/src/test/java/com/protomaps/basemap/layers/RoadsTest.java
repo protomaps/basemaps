@@ -475,7 +475,7 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_highway_fromMotorwayClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "highway", "min_zoom", 4, "oneway", true, "name", "Nimitz Freeway")),
+      List.of(Map.of("kind", "highway", "min_zoom", 4, "oneway", "yes", "name", "Nimitz Freeway")),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
@@ -496,7 +496,7 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_highwayLink_fromMotorwayClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "highway", "min_zoom", 4, "oneway", true, "is_link", true)),
+      List.of(Map.of("kind", "highway", "min_zoom", 4, "oneway", "yes", "is_link", true)),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
@@ -536,7 +536,7 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_majorLink_fromTrunkClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "major_road", "min_zoom", 7, "oneway", true, "is_link", true)),
+      List.of(Map.of("kind", "major_road", "min_zoom", 7, "oneway", "yes", "is_link", true)),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
@@ -576,7 +576,7 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_majorLink_fromPrimaryClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "major_road", "min_zoom", 8, "oneway", true, "is_link", true)),
+      List.of(Map.of("kind", "major_road", "min_zoom", 8, "oneway", "yes", "is_link", true)),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
@@ -616,7 +616,7 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_majorLink_fromSecondaryClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "major_road", "min_zoom", 10, "oneway", true, "is_link", true)),
+      List.of(Map.of("kind", "major_road", "min_zoom", 10, "oneway", "yes", "is_link", true)),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
@@ -656,7 +656,7 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_majorLink_fromTertiaryClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "major_road", "min_zoom", 10, "oneway", true, "is_link", true)),
+      List.of(Map.of("kind", "major_road", "min_zoom", 10, "oneway", "yes", "is_link", true)),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
@@ -878,7 +878,6 @@ class RoadsOvertureTest extends LayerTest {
         "kind", "major_road",
         "kind_detail", "primary",
         "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5))
-        // No is_tunnel attribute
       )
     ), results);
   }
@@ -911,7 +910,6 @@ class RoadsOvertureTest extends LayerTest {
         "kind", "highway",
         "kind_detail", "motorway",
         "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
-        // level=0 or no level attribute
       ),
       Map.of(
         "kind", "highway",
@@ -923,7 +921,6 @@ class RoadsOvertureTest extends LayerTest {
         "kind", "highway",
         "kind_detail", "motorway",
         "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5))
-        // level=0 or no level attribute
       )
     ), results);
   }
@@ -960,13 +957,12 @@ class RoadsOvertureTest extends LayerTest {
         "kind", "major_road",
         "kind_detail", "secondary",
         "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))
-        // No oneway attribute
       ),
       Map.of(
         "kind", "major_road",
         "kind_detail", "secondary",
         "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5)),
-        "oneway", true
+        "oneway", "yes"
       )
     ), results);
   }
@@ -1016,14 +1012,12 @@ class RoadsOvertureTest extends LayerTest {
         "kind", "major_road",
         "_geom", new TestUtils.NormGeometry(newLineString(0.7, 0.5, 0.8, 0.5)),
         "is_bridge", true,
-        "oneway", true
-        // Both is_bridge AND oneway
+        "oneway", "yes"
       ),
       Map.of(
         "kind", "major_road",
         "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5)),
-        "oneway", true
-        // oneway only, no is_bridge
+        "oneway", "yes"
       )
     ), results);
   }
