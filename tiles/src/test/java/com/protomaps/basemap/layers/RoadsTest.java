@@ -478,13 +478,15 @@ class RoadsOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
-          // TODO: get access_restrictions in here
           "id", "99f8b0b1-efde-4649-820a-9ef5498ba58a", // https://www.openstreetmap.org/way/692662557/history/5
           "theme", "transportation",
           "type", "segment",
           "subtype", "road",
           "class", "motorway",
-          "names.primary", "Nimitz Freeway"
+          "names.primary", "Nimitz Freeway",
+          "access_restrictions", List.of(
+            Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
+          )
         )),
         "overture", null, 0
       )));
@@ -497,14 +499,16 @@ class RoadsOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
-          // TODO: get access_restrictions in here
           "id", "ed49cecd-d577-4924-92b6-abaaf92bee6c", // https://www.openstreetmap.org/way/932872494/history/2
           "theme", "transportation",
           "type", "segment",
           "subtype", "road",
           "class", "motorway",
           "subclass", "link",
-          "road_flags", List.of("is_link")
+          "road_flags", List.of(Map.of("values", List.of("is_link"))),
+          "access_restrictions", List.of(
+            Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
+          )
         )),
         "overture", null, 0
       )));
@@ -535,14 +539,16 @@ class RoadsOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
-          // TODO: get access_restrictions in here
           "id", "3aefac69-2653-41a1-ae19-0d36d6d03491", // https://www.openstreetmap.org/way/198565349/history/11
           "theme", "transportation",
           "type", "segment",
           "subtype", "road",
           "class", "trunk",
           "subclass", "link",
-          "road_flags", List.of("is_link")
+          "road_flags", List.of(Map.of("values", List.of("is_link"))),
+          "access_restrictions", List.of(
+            Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
+          )
         )),
         "overture", null, 0
       )));
@@ -573,14 +579,16 @@ class RoadsOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
-          // TODO: get access_restrictions in here
           "id", "2c9442b6-14c2-44e0-975d-d69bd83a0da7", // https://www.openstreetmap.org/way/198565347/history/10
           "theme", "transportation",
           "type", "segment",
           "subtype", "road",
           "class", "primary",
           "subclass", "link",
-          "road_flags", List.of("is_link")
+          "road_flags", List.of(Map.of("values", List.of("is_link"))),
+          "access_restrictions", List.of(
+            Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
+          )
         )),
         "overture", null, 0
       )));
@@ -611,14 +619,16 @@ class RoadsOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
-          // TODO: get access_restrictions in here
           "id", "bf0ba372-0a6e-417b-a180-e174f4276b9c", // https://www.openstreetmap.org/way/23591806/history/10
           "theme", "transportation",
           "type", "segment",
           "subtype", "road",
           "class", "secondary",
           "subclass", "link",
-          "road_flags", List.of("is_link")
+          "road_flags", List.of(Map.of("values", List.of("is_link"))),
+          "access_restrictions", List.of(
+            Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
+          )
         )),
         "overture", null, 0
       )));
@@ -649,14 +659,16 @@ class RoadsOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
-          // TODO: get access_restrictions in here
           "id", "ad765059-60f9-4eb5-b672-9faf90748f00", // https://www.openstreetmap.org/way/8915068/history/18
           "theme", "transportation",
           "type", "segment",
           "subtype", "road",
           "class", "tertiary",
           "subclass", "link",
-          "road_flags", List.of("is_link")
+          "road_flags", List.of(Map.of("values", List.of("is_link"))),
+          "access_restrictions", List.of(
+            Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
+          )
         )),
         "overture", null, 0
       )));
@@ -750,5 +762,268 @@ class RoadsOvertureTest extends LayerTest {
         )),
         "overture", null, 0
       )));
+  }
+
+  // ===== Line Splitting Tests =====
+  // Tests for partial application of properties (bridge, tunnel, oneway, level) requiring line splitting
+
+  @Test
+  void split_partialBridge_middleSection() {
+    // Test: Single bridge section in the middle of a line
+    // Geometry: (0,0) to (1,0) - length=1 for easy math
+    // Bridge from 0.25 to 0.75
+    // Expected: 3 output features with correct geometries and is_bridge attribute
+    var results = process(SimpleFeature.create(
+      newLineString(0, 0, 1, 0),
+      new HashMap<>(Map.of(
+        "id", "test-bridge-middle",
+        "theme", "transportation",
+        "type", "segment",
+        "subtype", "road",
+        "class", "primary",
+        "road_flags", List.of(
+          Map.of("values", List.of("is_bridge"), "between", List.of(0.25, 0.75))
+        )
+      )),
+      "overture", null, 0
+    ));
+
+    assertFeatures(15, List.of(
+      Map.of(
+        "kind", "major_road",
+        "kind_detail", "primary",
+        "_geom", newLineString(0, 0, 0.25, 0)
+        // No is_bridge attribute
+      ),
+      Map.of(
+        "kind", "major_road",
+        "kind_detail", "primary",
+        "_geom", newLineString(0.25, 0, 0.75, 0),
+        "is_bridge", true
+      ),
+      Map.of(
+        "kind", "major_road",
+        "kind_detail", "primary",
+        "_geom", newLineString(0.75, 0, 1, 0)
+        // No is_bridge attribute
+      )
+    ), results);
+  }
+
+  @Test
+  void split_partialBridge_twoSections() {
+    // Test: Two separate bridge sections
+    // Geometry: (0,0) to (1,0)
+    // Bridges from 0.1-0.3 and 0.6-0.8
+    // Expected: 5 output features
+    // Based on Overture c3b55f85-220c-4d00-8419-be3f2c795729 (footway with 2 bridge sections)
+    // OSM ways: 999763975, 999763974, 22989089, 999763972, 999763973
+    var results = process(SimpleFeature.create(
+      newLineString(0, 0, 1, 0),
+      new HashMap<>(Map.of(
+        "id", "c3b55f85-220c-4d00-8419-be3f2c795729",
+        "theme", "transportation",
+        "type", "segment",
+        "subtype", "road",
+        "class", "footway",
+        "road_flags", List.of(
+          Map.of("values", List.of("is_bridge"), "between", List.of(0.1, 0.3)),
+          Map.of("values", List.of("is_bridge"), "between", List.of(0.6, 0.8))
+        )
+      )),
+      "overture", null, 0
+    ));
+
+    assertFeatures(15, List.of(
+      Map.of("kind", "path", "_geom", newLineString(0, 0, 0.1, 0)),
+      Map.of("kind", "path", "_geom", newLineString(0.1, 0, 0.3, 0), "is_bridge", true),
+      Map.of("kind", "path", "_geom", newLineString(0.3, 0, 0.6, 0)),
+      Map.of("kind", "path", "_geom", newLineString(0.6, 0, 0.8, 0), "is_bridge", true),
+      Map.of("kind", "path", "_geom", newLineString(0.8, 0, 1, 0))
+    ), results);
+  }
+
+  @Test
+  void split_partialTunnel_fromStart() {
+    // Test: Tunnel from start to middle
+    // Geometry: (0,0) to (1,0)
+    // Tunnel from 0.0 to 0.5
+    // Expected: 2 output features
+    // Based on Overture 6c52a051-7433-470a-aa89-935be681c967 (primary with tunnel)
+    // OSM ways: 659613394, 25966237
+    var results = process(SimpleFeature.create(
+      newLineString(0, 0, 1, 0),
+      new HashMap<>(Map.of(
+        "id", "6c52a051-7433-470a-aa89-935be681c967",
+        "theme", "transportation",
+        "type", "segment",
+        "subtype", "road",
+        "class", "primary",
+        "road_flags", List.of(
+          Map.of("values", List.of("is_tunnel"), "between", List.of(0.0, 0.5))
+        )
+      )),
+      "overture", null, 0
+    ));
+
+    assertFeatures(15, List.of(
+      Map.of(
+        "kind", "major_road",
+        "kind_detail", "primary",
+        "_geom", newLineString(0, 0, 0.5, 0),
+        "is_tunnel", true
+      ),
+      Map.of(
+        "kind", "major_road",
+        "kind_detail", "primary",
+        "_geom", newLineString(0.5, 0, 1, 0)
+        // No is_tunnel attribute
+      )
+    ), results);
+  }
+
+  @Test
+  void split_partialLevel_elevatedSection() {
+    // Test: Elevated/bridge section with level=1
+    // Geometry: (0,0) to (1,0)
+    // Level 1 from 0.25 to 0.75
+    // Expected: 3 output features with different level values
+    // Based on Overture 8d70a823-6584-459d-999d-cabf3b9672f6 (motorway with elevated section)
+    // OSM ways: 41168616, 931029707, 41168617
+    var results = process(SimpleFeature.create(
+      newLineString(0, 0, 1, 0),
+      new HashMap<>(Map.of(
+        "id", "8d70a823-6584-459d-999d-cabf3b9672f6",
+        "theme", "transportation",
+        "type", "segment",
+        "subtype", "road",
+        "class", "motorway",
+        "level_rules", List.of(
+          Map.of("value", 1, "between", List.of(0.25, 0.75))
+        )
+      )),
+      "overture", null, 0
+    ));
+
+    assertFeatures(15, List.of(
+      Map.of(
+        "kind", "highway",
+        "kind_detail", "motorway",
+        "_geom", newLineString(0, 0, 0.25, 0)
+        // level=0 or no level attribute
+      ),
+      Map.of(
+        "kind", "highway",
+        "kind_detail", "motorway",
+        "_geom", newLineString(0.25, 0, 0.75, 0),
+        "level", 1
+      ),
+      Map.of(
+        "kind", "highway",
+        "kind_detail", "motorway",
+        "_geom", newLineString(0.75, 0, 1, 0)
+        // level=0 or no level attribute
+      )
+    ), results);
+  }
+
+  @Test
+  void split_partialOneway_secondHalf() {
+    // Test: Oneway restriction on second half of line
+    // Geometry: (0,0) to (1,0)
+    // Oneway (access denied backward) from 0.5 to 1.0
+    // Expected: 2 output features
+    // Based on Overture 10536347-2a89-4f05-9a3d-92d365931bc4 (secondary with partial oneway)
+    // OSM ways: 394110740, 59689569
+    var results = process(SimpleFeature.create(
+      newLineString(0, 0, 1, 0),
+      new HashMap<>(Map.of(
+        "id", "10536347-2a89-4f05-9a3d-92d365931bc4",
+        "theme", "transportation",
+        "type", "segment",
+        "subtype", "road",
+        "class", "secondary",
+        "access_restrictions", List.of(
+          Map.of(
+            "access_type", "denied",
+            "when", Map.of("heading", "backward"),
+            "between", List.of(0.5, 1.0)
+          )
+        )
+      )),
+      "overture", null, 0
+    ));
+
+    assertFeatures(15, List.of(
+      Map.of(
+        "kind", "major_road",
+        "kind_detail", "secondary",
+        "_geom", newLineString(0, 0, 0.5, 0)
+        // No oneway attribute
+      ),
+      Map.of(
+        "kind", "major_road",
+        "kind_detail", "secondary",
+        "_geom", newLineString(0.5, 0, 1, 0),
+        "oneway", true
+      )
+    ), results);
+  }
+
+  @Test
+  void split_overlapping_bridgeAndOneway() {
+    // Test: Overlapping bridge and oneway restrictions
+    // Geometry: (0,0) to (1,0)
+    // Bridge from 0.25 to 0.75
+    // Oneway from 0.5 to 1.0
+    // Expected: 4 output features with different combinations
+    var results = process(SimpleFeature.create(
+      newLineString(0, 0, 1, 0),
+      new HashMap<>(Map.of(
+        "id", "test-overlap",
+        "theme", "transportation",
+        "type", "segment",
+        "subtype", "road",
+        "class", "primary",
+        "road_flags", List.of(
+          Map.of("values", List.of("is_bridge"), "between", List.of(0.25, 0.75))
+        ),
+        "access_restrictions", List.of(
+          Map.of(
+            "access_type", "denied",
+            "when", Map.of("heading", "backward"),
+            "between", List.of(0.5, 1.0)
+          )
+        )
+      )),
+      "overture", null, 0
+    ));
+
+    assertFeatures(15, List.of(
+      Map.of(
+        "kind", "major_road",
+        "_geom", newLineString(0, 0, 0.25, 0)
+        // Neither is_bridge nor oneway
+      ),
+      Map.of(
+        "kind", "major_road",
+        "_geom", newLineString(0.25, 0, 0.5, 0),
+        "is_bridge", true
+        // is_bridge only, no oneway
+      ),
+      Map.of(
+        "kind", "major_road",
+        "_geom", newLineString(0.5, 0, 0.75, 0),
+        "is_bridge", true,
+        "oneway", true
+        // Both is_bridge AND oneway
+      ),
+      Map.of(
+        "kind", "major_road",
+        "_geom", newLineString(0.75, 0, 1, 0),
+        "oneway", true
+        // oneway only, no is_bridge
+      )
+    ), results);
   }
 }
