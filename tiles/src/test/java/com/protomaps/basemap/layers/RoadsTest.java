@@ -701,7 +701,7 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_minorRoad_fromServiceClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "minor_road", "min_zoom", 14, "name", "Derby Street")),
+      List.of(Map.of("kind", "minor_road", "kind_detail", "service", "min_zoom", 14, "name", "Derby Street")),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
