@@ -773,7 +773,6 @@ class RoadsOvertureTest extends LayerTest {
     // Geometry: (0,0) to (144,0) - Input treated as lat/lon, output transformed to world coords
     // Bridge from 0.25 to 0.75
     // Expected: 3 output features with correct geometries and is_bridge attribute
-    // After transformation: lon 0->0.5, lon 0.25->0.5006944, lon 0.75->0.5020833, lon 1->0.5027777
     var results = process(SimpleFeature.create(
       newLineString(0, 0, 144, 0),
       new HashMap<>(Map.of(
