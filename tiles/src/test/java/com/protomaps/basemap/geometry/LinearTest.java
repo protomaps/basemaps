@@ -60,11 +60,11 @@ class LinearTest {
   void testSplitAtFractions_curvedLine_preservesVertices() {
     // Curved line with 5 points forming a curve
     LineString line = createLine(
-      0, 0,    // start
+      0, 0, // start
       0.25, 0.5, // curve up
-      0.5, 0.5,  // middle top
+      0.5, 0.5, // middle top
       0.75, 0.5, // continue curve
-      1, 0       // end back down
+      1, 0 // end back down
     );
 
     // Split at 0.4 (before middle) and 0.6 (after middle)
@@ -93,9 +93,9 @@ class LinearTest {
   void testSplitAtFractions_splitBetweenVertices() {
     // Line with 3 points, split in the middle of second segment
     LineString line = createLine(
-      0, 0,    // Point 0
-      0.5, 1,  // Point 1 (at halfway distance)
-      1, 0     // Point 2
+      0, 0, // Point 0
+      0.5, 1, // Point 1 (at halfway distance)
+      1, 0 // Point 2
     );
 
     // Split at 0.75 (should be in the second segment between points 1 and 2)
@@ -203,15 +203,15 @@ class LinearTest {
   @Test
   void testOverlaps() {
     // Test various overlap scenarios
-    assertTrue(Linear.overlaps(0.0, 0.5, 0.25, 0.75));  // Partial overlap
-    assertTrue(Linear.overlaps(0.25, 0.75, 0.0, 0.5));  // Reverse partial overlap
-    assertTrue(Linear.overlaps(0.0, 1.0, 0.25, 0.75));  // Contains
-    assertTrue(Linear.overlaps(0.25, 0.75, 0.0, 1.0));  // Contained by
-    assertTrue(Linear.overlaps(0.2, 0.6, 0.4, 0.8));    // Partial overlap
+    assertTrue(Linear.overlaps(0.0, 0.5, 0.25, 0.75)); // Partial overlap
+    assertTrue(Linear.overlaps(0.25, 0.75, 0.0, 0.5)); // Reverse partial overlap
+    assertTrue(Linear.overlaps(0.0, 1.0, 0.25, 0.75)); // Contains
+    assertTrue(Linear.overlaps(0.25, 0.75, 0.0, 1.0)); // Contained by
+    assertTrue(Linear.overlaps(0.2, 0.6, 0.4, 0.8)); // Partial overlap
 
-    assertFalse(Linear.overlaps(0.0, 0.3, 0.5, 0.8));   // No overlap (gap)
-    assertFalse(Linear.overlaps(0.5, 0.8, 0.0, 0.3));   // No overlap (gap reversed)
-    assertFalse(Linear.overlaps(0.0, 0.5, 0.5, 1.0));   // Adjacent but not overlapping
+    assertFalse(Linear.overlaps(0.0, 0.3, 0.5, 0.8)); // No overlap (gap)
+    assertFalse(Linear.overlaps(0.5, 0.8, 0.0, 0.3)); // No overlap (gap reversed)
+    assertFalse(Linear.overlaps(0.0, 0.5, 0.5, 1.0)); // Adjacent but not overlapping
   }
 
   @Test
