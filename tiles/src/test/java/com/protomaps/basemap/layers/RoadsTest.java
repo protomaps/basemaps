@@ -472,6 +472,42 @@ class RoadsTest extends LayerTest {
 class RoadsOvertureTest extends LayerTest {
 
   @Test
+  void kind_highway_fromMotorwayClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "highway", "min_zoom", 4, "name", "Nimitz Freeway")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "99f8b0b1-efde-4649-820a-9ef5498ba58a", // https://www.openstreetmap.org/way/692662557/history/5
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "motorway",
+          "names.primary", "Nimitz Freeway"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_majorRoad_fromTrunkClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 7, "name", "Mission Street")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "1dfe52aa-9432-4d38-8117-4b1e1fa345f0", // https://www.openstreetmap.org/way/143666210/history/16
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "trunk",
+          "names.primary", "Mission Street"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
   void kind_majorRoad_fromPrimaryClass() {
     assertFeatures(15,
       List.of(Map.of("kind", "major_road", "min_zoom", 8, "name", "Ashby Avenue")),
