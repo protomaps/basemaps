@@ -474,16 +474,37 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_highway_fromMotorwayClass() {
     assertFeatures(15,
-      List.of(Map.of("kind", "highway", "min_zoom", 4, "name", "Nimitz Freeway")),
+      List.of(Map.of("kind", "highway", "min_zoom", 4, "oneway", true, "name", "Nimitz Freeway")),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
+          // TODO: get access_restrictions in here
           "id", "99f8b0b1-efde-4649-820a-9ef5498ba58a", // https://www.openstreetmap.org/way/692662557/history/5
           "theme", "transportation",
           "type", "segment",
           "subtype", "road",
           "class", "motorway",
           "names.primary", "Nimitz Freeway"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_highwayLink_fromMotorwayClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "highway", "min_zoom", 4, "oneway", true, "is_link", true)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          // TODO: get access_restrictions in here
+          "id", "ed49cecd-d577-4924-92b6-abaaf92bee6c", // https://www.openstreetmap.org/way/932872494/history/2
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "motorway",
+          "subclass", "link",
+          "road_flags", List.of("is_link")
         )),
         "overture", null, 0
       )));
@@ -508,6 +529,26 @@ class RoadsOvertureTest extends LayerTest {
   }
 
   @Test
+  void kind_majorLink_fromTrunkClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 7, "oneway", true, "is_link", true)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          // TODO: get access_restrictions in here
+          "id", "3aefac69-2653-41a1-ae19-0d36d6d03491", // https://www.openstreetmap.org/way/198565349/history/11
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "trunk",
+          "subclass", "link",
+          "road_flags", List.of("is_link")
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
   void kind_majorRoad_fromPrimaryClass() {
     assertFeatures(15,
       List.of(Map.of("kind", "major_road", "min_zoom", 8, "name", "Ashby Avenue")),
@@ -520,6 +561,26 @@ class RoadsOvertureTest extends LayerTest {
           "subtype", "road",
           "class", "primary",
           "names.primary", "Ashby Avenue"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_majorLink_fromPrimaryClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 8, "oneway", true, "is_link", true)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          // TODO: get access_restrictions in here
+          "id", "2c9442b6-14c2-44e0-975d-d69bd83a0da7", // https://www.openstreetmap.org/way/198565347/history/10
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "primary",
+          "subclass", "link",
+          "road_flags", List.of("is_link")
         )),
         "overture", null, 0
       )));
@@ -544,6 +605,26 @@ class RoadsOvertureTest extends LayerTest {
   }
 
   @Test
+  void kind_majorLink_fromSecondaryClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 10, "oneway", true, "is_link", true)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          // TODO: get access_restrictions in here
+          "id", "bf0ba372-0a6e-417b-a180-e174f4276b9c", // https://www.openstreetmap.org/way/23591806/history/10
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "secondary",
+          "subclass", "link",
+          "road_flags", List.of("is_link")
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
   void kind_majorRoad_fromTertiaryClass() {
     assertFeatures(15,
       List.of(Map.of("kind", "major_road", "min_zoom", 10, "name", "West Street")),
@@ -556,6 +637,26 @@ class RoadsOvertureTest extends LayerTest {
           "subtype", "road",
           "class", "tertiary",
           "names.primary", "West Street"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_majorLink_fromTertiaryClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "major_road", "min_zoom", 10, "oneway", true, "is_link", true)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          // TODO: get access_restrictions in here
+          "id", "ad765059-60f9-4eb5-b672-9faf90748f00", // https://www.openstreetmap.org/way/8915068/history/18
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "road",
+          "class", "tertiary",
+          "subclass", "link",
+          "road_flags", List.of("is_link")
         )),
         "overture", null, 0
       )));
