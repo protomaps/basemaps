@@ -195,7 +195,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(with("basic_category", "airport"), use(KIND, "aerodrome")),
     rule(with("basic_category", "college_university"), use(KIND, "college")),
     rule(with("basic_category", "grocery_store"), use(KIND, "supermarket")),
-    rule(with("basic_category", "sport_stadium"), use(KIND, "stadium"))
+    rule(with("basic_category", "sport_stadium"), use(KIND, "stadium")),
+    rule(with("basic_category", "place_of_learning", "middle_school"), use(KIND, "school"))
 
   )).index();
 
@@ -568,14 +569,28 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     String kindDetail = getString(sf, kindMatches, KIND_DETAIL, UNDEFINED);
     Integer minZoom;
 
-    // Calculate minZoom using zooms indexes
-    var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
-    var zoomMatches = pointZoomsIndex.getMatches(sf2);
-    if (zoomMatches.isEmpty())
+    // Quickly eliminate any features with non-matching tags
+    if (kind.equals(UNDEFINED))
       return;
 
-    // Initial minZoom
-    minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
+    // QRank may override minZoom entirely
+    String wikidata = sf.getString("wikidata");
+    long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
+    var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
+
+    if (qrankedZoom.isPresent()) {
+      // Set minZoom from QRank
+      minZoom = qrankedZoom.get();
+    } else {
+      // Calculate minZoom using zooms indexes
+      var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
+      var zoomMatches = pointZoomsIndex.getMatches(sf2);
+      if (zoomMatches.isEmpty())
+        return;
+
+      // Initial minZoom
+      minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
+    }
 
     String name = sf.getString("names.primary");
 
