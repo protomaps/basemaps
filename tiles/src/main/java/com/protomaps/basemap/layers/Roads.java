@@ -14,15 +14,16 @@ import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.VectorTile;
 import com.onthegomap.planetiler.expression.MultiExpression;
 import com.onthegomap.planetiler.geo.GeometryException;
+import com.onthegomap.planetiler.geo.GeoUtils;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.Matcher;
+import com.protomaps.basemap.geometry.Linear;
 import com.protomaps.basemap.locales.CartographicLocale;
 import com.protomaps.basemap.names.OsmNames;
-import com.protomaps.basemap.geometry.Linear;
 import java.util.*;
 import org.locationtech.jts.geom.LineString;
 
@@ -640,7 +641,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     String kind, String kindDetail, String name, String highway, int minZoom,
     SegmentProperties props) {
 
-    var feat = features.geometry(this.name(), geometry)
+    // Transform geometry from lat/lon to world coordinates for rendering
+    LineString worldGeometry = (LineString) GeoUtils.latLonToWorldCoords(geometry);
+
+    var feat = features.geometry(this.name(), worldGeometry)
       .setId(FeatureId.create(sf))
       .setAttr("kind", kind)
       .setAttr("kind_detail", kindDetail)
@@ -680,16 +684,13 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // From road_flags
     Object roadFlagsObj = sf.getTag("road_flags");
     if (roadFlagsObj instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<Object> roadFlags = (List<Object>) roadFlagsObj;
+      @SuppressWarnings("unchecked") List<Object> roadFlags = (List<Object>) roadFlagsObj;
       for (Object flagObj : roadFlags) {
         if (flagObj instanceof Map) {
-          @SuppressWarnings("unchecked")
-          Map<String, Object> flag = (Map<String, Object>) flagObj;
+          @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) flagObj;
           Object betweenObj = flag.get("between");
           if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<?> between = (List<?>) betweenObj;
+            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
             if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
               splitPoints.add(((Number) between.get(0)).doubleValue());
               splitPoints.add(((Number) between.get(1)).doubleValue());
@@ -702,16 +703,13 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // From access_restrictions
     Object accessRestrictionsObj = sf.getTag("access_restrictions");
     if (accessRestrictionsObj instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
+      @SuppressWarnings("unchecked") List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
       for (Object restrictionObj : accessRestrictions) {
         if (restrictionObj instanceof Map) {
-          @SuppressWarnings("unchecked")
-          Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
+          @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
           Object betweenObj = restriction.get("between");
           if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<?> between = (List<?>) betweenObj;
+            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
             if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
               splitPoints.add(((Number) between.get(0)).doubleValue());
               splitPoints.add(((Number) between.get(1)).doubleValue());
@@ -724,16 +722,13 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // From level_rules
     Object levelRulesObj = sf.getTag("level_rules");
     if (levelRulesObj instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<Object> levelRules = (List<Object>) levelRulesObj;
+      @SuppressWarnings("unchecked") List<Object> levelRules = (List<Object>) levelRulesObj;
       for (Object ruleObj : levelRules) {
         if (ruleObj instanceof Map) {
-          @SuppressWarnings("unchecked")
-          Map<String, Object> rule = (Map<String, Object>) ruleObj;
+          @SuppressWarnings("unchecked") Map<String, Object> rule = (Map<String, Object>) ruleObj;
           Object betweenObj = rule.get("between");
           if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<?> between = (List<?>) betweenObj;
+            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
             if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
               splitPoints.add(((Number) between.get(0)).doubleValue());
               splitPoints.add(((Number) between.get(1)).doubleValue());
@@ -753,12 +748,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // Check road_flags for is_bridge, is_tunnel, is_link
     Object roadFlagsObj = sf.getTag("road_flags");
     if (roadFlagsObj instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<Object> roadFlags = (List<Object>) roadFlagsObj;
+      @SuppressWarnings("unchecked") List<Object> roadFlags = (List<Object>) roadFlagsObj;
       for (Object flagObj : roadFlags) {
         if (flagObj instanceof Map) {
-          @SuppressWarnings("unchecked")
-          Map<String, Object> flag = (Map<String, Object>) flagObj;
+          @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) flagObj;
 
           Object valuesObj = flag.get("values");
           Object betweenObj = flag.get("between");
@@ -767,8 +760,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
           double rangeStart = 0.0;
           double rangeEnd = 1.0;
           if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<?> between = (List<?>) betweenObj;
+            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
             if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
               rangeStart = ((Number) between.get(0)).doubleValue();
               rangeEnd = ((Number) between.get(1)).doubleValue();
@@ -777,8 +769,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
           // Check if this segment overlaps with the flag's range
           if (Linear.overlaps(start, end, rangeStart, rangeEnd) && valuesObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<String> values = (List<String>) valuesObj;
+            @SuppressWarnings("unchecked") List<String> values = (List<String>) valuesObj;
             if (values.contains("is_bridge")) {
               props.isBridge = true;
             }
@@ -796,12 +787,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // Check access_restrictions for oneway
     Object accessRestrictionsObj = sf.getTag("access_restrictions");
     if (accessRestrictionsObj instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
+      @SuppressWarnings("unchecked") List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
       for (Object restrictionObj : accessRestrictions) {
         if (restrictionObj instanceof Map) {
-          @SuppressWarnings("unchecked")
-          Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
+          @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
 
           String accessType = (String) restriction.get("access_type");
           if (!"denied".equals(accessType)) {
@@ -810,8 +799,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
           Object whenObj = restriction.get("when");
           if (whenObj instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> when = (Map<String, Object>) whenObj;
+            @SuppressWarnings("unchecked") Map<String, Object> when = (Map<String, Object>) whenObj;
             String heading = (String) when.get("heading");
 
             if ("backward".equals(heading)) {
@@ -820,8 +808,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
               double rangeEnd = 1.0;
               Object betweenObj = restriction.get("between");
               if (betweenObj instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<?> between = (List<?>) betweenObj;
+                @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
                 if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
                   rangeStart = ((Number) between.get(0)).doubleValue();
                   rangeEnd = ((Number) between.get(1)).doubleValue();
@@ -840,12 +827,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     // Check level_rules
     Object levelRulesObj = sf.getTag("level_rules");
     if (levelRulesObj instanceof List) {
-      @SuppressWarnings("unchecked")
-      List<Object> levelRules = (List<Object>) levelRulesObj;
+      @SuppressWarnings("unchecked") List<Object> levelRules = (List<Object>) levelRulesObj;
       for (Object ruleObj : levelRules) {
         if (ruleObj instanceof Map) {
-          @SuppressWarnings("unchecked")
-          Map<String, Object> rule = (Map<String, Object>) ruleObj;
+          @SuppressWarnings("unchecked") Map<String, Object> rule = (Map<String, Object>) ruleObj;
 
           Object valueObj = rule.get("value");
           if (valueObj instanceof Number) {
@@ -856,8 +841,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
             double rangeEnd = 1.0;
             Object betweenObj = rule.get("between");
             if (betweenObj instanceof List) {
-              @SuppressWarnings("unchecked")
-              List<?> between = (List<?>) betweenObj;
+              @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
               if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
                 rangeStart = ((Number) between.get(0)).doubleValue();
                 rangeEnd = ((Number) between.get(1)).doubleValue();
