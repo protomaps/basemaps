@@ -186,44 +186,44 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     rule(
       Expression.or(
-        with("amenity", "university", "college"), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
-        with("landuse", "cemetery"),
-        with("leisure", "park"), // Lots of pocket parks and NODE parks, show those later than rest of leisure
-        with("shop", "grocery", "supermarket")
+        with(KIND, "university", "college"), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
+        with(KIND, "cemetery"),
+        with(KIND, "park"), // Lots of pocket parks and NODE parks, show those later than rest of leisure
+        with(KIND, "grocery", "supermarket")
       ),
       use(MINZOOM, 14)
     ),
     rule(
       Expression.or(
-        with("aeroway", "aerodrome"),
-        with("amenity", "library", "post_office", "townhall"),
-        with("leisure", "golf_course", "marina", "stadium"),
-        with("natural", "peak")
+        with(KIND, "aerodrome"),
+        with(KIND, "library", "post_office", "townhall"),
+        with(KIND, "golf_course", "marina", "stadium"),
+        with(KIND, "peak")
       ),
       use(MINZOOM, 13)
     ),
-    rule(with("amenity", "hospital"), use(MINZOOM, 12)),
+    rule(with(KIND, "hospital"), use(MINZOOM, 12)),
     rule(with(KIND, "national_park"), use(MINZOOM, 11)),
-    rule(with("aeroway", "aerodrome"), with(KIND, "aerodrome"), with("iata"), use(MINZOOM, 11)), // Emphasize large international airports earlier
+    rule(with(KIND, "aerodrome"), with(KIND, "aerodrome"), with("iata"), use(MINZOOM, 11)), // Emphasize large international airports earlier
 
     // Demote some unimportant point categories to very late zooms
 
-    rule(with("highway", "bus_stop"), use(MINZOOM, 17)),
+    rule(with(KIND, "bus_stop"), use(MINZOOM, 17)),
     rule(
       Expression.or(
-        with("amenity", "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
+        with(KIND, "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
           "car_sharing", "bureau_de_change", "emergency_phone", "karaoke", "karaoke_box", "money_transfer", "car_wash",
           "hunting_stand", "studio", "boat_storage", "gambling", "adult_gaming_centre", "sanitary_dump_station",
-          "attraction", "animal", "water_slide", "roller_coaster", "summer_toboggan", "carousel", "amusement_ride",
+          "animal", "roller_coaster", "summer_toboggan", "carousel", "amusement_ride",
           "maze"),
-        with("historic", "memorial", "district"),
-        with("leisure", "pitch", "playground", "slipway"),
-        with("shop", "scuba_diving", "atv", "motorcycle", "snowmobile", "art", "bakery", "beauty", "bookmaker",
+        with(KIND, "memorial", "district"),
+        with(KIND, "pitch", "playground", "slipway"),
+        with(KIND, "scuba_diving", "atv", "motorcycle", "snowmobile", "art", "bakery", "beauty", "bookmaker",
           "books", "butcher", "car", "car_parts", "car_repair", "clothes", "computer", "convenience", "fashion",
           "florist", "garden_centre", "gift", "golf", "greengrocer", "grocery", "hairdresser", "hifi", "jewelry",
           "lottery", "mobile_phone", "newsagent", "optician", "perfumery", "ship_chandler", "stationery", "tobacco",
           "travel_agency"),
-        with("tourism", "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
+        with(KIND, "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
           "guest_house", "hostel")
       ),
       use(MINZOOM, 16)
@@ -234,16 +234,16 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(
       without("name"),
       Expression.or(
-        with("amenity", "atm", "bbq", "bench", "bicycle_parking",
+        with(KIND, "atm", "bbq", "bench", "bicycle_parking",
           "bicycle_rental", "bicycle_repair_station", "boat_storage", "bureau_de_change", "car_rental", "car_sharing",
           "car_wash", "charging_station", "customs", "drinking_water", "fuel", "harbourmaster", "hunting_stand",
           "karaoke_box", "life_ring", "money_transfer", "motorcycle_parking", "parking", "picnic_table", "post_box",
           "ranger_station", "recycling", "sanitary_dump_station", "shelter", "shower", "taxi", "telephone", "toilets",
           "waste_basket", "waste_disposal", "water_point", "watering_place", "bicycle_rental", "motorcycle_parking",
           "charging_station"),
-        with("historic", "landmark", "wayside_cross"),
-        with("leisure", "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area"),
-        with("tourism", "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut")
+        with(KIND, "landmark", "wayside_cross"),
+        with(KIND, "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area"),
+        with(KIND, "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut")
       ),
       use(MINZOOM, 16)
     )
