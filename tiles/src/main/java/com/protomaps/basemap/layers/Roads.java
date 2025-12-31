@@ -19,6 +19,7 @@ import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.FeatureId;
+import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.locales.CartographicLocale;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.*;
@@ -37,6 +38,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   // Internal tags used to reference calculated values between matchers
   private static final String KIND = "protomaps-basemaps:kind";
   private static final String KIND_DETAIL = "protomaps-basemaps:kindDetail";
+  private static final String MINZOOM = "protomaps-basemaps:minZoom";
+  private static final String HIGHWAY = "protomaps-basemaps:highway";
   private static final String UNDEFINED = "protomaps-basemaps:undefined";
 
   private static final MultiExpression.Index<Map<String, Object>> indexHighways = MultiExpression.of(List.of(
@@ -295,22 +298,60 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   // Overture properties to Protomaps kind mapping
 
-  private static final MultiExpression.Index<Map<String, Object>> overtureHighwaysIndex = MultiExpression.ofOrdered(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex =
+    MultiExpression.ofOrdered(List.of(
 
-    // Everything is undefined at first
-    rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
+      // Everything is undefined at first
+      rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED), use(HIGHWAY, UNDEFINED)),
 
-    // Pull from road class by default?
-    rule(with("class"), use(KIND, fromTag("class")), use(KIND_DETAIL, "")),
+      // Pull detail from road class by default, also store in HIGHWAY for zoom grading
+      rule(
+        with("class"),
+        use(KIND, fromTag("class")),
+        use(KIND_DETAIL, fromTag("class")),
+        use(HIGHWAY, fromTag("class"))
+      ),
 
-    // Assign HighRoad kinds
-    rule(with("class", "motorway", "motorway_link"), use(KIND, "highway")),
-    rule(with("class", "trunk", "trunk_link", "primary", "primary_link", "secondary", "secondary_link", "tertiary", "tertiary_link"), use(KIND, "major_road")),
-    rule(with("class", "residential", "unclassified", "road", "raceway", "service"), use(KIND, "minor_road")),
-    rule(with("class", "pedestrian", "track", "corridor", "path", "cycleway", "bridleway", "footway", "steps"), use(KIND, "path")),
+      // Overwrite detail with subclass if it exists
+      rule(
+        with("class"),
+        with("subclass"),
+        use(KIND_DETAIL, fromTag("subclass"))
+      ),
 
-    // Assign kind_detail
-    rule(with("class", "service"), use(KIND_DETAIL, "service"))
+      // Assign specific HighRoad kinds from class
+      rule(with("class", "motorway", "motorway_link"), use(KIND, "highway")),
+      rule(
+        with("class", "trunk", "trunk_link", "primary", "primary_link", "secondary", "secondary_link", "tertiary",
+          "tertiary_link"),
+        use(KIND, "major_road")
+      ),
+      rule(with("class", "residential", "unclassified", "road", "raceway", "service"), use(KIND, "minor_road")),
+      rule(
+        with("class", "pedestrian", "track", "corridor", "path", "cycleway", "bridleway", "footway", "steps"),
+        use(KIND, "path")
+      ),
+
+      // Assign kind_detail=service if appropriate
+      rule(with("class", "service"), use(KIND_DETAIL, "service"))
+
+    )).index();
+
+  private static final MultiExpression.Index<Map<String, Object>> highwayZoomsIndex = MultiExpression.ofOrdered(List.of(
+
+    rule(use(MINZOOM, 99)),
+
+    rule(with(KIND, "highway"), use(MINZOOM, 3)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "trunk", "trunk_link"), use(MINZOOM, 6)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "primary", "primary_link"), use(MINZOOM, 7)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "secondary", "secondary_link"), use(MINZOOM, 9)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "tertiary", "tertiary_link"), use(MINZOOM, 9)),
+    rule(with(KIND, "minor_road"), use(MINZOOM, 12)),
+    rule(with(KIND, "minor_road"), with(KIND_DETAIL, "service"), use(MINZOOM, 13)),
+    rule(with(KIND, "path"), use(MINZOOM, 12)),
+
+    rule(with(KIND, "path"), with(KIND_DETAIL, "path", "cycleway", "bridleway", "footway", "steps"), use(MINZOOM, 13)),
+    rule(with(KIND, "path"), with(KIND_DETAIL, "sidewalk", "crossing"), use(MINZOOM, 14))
 
   )).index();
 
@@ -512,18 +553,32 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    var matches = overtureHighwaysIndex.getMatches(sf);
-    if (matches.isEmpty()) {
+    var kindMatches = overtureKindsIndex.getMatches(sf);
+    if (kindMatches.isEmpty()) {
       return;
     }
 
-    String kind = getString(sf, matches, KIND, UNDEFINED);
-    String kindDetail = getString(sf, matches, KIND_DETAIL, UNDEFINED);
     String name = sf.getString("names.primary");
+    String kind = getString(sf, kindMatches, KIND, UNDEFINED);
+    String kindDetail = getString(sf, kindMatches, KIND_DETAIL, UNDEFINED);
+    String highway = getString(sf, kindMatches, HIGHWAY, UNDEFINED);
+    Integer minZoom;
 
     // Quickly eliminate any features with non-matching tags
     if (kind.equals(UNDEFINED))
       return;
+
+    // Calculate minZoom using zooms indexes
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(
+      sf,
+      Map.of(KIND, kind, KIND_DETAIL, kindDetail, HIGHWAY, highway)
+    );
+    var zoomMatches = highwayZoomsIndex.getMatches(sf2);
+    if (zoomMatches.isEmpty())
+      return;
+
+    // Initial minZoom
+    minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
 
     features.line(this.name())
       .setId(FeatureId.create(sf))
@@ -531,13 +586,13 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setAttr("kind_detail", kindDetail)
       .setAttr("name", name)
       // To power better client label collisions
-      .setMinZoom(6)
+      .setAttr("min_zoom", minZoom + 1)
       // `highway` is a temporary attribute that gets removed in the post-process step
       .setAttr("highway", kind)
       .setAttr("sort_rank", 400)
       .setMinPixelSize(0)
       .setPixelTolerance(0)
-      .setMinZoom(6);
+      .setZoomRange(Math.min(minZoom, 15), 15);
   }
 
   @Override

@@ -606,7 +606,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       .setAttr("min_zoom", minZoom + 1)
       //
       .setBufferPixels(8)
-      .setZoomRange(Math.min(15, 15), 15);
+      .setZoomRange(Math.min(minZoom, 15), 15);
   }
 
   @Override
