@@ -67,6 +67,7 @@ public class Basemap extends ForwardingProfile {
       var place = new Places(countryCoder);
       registerHandler(place);
       registerSourceHandler("osm", place::processOsm);
+      registerSourceHandler("overture", place::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Pois.LAYER_NAME)) {

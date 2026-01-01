@@ -200,6 +200,42 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     )
   )).index();
 
+  // Overture properties to Protomaps kind mapping
+  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex = MultiExpression.ofOrdered(List.of(
+    rule(
+      with("subtype", "locality"),
+      with("class", "city"),
+      use("kind", "locality"),
+      use("kind_detail", "city"),
+      use("kindRank", 2)
+    ),
+    rule(
+      with("subtype", "locality"),
+      with("class", "town"),
+      use("kind", "locality"),
+      use("kind_detail", "town"),
+      use("kindRank", 2)
+    ),
+    rule(
+      with("subtype", "macrohood"),
+      use("kind", "neighbourhood"),
+      use("kind_detail", "macrohood"),
+      use("kindRank", 10)
+    ),
+    rule(
+      with("subtype", "neighborhood"),
+      use("kind", "neighbourhood"),
+      use("kind_detail", "neighbourhood"),
+      use("kindRank", 11)
+    ),
+    rule(
+      with("subtype", "microhood"),
+      use("kind", "neighbourhood"),
+      use("kind_detail", "neighbourhood"),
+      use("kindRank", 11)
+    )
+  )).index();
+
   private record WikidataConfig(int minZoom, int maxZoom, int rankMax) {}
 
   private static Map<String, WikidataConfig> readWikidataConfigs() {
@@ -380,6 +416,111 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     OsmNames.setOsmNames(feat, sf, 0);
     OsmNames.setOsmRefs(feat, sf, 0);
+  }
+
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    // Filter by theme and type
+    if (!"divisions".equals(sf.getString("theme"))) {
+      return;
+    }
+
+    if (!"division".equals(sf.getString("type"))) {
+      return;
+    }
+
+    // Must be a point with a name
+    if (!sf.isPoint() || !sf.hasTag("names.primary")) {
+      return;
+    }
+
+    var matches = overtureKindsIndex.getMatches(sf);
+    if (matches.isEmpty()) {
+      return;
+    }
+
+    String kind = getString(sf, matches, "kind", null);
+    if (kind == null) {
+      return;
+    }
+
+    String kindDetail = getString(sf, matches, "kind_detail", null);
+    Integer kindRank = getInteger(sf, matches, "kindRank", 6);
+
+    // Use default zoom ranges based on kind
+    Integer minZoom = 12;
+    Integer maxZoom = 15;
+
+    if (kind.equals("locality")) {
+      minZoom = 7;
+      maxZoom = 15;
+    } else if (kind.equals("neighbourhood")) {
+      if (kindRank == 10) { // macrohood
+        minZoom = 10;
+      } else { // neighbourhood/microhood
+        minZoom = 12;
+      }
+    }
+
+    // Extract name
+    String name = sf.getString("names.primary");
+
+    // Extract population (if available)
+    Integer population = 0;
+    if (sf.hasTag("population")) {
+      Object popValue = sf.getTag("population");
+      if (popValue instanceof Number) {
+        population = ((Number) popValue).intValue();
+      }
+    }
+
+    int populationRank = 0;
+    int[] popBreaks = {
+      1000000000,
+      100000000,
+      50000000,
+      20000000,
+      10000000,
+      5000000,
+      1000000,
+      500000,
+      200000,
+      100000,
+      50000,
+      20000,
+      10000,
+      5000,
+      2000,
+      1000,
+      200,
+      0};
+
+    for (int i = 0; i < popBreaks.length; i++) {
+      if (population >= popBreaks[i]) {
+        populationRank = popBreaks.length - i;
+        break;
+      }
+    }
+
+    var feat = features.point(this.name())
+      .setAttr("kind", kind)
+      .setAttr("name", name)
+      .setAttr("min_zoom", minZoom + 1)
+      .setAttr("population", population)
+      .setAttr("population_rank", populationRank)
+      .setZoomRange(minZoom, maxZoom);
+
+    if (kindDetail != null) {
+      feat.setAttr("kind_detail", kindDetail);
+    }
+
+    int sortKey = getSortKey(minZoom, kindRank, population, name);
+    feat.setSortKey(sortKey);
+    feat.setAttr("sort_key", sortKey);
+
+    feat.setBufferPixels(24);
+    feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
+      .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION);
+    feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 64));
   }
 
   @Override

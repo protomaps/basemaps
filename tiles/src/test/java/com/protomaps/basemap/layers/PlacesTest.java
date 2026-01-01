@@ -203,3 +203,113 @@ class PlacesTest extends LayerTest {
       )));
   }
 }
+
+class PlacesOvertureTest extends LayerTest {
+
+  @Test
+  void testOaklandCity() {
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "locality",
+        "kind_detail", "city",
+        "name", "Oakland",
+        "min_zoom", 8,
+        "population", 433031,
+        "population_rank", 11
+      )),
+      process(SimpleFeature.create(
+        newPoint(-122.2708, 37.8044),
+        new HashMap<>(Map.of(
+          "id", "9d45ba84-c664-42bd-81e4-3f75b1d179c9",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "locality",
+          "class", "city",
+          "names.primary", "Oakland",
+          "population", 433031
+        )),
+        "overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testPiedmontTown() {
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "locality",
+        "kind_detail", "town",
+        "name", "Piedmont",
+        "min_zoom", 8,
+        "population", 0,
+        "population_rank", 1
+      )),
+      process(SimpleFeature.create(
+        newPoint(-122.2312, 37.8244),
+        new HashMap<>(Map.of(
+          "id", "bf3e15f5-1287-48a2-b8c4-2b9061950f74",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "locality",
+          "class", "town",
+          "names.primary", "Piedmont"
+        )),
+        "overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testDowntownOaklandMacrohood() {
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "neighbourhood",
+        "kind_detail", "macrohood",
+        "name", "Downtown Oakland",
+        "min_zoom", 11,
+        "population", 0,
+        "population_rank", 1
+      )),
+      process(SimpleFeature.create(
+        newPoint(-122.2708, 37.8044),
+        new HashMap<>(Map.of(
+          "id", "81e4b45f-1210-4e79-9ea1-becc6e223778",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "macrohood",
+          "names.primary", "Downtown Oakland"
+        )),
+        "overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testLakesideNeighborhood() {
+    assertFeatures(14,
+      List.of(Map.of(
+        "kind", "neighbourhood",
+        "kind_detail", "neighbourhood",
+        "name", "Lakeside",
+        "min_zoom", 13,
+        "population", 0,
+        "population_rank", 1
+      )),
+      process(SimpleFeature.create(
+        newPoint(-122.2476, 37.8074),
+        new HashMap<>(Map.of(
+          "id", "d95da2a7-5c9d-44ce-9d9b-8b1fa7aa93a1",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "neighborhood",
+          "names.primary", "Lakeside"
+        )),
+        "overture",
+        null,
+        0
+      )));
+  }
+}
