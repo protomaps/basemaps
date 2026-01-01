@@ -204,6 +204,7 @@ class PlacesTest extends LayerTest {
   }
 }
 
+
 class PlacesOvertureTest extends LayerTest {
 
   @Test
@@ -213,9 +214,9 @@ class PlacesOvertureTest extends LayerTest {
         "kind", "locality",
         "kind_detail", "city",
         "name", "Oakland",
-        "min_zoom", 8,
+        "min_zoom", 9,
         "population", 433031,
-        "population_rank", 11
+        "population_rank", 10
       )),
       process(SimpleFeature.create(
         newPoint(-122.2708, 37.8044),
@@ -241,7 +242,7 @@ class PlacesOvertureTest extends LayerTest {
         "kind", "locality",
         "kind_detail", "town",
         "name", "Piedmont",
-        "min_zoom", 8,
+        "min_zoom", 10,
         "population", 0,
         "population_rank", 1
       )),
@@ -265,8 +266,7 @@ class PlacesOvertureTest extends LayerTest {
   void testDowntownOaklandMacrohood() {
     assertFeatures(12,
       List.of(Map.of(
-        "kind", "neighbourhood",
-        "kind_detail", "macrohood",
+        "kind", "macrohood",
         "name", "Downtown Oakland",
         "min_zoom", 11,
         "population", 0,
