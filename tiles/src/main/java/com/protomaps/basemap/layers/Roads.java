@@ -683,60 +683,115 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
    * Collect all split points from road_flags, access_restrictions, and level_rules
    */
   private void collectOvertureSplitPoints(SourceFeature sf, List<Double> splitPoints) {
-    // From road_flags
-    Object roadFlagsObj = sf.getTag("road_flags");
-    if (roadFlagsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> roadFlags = (List<Object>) roadFlagsObj;
-      for (Object flagObj : roadFlags) {
-        if (flagObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) flagObj;
-          Object betweenObj = flag.get("between");
-          if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-              splitPoints.add(((Number) between.get(0)).doubleValue());
-              splitPoints.add(((Number) between.get(1)).doubleValue());
+    List<Object> segmentObjects = Arrays.asList(
+      sf.getTag("road_flags"),
+      sf.getTag("access_restrictions"),
+      sf.getTag("level_rules")
+    );
+
+    for (Object segmentsObj : segmentObjects) {
+      if (segmentsObj instanceof List) {
+        @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
+        for (Object segmentObj : segmentList) {
+          if (segmentObj instanceof Map) {
+            @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
+            Object betweenObj = flag.get("between");
+            if (betweenObj instanceof List) {
+              @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
+              if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+                splitPoints.add(((Number) between.get(0)).doubleValue());
+                splitPoints.add(((Number) between.get(1)).doubleValue());
+              }
             }
           }
         }
       }
     }
+  }
 
-    // From access_restrictions
-    Object accessRestrictionsObj = sf.getTag("access_restrictions");
-    if (accessRestrictionsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
-      for (Object restrictionObj : accessRestrictions) {
-        if (restrictionObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
-          Object betweenObj = restriction.get("between");
-          if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-              splitPoints.add(((Number) between.get(0)).doubleValue());
-              splitPoints.add(((Number) between.get(1)).doubleValue());
-            }
-          }
-        }
+  private void extractOvertureSegmentRoadFlags(OvertureSegmentProperties props, Map<String, Object> flag, double start,
+    double end) {
+    Object valuesObj = flag.get("values");
+    Object betweenObj = flag.get("between");
+
+    // Determine the range this flag applies to
+    double rangeStart = 0.0;
+    double rangeEnd = 1.0;
+    if (betweenObj instanceof List) {
+      @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
+      if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+        rangeStart = ((Number) between.get(0)).doubleValue();
+        rangeEnd = ((Number) between.get(1)).doubleValue();
       }
     }
 
-    // From level_rules
-    Object levelRulesObj = sf.getTag("level_rules");
-    if (levelRulesObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> levelRules = (List<Object>) levelRulesObj;
-      for (Object ruleObj : levelRules) {
-        if (ruleObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> rule = (Map<String, Object>) ruleObj;
-          Object betweenObj = rule.get("between");
-          if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-              splitPoints.add(((Number) between.get(0)).doubleValue());
-              splitPoints.add(((Number) between.get(1)).doubleValue());
-            }
+    // Check if this segment overlaps with the flag's range
+    if (Linear.overlaps(start, end, rangeStart, rangeEnd) && valuesObj instanceof List) {
+      @SuppressWarnings("unchecked") List<String> values = (List<String>) valuesObj;
+      if (values.contains("is_bridge")) {
+        props.isBridge = true;
+      }
+      if (values.contains("is_tunnel")) {
+        props.isTunnel = true;
+      }
+      if (values.contains("is_link")) {
+        props.isLink = true;
+      }
+    }
+  }
+
+  private void extractOvertureSegmentRestrictions(OvertureSegmentProperties props, Map<String, Object> restriction,
+    double start, double end) {
+    String accessType = (String) restriction.get("access_type");
+    if (!"denied".equals(accessType)) {
+      return;
+    }
+
+    Object whenObj = restriction.get("when");
+    if (whenObj instanceof Map) {
+      @SuppressWarnings("unchecked") Map<String, Object> when = (Map<String, Object>) whenObj;
+      String heading = (String) when.get("heading");
+
+      if ("backward".equals(heading)) {
+        // Determine the range this restriction applies to
+        double rangeStart = 0.0;
+        double rangeEnd = 1.0;
+        Object betweenObj = restriction.get("between");
+        if (betweenObj instanceof List) {
+          @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
+          if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+            rangeStart = ((Number) between.get(0)).doubleValue();
+            rangeEnd = ((Number) between.get(1)).doubleValue();
           }
         }
+
+        if (Linear.overlaps(start, end, rangeStart, rangeEnd)) {
+          props.isOneway = true;
+        }
+      }
+    }
+  }
+
+  private void extractOvertureSegmentLevels(OvertureSegmentProperties props, Map<String, Object> rule, double start,
+    double end) {
+    Object valueObj = rule.get("value");
+    if (valueObj instanceof Number) {
+      Integer levelValue = ((Number) valueObj).intValue();
+
+      // Determine the range this level applies to
+      double rangeStart = 0.0;
+      double rangeEnd = 1.0;
+      Object betweenObj = rule.get("between");
+      if (betweenObj instanceof List) {
+        @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
+        if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+          rangeStart = ((Number) between.get(0)).doubleValue();
+          rangeEnd = ((Number) between.get(1)).doubleValue();
+        }
+      }
+
+      if (Linear.overlaps(start, end, rangeStart, rangeEnd)) {
+        props.level = levelValue;
       }
     }
   }
@@ -747,111 +802,23 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   private OvertureSegmentProperties extractOvertureSegmentProperties(SourceFeature sf, double start, double end) {
     OvertureSegmentProperties props = new OvertureSegmentProperties();
 
-    // Check road_flags for is_bridge, is_tunnel, is_link
-    Object roadFlagsObj = sf.getTag("road_flags");
-    if (roadFlagsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> roadFlags = (List<Object>) roadFlagsObj;
-      for (Object flagObj : roadFlags) {
-        if (flagObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) flagObj;
+    for (String segmentsKey : List.of("road_flags", "access_restrictions", "level_rules")) {
+      Object segmentsObj = sf.getTag(segmentsKey);
+      if (segmentsObj instanceof List) {
+        @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
+        for (Object segmentObj : segmentList) {
+          if (segmentObj instanceof Map) {
+            if (segmentsKey == "road_flags") {
+              @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
+              extractOvertureSegmentRoadFlags(props, flag, start, end);
 
-          Object valuesObj = flag.get("values");
-          Object betweenObj = flag.get("between");
+            } else if (segmentsKey == "access_restrictions") {
+              @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) segmentObj;
+              extractOvertureSegmentRestrictions(props, restriction, start, end);
 
-          // Determine the range this flag applies to
-          double rangeStart = 0.0;
-          double rangeEnd = 1.0;
-          if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-              rangeStart = ((Number) between.get(0)).doubleValue();
-              rangeEnd = ((Number) between.get(1)).doubleValue();
-            }
-          }
-
-          // Check if this segment overlaps with the flag's range
-          if (Linear.overlaps(start, end, rangeStart, rangeEnd) && valuesObj instanceof List) {
-            @SuppressWarnings("unchecked") List<String> values = (List<String>) valuesObj;
-            if (values.contains("is_bridge")) {
-              props.isBridge = true;
-            }
-            if (values.contains("is_tunnel")) {
-              props.isTunnel = true;
-            }
-            if (values.contains("is_link")) {
-              props.isLink = true;
-            }
-          }
-        }
-      }
-    }
-
-    // Check access_restrictions for oneway
-    Object accessRestrictionsObj = sf.getTag("access_restrictions");
-    if (accessRestrictionsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> accessRestrictions = (List<Object>) accessRestrictionsObj;
-      for (Object restrictionObj : accessRestrictions) {
-        if (restrictionObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) restrictionObj;
-
-          String accessType = (String) restriction.get("access_type");
-          if (!"denied".equals(accessType)) {
-            continue;
-          }
-
-          Object whenObj = restriction.get("when");
-          if (whenObj instanceof Map) {
-            @SuppressWarnings("unchecked") Map<String, Object> when = (Map<String, Object>) whenObj;
-            String heading = (String) when.get("heading");
-
-            if ("backward".equals(heading)) {
-              // Determine the range this restriction applies to
-              double rangeStart = 0.0;
-              double rangeEnd = 1.0;
-              Object betweenObj = restriction.get("between");
-              if (betweenObj instanceof List) {
-                @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-                if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-                  rangeStart = ((Number) between.get(0)).doubleValue();
-                  rangeEnd = ((Number) between.get(1)).doubleValue();
-                }
-              }
-
-              if (Linear.overlaps(start, end, rangeStart, rangeEnd)) {
-                props.isOneway = true;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Check level_rules
-    Object levelRulesObj = sf.getTag("level_rules");
-    if (levelRulesObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> levelRules = (List<Object>) levelRulesObj;
-      for (Object ruleObj : levelRules) {
-        if (ruleObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> rule = (Map<String, Object>) ruleObj;
-
-          Object valueObj = rule.get("value");
-          if (valueObj instanceof Number) {
-            Integer levelValue = ((Number) valueObj).intValue();
-
-            // Determine the range this level applies to
-            double rangeStart = 0.0;
-            double rangeEnd = 1.0;
-            Object betweenObj = rule.get("between");
-            if (betweenObj instanceof List) {
-              @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-              if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-                rangeStart = ((Number) between.get(0)).doubleValue();
-                rangeEnd = ((Number) between.get(1)).doubleValue();
-              }
-            }
-
-            if (Linear.overlaps(start, end, rangeStart, rangeEnd)) {
-              props.level = levelValue;
+            } else if (segmentsKey == "level_rules") {
+              @SuppressWarnings("unchecked") Map<String, Object> rule = (Map<String, Object>) segmentObj;
+              extractOvertureSegmentLevels(props, rule, start, end);
             }
           }
         }
