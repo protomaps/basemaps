@@ -75,7 +75,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     1000000000
   };
 
-  private static final MultiExpression.Index<Map<String, Object>> index = MultiExpression.ofOrdered(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> osmKindsIndex = MultiExpression.ofOrdered(List.of(
 
     rule(use(KIND, UNDEFINED)),
     rule(with("population"), use(POPULATION, fromTag("population"))),
@@ -306,13 +306,14 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       // do nothing
     }
 
-    var matches = index.getMatches(sf);
+    var matches = osmKindsIndex.getMatches(sf);
     if (matches.isEmpty()) {
       return;
     }
 
     String kind = getString(sf, matches, KIND, UNDEFINED);
     String kindDetail = getString(sf, matches, KIND_DETAIL, "");
+    Integer kindRank = getInteger(sf, matches, KIND_RANK, 0);
     Integer population = getInteger(sf, matches, POPULATION, 0);
 
     if (kind == UNDEFINED) {
@@ -321,7 +322,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     Integer minZoom;
     Integer maxZoom;
-    Integer kindRank;
 
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of(KIND, kind, KIND_DETAIL, kindDetail));
     var zoomMatches = zoomsIndex.getMatches(sf2);
@@ -414,7 +414,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     String kind = getString(sf, matches, KIND, UNDEFINED);
     String kindDetail = getString(sf, matches, KIND_DETAIL, "");
-    Integer kindRank = getInteger(sf, matches, KIND_RANK, 6);
 
     if (kind == UNDEFINED) {
       return;
@@ -422,6 +421,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     Integer minZoom;
     Integer maxZoom;
+    Integer kindRank;
 
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of(KIND, kind, KIND_DETAIL, kindDetail));
     var zoomMatches = zoomsIndex.getMatches(sf2);
@@ -430,6 +430,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
     maxZoom = getInteger(sf2, zoomMatches, MAXZOOM, 99);
+    kindRank = getInteger(sf2, zoomMatches, KIND_RANK, 99);
 
     // Extract name
     String name = sf.getString("names.primary");
