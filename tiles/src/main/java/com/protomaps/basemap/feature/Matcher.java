@@ -2,6 +2,7 @@ package com.protomaps.basemap.feature;
 
 import com.onthegomap.planetiler.expression.Expression;
 import com.onthegomap.planetiler.expression.MultiExpression;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.geo.GeometryType;
 import com.onthegomap.planetiler.reader.SourceFeature;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * A utility class for matching source feature properties to values.
@@ -149,6 +151,78 @@ public class Matcher {
     return Expression.not(with(arguments));
   }
 
+  /**
+   * Creates an {@link Expression} that matches when a numeric tag value is within a specified range.
+   *
+   * <p>
+   * The lower bound is inclusive. The upper bound, if provided, is exclusive.
+   * </p>
+   *
+   * <p>
+   * If the upper bound is null, only the lower bound is checked (value >= lowerBound).
+   * </p>
+   *
+   * <p>
+   * Tag values that cannot be parsed as numbers or missing tags will not match.
+   * </p>
+   *
+   * @param tagName    The name of the tag to check.
+   * @param lowerBound The inclusive lower bound.
+   * @param upperBound The exclusive upper bound, or null to check only the lower bound.
+   * @return An {@link Expression} for the numeric range check.
+   */
+  public static Expression withinRange(String tagName, Integer lowerBound, Integer upperBound) {
+    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), Long.valueOf(upperBound));
+  }
+
+  /**
+   * Overload withinRange to accept just lower bound integer
+   */
+  public static Expression withinRange(String tagName, Integer lowerBound) {
+    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), null);
+  }
+
+  /**
+   * Overload withinRange to accept lower bound integer and upper bound double
+   */
+  public static Expression withinRange(String tagName, Integer lowerBound, Double upperBound) {
+    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), upperBound.longValue());
+  }
+
+  /**
+   * Overload withinRange to accept bounds as doubles
+   */
+  public static Expression withinRange(String tagName, Double lowerBound, Double upperBound) {
+    return new WithinRangeExpression(tagName, lowerBound.longValue(), upperBound.longValue());
+  }
+
+  /**
+   * Overload withinRange to accept just lower bound double
+   */
+  public static Expression withinRange(String tagName, Double lowerBound) {
+    return new WithinRangeExpression(tagName, lowerBound.longValue(), null);
+  }
+
+  /**
+   * Expression implementation for numeric range matching.
+   */
+  private record WithinRangeExpression(String tagName, long lowerBound, Long upperBound) implements Expression {
+
+    @Override
+    public boolean evaluate(com.onthegomap.planetiler.reader.WithTags input, List<String> matchKeys) {
+      if (!input.hasTag(tagName)) {
+        return false;
+      }
+      long value = input.getLong(tagName);
+      // getLong returns 0 for invalid values, so we need to check if 0 is actually the tag value
+      if (value == 0 && !"0".equals(input.getString(tagName))) {
+        // getLong returned 0 because parsing failed
+        return false;
+      }
+      return value >= lowerBound && (upperBound == null || value < upperBound);
+    }
+  }
+
   public static Expression withPoint() {
     return Expression.matchGeometryType(GeometryType.POINT);
   }
@@ -275,6 +349,68 @@ public class Matcher {
       }
     }
     return defaultValue;
+  }
+
+  /**
+   * Wrapper that combines a SourceFeature with computed tags without mutating the original. This allows MultiExpression
+   * matching to access both original and computed tags.
+   *
+   * <p>
+   * This is useful when you need to add computed tags (like area calculations or derived properties) that should be
+   * accessible to MultiExpression rules, but the original SourceFeature has immutable tags.
+   * </p>
+   */
+  public static class SourceFeatureWithComputedTags extends SourceFeature {
+    private final SourceFeature delegate;
+    private final Map<String, Object> combinedTags;
+
+    /**
+     * Creates a wrapper around a SourceFeature with additional computed tags.
+     *
+     * @param delegate     The original SourceFeature to wrap
+     * @param computedTags Additional computed tags to merge with the original tags
+     */
+    public SourceFeatureWithComputedTags(SourceFeature delegate, Map<String, Object> computedTags) {
+      super(new HashMap<>(delegate.tags()), delegate.getSource(), delegate.getSourceLayer(), null, delegate.id());
+      this.delegate = delegate;
+      this.combinedTags = new HashMap<>(delegate.tags());
+      this.combinedTags.putAll(computedTags);
+    }
+
+    @Override
+    public Map<String, Object> tags() {
+      return combinedTags;
+    }
+
+    @Override
+    public Geometry worldGeometry() throws GeometryException {
+      return delegate.worldGeometry();
+    }
+
+    @Override
+    public Geometry latLonGeometry() throws GeometryException {
+      return delegate.latLonGeometry();
+    }
+
+    @Override
+    public boolean isPoint() {
+      return delegate.isPoint();
+    }
+
+    @Override
+    public boolean canBePolygon() {
+      return delegate.canBePolygon();
+    }
+
+    @Override
+    public boolean canBeLine() {
+      return delegate.canBeLine();
+    }
+
+    @Override
+    public boolean hasRelationInfo() {
+      return delegate.hasRelationInfo();
+    }
   }
 
 }
