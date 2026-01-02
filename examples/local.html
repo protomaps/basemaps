@@ -19,8 +19,9 @@ Generate styles/style.json:
 
 Populate basemaps-assets submodule with fonts and sprite sheets:
 
-    git submodule init
-    git submodule update
+    curl -L https://github.com/protomaps/basemaps-assets/archive/refs/heads/main.zip -o /tmp/basemaps-assets-main.zip
+    unzip /tmp/basemaps-assets-main.zip 'basemaps-assets-main/fonts/*' 'basemaps-assets-main/sprites/*' -d /tmp
+    mv /tmp/basemaps-assets-main basemaps-assets
 
 Run local web server to view http://localhost:8080/examples/local.html:
 
