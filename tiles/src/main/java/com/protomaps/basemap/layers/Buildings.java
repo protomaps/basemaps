@@ -144,7 +144,7 @@ public class Buildings implements ForwardingProfile.LayerPostProcessor {
     }
 
     // Ignore type=building_part for now
-    if (!"building".equals(sf.getString("type"))) {
+    if (!"building".equals(sf.getString("type")) && !"building_part".equals(sf.getString("type"))) {
       return;
     }
 
