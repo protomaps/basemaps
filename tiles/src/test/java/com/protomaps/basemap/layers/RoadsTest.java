@@ -748,6 +748,59 @@ class RoadsOvertureTest extends LayerTest {
   }
 
   @Test
+  void kind_rail_fromStandardGauge() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "rail", "kind_detail", "standard_gauge", "min_zoom", 12, "name", "UP Niles Subdivision")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "c6fe375e-046f-40d2-a872-0ed5506d13a0", // https://www.openstreetmap.org/way/318755220/history/15
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "rail",
+          "class", "standard_gauge",
+          "names.primary", "UP Niles Subdivision"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_ferry_fromWaterway() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "ferry", "min_zoom", 12, "name", "Oakland Jack London Square - San Francisco Ferry Building")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "7553c04c-b6fb-4ce5-b03b-a8966816c3f9", // https://www.openstreetmap.org/way/662437195/history/16
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "water",
+          "names.primary", "Oakland Jack London Square - San Francisco Ferry Building"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
+  void kind_rail_fromSubwayClass() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "rail", "kind_detail", "subway", "min_zoom", 15, "name", "A-Line")),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "d445b0b6-82a9-4e23-8944-478099e6f3fd", // https://www.openstreetmap.org/way/50970282/history/18
+          "theme", "transportation",
+          "type", "segment",
+          "subtype", "rail",
+          "class", "subway",
+          "names.primary", "A-Line"
+        )),
+        "overture", null, 0
+      )));
+  }
+
+  @Test
   void kind_sidewalk_fromFootwayClass() {
     assertFeatures(15,
       List.of(Map.of("kind", "path", "kind_detail", "sidewalk", "min_zoom", 15)),
@@ -838,6 +891,37 @@ class RoadsOvertureTest extends LayerTest {
       Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.7, 0.5, 0.8, 0.5))),
       Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5)), "is_bridge", true),
       Map.of("kind", "path", "_geom", new TestUtils.NormGeometry(newLineString(0.9, 0.5, 1.0, 0.5)))
+    ), results);
+  }
+
+  @Test
+  void split_partialTunnel_subwayRail() {
+    // Test: Rail with bridge and tunnel sections
+    // Geometry: (0,0) to (144,0) - Input treated as lat/lon, output transformed to world coords
+    // Expected: 4 output features
+    // Based on Overture d445b0b6-82a9-4e23-8944-478099e6f3fd (railway with tunnel sections)
+    // OSM ways: 32103864, 50970282, etc.
+    var results = process(SimpleFeature.create(
+      newLineString(0, 0, 144, 0),
+      new HashMap<>(Map.of(
+        "id", "d445b0b6-82a9-4e23-8944-478099e6f3fd",
+        "theme", "transportation",
+        "type", "segment",
+        "subtype", "rail",
+        "class", "subway",
+        "rail_flags", List.of(
+          Map.of("values", List.of("is_bridge"), "between", List.of(0.25, 0.5)),
+          Map.of("values", List.of("is_tunnel"), "between", List.of(0.75, 1.0))
+        )
+      )),
+      "overture", null, 0
+    ));
+
+    assertFeatures(15, List.of(
+      Map.of("kind", "rail", "_geom", new TestUtils.NormGeometry(newLineString(0.5, 0.5, 0.6, 0.5))),
+      Map.of("kind", "rail", "_geom", new TestUtils.NormGeometry(newLineString(0.6, 0.5, 0.7, 0.5)), "is_bridge", true),
+      Map.of("kind", "rail", "_geom", new TestUtils.NormGeometry(newLineString(0.7, 0.5, 0.8, 0.5))),
+      Map.of("kind", "rail", "_geom", new TestUtils.NormGeometry(newLineString(0.8, 0.5, 0.9, 0.5)), "is_tunnel", true)
     ), results);
   }
 
