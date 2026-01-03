@@ -171,7 +171,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   // Overture properties to Protomaps kind mapping
 
-  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex =
+  private static final MultiExpression.Index<Map<String, Object>> overtureRoadKindsIndex =
     MultiExpression.ofOrdered(List.of(
 
       // Everything is undefined at first
@@ -210,6 +210,25 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     )).index();
 
+  private static final MultiExpression.Index<Map<String, Object>> overtureRailKindsIndex =
+    MultiExpression.ofOrdered(List.of(
+
+      // Everything is undefined at first
+      rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED), use(HIGHWAY, UNDEFINED)),
+
+      // Move Overture type=segment/subtype=rail class to kind_detail
+      rule(with("class"), use(KIND, "rail"), use(KIND_DETAIL, fromTag("class")))
+
+    )).index();
+
+  private static final MultiExpression.Index<Map<String, Object>> overtureWaterKindsIndex =
+    MultiExpression.ofOrdered(List.of(
+
+      // All Overture type=segment/subtype=water is going to be kind=ferry for now
+      rule(use(KIND, "ferry"), use(KIND_DETAIL, UNDEFINED), use(HIGHWAY, UNDEFINED))
+
+    )).index();
+
   // Protomaps kind/kind_detail to min_zoom mapping
 
   private static final MultiExpression.Index<Map<String, Object>> highwayZoomsIndex = MultiExpression.ofOrdered(List.of(
@@ -238,6 +257,15 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(with(KIND, "path"), use(MINZOOM, 12)),
     rule(with(KIND, "path"), with(KIND_DETAIL, "path", "cycleway", "bridleway", "footway", "steps"), use(MINZOOM, 13)),
     rule(with(KIND, "path"), with(KIND_DETAIL, "sidewalk", "crossing", "corridor"), use(MINZOOM, 14)),
+
+    // Non-roads
+    rule(with(KIND, "ferry"), use(MINZOOM, 11)),
+    rule(with(KIND, "rail"), use(MINZOOM, 11)),
+    rule(
+      with(KIND, "rail"),
+      with(KIND_DETAIL, "funicular", "light_rail", "monorail", "narrow_gauge", "subway", "tram", "unknown"),
+      use(MINZOOM, 14)
+    ),
 
     // Freeways in the US are special
 
@@ -486,11 +514,18 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    if (!"road".equals(sf.getString("subtype"))) {
+    List<Map<String,Object>> kindMatches;
+
+    if ("road".equals(sf.getString("subtype"))) {
+      kindMatches = overtureRoadKindsIndex.getMatches(sf);
+    } else if ("rail".equals(sf.getString("subtype"))) {
+      kindMatches = overtureRailKindsIndex.getMatches(sf);
+    } else if ("water".equals(sf.getString("subtype"))) {
+      kindMatches = overtureWaterKindsIndex.getMatches(sf);
+    } else {
       return;
     }
 
-    var kindMatches = overtureKindsIndex.getMatches(sf);
     if (kindMatches.isEmpty()) {
       return;
     }
@@ -594,11 +629,12 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   /**
-   * Collect all split points from road_flags, access_restrictions, and level_rules
+   * Collect all split points from road_flags, rail_flags, access_restrictions, and level_rules
    */
   private void collectOvertureSplitPoints(SourceFeature sf, List<Double> splitPoints) {
     List<Object> segmentObjects = Arrays.asList(
       sf.getTag("road_flags"),
+      sf.getTag("rail_flags"),
       sf.getTag("access_restrictions"),
       sf.getTag("level_rules")
     );
@@ -623,7 +659,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     }
   }
 
-  private void extractOvertureSegmentRoadFlags(OvertureSegmentProperties props, Map<String, Object> flag, double start,
+  private void extractOvertureSegmentFlags(OvertureSegmentProperties props, Map<String, Object> flag, double start,
     double end) {
     Object valuesObj = flag.get("values");
     Object betweenObj = flag.get("between");
@@ -716,15 +752,15 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   private OvertureSegmentProperties extractOvertureSegmentProperties(SourceFeature sf, double start, double end) {
     OvertureSegmentProperties props = new OvertureSegmentProperties();
 
-    for (String segmentsKey : List.of("road_flags", "access_restrictions", "level_rules")) {
+    for (String segmentsKey : List.of("road_flags", "rail_flags", "access_restrictions", "level_rules")) {
       Object segmentsObj = sf.getTag(segmentsKey);
       if (segmentsObj instanceof List) {
         @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
         for (Object segmentObj : segmentList) {
           if (segmentObj instanceof Map) {
-            if (segmentsKey == "road_flags") {
+            if (segmentsKey == "road_flags" || segmentsKey == "rail_flags") {
               @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
-              extractOvertureSegmentRoadFlags(props, flag, start, end);
+              extractOvertureSegmentFlags(props, flag, start, end);
 
             } else if (segmentsKey == "access_restrictions") {
               @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) segmentObj;
