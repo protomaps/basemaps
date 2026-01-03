@@ -11,13 +11,15 @@ Start by building tiles/data/monaco.pmtiles:
     java -jar target/*-with-deps.jar --download --area=monaco --force
     cd -
 
-Generate styles/style.json:
+Generate styles/style.json with sprites and fonts in a local basemaps-assets directory:
 
     cd styles
-    npm run generate_style style.json https://example.com/tilejson.json light en
+    npm run generate_style style.json https://example.com/tilejson.json light en \
+      'http://localhost:8080/basemaps-assets/sprites/v4/light' \
+      'http://localhost:8080/basemaps-assets/fonts/{fontstack}/{range}.pbf'
     cd -
 
-Populate basemaps-assets submodule with fonts and sprite sheets:
+Populate basemaps-assets directory with fonts and sprite sheets:
 
     curl -L https://github.com/protomaps/basemaps-assets/archive/refs/heads/main.zip -o /tmp/basemaps-assets-main.zip
     unzip /tmp/basemaps-assets-main.zip 'basemaps-assets-main/fonts/*' 'basemaps-assets-main/sprites/*' -d /tmp
@@ -72,9 +74,6 @@ Run local web server to view http://localhost:8080/examples/local.html:
                     url: "pmtiles://../tiles/monaco.pmtiles",
                     attribution: style.sources.protomaps.attribution
                 };
-
-                style.glyphs = "http://localhost:8080/basemaps-assets/fonts/{fontstack}/{range}.pbf";
-                style.sprite = "http://localhost:8080/basemaps-assets/sprites/v4/light";
 
                 // Initialize map with modified style
                 const map = new maplibregl.Map({
