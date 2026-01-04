@@ -601,6 +601,46 @@ export function nolabels_layers(
       },
     },
     {
+      id: "3d-buildings",
+      source: "protomaps",
+      "source-layer": "buildings",
+      type: "fill-extrusion",
+      paint: {
+        "fill-extrusion-color": t.buildings,
+        "fill-extrusion-height": [
+          "case",
+          ["has", "height"],
+          ["get", "height"],
+          ["has", "floors"],
+          [
+            "*",
+            [
+              "to-number",
+              ["get", "floors"]
+            ],
+            2
+          ],
+          3.5
+        ],
+        "fill-extrusion-base": [
+          "case",
+          ["has", "min_height"],
+          ["get", "min_height"],
+          ["has", "min_floors"],
+          [
+            "*",
+            [
+              "to-number",
+              ["get", "min_floors"]
+            ],
+            2
+          ],
+          0
+        ],
+        "fill-extrusion-opacity": 0.6
+      }
+    },
+    {
       id: "roads_pier",
       type: "line",
       source: source,
