@@ -6,12 +6,15 @@ import { type Flavor, layers, namedFlavor } from "./index";
 export async function generateStyle(args: string[]) {
   if (args.length < 2) {
     throw new TypeError(
-      "usage: generate-style OUTPUT TILEJSON_URL [FLAVOR.js|FLAVOR.ts|FLAVOR.json|FLAVOR_NAME] LANG",
+      "usage: generate-style OUTPUT TILEJSON_URL [FLAVOR.js|FLAVOR.ts|FLAVOR.json|FLAVOR_NAME] LANG [SPRITE_URL] [GLYPHS_URL]",
     );
   }
 
   const tileJson = args[0];
   const flavorArg = args[1];
+  const customSprite = args[3];
+  const customGlyphs = args[4];
+
   let spriteValue: string | undefined;
 
   let flavor: Flavor;
@@ -40,10 +43,13 @@ export async function generateStyle(args: string[]) {
     },
     layers: layers("protomaps", flavor, { lang: lang }),
     glyphs:
+      customGlyphs ||
       "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
   };
 
-  if (spriteValue) {
+  if (customSprite) {
+    style.sprite = customSprite;
+  } else if (spriteValue) {
     style.sprite = `https://protomaps.github.io/basemaps-assets/sprites/v4/${flavorArg}`;
   }
 

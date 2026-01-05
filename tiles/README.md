@@ -1,3 +1,13 @@
+## Maven
+
+```shell
+mvn clean package -DskipTests
+```
+
+```shell
+java -jar target/*-with-deps.jar --download --force --area=monaco
+```
+
 ## Docker
 
 ```
