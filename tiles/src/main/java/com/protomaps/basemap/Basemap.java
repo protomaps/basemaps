@@ -61,6 +61,7 @@ public class Basemap extends ForwardingProfile {
       registerHandler(landcover);
       registerSourceHandler("landcover", landcover::processLandcover);
       registerSourceHandler("ne", landcover::processNe);
+      registerSourceHandler("overture", landcover::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Places.LAYER_NAME)) {
