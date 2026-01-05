@@ -3,6 +3,7 @@ package com.protomaps.basemap.feature;
 import static com.onthegomap.planetiler.TestUtils.newLineString;
 import static com.onthegomap.planetiler.TestUtils.newPoint;
 import static com.onthegomap.planetiler.TestUtils.newPolygon;
+import static com.protomaps.basemap.feature.Matcher.atLeast;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static com.protomaps.basemap.feature.Matcher.getBoolean;
 import static com.protomaps.basemap.feature.Matcher.getDouble;
@@ -704,7 +705,7 @@ class MatcherTest {
   }
 
   @Test
-  void testWithinRangeWithUpperBound() {
+  void testWithinRange() {
     var expression = withinRange("population", 5, 10);
 
     // Value within range (5 < 7 <= 10)
@@ -759,8 +760,8 @@ class MatcherTest {
   }
 
   @Test
-  void testWithinRangeWithoutUpperBound() {
-    var expression = withinRange("population", 5);
+  void testAtLeast() {
+    var expression = atLeast("population", 5);
 
     // Value above lower bound
     var sf = SimpleFeature.create(

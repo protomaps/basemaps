@@ -1,6 +1,7 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.util.Parse.parseDoubleOrNull;
+import static com.protomaps.basemap.feature.Matcher.atLeast;
 import static com.protomaps.basemap.feature.Matcher.fromTag;
 import static com.protomaps.basemap.feature.Matcher.getInteger;
 import static com.protomaps.basemap.feature.Matcher.getString;
@@ -270,11 +271,11 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       rule(withinRange(WAYAREA, 10, 500), use(MINZOOM, 14)),
       rule(withinRange(WAYAREA, 500, 2000), use(MINZOOM, 13)),
       rule(withinRange(WAYAREA, 2000, 1e4), use(MINZOOM, 12)),
-      rule(withinRange(WAYAREA, 1e4), use(MINZOOM, 11)),
+      rule(atLeast(WAYAREA, 1e4), use(MINZOOM, 11)),
 
       rule(with(KIND, "playground"), use(MINZOOM, 17)),
       rule(with(KIND, "allotments"), withinRange(WAYAREA, 0, 10), use(MINZOOM, 16)),
-      rule(with(KIND, "allotments"), withinRange(WAYAREA, 10), use(MINZOOM, 15)),
+      rule(with(KIND, "allotments"), atLeast(WAYAREA, 10), use(MINZOOM, 15)),
 
       // Height-graded polygons, generic at first then per-kind adjustments
       // Small but tall features should show up early as they have regional prominence.
@@ -282,7 +283,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
       rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 10, 20), use(MINZOOM, 13)),
       rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 20, 100), use(MINZOOM, 12)),
-      rule(withinRange(WAYAREA, 10, 2000), withinRange(HEIGHT, 100), use(MINZOOM, 11)),
+      rule(withinRange(WAYAREA, 10, 2000), atLeast(HEIGHT, 100), use(MINZOOM, 11)),
 
       // Clamp certain kind values so medium tall buildings don't crowd downtown areas
       // NOTE: (nvkelso 20230623) Apply label grid to early zooms of POIs layer
@@ -305,7 +306,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       rule(WITH_S_C, withinRange(WAYAREA, 10, 100), use(MINZOOM, 15)),
       rule(WITH_S_C, withinRange(WAYAREA, 100, 1000), use(MINZOOM, 14)),
       rule(WITH_S_C, withinRange(WAYAREA, 1000, 5000), use(MINZOOM, 13)),
-      rule(WITH_S_C, withinRange(WAYAREA, 5000), use(MINZOOM, 12)),
+      rule(WITH_S_C, atLeast(WAYAREA, 5000), use(MINZOOM, 12)),
 
       // National parks
 
@@ -319,7 +320,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       rule(WITH_N_P, withinRange(WAYAREA, 2e6, 1e7), use(MINZOOM, 8)),
       rule(WITH_N_P, withinRange(WAYAREA, 1e7, 2.5e7), use(MINZOOM, 7)),
       rule(WITH_N_P, withinRange(WAYAREA, 2.5e7, 3e8), use(MINZOOM, 6)),
-      rule(WITH_N_P, withinRange(WAYAREA, 3e8), use(MINZOOM, 5)),
+      rule(WITH_N_P, atLeast(WAYAREA, 3e8), use(MINZOOM, 5)),
 
       // College and university polygons
 
@@ -331,7 +332,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       rule(WITH_C_U, withinRange(WAYAREA, 1.5e5, 2.5e5), use(MINZOOM, 10)),
       rule(WITH_C_U, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
       rule(WITH_C_U, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
-      rule(WITH_C_U, withinRange(WAYAREA, 2e7), use(MINZOOM, 7)),
+      rule(WITH_C_U, atLeast(WAYAREA, 2e7), use(MINZOOM, 7)),
       rule(WITH_C_U, with("name", "Academy of Art University"), use(MINZOOM, 14)), // Hack for weird San Francisco university
 
       // Big green polygons
@@ -346,7 +347,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       rule(WITH_B_G, withinRange(WAYAREA, 2.5e5, 1e6), use(MINZOOM, 10)),
       rule(WITH_B_G, withinRange(WAYAREA, 1e6, 4e6), use(MINZOOM, 9)),
       rule(WITH_B_G, withinRange(WAYAREA, 4e6, 1e7), use(MINZOOM, 8)),
-      rule(WITH_B_G, withinRange(WAYAREA, 1e7), use(MINZOOM, 7)),
+      rule(WITH_B_G, atLeast(WAYAREA, 1e7), use(MINZOOM, 7)),
 
       // Remaining grab-bag of scaled kinds
 
@@ -357,7 +358,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       rule(WITH_ETC, withinRange(WAYAREA, 1e5, 2.5e5), use(MINZOOM, 10)),
       rule(WITH_ETC, withinRange(WAYAREA, 2.5e5, 5e6), use(MINZOOM, 9)),
       rule(WITH_ETC, withinRange(WAYAREA, 5e6, 2e7), use(MINZOOM, 8)),
-      rule(WITH_ETC, withinRange(WAYAREA, 2e7), use(MINZOOM, 7))
+      rule(WITH_ETC, atLeast(WAYAREA, 2e7), use(MINZOOM, 7))
 
     )).index();
 

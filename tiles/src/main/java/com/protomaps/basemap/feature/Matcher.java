@@ -159,27 +159,16 @@ public class Matcher {
    * </p>
    *
    * <p>
-   * If the upper bound is null, only the lower bound is checked (value >= lowerBound).
-   * </p>
-   *
-   * <p>
    * Tag values that cannot be parsed as numbers or missing tags will not match.
    * </p>
    *
    * @param tagName    The name of the tag to check.
    * @param lowerBound The inclusive lower bound.
-   * @param upperBound The exclusive upper bound, or null to check only the lower bound.
+   * @param upperBound The exclusive upper bound.
    * @return An {@link Expression} for the numeric range check.
    */
   public static Expression withinRange(String tagName, Integer lowerBound, Integer upperBound) {
     return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), Long.valueOf(upperBound));
-  }
-
-  /**
-   * Overload withinRange to accept just lower bound integer
-   */
-  public static Expression withinRange(String tagName, Integer lowerBound) {
-    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), null);
   }
 
   /**
@@ -197,9 +186,24 @@ public class Matcher {
   }
 
   /**
-   * Overload withinRange to accept just lower bound double
+   * Creates an {@link Expression} that matches when a numeric tag value is greater or equal to a value.
+   *
+   * <p>
+   * Tag values that cannot be parsed as numbers or missing tags will not match.
+   * </p>
+   *
+   * @param tagName    The name of the tag to check.
+   * @param lowerBound The inclusive lower bound.
+   * @return An {@link Expression} for the numeric range check.
    */
-  public static Expression withinRange(String tagName, Double lowerBound) {
+  public static Expression atLeast(String tagName, Integer lowerBound) {
+    return new WithinRangeExpression(tagName, Long.valueOf(lowerBound), null);
+  }
+
+  /**
+   * Overload atLeast to accept just lower bound double
+   */
+  public static Expression atLeast(String tagName, Double lowerBound) {
     return new WithinRangeExpression(tagName, lowerBound.longValue(), null);
   }
 
