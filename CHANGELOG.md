@@ -1,3 +1,7 @@
+Tiles 4.14.0
+------
+- Add Overture data source support [#541]
+
 Tiles 4.13.6
 ------
 - Translate POI min_zoom= assignments to MultiExpression rules [#539]
