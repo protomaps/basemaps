@@ -57,6 +57,43 @@ public class Landcover implements ForwardingProfile.LayerPostProcessor {
       .setPixelTolerance(Earth.PIXEL_TOLERANCE);
   }
 
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    String type = sf.getString("type");
+    String kind = sf.getString("subtype");
+
+    // Filter by type field - Overture base theme land
+    if (!"land_cover".equals(type)) {
+      return;
+    }
+
+    // Map base_layers.ts from https://docs.overturemaps.org/schema/reference/base/land_cover/
+    if (kind == "grass") {
+      kind = "grassland";
+    } else if (kind == "barren") {
+      kind = "barren";
+    } else if (kind == "urban") {
+      kind = "urban_area";
+    } else if (kind == "crop") {
+      kind = "farmland";
+    } else if (kind == "snow") {
+      kind = "glacier";
+    } else if (kind == "shrub") {
+      kind = "scrub";
+    } else if (kind == "forest" || kind == "mangrove" || kind == "moss" || kind == "wetland") {
+      kind = "forest";
+    }
+
+    // polygons are disjoint and non-overlapping, but order them in archive in consistent way
+    Integer sortKey = sortKeyMapping.getOrDefault(kind, 6);
+
+    features.polygon(LAYER_NAME)
+      .setAttr("kind", kind)
+      .setZoomRange(0, 7)
+      .setSortKey(sortKey)
+      .setMinPixelSize(1.0)
+      .setPixelTolerance(Earth.PIXEL_TOLERANCE);
+  }
+
   public static final String LAYER_NAME = "landcover";
 
   @Override
