@@ -1,3 +1,0 @@
-duckdb==1.4.3
-GDAL==3.2.2
-geopandas==1.0.1
