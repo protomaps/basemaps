@@ -1,3 +1,7 @@
+Tiles 4.13.6
+------
+- Translate POI min_zoom= assignments to MultiExpression rules [#539]
+
 Tiles 4.13.5
 ------
 - Translate POI kind= assignments to MultiExpression rules [#537]
