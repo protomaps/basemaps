@@ -441,7 +441,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     if (sf.hasTag("population")) {
       Object popValue = sf.getTag("population");
       if (popValue instanceof Number number) {
-        population = ((Number) popValue).intValue();
+        population = number.intValue();
       }
     }
 

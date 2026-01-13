@@ -734,7 +734,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     double end) {
     Object valueObj = rule.get("value");
     if (valueObj instanceof Number number) {
-      Integer levelValue = ((Number) valueObj).intValue();
+      Integer levelValue = number.intValue();
 
       // Determine the range this level applies to
       double rangeStart = 0.0;
