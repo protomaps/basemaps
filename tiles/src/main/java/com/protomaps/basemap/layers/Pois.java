@@ -566,7 +566,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     var kindMatches = overtureKindsIndex.getMatches(sf);
 
     String kind = getString(sf, kindMatches, KIND, UNDEFINED);
-    String kindDetail = getString(sf, kindMatches, KIND_DETAIL, UNDEFINED);
     Integer minZoom;
 
     // Quickly eliminate any features with non-matching tags

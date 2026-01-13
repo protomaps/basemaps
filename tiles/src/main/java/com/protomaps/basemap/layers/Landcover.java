@@ -67,19 +67,19 @@ public class Landcover implements ForwardingProfile.LayerPostProcessor {
     }
 
     // Map base_layers.ts from https://docs.overturemaps.org/schema/reference/base/land_cover/
-    if (kind == "grass") {
+    if ("grass".equals(kind)) {
       kind = "grassland";
-    } else if (kind == "barren") {
+    } else if ("barren".equals(kind)) {
       kind = "barren";
-    } else if (kind == "urban") {
+    } else if ("urban".equals(kind)) {
       kind = "urban_area";
-    } else if (kind == "crop") {
+    } else if ("crop".equals(kind)) {
       kind = "farmland";
-    } else if (kind == "snow") {
+    } else if ("snow".equals(kind)) {
       kind = "glacier";
-    } else if (kind == "shrub") {
+    } else if ("shrub".equals(kind)) {
       kind = "scrub";
-    } else if (kind == "forest" || kind == "mangrove" || kind == "moss" || kind == "wetland") {
+    } else if ("forest".equals(kind) || "mangrove".equals(kind) || "moss".equals(kind) || "wetland".equals(kind)) {
       kind = "forest";
     }
 

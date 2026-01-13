@@ -313,15 +313,15 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     String kind = getString(sf, matches, KIND, UNDEFINED);
     String kindDetail = getString(sf, matches, KIND_DETAIL, "");
-    Integer kindRank = getInteger(sf, matches, KIND_RANK, 0);
     Integer population = getInteger(sf, matches, POPULATION, 0);
 
-    if (kind == UNDEFINED) {
+    if (UNDEFINED.equals(kind)) {
       return;
     }
 
     Integer minZoom;
     Integer maxZoom;
+    Integer kindRank;
 
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of(KIND, kind, KIND_DETAIL, kindDetail));
     var zoomMatches = zoomsIndex.getMatches(sf2);

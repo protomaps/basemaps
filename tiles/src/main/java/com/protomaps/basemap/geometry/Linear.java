@@ -10,6 +10,10 @@ import org.locationtech.jts.linearref.LengthIndexedLine;
  */
 public class Linear {
 
+  private Linear() {
+    // Utility class, prevent instantiation
+  }
+
   /**
    * Represents a segment of a line with fractional start/end positions.
    */

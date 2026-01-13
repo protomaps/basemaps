@@ -516,11 +516,12 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     List<Map<String,Object>> kindMatches;
 
-    if ("road".equals(sf.getString("subtype"))) {
+    String subtype = sf.getString("subtype");
+    if ("road".equals(subtype)) {
       kindMatches = overtureRoadKindsIndex.getMatches(sf);
-    } else if ("rail".equals(sf.getString("subtype"))) {
+    } else if ("rail".equals(subtype)) {
       kindMatches = overtureRailKindsIndex.getMatches(sf);
-    } else if ("water".equals(sf.getString("subtype"))) {
+    } else if ("water".equals(subtype)) {
       kindMatches = overtureWaterKindsIndex.getMatches(sf);
     } else {
       return;
@@ -537,7 +538,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     Integer minZoom;
 
     // Quickly eliminate any features with non-matching tags
-    if (kind.equals(UNDEFINED))
+    if (UNDEFINED.equals(kind))
       return;
 
     // Calculate minZoom using zooms indexes
@@ -590,6 +591,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   /**
    * Emit a road feature with given geometry and properties
    */
+  @java.lang.SuppressWarnings("java:S107")
   private void emitOvertureFeature(FeatureCollector features, SourceFeature sf, LineString geometry,
     String kind, String kindDetail, String name, String highway, int minZoom,
     OvertureSegmentProperties props) {
@@ -759,15 +761,15 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
         if (!(segmentObj instanceof Map)) {
           continue;
         }
-        if (segmentsKey == "road_flags" || segmentsKey == "rail_flags") {
+        if ("road_flags".equals(segmentsKey) || "rail_flags".equals(segmentsKey)) {
           @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
           extractOvertureSegmentFlags(props, flag, start, end);
 
-        } else if (segmentsKey == "access_restrictions") {
+        } else if ("access_restrictions".equals(segmentsKey)) {
           @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) segmentObj;
           extractOvertureSegmentRestrictions(props, restriction, start, end);
 
-        } else if (segmentsKey == "level_rules") {
+        } else if ("level_rules".equals(segmentsKey)) {
           @SuppressWarnings("unchecked") Map<String, Object> rule = (Map<String, Object>) segmentObj;
           extractOvertureSegmentLevels(props, rule, start, end);
         }
