@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 public class Basemap extends ForwardingProfile {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Basemap.class);
+  private static final String SRC_OVERTURE = "overture";
 
   public Basemap(QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
     String layer) {
@@ -46,14 +47,14 @@ public class Basemap extends ForwardingProfile {
       var buildings = new Buildings();
       registerHandler(buildings);
       registerSourceHandler("osm", buildings::processOsm);
-      registerSourceHandler("overture", buildings::processOverture);
+      registerSourceHandler(SRC_OVERTURE, buildings::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Landuse.LAYER_NAME)) {
       var landuse = new Landuse();
       registerHandler(landuse);
       registerSourceHandler("osm", landuse::processOsm);
-      registerSourceHandler("overture", landuse::processOverture);
+      registerSourceHandler(SRC_OVERTURE, landuse::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Landcover.LAYER_NAME)) {
@@ -61,28 +62,28 @@ public class Basemap extends ForwardingProfile {
       registerHandler(landcover);
       registerSourceHandler("landcover", landcover::processLandcover);
       registerSourceHandler("ne", landcover::processNe);
-      registerSourceHandler("overture", landcover::processOverture);
+      registerSourceHandler(SRC_OVERTURE, landcover::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Places.LAYER_NAME)) {
       var place = new Places(countryCoder);
       registerHandler(place);
       registerSourceHandler("osm", place::processOsm);
-      registerSourceHandler("overture", place::processOverture);
+      registerSourceHandler(SRC_OVERTURE, place::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Pois.LAYER_NAME)) {
       var poi = new Pois(qrankDb);
       registerHandler(poi);
       registerSourceHandler("osm", poi::processOsm);
-      registerSourceHandler("overture", poi::processOverture);
+      registerSourceHandler(SRC_OVERTURE, poi::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Roads.LAYER_NAME)) {
       var roads = new Roads(countryCoder);
       registerHandler(roads);
       registerSourceHandler("osm", roads::processOsm);
-      registerSourceHandler("overture", roads::processOverture);
+      registerSourceHandler(SRC_OVERTURE, roads::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Transit.LAYER_NAME)) {
@@ -97,7 +98,7 @@ public class Basemap extends ForwardingProfile {
       registerSourceHandler("osm", water::processOsm);
       registerSourceHandler("osm_water", water::processPreparedOsm);
       registerSourceHandler("ne", water::processNe);
-      registerSourceHandler("overture", water::processOverture);
+      registerSourceHandler(SRC_OVERTURE, water::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Earth.LAYER_NAME)) {
@@ -107,7 +108,7 @@ public class Basemap extends ForwardingProfile {
       registerSourceHandler("osm", earth::processOsm);
       registerSourceHandler("osm_land", earth::processPreparedOsm);
       registerSourceHandler("ne", earth::processNe);
-      registerSourceHandler("overture", earth::processOverture);
+      registerSourceHandler(SRC_OVERTURE, earth::processOverture);
     }
 
     if (clip != null) {
@@ -234,7 +235,7 @@ public class Basemap extends ForwardingProfile {
 
     if (!overtureFile.isEmpty()) {
       // Add Overture Parquet source
-      planetiler.addParquetSource("overture",
+      planetiler.addParquetSource(SRC_OVERTURE,
         List.of(Path.of(overtureFile)),
         false, // not Hive partitioned dirname, just a single file
         fields -> fields.get("id"),
