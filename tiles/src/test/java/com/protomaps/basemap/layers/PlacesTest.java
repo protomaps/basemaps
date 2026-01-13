@@ -1,6 +1,7 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.newPoint;
+import com.protomaps.basemap.Basemap;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
@@ -229,7 +230,7 @@ class PlacesOvertureTest extends LayerTest {
           "names.primary", "Oakland",
           "population", 433031
         )),
-        "overture",
+        Basemap.SRC_OVERTURE,
         null,
         0
       )));
@@ -256,7 +257,7 @@ class PlacesOvertureTest extends LayerTest {
           "class", "town",
           "names.primary", "Piedmont"
         )),
-        "overture",
+        Basemap.SRC_OVERTURE,
         null,
         0
       )));
@@ -281,7 +282,7 @@ class PlacesOvertureTest extends LayerTest {
           "subtype", "macrohood",
           "names.primary", "Downtown Oakland"
         )),
-        "overture",
+        Basemap.SRC_OVERTURE,
         null,
         0
       )));
@@ -307,7 +308,7 @@ class PlacesOvertureTest extends LayerTest {
           "subtype", "neighborhood",
           "names.primary", "Lakeside"
         )),
-        "overture",
+        Basemap.SRC_OVERTURE,
         null,
         0
       )));

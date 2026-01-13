@@ -1,6 +1,7 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.*;
+import com.protomaps.basemap.Basemap;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
@@ -1151,7 +1152,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "Alcatraz National Park",
           "confidence", 0.64
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1169,7 +1170,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "UCSF Medical Center",
           "confidence", 0.95
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1188,7 +1189,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "San Francisco Bay Oakland International Airport (OAK)",
           "confidence", 0.77
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1206,7 +1207,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "West Oakland Branch",
           "confidence", 0.99
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1224,7 +1225,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "郵便局",
           "confidence", 0.95
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1242,7 +1243,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "Oracle Park",
           "confidence", 0.99
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1260,7 +1261,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "Laney College",
           "confidence", 0.99
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1278,7 +1279,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "Mountain View Cemetery",
           "confidence", 0.96
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1296,7 +1297,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "Snow Park",
           "confidence", 0.96
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1314,7 +1315,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "Piedmont Grocery",
           "confidence", 0.96
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1332,7 +1333,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "高橋歯科クリニック",
           "confidence", 0.95
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1350,7 +1351,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "Boulangerie Rougès | Paris",
           "confidence", 0.95
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -1369,7 +1370,7 @@ class PoisOvertureTest extends LayerTest {
           "names.primary", "CITAN",
           "confidence", 1.00
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 }

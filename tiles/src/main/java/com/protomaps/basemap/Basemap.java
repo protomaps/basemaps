@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 public class Basemap extends ForwardingProfile {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Basemap.class);
-  private static final String SRC_OVERTURE = "source:overture";
+
+  public static final String SRC_OVERTURE = "protomaps:overture";
 
   public Basemap(QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
     String layer) {

@@ -635,22 +635,23 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
    * Collect all split points from road_flags, rail_flags, access_restrictions, and level_rules
    */
   private void collectOvertureSplitPoints(Object segmentsObj, List<Double> splitPoints) {
-    if (segmentsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
-      for (Object segmentObj : segmentList) {
-        if (!(segmentObj instanceof Map)) {
-          continue;
-        }
-        @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
-        Object betweenObj = flag.get("between");
-        if (!(betweenObj instanceof List)) {
-          continue;
-        }
-        @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-        if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-          splitPoints.add(((Number) between.get(0)).doubleValue());
-          splitPoints.add(((Number) between.get(1)).doubleValue());
-        }
+    if (!(segmentsObj instanceof List)) {
+      return;
+    }
+    @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
+    for (Object segmentObj : segmentList) {
+      if (!(segmentObj instanceof Map)) {
+        continue;
+      }
+      @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
+      Object betweenObj = flag.get("between");
+      if (!(betweenObj instanceof List)) {
+        continue;
+      }
+      @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
+      if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+        splitPoints.add(((Number) between.get(0)).doubleValue());
+        splitPoints.add(((Number) between.get(1)).doubleValue());
       }
     }
   }

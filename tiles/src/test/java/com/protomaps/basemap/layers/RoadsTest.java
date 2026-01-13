@@ -1,6 +1,7 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.newLineString;
+import com.protomaps.basemap.Basemap;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.TestUtils;
@@ -489,7 +490,7 @@ class RoadsOvertureTest extends LayerTest {
             Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
           )
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -511,7 +512,7 @@ class RoadsOvertureTest extends LayerTest {
             Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
           )
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -529,7 +530,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "trunk",
           "names.primary", "Mission Street"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -551,7 +552,7 @@ class RoadsOvertureTest extends LayerTest {
             Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
           )
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -569,7 +570,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "primary",
           "names.primary", "Ashby Avenue"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -591,7 +592,7 @@ class RoadsOvertureTest extends LayerTest {
             Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
           )
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -609,7 +610,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "secondary",
           "names.primary", "40th Street"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -631,7 +632,7 @@ class RoadsOvertureTest extends LayerTest {
             Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
           )
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -649,7 +650,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "tertiary",
           "names.primary", "West Street"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -671,7 +672,7 @@ class RoadsOvertureTest extends LayerTest {
             Map.of("access_type", "denied", "when", Map.of("heading", "backward"))
           )
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -689,7 +690,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "pedestrian",
           "names.primary", "13th Street"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -707,7 +708,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "residential",
           "names.primary", "17th Street"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -725,7 +726,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "service",
           "names.primary", "Derby Street"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -743,7 +744,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "cycleway",
           "names.primary", "Ohlone Greenway"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -761,7 +762,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "standard_gauge",
           "names.primary", "UP Niles Subdivision"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -778,7 +779,7 @@ class RoadsOvertureTest extends LayerTest {
           "subtype", "water",
           "names.primary", "Oakland Jack London Square - San Francisco Ferry Building"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -796,7 +797,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "subway",
           "names.primary", "A-Line"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -814,7 +815,7 @@ class RoadsOvertureTest extends LayerTest {
           "class", "footway",
           "subclass", "sidewalk"
         )),
-        "overture", null, 0
+        Basemap.SRC_OVERTURE, null, 0
       )));
   }
 
@@ -838,7 +839,7 @@ class RoadsOvertureTest extends LayerTest {
           Map.of("values", List.of("is_bridge"), "between", List.of(0.25, 0.75))
         )
       )),
-      "overture", null, 0
+      Basemap.SRC_OVERTURE, null, 0
     ));
 
     assertFeatures(15, List.of(
@@ -882,7 +883,7 @@ class RoadsOvertureTest extends LayerTest {
           Map.of("values", List.of("is_bridge"), "between", List.of(0.6, 0.8))
         )
       )),
-      "overture", null, 0
+      Basemap.SRC_OVERTURE, null, 0
     ));
 
     assertFeatures(15, List.of(
@@ -914,7 +915,7 @@ class RoadsOvertureTest extends LayerTest {
           Map.of("values", List.of("is_tunnel"), "between", List.of(0.75, 1.0))
         )
       )),
-      "overture", null, 0
+      Basemap.SRC_OVERTURE, null, 0
     ));
 
     assertFeatures(15, List.of(
@@ -945,7 +946,7 @@ class RoadsOvertureTest extends LayerTest {
           Map.of("values", List.of("is_tunnel"), "between", List.of(0.0, 0.5))
         )
       )),
-      "overture", null, 0
+      Basemap.SRC_OVERTURE, null, 0
     ));
 
     assertFeatures(15, List.of(
@@ -983,7 +984,7 @@ class RoadsOvertureTest extends LayerTest {
           Map.of("value", 1, "between", List.of(0.25, 0.75))
         )
       )),
-      "overture", null, 0
+      Basemap.SRC_OVERTURE, null, 0
     ));
 
     assertFeatures(15, List.of(
@@ -1030,7 +1031,7 @@ class RoadsOvertureTest extends LayerTest {
           )
         )
       )),
-      "overture", null, 0
+      Basemap.SRC_OVERTURE, null, 0
     ));
 
     assertFeatures(15, List.of(
@@ -1074,7 +1075,7 @@ class RoadsOvertureTest extends LayerTest {
           )
         )
       )),
-      "overture", null, 0
+      Basemap.SRC_OVERTURE, null, 0
     ));
 
     assertFeatures(15, List.of(
