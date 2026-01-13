@@ -54,7 +54,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
   private static final String COUNTRY = "protomaps-basemaps:country";
   private static final String UNDEFINED = "protomaps-basemaps:undefined";
 
-  private static int[] POP_BREAKS = {
+  private static int[] popBreaks = {
     0,
     200,
     1000,
@@ -334,8 +334,8 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     int populationRank = 0;
 
-    for (int i = 0; i < POP_BREAKS.length; i++) {
-      if (population >= POP_BREAKS[i]) {
+    for (int i = 0; i < popBreaks.length; i++) {
+      if (population >= popBreaks[i]) {
         populationRank = i + 1;
       }
     }
@@ -415,7 +415,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     String kind = getString(sf, matches, KIND, UNDEFINED);
     String kindDetail = getString(sf, matches, KIND_DETAIL, "");
 
-    if (kind == UNDEFINED) {
+    if (UNDEFINED.equals(kind)) {
       return;
     }
 
@@ -439,15 +439,15 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     Integer population = 0;
     if (sf.hasTag("population")) {
       Object popValue = sf.getTag("population");
-      if (popValue instanceof Number) {
+      if (popValue instanceof Number number) {
         population = ((Number) popValue).intValue();
       }
     }
 
     int populationRank = 0;
 
-    for (int i = 0; i < POP_BREAKS.length; i++) {
-      if (population >= POP_BREAKS[i]) {
+    for (int i = 0; i < popBreaks.length; i++) {
+      if (population >= popBreaks[i]) {
         populationRank = i + 1;
       }
     }

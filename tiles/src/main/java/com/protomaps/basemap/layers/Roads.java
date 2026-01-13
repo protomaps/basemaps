@@ -636,6 +636,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   /**
    * Collect all split points from road_flags, rail_flags, access_restrictions, and level_rules
    */
+  @java.lang.SuppressWarnings("java:S135")
   private void collectOvertureSplitPoints(Object segmentsObj, List<Double> splitPoints) {
     if (!(segmentsObj instanceof List)) {
       return;
@@ -724,7 +725,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   private void extractOvertureSegmentLevels(OvertureSegmentProperties props, Map<String, Object> rule, double start,
     double end) {
     Object valueObj = rule.get("value");
-    if (valueObj instanceof Number) {
+    if (valueObj instanceof Number number) {
       Integer levelValue = ((Number) valueObj).intValue();
 
       // Determine the range this level applies to

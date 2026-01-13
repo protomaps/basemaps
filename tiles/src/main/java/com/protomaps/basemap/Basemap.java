@@ -209,6 +209,7 @@ public class Basemap extends ForwardingProfile {
       """, basemap.name(), basemap.version(), basemap.description()));
   }
 
+  @java.lang.SuppressWarnings("java:S5738")
   static void run(Arguments args) throws IOException {
     args = args.orElse(Arguments.of("maxzoom", 15));
 
