@@ -241,14 +241,22 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     rule(with(KIND, "highway"), with(HIGHWAY, "motorway_link"), use(MINZOOM_NAME, 11), use(MINZOOM_SHIELD, 12)),
 
     // Major roads show up early also
-    rule(with(KIND, "major_road"), with(HIGHWAY, "trunk"), use(MINZOOM, 6), use(MINZOOM_NAME, 12), use(MINZOOM_SHIELD, 8)),
-    rule(with(KIND, "major_road"), with(HIGHWAY, "trunk_link"), use(MINZOOM, 6), use(MINZOOM_NAME, 12), use(MINZOOM_SHIELD, 12)),
-    rule(with(KIND, "major_road"), with(HIGHWAY, "primary"), use(MINZOOM, 7), use(MINZOOM_NAME, 12), use(MINZOOM_SHIELD, 10)),
-    rule(with(KIND, "major_road"), with(HIGHWAY, "primary_link"), use(MINZOOM, 7), use(MINZOOM_NAME, 13), use(MINZOOM_SHIELD, 11)),
-    rule(with(KIND, "major_road"), with(HIGHWAY, "secondary"), use(MINZOOM, 9), use(MINZOOM_NAME, 12), use(MINZOOM_SHIELD, 11)),
-    rule(with(KIND, "major_road"), with(HIGHWAY, "secondary_link"), use(MINZOOM, 9), use(MINZOOM_NAME, 14), use(MINZOOM_SHIELD, 13)),
-    rule(with(KIND, "major_road"), with(HIGHWAY, "tertiary"), use(MINZOOM, 9), use(MINZOOM_NAME, 13), use(MINZOOM_SHIELD, 12)),
-    rule(with(KIND, "major_road"), with(HIGHWAY, "tertiary_link"), use(MINZOOM, 9), use(MINZOOM_NAME, 14), use(MINZOOM_SHIELD, 13)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "trunk"), use(MINZOOM, 6), use(MINZOOM_NAME, 12),
+      use(MINZOOM_SHIELD, 8)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "trunk_link"), use(MINZOOM, 6), use(MINZOOM_NAME, 12),
+      use(MINZOOM_SHIELD, 12)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "primary"), use(MINZOOM, 7), use(MINZOOM_NAME, 12),
+      use(MINZOOM_SHIELD, 10)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "primary_link"), use(MINZOOM, 7), use(MINZOOM_NAME, 13),
+      use(MINZOOM_SHIELD, 11)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "secondary"), use(MINZOOM, 9), use(MINZOOM_NAME, 12),
+      use(MINZOOM_SHIELD, 11)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "secondary_link"), use(MINZOOM, 9), use(MINZOOM_NAME, 14),
+      use(MINZOOM_SHIELD, 13)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "tertiary"), use(MINZOOM, 9), use(MINZOOM_NAME, 13),
+      use(MINZOOM_SHIELD, 12)),
+    rule(with(KIND, "major_road"), with(HIGHWAY, "tertiary_link"), use(MINZOOM, 9), use(MINZOOM_NAME, 14),
+      use(MINZOOM_SHIELD, 13)),
 
     // Minor roads and paths show up a little early
     rule(with(KIND, "minor_road"), use(MINZOOM, 12)),
@@ -514,7 +522,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    List<Map<String,Object>> kindMatches;
+    List<Map<String, Object>> kindMatches;
 
     String subtype = sf.getString("subtype");
     if ("road".equals(subtype)) {

@@ -177,29 +177,30 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   // Overture properties to Protomaps kind mapping
 
-  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex = MultiExpression.ofOrdered(List.of(
-    rule(
-      with("subtype", "locality"),
-      with("class", "city"),
-      use(KIND, "locality"),
-      use(KIND_DETAIL, "city")
-    ),
-    rule(
-      with("subtype", "locality"),
-      with("class", "town"),
-      use(KIND, "locality"),
-      use(KIND_DETAIL, "town")
-    ),
-    rule(
-      with("subtype", "macrohood"),
-      use(KIND, "macrohood")
-    ),
-    rule(
-      with("subtype", "neighborhood", "microhood"),
-      use(KIND, "neighbourhood"),
-      use(KIND_DETAIL, "neighbourhood")
-    )
-  )).index();
+  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex =
+    MultiExpression.ofOrdered(List.of(
+      rule(
+        with("subtype", "locality"),
+        with("class", "city"),
+        use(KIND, "locality"),
+        use(KIND_DETAIL, "city")
+      ),
+      rule(
+        with("subtype", "locality"),
+        with("class", "town"),
+        use(KIND, "locality"),
+        use(KIND_DETAIL, "town")
+      ),
+      rule(
+        with("subtype", "macrohood"),
+        use(KIND, "macrohood")
+      ),
+      rule(
+        with("subtype", "neighborhood", "microhood"),
+        use(KIND, "neighbourhood"),
+        use(KIND_DETAIL, "neighbourhood")
+      )
+    )).index();
 
   // Protomaps kind/kind_detail to min_zoom/max_zoom/kind_rank mapping
 

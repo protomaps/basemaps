@@ -182,23 +182,24 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   // Overture properties to Protomaps kind/kind_detail mapping
 
-  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex = MultiExpression.ofOrdered(List.of(
+  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex =
+    MultiExpression.ofOrdered(List.of(
 
-    // Everything is undefined at first
-    rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
+      // Everything is undefined at first
+      rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
 
-    // Pull from basic_category
-    rule(with("basic_category"), use(KIND, fromTag("basic_category"))),
+      // Pull from basic_category
+      rule(with("basic_category"), use(KIND, fromTag("basic_category"))),
 
-    // Some basic categories don't match OSM-style expectations
-    rule(with("basic_category", "accommodation"), with("categories.primary", "hostel"), use(KIND, "hostel")),
-    rule(with("basic_category", "airport"), use(KIND, "aerodrome")),
-    rule(with("basic_category", "college_university"), use(KIND, "college")),
-    rule(with("basic_category", "grocery_store"), use(KIND, "supermarket")),
-    rule(with("basic_category", "sport_stadium"), use(KIND, "stadium")),
-    rule(with("basic_category", "place_of_learning", "middle_school"), use(KIND, "school"))
+      // Some basic categories don't match OSM-style expectations
+      rule(with("basic_category", "accommodation"), with("categories.primary", "hostel"), use(KIND, "hostel")),
+      rule(with("basic_category", "airport"), use(KIND, "aerodrome")),
+      rule(with("basic_category", "college_university"), use(KIND, "college")),
+      rule(with("basic_category", "grocery_store"), use(KIND, "supermarket")),
+      rule(with("basic_category", "sport_stadium"), use(KIND, "stadium")),
+      rule(with("basic_category", "place_of_learning", "middle_school"), use(KIND, "school"))
 
-  )).index();
+    )).index();
 
   // Protomaps kind/kind_detail to min_zoom mapping for points
 

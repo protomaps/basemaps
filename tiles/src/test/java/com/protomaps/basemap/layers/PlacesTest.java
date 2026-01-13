@@ -1,9 +1,9 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.newPoint;
-import com.protomaps.basemap.Basemap;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
+import com.protomaps.basemap.Basemap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

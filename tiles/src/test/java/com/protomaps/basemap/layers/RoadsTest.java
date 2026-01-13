@@ -1,13 +1,13 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.newLineString;
-import com.protomaps.basemap.Basemap;
 
 import com.onthegomap.planetiler.FeatureCollector;
 import com.onthegomap.planetiler.TestUtils;
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmReader;
+import com.protomaps.basemap.Basemap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -769,7 +769,8 @@ class RoadsOvertureTest extends LayerTest {
   @Test
   void kind_ferry_fromWaterway() {
     assertFeatures(15,
-      List.of(Map.of("kind", "ferry", "min_zoom", 12, "name", "Oakland Jack London Square - San Francisco Ferry Building")),
+      List.of(
+        Map.of("kind", "ferry", "min_zoom", 12, "name", "Oakland Jack London Square - San Francisco Ferry Building")),
       process(SimpleFeature.create(
         newLineString(0, 0, 1, 1),
         new HashMap<>(Map.of(
