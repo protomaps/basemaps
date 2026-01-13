@@ -638,16 +638,18 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     if (segmentsObj instanceof List) {
       @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
       for (Object segmentObj : segmentList) {
-        if (segmentObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
-          Object betweenObj = flag.get("between");
-          if (betweenObj instanceof List) {
-            @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
-            if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
-              splitPoints.add(((Number) between.get(0)).doubleValue());
-              splitPoints.add(((Number) between.get(1)).doubleValue());
-            }
-          }
+        if (!(segmentObj instanceof Map)) {
+          continue;
+        }
+        @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
+        Object betweenObj = flag.get("between");
+        if (!(betweenObj instanceof List)) {
+          continue;
+        }
+        @SuppressWarnings("unchecked") List<?> between = (List<?>) betweenObj;
+        if (between.size() >= 2 && between.get(0) instanceof Number && between.get(1) instanceof Number) {
+          splitPoints.add(((Number) between.get(0)).doubleValue());
+          splitPoints.add(((Number) between.get(1)).doubleValue());
         }
       }
     }
@@ -746,44 +748,25 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   private OvertureSegmentProperties extractOvertureSegmentProperties(SourceFeature sf, double start, double end) {
     OvertureSegmentProperties props = new OvertureSegmentProperties();
 
-    Object segmentsObj = sf.getTag("road_flags");
-    if (segmentsObj instanceof List) {
+    for (String segmentsKey : List.of("road_flags", "rail_flags", "access_restrictions", "level_rules")) {
+      Object segmentsObj = sf.getTag(segmentsKey);
+      if (!(segmentsObj instanceof List)) {
+        continue;
+      }
       @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
       for (Object segmentObj : segmentList) {
-        if (segmentObj instanceof Map) {
+        if (!(segmentObj instanceof Map)) {
+          continue;
+        }
+        if (segmentsKey == "road_flags" || segmentsKey == "rail_flags") {
           @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
           extractOvertureSegmentFlags(props, flag, start, end);
-        }
-      }
-    }
 
-    segmentsObj = sf.getTag("rail_flags");
-    if (segmentsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
-      for (Object segmentObj : segmentList) {
-        if (segmentObj instanceof Map) {
-          @SuppressWarnings("unchecked") Map<String, Object> flag = (Map<String, Object>) segmentObj;
-          extractOvertureSegmentFlags(props, flag, start, end);
-        }
-      }
-    }
-
-    segmentsObj = sf.getTag("access_restrictions");
-    if (segmentsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
-      for (Object segmentObj : segmentList) {
-        if (segmentObj instanceof Map) {
+        } else if (segmentsKey == "access_restrictions") {
           @SuppressWarnings("unchecked") Map<String, Object> restriction = (Map<String, Object>) segmentObj;
           extractOvertureSegmentRestrictions(props, restriction, start, end);
-        }
-      }
-    }
 
-    segmentsObj = sf.getTag("level_rules");
-    if (segmentsObj instanceof List) {
-      @SuppressWarnings("unchecked") List<Object> segmentList = (List<Object>) segmentsObj;
-      for (Object segmentObj : segmentList) {
-        if (segmentObj instanceof Map) {
+        } else if (segmentsKey == "level_rules") {
           @SuppressWarnings("unchecked") Map<String, Object> rule = (Map<String, Object>) segmentObj;
           extractOvertureSegmentLevels(props, rule, start, end);
         }
