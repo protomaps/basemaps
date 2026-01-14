@@ -239,9 +239,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     }
 
     var matches = osmKindsIndex.getMatches(sf);
-    if (matches.isEmpty()) {
-      return;
-    }
 
     String kind = getString(sf, matches, KIND, UNDEFINED);
     String kindDetail = getString(sf, matches, KIND_DETAIL, "");
@@ -257,8 +254,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of(KIND, kind, KIND_DETAIL, kindDetail));
     var zoomMatches = zoomsIndex.getMatches(sf2);
-    if (zoomMatches.isEmpty())
-      return;
 
     minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
     maxZoom = getInteger(sf2, zoomMatches, MAXZOOM, 99);
@@ -340,9 +335,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     }
 
     var matches = overtureKindsIndex.getMatches(sf);
-    if (matches.isEmpty()) {
-      return;
-    }
 
     String kind = getString(sf, matches, KIND, UNDEFINED);
     String kindDetail = getString(sf, matches, KIND_DETAIL, "");
@@ -357,8 +349,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of(KIND, kind, KIND_DETAIL, kindDetail));
     var zoomMatches = zoomsIndex.getMatches(sf2);
-    if (zoomMatches.isEmpty())
-      return;
 
     minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
     maxZoom = getInteger(sf2, zoomMatches, MAXZOOM, 99);

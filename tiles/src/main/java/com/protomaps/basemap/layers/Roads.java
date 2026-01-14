@@ -349,9 +349,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     }
 
     var matches = osmKindsIndex.getMatches(sf);
-    if (matches.isEmpty()) {
-      return;
-    }
 
     String kind = getString(sf, matches, KIND, "other");
     String kindDetail = getString(sf, matches, KIND_DETAIL, "");
@@ -365,8 +362,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       Map.of(KIND, kind, KIND_DETAIL, kindDetail, HIGHWAY, highway)
     );
     var zoomMatches = highwayZoomsIndex.getMatches(sf2);
-    if (zoomMatches.isEmpty())
-      return;
 
     // Initial minZoom
     minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
@@ -533,10 +528,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    if (kindMatches.isEmpty()) {
-      return;
-    }
-
     String name = sf.getString("names.primary");
     String kind = getString(sf, kindMatches, KIND, UNDEFINED);
     String kindDetail = getString(sf, kindMatches, KIND_DETAIL, UNDEFINED);
@@ -553,8 +544,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       Map.of(KIND, kind, KIND_DETAIL, kindDetail, HIGHWAY, highway)
     );
     var zoomMatches = highwayZoomsIndex.getMatches(sf2);
-    if (zoomMatches.isEmpty())
-      return;
 
     // Initial minZoom
     minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);

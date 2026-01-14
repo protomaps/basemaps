@@ -465,8 +465,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       // Calculate minZoom using zooms indexes
       var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
       var zoomMatches = hasNamedPolygon ? namedPolygonZoomsIndex.getMatches(sf2) : pointZoomsIndex.getMatches(sf2);
-      if (zoomMatches.isEmpty())
-        return;
 
       // Initial minZoom
       minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
@@ -585,8 +583,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       // Calculate minZoom using zooms indexes
       var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
       var zoomMatches = pointZoomsIndex.getMatches(sf2);
-      if (zoomMatches.isEmpty())
-        return;
 
       // Initial minZoom
       minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
