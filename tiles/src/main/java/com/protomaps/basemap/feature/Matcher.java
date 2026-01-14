@@ -155,7 +155,7 @@ public class Matcher {
    * Creates an {@link Expression} that matches when a numeric tag value is within a specified range.
    *
    * <p>
-   * The lower bound is inclusive. The upper bound, if provided, is exclusive.
+   * The lower bound is inclusive. The upper bound is exclusive.
    * </p>
    *
    * <p>
