@@ -312,20 +312,21 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
     String minZoomString = getString(sf, matches, "minZoom", null);
 
-    if (sf.canBePolygon() && minZoomString != null) {
-      int minZoom = (int) Math.round(Double.parseDouble(minZoomString));
-
-      int themeMinZoom = sf.getSourceLayer().contains("_50m_") ? 0 : 5;
-      int themeMaxZoom = sf.getSourceLayer().contains("_50m_") ? 4 : 5;
-
-      features.polygon(LAYER_NAME)
-        .setAttr("kind", kind)
-        .setAttr("sort_rank", 200)
-        .setPixelTolerance(Earth.PIXEL_TOLERANCE)
-        .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
-        .setMinPixelSize(1.0)
-        .setBufferPixels(8);
+    if (!sf.canBePolygon() || minZoomString == null) {
+      return;
     }
+
+    int minZoom = (int) Math.round(Double.parseDouble(minZoomString));
+    int themeMinZoom = sf.getSourceLayer().contains("_50m_") ? 0 : 5;
+    int themeMaxZoom = sf.getSourceLayer().contains("_50m_") ? 4 : 5;
+
+    features.polygon(LAYER_NAME)
+      .setAttr("kind", kind)
+      .setAttr("sort_rank", 200)
+      .setPixelTolerance(Earth.PIXEL_TOLERANCE)
+      .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
+      .setMinPixelSize(1.0)
+      .setBufferPixels(8);
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {

@@ -373,9 +373,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     minZoomShieldText = getInteger(sf2, zoomMatches, MINZOOM_SHIELD, 99);
     minZoomNames = getInteger(sf2, zoomMatches, MINZOOM_NAME, 99);
 
-    if (sf.hasTag("access", "private", "no")) {
-      minZoom = Math.max(minZoom, 15);
-    }
+    minZoom = sf.hasTag("access", "private", "no") ? Math.max(minZoom, 15) : minZoom;
 
     var feat = features.line("roads")
       .setId(FeatureId.create(sf))
