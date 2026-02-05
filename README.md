@@ -10,7 +10,7 @@ To get started, check out some basic examples:
 
 This repository is organized into parts:
 
-* `app`: A single-page app, [maps.protomaps.com](maps.protomaps.com) for viewing and downloading basemap builds.
+* `app`: A single-page app, [https://maps.protomaps.com](maps.protomaps.com) for viewing and downloading basemap builds.
 * `tiles/`: A [Planetiler](https://github.com/onthegomap/planetiler) build profile that generates `planet.pmtiles` from OpenStreetMap and Natural Earth in 2-3 hours on a modest computer.
 * `styles/`: A TypeScript package that generates [MapLibre GL](http://github.com/maplibre) styles, in multiple color themes, that can be used via `npm` or exported as JSON.
 
