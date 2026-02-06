@@ -20,6 +20,7 @@
 		"solid-js": "^1.9.5"
 	},
 	"devDependencies": {
+		"@types/node": "^22.0.0",
 		"@biomejs/biome": "1.9.4",
 		"@tailwindcss/vite": "^4.1.17",
 		"jsdom": "^25.0.1",
