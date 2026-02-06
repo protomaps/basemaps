@@ -1,3 +1,7 @@
+Tiles 4.13.7
+------
+- Add `platform_edge` to ignored railway types by @pietervdvn [#547]
+
 Tiles 4.13.6
 ------
 - Translate POI min_zoom= assignments to MultiExpression rules [#539]
