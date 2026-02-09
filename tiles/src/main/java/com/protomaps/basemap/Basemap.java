@@ -152,12 +152,22 @@ public class Basemap extends ForwardingProfile {
   public static void main(String[] args) throws IOException {
     // Check for help flag
     for (String arg : args) {
+      if ("--version".equals(arg) || "-v".equals(arg)) {
+        printVersion();
+        System.exit(0);
+      }
+
       if ("--help".equals(arg) || "-h".equals(arg)) {
         printHelp();
         System.exit(0);
       }
     }
     run(Arguments.fromArgsOrConfigFile(args));
+  }
+
+  private static void printVersion() {
+    Basemap basemap = new Basemap(null, null, null, "");
+    System.out.println(basemap.version());
   }
 
   private static void printHelp() {
