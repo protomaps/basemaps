@@ -99,7 +99,7 @@ function BuildComponent(props: {
   };
 
   return (
-    <tr style={{ color: date.getDay() === 1 ? "black" : "#aaa" }}>
+    <tr>
       <td>
         <input
           disabled={idx <= props.cmpB}
