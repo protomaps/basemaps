@@ -374,6 +374,8 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setAttr("min_zoom", minZoom + 1)
         .setAttrWithMinzoom("layer", Parse.parseIntOrNull(sf.getString("layer")), extraAttrMinzoom)
         .setAttr("sort_rank", 200)
+        .setAttrWithMinzoom("bridge", sf.getString("bridge"), extraAttrMinzoom)
+        .setAttrWithMinzoom("tunnel", sf.getString("tunnel"), extraAttrMinzoom)
         .setSortKey(minZoom)
         .setMinPixelSize(0)
         .setPixelTolerance(0)
