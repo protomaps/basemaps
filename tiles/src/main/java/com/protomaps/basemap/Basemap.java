@@ -164,6 +164,32 @@ public class Basemap extends ForwardingProfile {
     return result;
   }
 
+  /**
+   * Extracts bounds from GeoParquet metadata and returns them as a formatted string.
+   *
+   * @param parquetPath Path to the GeoParquet file
+   * @return Bounds string in format "minX,minY,maxX,maxY" if successful, empty otherwise
+   */
+  static java.util.Optional<String> extractBoundsFromGeoParquet(Path parquetPath) {
+    try {
+      var inputFile = ParquetReader.makeInputFile(parquetPath.toFile());
+      try (var reader = ParquetFileReader.open(inputFile, ParquetReadOptions.builder().build())) {
+        var fileMetadata = reader.getFooter().getFileMetaData();
+        var geoparquet = GeoParquetMetadata.parse(fileMetadata);
+        Envelope bounds = geoparquet.primaryColumnMetadata().envelope();
+
+        if (bounds != null && !bounds.isNull() && bounds.getArea() > 0) {
+          String boundsStr = String.format("%f,%f,%f,%f",
+            bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
+          return java.util.Optional.of(boundsStr);
+        }
+      }
+    } catch (Exception e) {
+      LOGGER.warn("Failed to read bounds from GeoParquet file: {}", e.getMessage());
+    }
+    return java.util.Optional.empty();
+  }
+
   public static void main(String[] args) throws IOException {
     // Check for help flag
     for (String arg : args) {
@@ -249,23 +275,12 @@ public class Basemap extends ForwardingProfile {
 
     // Extract bounds from GeoParquet metadata if using Overture source
     if (!overtureFile.isEmpty() && args.getString("bounds", "", "").isEmpty()) {
-      try {
-        Path parquetPath = Path.of(overtureFile);
-        var inputFile = ParquetReader.makeInputFile(parquetPath.toFile());
-        try (var reader = ParquetFileReader.open(inputFile, ParquetReadOptions.builder().build())) {
-          var fileMetadata = reader.getFooter().getFileMetaData();
-          var geoparquet = GeoParquetMetadata.parse(fileMetadata);
-          Envelope bounds = geoparquet.primaryColumnMetadata().envelope();
-
-          if (bounds != null && !bounds.isNull() && bounds.getArea() > 0) {
-            String boundsStr = String.format("%f,%f,%f,%f",
-              bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
-            LOGGER.info("Setting bounds from GeoParquet metadata: {}", boundsStr);
-            args = args.orElse(Arguments.of("bounds", boundsStr));
-          }
-        }
-      } catch (Exception e) {
-        LOGGER.warn("Failed to read bounds from GeoParquet file: {}", e.getMessage());
+      Path parquetPath = Path.of(overtureFile);
+      var boundsOpt = extractBoundsFromGeoParquet(parquetPath);
+      if (boundsOpt.isPresent()) {
+        String boundsStr = boundsOpt.get();
+        LOGGER.info("Setting bounds from GeoParquet metadata: {}", boundsStr);
+        args = args.orElse(Arguments.of("bounds", boundsStr));
       }
     }
 
