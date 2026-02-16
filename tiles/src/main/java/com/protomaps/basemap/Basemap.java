@@ -1,8 +1,10 @@
 package com.protomaps.basemap;
 
+import blue.strategic.parquet.ParquetReader;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
+import com.onthegomap.planetiler.reader.parquet.GeoParquetMetadata;
 import com.onthegomap.planetiler.util.Downloader;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.QrankDb;
@@ -24,6 +26,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.parquet.ParquetReadOptions;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,6 +245,28 @@ public class Basemap extends ForwardingProfile {
     }
     if (area.isEmpty() && overtureFile.isEmpty()) {
       area = "monaco"; // default
+    }
+
+    // Extract bounds from GeoParquet metadata if using Overture source
+    if (!overtureFile.isEmpty() && args.getString("bounds", "", "").isEmpty()) {
+      try {
+        Path parquetPath = Path.of(overtureFile);
+        var inputFile = ParquetReader.makeInputFile(parquetPath.toFile());
+        try (var reader = ParquetFileReader.open(inputFile, ParquetReadOptions.builder().build())) {
+          var fileMetadata = reader.getFooter().getFileMetaData();
+          var geoparquet = GeoParquetMetadata.parse(fileMetadata);
+          Envelope bounds = geoparquet.primaryColumnMetadata().envelope();
+
+          if (bounds != null && !bounds.isNull() && bounds.getArea() > 0) {
+            String boundsStr = String.format("%f,%f,%f,%f",
+              bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
+            LOGGER.info("Setting bounds from GeoParquet metadata: {}", boundsStr);
+            args = args.orElse(Arguments.of("bounds", boundsStr));
+          }
+        }
+      } catch (Exception e) {
+        LOGGER.warn("Failed to read bounds from GeoParquet file: {}", e.getMessage());
+      }
     }
 
     var planetiler = Planetiler.create(args)
