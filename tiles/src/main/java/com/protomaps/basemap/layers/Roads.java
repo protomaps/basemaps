@@ -424,7 +424,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       return;
     }
 
-    if (sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "proposed")) {
+    if (sf.hasTag("railway", "abandoned", "razed", "demolished", "removed", "construction", "platform", "platform_edge",
+      "proposed")) {
       return;
     }
 
