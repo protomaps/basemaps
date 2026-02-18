@@ -59,7 +59,9 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
     "US National Forest Service", "United State Forest Service", "U.S. National Forest Service");
 
-  private static final MultiExpression.Index<Map<String, Object>> kindsIndex = MultiExpression.ofOrdered(List.of(
+  // OSM tags to Protomaps kind/kind_detail mapping
+
+  private static final MultiExpression.Index<Map<String, Object>> osmKindsIndex = MultiExpression.ofOrdered(List.of(
 
     // Everything is undefined at first
     rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
@@ -177,6 +179,30 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   )).index();
 
+
+  // Overture properties to Protomaps kind/kind_detail mapping
+
+  private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex =
+    MultiExpression.ofOrdered(List.of(
+
+      // Everything is undefined at first
+      rule(use(KIND, UNDEFINED), use(KIND_DETAIL, UNDEFINED)),
+
+      // Pull from basic_category
+      rule(with("basic_category"), use(KIND, fromTag("basic_category"))),
+
+      // Some basic categories don't match OSM-style expectations
+      rule(with("basic_category", "accommodation"), with("categories.primary", "hostel"), use(KIND, "hostel")),
+      rule(with("basic_category", "airport"), use(KIND, "aerodrome")),
+      rule(with("basic_category", "college_university"), use(KIND, "college")),
+      rule(with("basic_category", "grocery_store"), use(KIND, "supermarket")),
+      rule(with("basic_category", "sport_stadium"), use(KIND, "stadium")),
+      rule(with("basic_category", "place_of_learning", "middle_school"), use(KIND, "school"))
+
+    )).index();
+
+  // Protomaps kind/kind_detail to min_zoom mapping for points
+
   private static final MultiExpression.Index<Map<String, Object>> pointZoomsIndex = MultiExpression.ofOrdered(List.of(
 
     // Every point is zoom=15 at first
@@ -186,44 +212,44 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     rule(
       Expression.or(
-        with("amenity", "university", "college"), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
-        with("landuse", "cemetery"),
-        with("leisure", "park"), // Lots of pocket parks and NODE parks, show those later than rest of leisure
-        with("shop", "grocery", "supermarket")
+        with(KIND, "university", "college"), // One would think University should be earlier, but there are lots of dinky node only places, so if the university has a large area, it'll naturally improve its zoom in another section...
+        with(KIND, "cemetery"),
+        with(KIND, "park"), // Lots of pocket parks and NODE parks, show those later than rest of leisure
+        with(KIND, "grocery", "supermarket")
       ),
       use(MINZOOM, 14)
     ),
     rule(
       Expression.or(
-        with("aeroway", "aerodrome"),
-        with("amenity", "library", "post_office", "townhall"),
-        with("leisure", "golf_course", "marina", "stadium"),
-        with("natural", "peak")
+        with(KIND, "aerodrome"),
+        with(KIND, "library", "post_office", "townhall"),
+        with(KIND, "golf_course", "marina", "stadium"),
+        with(KIND, "peak")
       ),
       use(MINZOOM, 13)
     ),
-    rule(with("amenity", "hospital"), use(MINZOOM, 12)),
+    rule(with(KIND, "hospital"), use(MINZOOM, 12)),
     rule(with(KIND, "national_park"), use(MINZOOM, 11)),
-    rule(with("aeroway", "aerodrome"), with(KIND, "aerodrome"), with("iata"), use(MINZOOM, 11)), // Emphasize large international airports earlier
+    rule(with(KIND, "aerodrome"), with(KIND, "aerodrome"), with("iata"), use(MINZOOM, 11)), // Emphasize large international airports earlier
 
     // Demote some unimportant point categories to very late zooms
 
-    rule(with("highway", "bus_stop"), use(MINZOOM, 17)),
+    rule(with(KIND, "bus_stop"), use(MINZOOM, 17)),
     rule(
       Expression.or(
-        with("amenity", "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
+        with(KIND, "clinic", "dentist", "doctors", "social_facility", "baby_hatch", "childcare",
           "car_sharing", "bureau_de_change", "emergency_phone", "karaoke", "karaoke_box", "money_transfer", "car_wash",
           "hunting_stand", "studio", "boat_storage", "gambling", "adult_gaming_centre", "sanitary_dump_station",
-          "attraction", "animal", "water_slide", "roller_coaster", "summer_toboggan", "carousel", "amusement_ride",
+          "animal", "roller_coaster", "summer_toboggan", "carousel", "amusement_ride",
           "maze"),
-        with("historic", "memorial", "district"),
-        with("leisure", "pitch", "playground", "slipway"),
-        with("shop", "scuba_diving", "atv", "motorcycle", "snowmobile", "art", "bakery", "beauty", "bookmaker",
+        with(KIND, "memorial", "district"),
+        with(KIND, "pitch", "playground", "slipway"),
+        with(KIND, "scuba_diving", "atv", "motorcycle", "snowmobile", "art", "bakery", "beauty", "bookmaker",
           "books", "butcher", "car", "car_parts", "car_repair", "clothes", "computer", "convenience", "fashion",
           "florist", "garden_centre", "gift", "golf", "greengrocer", "grocery", "hairdresser", "hifi", "jewelry",
           "lottery", "mobile_phone", "newsagent", "optician", "perfumery", "ship_chandler", "stationery", "tobacco",
           "travel_agency"),
-        with("tourism", "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
+        with(KIND, "artwork", "hanami", "trail_riding_station", "bed_and_breakfast", "chalet",
           "guest_house", "hostel")
       ),
       use(MINZOOM, 16)
@@ -234,16 +260,16 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(
       without("name"),
       Expression.or(
-        with("amenity", "atm", "bbq", "bench", "bicycle_parking",
+        with(KIND, "atm", "bbq", "bench", "bicycle_parking",
           "bicycle_rental", "bicycle_repair_station", "boat_storage", "bureau_de_change", "car_rental", "car_sharing",
           "car_wash", "charging_station", "customs", "drinking_water", "fuel", "harbourmaster", "hunting_stand",
           "karaoke_box", "life_ring", "money_transfer", "motorcycle_parking", "parking", "picnic_table", "post_box",
           "ranger_station", "recycling", "sanitary_dump_station", "shelter", "shower", "taxi", "telephone", "toilets",
           "waste_basket", "waste_disposal", "water_point", "watering_place", "bicycle_rental", "motorcycle_parking",
           "charging_station"),
-        with("historic", "landmark", "wayside_cross"),
-        with("leisure", "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area"),
-        with("tourism", "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut")
+        with(KIND, "landmark", "wayside_cross"),
+        with(KIND, "dog_park", "firepit", "fishing", "pitch", "playground", "slipway", "swimming_area"),
+        with(KIND, "alpine_hut", "information", "picnic_site", "viewpoint", "wilderness_hut")
       ),
       use(MINZOOM, 16)
     )
@@ -259,6 +285,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     with(KIND, "forest", "park", "protected_area", "nature_reserve", "village_green");
   private static final Expression WITH_ETC =
     with(KIND, "aerodrome", "golf_course", "military", "naval_base", "stadium", "zoo");
+
+  // Protomaps kind/kind_detail to min_zoom mapping for named polygons
 
   private static final MultiExpression.Index<Map<String, Object>> namedPolygonZoomsIndex =
     MultiExpression.ofOrdered(List.of(
@@ -413,7 +441,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
 
     // Map the Protomaps KIND classification to incoming tags
-    var kindMatches = kindsIndex.getMatches(sf);
+    var kindMatches = osmKindsIndex.getMatches(sf);
 
     // Output feature and its basic values to assign
     FeatureCollector.Feature outputFeature;
@@ -437,8 +465,6 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       // Calculate minZoom using zooms indexes
       var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
       var zoomMatches = hasNamedPolygon ? namedPolygonZoomsIndex.getMatches(sf2) : pointZoomsIndex.getMatches(sf2);
-      if (zoomMatches.isEmpty())
-        return;
 
       // Initial minZoom
       minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
@@ -523,6 +549,60 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     // Even with the categorical zoom bucketing above, we end up with too dense a point feature spread in downtown
     // areas, so cull the labels which wouldn't label at earlier zooms than the max_zoom of 15
     outputFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
+  }
+
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    // Filter by type field - Overture transportation theme
+    if (!"places".equals(sf.getString("theme"))) {
+      return;
+    }
+
+    if (!"place".equals(sf.getString("type"))) {
+      return;
+    }
+
+    // Map the Protomaps KIND classification to incoming tags
+    var kindMatches = overtureKindsIndex.getMatches(sf);
+
+    String kind = getString(sf, kindMatches, KIND, UNDEFINED);
+    Integer minZoom;
+
+    // Quickly eliminate any features with non-matching tags
+    if (kind.equals(UNDEFINED))
+      return;
+
+    // QRank may override minZoom entirely
+    String wikidata = sf.getString("wikidata");
+    long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
+    var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
+
+    if (qrankedZoom.isPresent()) {
+      // Set minZoom from QRank
+      minZoom = qrankedZoom.get();
+    } else {
+      // Calculate minZoom using zooms indexes
+      var sf2 = computeExtraTags(sf, getString(sf, kindMatches, KIND, UNDEFINED));
+      var zoomMatches = pointZoomsIndex.getMatches(sf2);
+
+      // Initial minZoom
+      minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
+    }
+
+    String name = sf.getString("names.primary");
+
+    features.point(this.name())
+      // all POIs should receive their IDs at all zooms
+      // (there is no merging of POIs like with lines and polygons in other layers)
+      //.setId(FeatureId.create(sf))
+      // Core Tilezen schema properties
+      .setAttr("kind", kind)
+      .setAttr("name", name)
+      // While other layers don't need min_zoom, POIs do for more predictable client-side label collisions
+      // 512 px zooms versus 256 px logical zooms
+      .setAttr("min_zoom", minZoom + 1)
+      //
+      .setBufferPixels(8)
+      .setZoomRange(Math.min(minZoom, 15), 15);
   }
 
   @Override
