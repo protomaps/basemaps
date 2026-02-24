@@ -270,13 +270,15 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
     // Overture land_use examples: agriculture, aquaculture, campground, cemetery, construction
     String kind = sf.getString("subtype");
 
-    features.polygon(LAYER_NAME)
-      //.setId(1L + sortKey)
-      .setAttr("kind", kind)
-      .setAttr("sort_rank", 189)
-      // Below z8 this data shows up as Landcover.java
-      .setZoomRange(8, 15)
-      .setMinPixelSize(2.0);
+    if (sf.canBePolygon()) {
+      features.polygon(LAYER_NAME)
+        //.setId(1L + sortKey)
+        .setAttr("kind", kind)
+        .setAttr("sort_rank", 189)
+        // Below z8 this data shows up as Landcover.java
+        .setZoomRange(8, 15)
+        .setMinPixelSize(2.0);
+    }
   }
 
   public static final String LAYER_NAME = "landuse";

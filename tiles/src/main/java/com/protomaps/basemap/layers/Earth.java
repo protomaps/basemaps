@@ -83,11 +83,13 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    features.polygon(LAYER_NAME)
-      .setAttr("kind", "earth")
-      .setPixelTolerance(PIXEL_TOLERANCE)
-      .setMinZoom(6)
-      .setBufferPixels(8);
+    if (sf.canBePolygon()) {
+      features.polygon(LAYER_NAME)
+        .setAttr("kind", "earth")
+        .setPixelTolerance(PIXEL_TOLERANCE)
+        .setMinZoom(6)
+        .setBufferPixels(8);
+    }
   }
 
   @Override
