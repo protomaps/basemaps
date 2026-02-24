@@ -1,6 +1,6 @@
 Tiles 4.14.0
 ------
-- Add Overture data source support [#541]
+- Add experimental Overture data source support [#541]
 
 Tiles 4.13.7
 ------
