@@ -199,7 +199,7 @@ class RoadsTest extends LayerTest {
 
     // US
     assertFeatures(12,
-      List.of(Map.of("kind", kind,
+      List.of(Map.of("kind", highway.startsWith("motorway") ? "major_road" : kind,
         "kind_detail", kindDetail,
         "_minzoom", usMinZoom
       )),
@@ -211,7 +211,7 @@ class RoadsTest extends LayerTest {
 
     // US with relation US:US
     assertFeatures(12,
-      List.of(Map.of("kind", kind,
+      List.of(Map.of("kind", "major_road",
         "kind_detail", kindDetail,
         "_minzoom", 6
       )),
@@ -223,7 +223,7 @@ class RoadsTest extends LayerTest {
 
     // US with relation US:I
     assertFeatures(12,
-      List.of(Map.of("kind", kind,
+      List.of(Map.of("kind", "highway",
         "kind_detail", kindDetail,
         "_minzoom", 3
       )),
