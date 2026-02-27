@@ -214,15 +214,15 @@ public class Basemap extends ForwardingProfile {
     Path dataDir = Path.of("data");
     Path sourcesDir = dataDir.resolve("sources");
 
-    Path nePath = sourcesDir.resolve("natural_earth_vector.sqlite.zip");
-    String neUrl = "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip";
+    Path nePath = sourcesDir.resolve("natural_earth_vector.gpkg.zip");
+    String neUrl = "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip";
 
     var countryCoder = CountryCoder.fromJarResource();
 
     String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "monaco");
 
     var planetiler = Planetiler.create(args)
-      .addNaturalEarthSource("ne", nePath, neUrl)
+      .addGeoPackageSource("ne", nePath, neUrl)
       .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
       .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
         "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
