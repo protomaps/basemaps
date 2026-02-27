@@ -400,7 +400,7 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["!has", "is_tunnel"],
+        ["has", "is_tunnel"],
         ["!has", "is_bridge"],
         ["==", "kind", "major_road"],
       ],
@@ -436,7 +436,7 @@ export function nolabels_layers(
       "source-layer": "roads",
       filter: [
         "all",
-        ["!has", "is_tunnel"],
+        ["has", "is_tunnel"],
         ["!has", "is_bridge"],
         ["==", "kind", "highway"],
         ["!has", "is_link"],
