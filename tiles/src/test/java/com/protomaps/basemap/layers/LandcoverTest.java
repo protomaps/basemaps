@@ -3,7 +3,6 @@ package com.protomaps.basemap.layers;
 import static com.onthegomap.planetiler.TestUtils.newPolygon;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
-import com.protomaps.basemap.Basemap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,7 @@ class LandcoverTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "land_cover", "subtype", "grass")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         0
       )));
@@ -82,7 +81,7 @@ class LandcoverTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "land_cover", "subtype", "barren")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         0
       )));
@@ -95,7 +94,7 @@ class LandcoverTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "land_cover", "subtype", "urban")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         0
       )));
@@ -108,7 +107,7 @@ class LandcoverTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "land_cover", "subtype", "crop")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         0
       )));
@@ -121,7 +120,7 @@ class LandcoverTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "land_cover", "subtype", "snow")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         0
       )));
@@ -134,7 +133,7 @@ class LandcoverTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "land_cover", "subtype", "shrub")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         0
       )));
@@ -147,7 +146,7 @@ class LandcoverTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "land_cover", "subtype", "forest")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         0
       )));

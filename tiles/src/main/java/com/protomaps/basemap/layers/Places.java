@@ -45,16 +45,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   public static final String LAYER_NAME = "places";
 
-  // Internal tags used to reference calculated values between matchers
-  private static final String KIND = "protomaps-basemaps:kind";
-  private static final String KIND_DETAIL = "protomaps-basemaps:kindDetail";
-  private static final String KIND_RANK = "protomaps-basemaps:kindRank";
-  private static final String POPULATION = "protomaps-basemaps:population";
-  private static final String MINZOOM = "protomaps-basemaps:minZoom";
-  private static final String MAXZOOM = "protomaps-basemaps:maxZoom";
-  private static final String COUNTRY = "protomaps-basemaps:country";
-  private static final String UNDEFINED = "protomaps-basemaps:undefined";
-
   private static int[] popBreaks = {
     0,
     200,
@@ -78,35 +68,36 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private static final MultiExpression.Index<Map<String, Object>> osmKindsIndex = MultiExpression.ofOrdered(List.of(
 
-    rule(use(KIND, UNDEFINED)),
-    rule(with("population"), use(POPULATION, fromTag("population"))),
+    rule(use("pm:kind", "pm:undefined")),
+    rule(with("population"), use("pm:population", fromTag("population"))),
 
-    rule(with("place", "country"), use(KIND, "country")),
-    rule(with("place", "state", "province"), with(COUNTRY, "US", "CA", "BR", "IN", "CN", "AU"), use(KIND, "region")),
-    rule(with("place", "city", "town"), use(KIND, "locality"), use(KIND_DETAIL, fromTag("place"))),
-    rule(with("place", "city"), without("population"), use(POPULATION, 5000)),
-    rule(with("place", "town"), without("population"), use(POPULATION, 10000)),
+    rule(with("place", "country"), use("pm:kind", "country")),
+    rule(with("place", "state", "province"), with("pm:country", "US", "CA", "BR", "IN", "CN", "AU"),
+      use("pm:kind", "region")),
+    rule(with("place", "city", "town"), use("pm:kind", "locality"), use("pm:kindDetail", fromTag("place"))),
+    rule(with("place", "city"), without("population"), use("pm:population", 5000)),
+    rule(with("place", "town"), without("population"), use("pm:population", 10000)),
 
     // Neighborhood-scale places
 
-    rule(with("place", "neighbourhood", "suburb"), use(KIND, "neighbourhood")),
-    rule(with("place", "suburb"), use(KIND, "neighbourhood"), use(KIND_DETAIL, "suburb")),
-    rule(with("place", "quarter"), use(KIND, "macrohood")),
+    rule(with("place", "neighbourhood", "suburb"), use("pm:kind", "neighbourhood")),
+    rule(with("place", "suburb"), use("pm:kind", "neighbourhood"), use("pm:kindDetail", "suburb")),
+    rule(with("place", "quarter"), use("pm:kind", "macrohood")),
 
     // Smaller places detailed in OSM but not fully tested for Overture
 
-    rule(with("place", "village"), use(KIND, "locality"), use(KIND_DETAIL, fromTag("place"))),
-    rule(with("place", "village"), without("population"), use(POPULATION, 2000)),
-    rule(with("place", "locality"), use(KIND, "locality")),
-    rule(with("place", "locality"), without("population"), use(POPULATION, 1000)),
-    rule(with("place", "hamlet"), use(KIND, "locality")),
-    rule(with("place", "hamlet"), without("population"), use(POPULATION, 200)),
-    rule(with("place", "isolated_dwelling"), use(KIND, "locality")),
-    rule(with("place", "isolated_dwelling"), without("population"), use(POPULATION, 100)),
-    rule(with("place", "farm"), use(KIND, "locality")),
-    rule(with("place", "farm"), without("population"), use(POPULATION, 50)),
-    rule(with("place", "allotments"), use(KIND, "locality")),
-    rule(with("place", "allotments"), without("population"), use(POPULATION, 1000))
+    rule(with("place", "village"), use("pm:kind", "locality"), use("pm:kindDetail", fromTag("place"))),
+    rule(with("place", "village"), without("population"), use("pm:population", 2000)),
+    rule(with("place", "locality"), use("pm:kind", "locality")),
+    rule(with("place", "locality"), without("population"), use("pm:population", 1000)),
+    rule(with("place", "hamlet"), use("pm:kind", "locality")),
+    rule(with("place", "hamlet"), without("population"), use("pm:population", 200)),
+    rule(with("place", "isolated_dwelling"), use("pm:kind", "locality")),
+    rule(with("place", "isolated_dwelling"), without("population"), use("pm:population", 100)),
+    rule(with("place", "farm"), use("pm:kind", "locality")),
+    rule(with("place", "farm"), without("population"), use("pm:population", 50)),
+    rule(with("place", "allotments"), use("pm:kind", "locality")),
+    rule(with("place", "allotments"), without("population"), use("pm:population", 1000))
 
   )).index();
 
@@ -115,10 +106,13 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
   private static final MultiExpression.Index<Map<String, Object>> overtureKindsIndex =
     MultiExpression.ofOrdered(List.of(
 
-      rule(with("subtype", "locality"), with("class", "city"), use(KIND, "locality"), use(KIND_DETAIL, "city")),
-      rule(with("subtype", "locality"), with("class", "town"), use(KIND, "locality"), use(KIND_DETAIL, "town")),
-      rule(with("subtype", "macrohood"), use(KIND, "macrohood")),
-      rule(with("subtype", "neighborhood", "microhood"), use(KIND, "neighbourhood"), use(KIND_DETAIL, "neighbourhood"))
+      rule(with("subtype", "locality"), with("class", "city"), use("pm:kind", "locality"),
+        use("pm:kindDetail", "city")),
+      rule(with("subtype", "locality"), with("class", "town"), use("pm:kind", "locality"),
+        use("pm:kindDetail", "town")),
+      rule(with("subtype", "macrohood"), use("pm:kind", "macrohood")),
+      rule(with("subtype", "neighborhood", "microhood"), use("pm:kind", "neighbourhood"),
+        use("pm:kindDetail", "neighbourhood"))
 
     )).index();
 
@@ -126,30 +120,38 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
   private static final MultiExpression.Index<Map<String, Object>> zoomsIndex = MultiExpression.ofOrdered(List.of(
     // Top-level defaults
-    rule(use(MINZOOM, 12), use(MAXZOOM, 15)),
+    rule(use("pm:minzoom", 12), use("pm:maxzoom", 15)),
 
-    rule(with(KIND, "country"), use(KIND_RANK, 0), use(MINZOOM, 5), use(MAXZOOM, 8)),
-    rule(with(KIND, "region"), use(MINZOOM, 8), use(MAXZOOM, 11)),
-    rule(with(KIND, "region"), with(COUNTRY, "US", "CA", "BR", "IN", "CN", "AU"), use(KIND_RANK, 1)),
+    rule(with("pm:kind", "country"), use("pm:kindRank", 0), use("pm:minzoom", 5), use("pm:maxzoom", 8)),
+    rule(with("pm:kind", "region"), use("pm:minzoom", 8), use("pm:maxzoom", 11)),
+    rule(with("pm:kind", "region"), with("pm:country", "US", "CA", "BR", "IN", "CN", "AU"), use("pm:kindRank", 1)),
 
-    rule(with(KIND, "locality"), use(KIND_RANK, 4), use(MINZOOM, 7), use(MAXZOOM, 15)),
-    rule(with(KIND, "locality"), atLeast(POPULATION, 1000), use(MINZOOM, 12)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "city"), use(KIND_RANK, 2), use(MINZOOM, 8)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "town"), use(KIND_RANK, 2), use(MINZOOM, 9)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "village"), use(KIND_RANK, 3), use(MINZOOM, 10)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "village"), atLeast(POPULATION, 2000), use(MINZOOM, 11)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "hamlet"), use(KIND_RANK, 5), use(MINZOOM, 11)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "hamlet"), atLeast(POPULATION, 200), use(MINZOOM, 12)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "isolated_dwelling"), use(KIND_RANK, 6), use(MINZOOM, 13)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "isolated_dwelling"), atLeast(POPULATION, 100), use(MINZOOM, 14)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "farm"), use(KIND_RANK, 7), use(MINZOOM, 13)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "farm"), atLeast(POPULATION, 50), use(MINZOOM, 14)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "allotments"), use(KIND_RANK, 8), use(MINZOOM, 13)),
-    rule(with(KIND, "locality"), with(KIND_DETAIL, "allotments"), atLeast(POPULATION, 100), use(MINZOOM, 14)),
+    rule(with("pm:kind", "locality"), use("pm:kindRank", 4), use("pm:minzoom", 7), use("pm:maxzoom", 15)),
+    rule(with("pm:kind", "locality"), atLeast("pm:population", 1000), use("pm:minzoom", 12)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "city"), use("pm:kindRank", 2), use("pm:minzoom", 8)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "town"), use("pm:kindRank", 2), use("pm:minzoom", 9)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "village"), use("pm:kindRank", 3), use("pm:minzoom", 10)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "village"), atLeast("pm:population", 2000),
+      use("pm:minzoom", 11)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "hamlet"), use("pm:kindRank", 5), use("pm:minzoom", 11)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "hamlet"), atLeast("pm:population", 200),
+      use("pm:minzoom", 12)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "isolated_dwelling"), use("pm:kindRank", 6),
+      use("pm:minzoom", 13)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "isolated_dwelling"), atLeast("pm:population", 100),
+      use("pm:minzoom", 14)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "farm"), use("pm:kindRank", 7), use("pm:minzoom", 13)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "farm"), atLeast("pm:population", 50),
+      use("pm:minzoom", 14)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "allotments"), use("pm:kindRank", 8),
+      use("pm:minzoom", 13)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "allotments"), atLeast("pm:population", 100),
+      use("pm:minzoom", 14)),
 
-    rule(with(KIND, "macrohood"), use(KIND_RANK, 10), use(MINZOOM, 10)),
-    rule(with(KIND, "neighbourhood"), use(KIND_RANK, 11), use(MINZOOM, 12)),
-    rule(with(KIND, "neighbourhood"), with(KIND_DETAIL, "suburb"), use(KIND_RANK, 9), use(MINZOOM, 12))
+    rule(with("pm:kind", "macrohood"), use("pm:kindRank", 10), use("pm:minzoom", 10)),
+    rule(with("pm:kind", "neighbourhood"), use("pm:kindRank", 11), use("pm:minzoom", 12)),
+    rule(with("pm:kind", "neighbourhood"), with("pm:kindDetail", "suburb"), use("pm:kindRank", 9),
+      use("pm:minzoom", 12))
   )).index();
 
   private record WikidataConfig(int minZoom, int maxZoom, int rankMax) {}
@@ -232,7 +234,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     try {
       Optional<String> code = countryCoder.getCountryCode(sf.latLonGeometry());
       if (code.isPresent()) {
-        sf.setTag(COUNTRY, code.get());
+        sf.setTag("pm:country", code.get());
       }
     } catch (GeometryException e) {
       // do nothing
@@ -240,11 +242,11 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     var matches = osmKindsIndex.getMatches(sf);
 
-    String kind = getString(sf, matches, KIND, UNDEFINED);
-    String kindDetail = getString(sf, matches, KIND_DETAIL, "");
-    Integer population = getInteger(sf, matches, POPULATION, 0);
+    String kind = getString(sf, matches, "pm:kind", "pm:undefined");
+    String kindDetail = getString(sf, matches, "pm:kindDetail", "");
+    Integer population = getInteger(sf, matches, "pm:population", 0);
 
-    if (UNDEFINED.equals(kind)) {
+    if ("pm:undefined".equals(kind)) {
       return;
     }
 
@@ -252,12 +254,12 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     Integer maxZoom;
     Integer kindRank;
 
-    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of(KIND, kind, KIND_DETAIL, kindDetail));
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail));
     var zoomMatches = zoomsIndex.getMatches(sf2);
 
-    minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
-    maxZoom = getInteger(sf2, zoomMatches, MAXZOOM, 99);
-    kindRank = getInteger(sf2, zoomMatches, KIND_RANK, 99);
+    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
+    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
+    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
 
     int populationRank = 0;
 
@@ -336,10 +338,10 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     var matches = overtureKindsIndex.getMatches(sf);
 
-    String kind = getString(sf, matches, KIND, UNDEFINED);
-    String kindDetail = getString(sf, matches, KIND_DETAIL, "");
+    String kind = getString(sf, matches, "pm:kind", "pm:undefined");
+    String kindDetail = getString(sf, matches, "pm:kindDetail", "");
 
-    if (UNDEFINED.equals(kind)) {
+    if ("pm:undefined".equals(kind)) {
       return;
     }
 
@@ -347,12 +349,12 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     Integer maxZoom;
     Integer kindRank;
 
-    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of(KIND, kind, KIND_DETAIL, kindDetail));
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail));
     var zoomMatches = zoomsIndex.getMatches(sf2);
 
-    minZoom = getInteger(sf2, zoomMatches, MINZOOM, 99);
-    maxZoom = getInteger(sf2, zoomMatches, MAXZOOM, 99);
-    kindRank = getInteger(sf2, zoomMatches, KIND_RANK, 99);
+    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
+    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
+    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
 
     // Extract name
     String name = sf.getString("names.primary");

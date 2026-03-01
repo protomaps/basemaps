@@ -3,7 +3,6 @@ package com.protomaps.basemap.layers;
 import static com.onthegomap.planetiler.TestUtils.*;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
-import com.protomaps.basemap.Basemap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +103,7 @@ class WaterOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newLineString(0, 0, 144, 0),
         new HashMap<>(Map.of("type", "water", "subtype", "ocean")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         1
       )));
@@ -117,7 +116,7 @@ class WaterOvertureTest extends LayerTest {
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
         new HashMap<>(Map.of("type", "water", "subtype", "ocean")),
-        Basemap.SRC_OVERTURE,
+        "pm:overture",
         null,
         1
       )));
