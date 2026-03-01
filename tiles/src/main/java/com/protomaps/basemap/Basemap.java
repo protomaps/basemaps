@@ -1,8 +1,10 @@
 package com.protomaps.basemap;
 
+import blue.strategic.parquet.ParquetReader;
 import com.onthegomap.planetiler.ForwardingProfile;
 import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
+import com.onthegomap.planetiler.reader.parquet.GeoParquetMetadata;
 import com.onthegomap.planetiler.util.Downloader;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.QrankDb;
@@ -24,6 +26,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.parquet.ParquetReadOptions;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +51,14 @@ public class Basemap extends ForwardingProfile {
       var buildings = new Buildings();
       registerHandler(buildings);
       registerSourceHandler("osm", buildings::processOsm);
+      registerSourceHandler("pm:overture", buildings::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Landuse.LAYER_NAME)) {
       var landuse = new Landuse();
       registerHandler(landuse);
       registerSourceHandler("osm", landuse::processOsm);
+      registerSourceHandler("pm:overture", landuse::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Landcover.LAYER_NAME)) {
@@ -59,24 +66,28 @@ public class Basemap extends ForwardingProfile {
       registerHandler(landcover);
       registerSourceHandler("landcover", landcover::processLandcover);
       registerSourceHandler("ne", landcover::processNe);
+      registerSourceHandler("pm:overture", landcover::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Places.LAYER_NAME)) {
       var place = new Places(countryCoder);
       registerHandler(place);
       registerSourceHandler("osm", place::processOsm);
+      registerSourceHandler("pm:overture", place::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Pois.LAYER_NAME)) {
       var poi = new Pois(qrankDb);
       registerHandler(poi);
       registerSourceHandler("osm", poi::processOsm);
+      registerSourceHandler("pm:overture", poi::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Roads.LAYER_NAME)) {
       var roads = new Roads(countryCoder);
       registerHandler(roads);
       registerSourceHandler("osm", roads::processOsm);
+      registerSourceHandler("pm:overture", roads::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Transit.LAYER_NAME)) {
@@ -91,6 +102,7 @@ public class Basemap extends ForwardingProfile {
       registerSourceHandler("osm", water::processOsm);
       registerSourceHandler("osm_water", water::processPreparedOsm);
       registerSourceHandler("ne", water::processNe);
+      registerSourceHandler("pm:overture", water::processOverture);
     }
 
     if (layer.isEmpty() || layer.equals(Earth.LAYER_NAME)) {
@@ -100,6 +112,7 @@ public class Basemap extends ForwardingProfile {
       registerSourceHandler("osm", earth::processOsm);
       registerSourceHandler("osm_land", earth::processPreparedOsm);
       registerSourceHandler("ne", earth::processNe);
+      registerSourceHandler("pm:overture", earth::processOverture);
     }
 
     if (clip != null) {
@@ -119,7 +132,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.13.7";
+    return "4.14.0";
   }
 
   @Override
@@ -147,6 +160,32 @@ public class Basemap extends ForwardingProfile {
     }
 
     return result;
+  }
+
+  /**
+   * Extracts bounds from GeoParquet metadata and returns them as a formatted string.
+   *
+   * @param parquetPath Path to the GeoParquet file
+   * @return Bounds string in format "minX,minY,maxX,maxY" if successful, empty otherwise
+   */
+  static java.util.Optional<String> extractBoundsFromGeoParquet(Path parquetPath) {
+    try {
+      var inputFile = ParquetReader.makeInputFile(parquetPath.toFile());
+      try (var reader = ParquetFileReader.open(inputFile, ParquetReadOptions.builder().build())) {
+        var fileMetadata = reader.getFooter().getFileMetaData();
+        var geoparquet = GeoParquetMetadata.parse(fileMetadata);
+        Envelope bounds = geoparquet.primaryColumnMetadata().envelope();
+
+        if (bounds != null && !bounds.isNull() && bounds.getArea() > 0) {
+          String boundsStr = String.format("%f,%f,%f,%f",
+            bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
+          return java.util.Optional.of(boundsStr);
+        }
+      }
+    } catch (Exception e) {
+      LOGGER.warn("Failed to read bounds from GeoParquet file: {}", e.getMessage());
+    }
+    return java.util.Optional.empty();
   }
 
   public static void main(String[] args) throws IOException {
@@ -183,6 +222,7 @@ public class Basemap extends ForwardingProfile {
         --help, -h              Show this help message and exit
         --area=<name>           Geofabrik area name to download, or filename in data/sources/
                                 (default: monaco, e.g., us/california, washington)
+        --overture=<path>       Path to Overture Maps Parquet file (mutually exclusive with --area)
         --maxzoom=<n>           Maximum zoom level (default: 15)
         --layer=<name>          Process only a single layer (optional)
                                 Valid values: boundaries, buildings, landuse, landcover,
@@ -208,6 +248,7 @@ public class Basemap extends ForwardingProfile {
       """, basemap.name(), basemap.version(), basemap.description()));
   }
 
+  @java.lang.SuppressWarnings("java:S5738")
   static void run(Arguments args) throws IOException {
     args = args.orElse(Arguments.of("maxzoom", 15));
 
@@ -219,17 +260,50 @@ public class Basemap extends ForwardingProfile {
 
     var countryCoder = CountryCoder.fromJarResource();
 
-    String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "monaco");
+    String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "");
+    String overtureFile = args.getString("overture", "Path to Overture Maps Parquet file", "");
+
+    if (!area.isEmpty() && !overtureFile.isEmpty()) {
+      LOGGER.error("Error: Cannot specify both --area and --overture");
+      System.exit(1);
+    }
+    if (area.isEmpty() && overtureFile.isEmpty()) {
+      area = "monaco"; // default
+    }
+
+    // Extract bounds from GeoParquet metadata if using Overture source
+    if (!overtureFile.isEmpty() && args.getString("bounds", "", "").isEmpty()) {
+      Path parquetPath = Path.of(overtureFile);
+      var boundsOpt = extractBoundsFromGeoParquet(parquetPath);
+      if (boundsOpt.isPresent()) {
+        String boundsStr = boundsOpt.get();
+        LOGGER.info("Setting bounds from GeoParquet metadata: {}", boundsStr);
+        args = args.orElse(Arguments.of("bounds", boundsStr));
+      }
+    }
 
     var planetiler = Planetiler.create(args)
-      .addNaturalEarthSource("ne", nePath, neUrl)
-      .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
-      .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
-        "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
-      .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
-        "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
-      .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
-        "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
+      .addNaturalEarthSource("ne", nePath, neUrl);
+
+    if (!overtureFile.isEmpty()) {
+      // Add Overture Parquet source
+      planetiler.addParquetSource("pm:overture",
+        List.of(Path.of(overtureFile)),
+        false, // not Hive partitioned dirname, just a single file
+        fields -> fields.get("id"),
+        fields -> fields.get("type") // source layer
+      );
+    } else {
+      // Add OSM and GeoPackage sources
+      planetiler
+        .addOsmSource("osm", Path.of("data", "sources", area + ".osm.pbf"), "geofabrik:" + area)
+        .addShapefileSource("osm_water", sourcesDir.resolve("water-polygons-split-3857.zip"),
+          "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip")
+        .addShapefileSource("osm_land", sourcesDir.resolve("land-polygons-split-3857.zip"),
+          "https://osmdata.openstreetmap.de/download/land-polygons-split-3857.zip")
+        .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
+          "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
+    }
 
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
     Path qrankCsv = sourcesDir.resolve("qrank.csv.gz");
@@ -273,8 +347,20 @@ public class Basemap extends ForwardingProfile {
 
     fontRegistry.loadFontBundle("NotoSansDevanagari-Regular", "1", "Devanagari");
 
+    String outputName;
+    if (!overtureFile.isEmpty()) {
+      String filename = Path.of(overtureFile).getFileName().toString();
+      if (filename.endsWith(".parquet")) {
+        outputName = filename.substring(0, filename.length() - ".parquet".length());
+      } else {
+        outputName = filename;
+      }
+    } else {
+      outputName = area;
+    }
+
     planetiler.setProfile(new Basemap(qrankDb, countryCoder, clip, layer))
-      .setOutput(Path.of(area + ".pmtiles"))
+      .setOutput(Path.of(outputName + ".pmtiles"))
       .run();
   }
 }
