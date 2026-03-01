@@ -89,5 +89,12 @@
     "tags": ["earth"],
     "center": [-123.22, 48.111],
     "zoom": 7
+  },
+  {
+    "name": "nyc-tunnels",
+    "description": "Highway and major road tunnels should have dashed strokes",
+    "tags": ["roads", "tunnels"],
+    "center": [-73.9684, 40.747621],
+    "zoom": 17
   }
 ]

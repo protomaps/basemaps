@@ -2,6 +2,11 @@ Tiles 4.14.0
 ------
 - Add experimental Overture data source support [#541]
 
+Styles 5.7.1
+------
+- Fix appearance of highway and major road tunnel dashed strokes [#558]
+- Fix filter for landuse in styles to include glacier and sand [#563]
+
 Tiles 4.13.7
 ------
 - Add `platform_edge` to ignored railway types by @pietervdvn [#547]
