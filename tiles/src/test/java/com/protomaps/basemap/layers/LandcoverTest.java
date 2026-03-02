@@ -60,4 +60,95 @@ class LandcoverTest extends LayerTest {
       ))
     );
   }
+
+  @Test
+  void testOvertureGrass() {
+    assertFeatures(7,
+      List.of(Map.of("kind", "grassland")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "land_cover", "subtype", "grass")),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testOvertureBarren() {
+    assertFeatures(7,
+      List.of(Map.of("kind", "barren")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "land_cover", "subtype", "barren")),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testOvertureUrban() {
+    assertFeatures(7,
+      List.of(Map.of("kind", "urban_area")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "land_cover", "subtype", "urban")),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testOvertureCrop() {
+    assertFeatures(7,
+      List.of(Map.of("kind", "farmland")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "land_cover", "subtype", "crop")),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testOvertureSnow() {
+    assertFeatures(7,
+      List.of(Map.of("kind", "glacier")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "land_cover", "subtype", "snow")),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testOvertureShrub() {
+    assertFeatures(7,
+      List.of(Map.of("kind", "scrub")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "land_cover", "subtype", "shrub")),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testOvertureForest() {
+    assertFeatures(7,
+      List.of(Map.of("kind", "forest")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "land_cover", "subtype", "forest")),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
 }

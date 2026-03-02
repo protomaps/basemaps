@@ -312,20 +312,21 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
 
     String minZoomString = getString(sf, matches, "minZoom", null);
 
-    if (sf.canBePolygon() && minZoomString != null) {
-      int minZoom = (int) Math.round(Double.parseDouble(minZoomString));
-
-      int themeMinZoom = sf.getSourceLayer().contains("_50m_") ? 0 : 5;
-      int themeMaxZoom = sf.getSourceLayer().contains("_50m_") ? 4 : 5;
-
-      features.polygon(LAYER_NAME)
-        .setAttr("kind", kind)
-        .setAttr("sort_rank", 200)
-        .setPixelTolerance(Earth.PIXEL_TOLERANCE)
-        .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
-        .setMinPixelSize(1.0)
-        .setBufferPixels(8);
+    if (!sf.canBePolygon() || minZoomString == null) {
+      return;
     }
+
+    int minZoom = (int) Math.round(Double.parseDouble(minZoomString));
+    int themeMinZoom = sf.getSourceLayer().contains("_50m_") ? 0 : 5;
+    int themeMaxZoom = sf.getSourceLayer().contains("_50m_") ? 4 : 5;
+
+    features.polygon(LAYER_NAME)
+      .setAttr("kind", kind)
+      .setAttr("sort_rank", 200)
+      .setPixelTolerance(Earth.PIXEL_TOLERANCE)
+      .setZoomRange(Math.max(themeMinZoom, minZoom), themeMaxZoom)
+      .setMinPixelSize(1.0)
+      .setBufferPixels(8);
   }
 
   public void processOsm(SourceFeature sf, FeatureCollector features) {
@@ -428,6 +429,31 @@ public class Water implements ForwardingProfile.LayerPostProcessor {
         .setBufferPixels(128);
 
       OsmNames.setOsmNames(waterLabelPosition, sf, 0);
+    }
+  }
+
+  public void processOverture(SourceFeature sf, FeatureCollector features) {
+    String type = sf.getString("type");
+
+    // Filter by type field - Overture base theme water
+    if (!"water".equals(type)) {
+      return;
+    }
+
+    // Read Overture water attributes
+    String subtype = sf.getString("subtype"); // e.g., "lake", "river", "ocean"
+    // Access nested struct field: names.primary
+    String primaryName = sf.getString("names.primary");
+
+    if (sf.canBePolygon()) {
+      features.polygon(LAYER_NAME)
+        .setAttr("kind", subtype != null ? subtype : "water")
+        .setAttr("name", primaryName)
+        .setAttr("sort_rank", 200)
+        .setPixelTolerance(Earth.PIXEL_TOLERANCE)
+        .setMinZoom(6)
+        .setMinPixelSize(1.0)
+        .setBufferPixels(8);
     }
   }
 

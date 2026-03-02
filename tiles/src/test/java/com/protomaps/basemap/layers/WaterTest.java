@@ -93,3 +93,32 @@ class WaterTest extends LayerTest {
       )));
   }
 }
+
+
+class WaterOvertureTest extends LayerTest {
+  @Test
+  void test_nonPolygon() {
+    assertFeatures(15,
+      List.of(),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 144, 0),
+        new HashMap<>(Map.of("type", "water", "subtype", "ocean")),
+        "pm:overture",
+        null,
+        1
+      )));
+  }
+
+  @Test
+  void test_ocean() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "ocean")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("type", "water", "subtype", "ocean")),
+        "pm:overture",
+        null,
+        1
+      )));
+  }
+}
