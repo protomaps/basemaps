@@ -188,6 +188,8 @@ public class Basemap extends ForwardingProfile {
                                 Valid values: boundaries, buildings, landuse, landcover,
                                               places, pois, roads, transit, water, earth
         --clip=<path>           GeoJSON file path to clip tileset (optional)
+        --clip-buffer=<n>       Relative buffer around clip polygon (default: 4.0/256.0)
+              Use 0 for exact boundary, e.g. --clip-buffer=0
 
       Common Planetiler Options:
         --output=<path>         Output file path and format (e.g., output.pmtiles)
@@ -243,11 +245,17 @@ public class Basemap extends ForwardingProfile {
     fontRegistry.setZipFilePath(pgfEncodingZip.toString());
 
     Clip clip = null;
+    double clipBuffer = args.getDouble("clip_buffer",
+      "Relative buffer around clip polygon. 0 for exact boundary.", Clip.DEFAULT_BUFFER);
+    if (clipBuffer < 0) {
+      LOGGER.error("Error: --clip-buffer must be >= 0, but was {}", clipBuffer);
+      System.exit(1);
+    }
     var clipArg = args.getString("clip", "File path to GeoJSON Polygon or MultiPolygon geometry to clip tileset.", "");
     if (!clipArg.isEmpty()) {
       clip =
         Clip.fromGeoJSONFile(args.getStats(), planetiler.config().minzoom(), planetiler.config().maxzoom(), true,
-          Paths.get(clipArg));
+          clipBuffer, Paths.get(clipArg));
     }
 
     List<String> availableLayers = List.of(
