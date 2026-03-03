@@ -1,3 +1,7 @@
+Tiles 4.14.1
+------
+- make building offline possible by using download QRank / PGF files [#378]
+
 Tiles 4.14.0
 ------
 - Add experimental Overture data source support [#541]
