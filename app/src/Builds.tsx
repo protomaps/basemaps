@@ -202,14 +202,14 @@ function Builds() {
       type: "maplibre-gl",
       renderer: "maplibre-gl",
       index: 0,
-      url: `https://npm-style.protomaps.dev/style.json?version=${latestStyle()}&theme=${theme}&tiles=${leftKey}`,
+      url: `https://npm-style.protomaps.dev/style.json?version=${latestStyle()}&theme=${theme}&tiles=${leftKey}&lang=en`,
     };
     const right: MaperturePayload = {
       name: `${rightKey} ${latestStyle()} ${theme}`,
       type: "maplibre-gl",
       renderer: "maplibre-gl",
       index: 0,
-      url: `https://npm-style.protomaps.dev/style.json?version=${latestStyle()}&theme=${theme}&tiles=${rightKey}`,
+      url: `https://npm-style.protomaps.dev/style.json?version=${latestStyle()}&theme=${theme}&tiles=${rightKey}&lang=en`,
     };
     const payload = JSON.stringify([left, right]);
     open(
