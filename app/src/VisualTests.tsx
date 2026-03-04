@@ -13,31 +13,35 @@ import "maplibre-gl/dist/maplibre-gl.css";
 // @ts-ignore
 import pixelmatch from "pixelmatch";
 
-const drawToCanvas = (ctx: CanvasRenderingContext2D, data: string) => {
-  const img = new Image();
-  const promise = new Promise<void>((resolve) => {
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
-      resolve();
-    };
-  });
-  img.src = data;
-  return promise;
-};
+if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
+  maplibregl.setRTLTextPlugin(
+    "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
+    false, // we need to pre-load this, otherwise diffs will be flaky
+  );
+}
 
-const moveAndRenderMap = (
+// Jumps the map and waits for idle, capturing a Blob of the rendered frame.
+const moveAndCaptureBlob = (
   map: maplibregl.Map,
   center: [number, number],
   zoom: number,
-): Promise<string> => {
-  return new Promise<string>((resolve) => {
-    map.on("idle", () => {
-      const canvas = map.getCanvas();
-      resolve(canvas.toDataURL());
+): Promise<Blob> => {
+  return new Promise<Blob>((resolve) => {
+    map.once("idle", () => {
+      map.getCanvas().toBlob((blob) => {
+        if (!blob) throw new Error("Could not get image blob");
+        return resolve(blob);
+      });
     });
-    map.jumpTo({
-      center: center,
-      zoom: zoom,
+    map.jumpTo({ center, zoom });
+  });
+};
+
+const canvasToObjectURL = (canvas: HTMLCanvasElement): Promise<string> => {
+  return new Promise<string>((resolve) => {
+    canvas.toBlob((blob) => {
+      if (!blob) throw new Error("Could not get image blob");
+      resolve(URL.createObjectURL(blob));
     });
   });
 };
@@ -78,6 +82,7 @@ interface RenderState {
   rightCtx: CanvasRenderingContext2D;
   diffCtx: CanvasRenderingContext2D;
   diffCanvas: HTMLCanvasElement;
+  diffImageData: ImageData;
 }
 
 interface RenderingResult {
@@ -110,37 +115,6 @@ interface DisplayInfo {
 const QUERY_PARAMS = new URLSearchParams(location.search);
 // const SHOW_DIFFERENCES_ONLY = QUERY_PARAMS.get("showDifferencesOnly");
 const DIM = 500 * window.devicePixelRatio;
-
-const runExample = async (
-  state: RenderState,
-  example: Example,
-): Promise<RenderingResult> => {
-  const [left_data, right_data] = await Promise.all([
-    moveAndRenderMap(state.leftMap, example.center, example.zoom),
-    moveAndRenderMap(state.rightMap, example.center, example.zoom),
-  ]);
-
-  await drawToCanvas(state.leftCtx, left_data);
-  await drawToCanvas(state.rightCtx, right_data);
-
-  const diff = state.diffCtx.createImageData(DIM, DIM);
-  const pixelsDifferent = pixelmatch(
-    state.leftCtx.getImageData(0, 0, DIM, DIM).data,
-    state.rightCtx.getImageData(0, 0, DIM, DIM).data,
-    diff.data,
-    DIM,
-    DIM,
-    { threshold: 0.1 },
-  );
-  state.diffCtx.putImageData(diff, 0, 0);
-
-  return {
-    pixelsDifferent: pixelsDifferent,
-    leftData: left_data,
-    rightData: right_data,
-    diffData: state.diffCanvas.toDataURL(),
-  };
-};
 
 const linkTo = (props: { name?: string; tag?: string }) => {
   const q = new URLSearchParams(QUERY_PARAMS);
@@ -242,36 +216,36 @@ function VisualTests() {
 
   onMount(() => {
     const runExamples = async () => {
-      if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
-        maplibregl.setRTLTextPlugin(
-          "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
-          false, // we need to pre-load this, otherwise diffs will be flaky
-        );
-      }
-
       const protocol = new pmtiles.Protocol();
       maplibregl.addProtocol("pmtiles", protocol.tile);
 
+      const rightLayersStr = QUERY_PARAMS.get("rightStyle");
+      const buildsPromise = fetch(
+        "https://build-metadata.protomaps.dev/builds.json",
+      ).then((r) => r.json());
+      const leftLayersStrPromise = QUERY_PARAMS.get("leftStyle")
+        ? Promise.resolve(QUERY_PARAMS.get("leftStyle"))
+        : latestVersion();
+      const rightLayersPromise = rightLayersStr
+        ? layersForVersion(rightLayersStr)
+        : Promise.resolve(
+            layers("protomaps", namedFlavor("light"), { lang: "en" }),
+          );
+
+      const leftLayersStr = await leftLayersStrPromise;
+
+      const [builds, leftLayers, rightLayers] = await Promise.all([
+        buildsPromise,
+        layersForVersion(leftLayersStr),
+        rightLayersPromise,
+      ]);
+
       // the tileset defaults to the latest daily build
-      const builds = await (
-        await fetch("https://build-metadata.protomaps.dev/builds.json")
-      ).json();
       const last_build = `https://build.protomaps.com/${
         builds[builds.length - 1].key
       }`;
       const leftTiles = QUERY_PARAMS.get("leftTiles") || last_build;
       const rightTiles = QUERY_PARAMS.get("rightTiles") || last_build;
-
-      // the left style defaults to the latest published NPM version
-      // the right style is the main branch (GitHub Pages) or local development
-      const leftLayersStr =
-        QUERY_PARAMS.get("leftStyle") || (await latestVersion());
-      const rightLayersStr = QUERY_PARAMS.get("rightStyle");
-
-      const leftLayers = await layersForVersion(leftLayersStr);
-      const rightLayers = rightLayersStr
-        ? await layersForVersion(rightLayersStr)
-        : layers("protomaps", namedFlavor("light"), { lang: "en" });
 
       setDisplayInfo({
         leftTiles,
@@ -343,6 +317,9 @@ function VisualTests() {
         return;
       }
 
+      // Pre-allocate diff ImageData once; reused across all examples
+      const diffImageData = new ImageData(DIM, DIM);
+
       const renderState: RenderState = {
         leftMap: mapLeftRef,
         rightMap: mapRightRef,
@@ -350,20 +327,90 @@ function VisualTests() {
         rightCtx: rightCtx,
         diffCtx: diffCtx,
         diffCanvas: diffCanvas,
+        diffImageData: diffImageData,
       };
 
-      for (const example of examples) {
-        const rendered = await runExample(renderState, example);
+      // Kick off the first render before the loop. The maps are already
+      // positioned at examples[0] from createMap, so this jumpTo is redundant
+      // but harmless and keeps the loop uniform.
+      let leftNext = moveAndCaptureBlob(
+        renderState.leftMap,
+        examples[0].center,
+        examples[0].zoom,
+      );
+      let rightNext = moveAndCaptureBlob(
+        renderState.rightMap,
+        examples[0].center,
+        examples[0].zoom,
+      );
 
-        setResults((currentResults: ExampleResult[]) => {
-          return [
-            ...currentResults,
-            {
-              example: example,
-              rendered: rendered,
+      for (let i = 0; i < examples.length; i++) {
+        const ex = examples[i];
+        const nextEx = examples[i + 1] ?? null;
+
+        // Wait for both maps to have captured their frame blob.
+        // The blobs were snapshotted synchronously inside the idle handler,
+        // so they always contain the correct rendered frame.
+        const [leftBlob, rightBlob] = await Promise.all([leftNext, rightNext]);
+
+        const leftUrl = URL.createObjectURL(leftBlob);
+        const rightUrl = URL.createObjectURL(rightBlob);
+
+        if (nextEx) {
+          leftNext = moveAndCaptureBlob(
+            renderState.leftMap,
+            nextEx.center,
+            nextEx.zoom,
+          );
+          rightNext = moveAndCaptureBlob(
+            renderState.rightMap,
+            nextEx.center,
+            nextEx.zoom,
+          );
+        }
+
+        // Decode blobs to ImageBitmap and draw to scratch canvases for pixelmatch.
+        const [leftBitmap, rightBitmap] = await Promise.all([
+          createImageBitmap(leftBlob),
+          createImageBitmap(rightBlob),
+        ]);
+        renderState.leftCtx.drawImage(leftBitmap, 0, 0);
+        leftBitmap.close();
+        renderState.rightCtx.drawImage(rightBitmap, 0, 0);
+        rightBitmap.close();
+
+        // Run diff
+        const leftImageData = renderState.leftCtx.getImageData(0, 0, DIM, DIM);
+        const rightImageData = renderState.rightCtx.getImageData(
+          0,
+          0,
+          DIM,
+          DIM,
+        );
+        renderState.diffImageData.data.fill(0);
+        const pixelsDifferent = pixelmatch(
+          leftImageData.data,
+          rightImageData.data,
+          renderState.diffImageData.data,
+          DIM,
+          DIM,
+          { threshold: 0.1 },
+        );
+        renderState.diffCtx.putImageData(renderState.diffImageData, 0, 0);
+        const diffUrl = await canvasToObjectURL(diffCanvas);
+
+        setResults((currentResults: ExampleResult[]) => [
+          ...currentResults,
+          {
+            example: ex,
+            rendered: {
+              pixelsDifferent,
+              leftData: leftUrl,
+              rightData: rightUrl,
+              diffData: diffUrl,
             },
-          ];
-        });
+          },
+        ]);
       }
     };
 
