@@ -28,7 +28,10 @@ const moveAndCaptureBlob = (
 ): Promise<Blob> => {
   return new Promise<Blob>((resolve) => {
     map.once("idle", () => {
-      map.getCanvas().toBlob((blob) => resolve(blob!));
+      map.getCanvas().toBlob((blob) => {
+        if (!blob) throw new Error("Could not get image blob");
+        return resolve(blob);
+      });
     });
     map.jumpTo({ center, zoom });
   });
@@ -36,7 +39,10 @@ const moveAndCaptureBlob = (
 
 const canvasToObjectURL = (canvas: HTMLCanvasElement): Promise<string> => {
   return new Promise<string>((resolve) => {
-    canvas.toBlob((blob) => resolve(URL.createObjectURL(blob!)));
+    canvas.toBlob((blob) => {
+      if (!blob) throw new Error("Could not get image blob");
+      resolve(URL.createObjectURL(blob));
+    });
   });
 };
 
@@ -218,11 +224,13 @@ function VisualTests() {
         "https://build-metadata.protomaps.dev/builds.json",
       ).then((r) => r.json());
       const leftLayersStrPromise = QUERY_PARAMS.get("leftStyle")
-        ? Promise.resolve(QUERY_PARAMS.get("leftStyle")!)
+        ? Promise.resolve(QUERY_PARAMS.get("leftStyle"))
         : latestVersion();
       const rightLayersPromise = rightLayersStr
         ? layersForVersion(rightLayersStr)
-        : Promise.resolve(layers("protomaps", namedFlavor("light"), { lang: "en" }));
+        : Promise.resolve(
+            layers("protomaps", namedFlavor("light"), { lang: "en" }),
+          );
 
       const leftLayersStr = await leftLayersStrPromise;
 
