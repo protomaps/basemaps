@@ -100,9 +100,9 @@ interface Example {
   zoom: number;
 }
 
-interface ExampleResult {
+interface ExampleSlot {
   example: Example;
-  rendered: RenderingResult;
+  rendered: RenderingResult | null;
 }
 
 interface DisplayInfo {
@@ -136,43 +136,49 @@ const latestVersion = async () => {
   return (await resp.json())["dist-tags"].latest;
 };
 
-function ExampleComponent(props: { result: ExampleResult }) {
+function ExampleComponent(props: { slot: ExampleSlot }) {
   let leftRef: HTMLImageElement | undefined;
   let rightRef: HTMLImageElement | undefined;
   let diffRef: HTMLImageElement | undefined;
 
   createEffect(() => {
-    if (!leftRef || !rightRef || !diffRef) {
-      console.error("DOM element not initialized");
-      return;
-    }
+    const rendered = props.slot.rendered;
+    if (!rendered) return;
+    if (!leftRef || !rightRef || !diffRef) return;
 
-    leftRef.src = props.result.rendered.leftData;
-    rightRef.src = props.result.rendered.rightData;
-    diffRef.src = props.result.rendered.diffData;
+    leftRef.src = rendered.leftData;
+    rightRef.src = rendered.rightData;
+    diffRef.src = rendered.diffData;
   });
 
-  const example = props.result.example;
+  const example = props.slot.example;
 
   return (
     <div class="mt-8">
-      <div>
-        <img
-          alt="left"
-          ref={leftRef}
-          class="inline-block w-[500px] h-[500px]"
-        />
-        <img
-          alt="right"
-          ref={rightRef}
-          class="inline-block w-[500px] h-[500px]"
-        />
-        <img
-          alt="diff"
-          ref={diffRef}
-          class="inline-block w-[500px] h-[500px]"
-        />
-      </div>
+      {props.slot.rendered ? (
+        <div>
+          <img
+            alt="left"
+            ref={leftRef}
+            class="inline-block w-[500px] h-[500px]"
+          />
+          <img
+            alt="right"
+            ref={rightRef}
+            class="inline-block w-[500px] h-[500px]"
+          />
+          <img
+            alt="diff"
+            ref={diffRef}
+            class="inline-block w-[500px] h-[500px]"
+          />
+        </div>
+      ) : (
+        <div class="inline-flex items-center gap-2 h-[500px]">
+          <div class="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+          <span class="text-gray-500 text-sm">Rendering...</span>
+        </div>
+      )}
       <div class="space-x-4">
         <a class="underline" href={linkTo({ name: example.name })}>
           {example.name}
@@ -206,7 +212,7 @@ function VisualTests() {
   let canvasLeftRef: HTMLCanvasElement | undefined;
   let canvasRightRef: HTMLCanvasElement | undefined;
   let canvasDiffRef: HTMLCanvasElement | undefined;
-  const [results, setResults] = createSignal<ExampleResult[]>([]);
+  const [slots, setSlots] = createSignal<ExampleSlot[]>([]);
   const [displayInfo, setDisplayInfo] = createSignal<DisplayInfo>({
     leftTiles: "",
     rightTiles: "",
@@ -265,6 +271,8 @@ function VisualTests() {
       } else if (tag !== null) {
         examples = examples.filter((e) => e.tags.indexOf(tag) >= 0);
       }
+      setSlots(examples.map((e) => ({ example: e, rendered: null })));
+
       const example = examples[0];
 
       if (
@@ -345,7 +353,6 @@ function VisualTests() {
       );
 
       for (let i = 0; i < examples.length; i++) {
-        const ex = examples[i];
         const nextEx = examples[i + 1] ?? null;
 
         // Wait for both maps to have captured their frame blob.
@@ -399,18 +406,16 @@ function VisualTests() {
         renderState.diffCtx.putImageData(renderState.diffImageData, 0, 0);
         const diffUrl = await canvasToObjectURL(diffCanvas);
 
-        setResults((currentResults: ExampleResult[]) => [
-          ...currentResults,
-          {
-            example: ex,
-            rendered: {
-              pixelsDifferent,
-              leftData: leftUrl,
-              rightData: rightUrl,
-              diffData: diffUrl,
-            },
-          },
-        ]);
+        const rendered = {
+          pixelsDifferent,
+          leftData: leftUrl,
+          rightData: rightUrl,
+          diffData: diffUrl,
+        };
+        const idx = i;
+        setSlots((prev) =>
+          prev.map((s, j) => (j === idx ? { ...s, rendered } : s)),
+        );
       }
     };
 
@@ -442,8 +447,8 @@ function VisualTests() {
           <br />
           rightStyle={displayInfo().rightLayersStr}
         </div>
-        <For each={results()}>
-          {(result: ExampleResult) => <ExampleComponent result={result} />}
+        <For each={slots()}>
+          {(slot: ExampleSlot) => <ExampleComponent slot={slot} />}
         </For>
         <div class="h-0 overflow-hidden">
           <div ref={mapLeftContainerRef} class="w-[500px] h-[500px]" />
