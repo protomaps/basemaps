@@ -202,6 +202,56 @@ class PlacesTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void testLocalityNoPopulationNotVisibleAtZoom7() {
+    // Place Mahiouindo - OSM node/4535788658
+    // place=locality without population should not be visible at zoom 7
+    assertFeatures(7,
+      List.of(),
+      process(SimpleFeature.create(
+        newPoint(2.5892, 7.3321),
+        new HashMap<>(Map.of("place", "locality", "name", "Place Mahiouindo")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testLocalityNoPopulationMinZoom() {
+    // Place Mahiouindo - should have min_zoom=13 (minzoom=12 + 1)
+    assertFeatures(12,
+      List.of(Map.of("kind", "locality",
+        "kind_detail", "locality",
+        "min_zoom", 13,
+        "population", 1000)),
+      process(SimpleFeature.create(
+        newPoint(2.5892, 7.3321),
+        new HashMap<>(Map.of("place", "locality", "name", "Place Mahiouindo")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testCityWithPopulationVisibleAtZoom7() {
+    // Kétou - OSM node/2313302870
+    // place=city with population=160000 should be visible at zoom 7
+    assertFeatures(7,
+      List.of(Map.of("kind", "locality",
+        "kind_detail", "city",
+        "min_zoom", 9,
+        "population", 160000)),
+      process(SimpleFeature.create(
+        newPoint(2.5892, 7.3632),
+        new HashMap<>(Map.of("place", "city", "name", "Kétou", "population", "160000")),
+        "osm",
+        null,
+        0
+      )));
+  }
 }
 
 
