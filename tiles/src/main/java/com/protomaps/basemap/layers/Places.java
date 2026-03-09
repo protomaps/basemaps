@@ -254,7 +254,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     Integer maxZoom;
     Integer kindRank;
 
-    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail));
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail, "pm:population", population));
     var zoomMatches = zoomsIndex.getMatches(sf2);
 
     minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
@@ -345,20 +345,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    Integer minZoom;
-    Integer maxZoom;
-    Integer kindRank;
-
-    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail));
-    var zoomMatches = zoomsIndex.getMatches(sf2);
-
-    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
-    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
-    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
-
-    // Extract name
-    String name = sf.getString("names.primary");
-
     // Extract population (if available)
     Integer population = 0;
     if (sf.hasTag("population")) {
@@ -367,6 +353,20 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
         population = number.intValue();
       }
     }
+
+    Integer minZoom;
+    Integer maxZoom;
+    Integer kindRank;
+
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail, "pm:population", population));
+    var zoomMatches = zoomsIndex.getMatches(sf2);
+
+    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
+    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
+    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
+
+    // Extract name
+    String name = sf.getString("names.primary");
 
     int populationRank = 0;
 

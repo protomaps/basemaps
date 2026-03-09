@@ -204,11 +204,11 @@ class PlacesTest extends LayerTest {
   }
 
   @Test
-  void testLocalityNoPopulationNotVisibleAtZoom7() {
+  void testLocalityNoPopulationHasCorrectMinZoom() {
     // Place Mahiouindo - OSM node/4535788658
-    // place=locality without population should not be visible at zoom 7
+    // place=locality without population should have _minzoom=12 (not 7)
     assertFeatures(7,
-      List.of(),
+      List.of(Map.of("_minzoom", 12, "_maxzoom", 14, "kind", "locality", "kind_detail", "locality")),
       process(SimpleFeature.create(
         newPoint(2.5892, 7.3321),
         new HashMap<>(Map.of("place", "locality", "name", "Place Mahiouindo")),
