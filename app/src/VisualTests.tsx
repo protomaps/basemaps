@@ -353,7 +353,6 @@ function VisualTests() {
       );
 
       for (let i = 0; i < examples.length; i++) {
-        const ex = examples[i];
         const nextEx = examples[i + 1] ?? null;
 
         // Wait for both maps to have captured their frame blob.
