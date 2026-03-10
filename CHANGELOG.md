@@ -1,3 +1,7 @@
+Styles 5.7.2
+------
+- improve poor visibility of roads type=track [#509]
+
 Tiles 4.14.1
 ------
 - make building offline possible by using download QRank / PGF files [#378]
