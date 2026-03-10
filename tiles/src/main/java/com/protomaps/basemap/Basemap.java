@@ -21,6 +21,7 @@ import com.protomaps.basemap.layers.Water;
 import com.protomaps.basemap.postprocess.Clip;
 import com.protomaps.basemap.text.FontRegistry;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -132,7 +133,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.14.1";
+    return "4.14.2";
   }
 
   @Override
@@ -257,9 +258,6 @@ public class Basemap extends ForwardingProfile {
     Path dataDir = Path.of("data");
     Path sourcesDir = dataDir.resolve("sources");
 
-    Path nePath = sourcesDir.resolve("natural_earth_vector.sqlite.zip");
-    String neUrl = "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip";
-
     var countryCoder = CountryCoder.fromJarResource();
 
     String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "");
@@ -285,7 +283,8 @@ public class Basemap extends ForwardingProfile {
     }
 
     var planetiler = Planetiler.create(args)
-      .addNaturalEarthSource("ne", nePath, neUrl);
+      .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
+        "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip");
 
     if (!overtureFile.isEmpty()) {
       // Add Overture Parquet source
@@ -309,11 +308,20 @@ public class Basemap extends ForwardingProfile {
 
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
     Path qrankCsv = sourcesDir.resolve("qrank.csv.gz");
-    Downloader.create(planetiler.config()).add("ne", neUrl, nePath)
-      .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
-      .add("qrank", "https://qrank.toolforge.org/download/qrank.csv.gz", qrankCsv)
-      .run();
+
+    if (!Files.exists(qrankCsv)) {
+      Downloader.create(planetiler.config())
+        .add("qrank", "https://qrank.toolforge.org/download/qrank.csv.gz", qrankCsv)
+        .run();
+    }
+
     var qrankDb = QrankDb.fromCsv(qrankCsv);
+
+    if (!Files.exists(pgfEncodingZip)) {
+      Downloader.create(planetiler.config())
+        .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
+        .run();
+    }
 
     FontRegistry fontRegistry = FontRegistry.getInstance();
     fontRegistry.setZipFilePath(pgfEncodingZip.toString());

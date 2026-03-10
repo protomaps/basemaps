@@ -37,3 +37,14 @@ Because basemap tilesets are delivered in the [PMTiles](https://docs.protomaps.c
   * CC-BY or proprietary datasets. In general, data sources should be [ODbL-compatible](https://wiki.openstreetmap.org/wiki/Import/ODbL_Compatibility).
   * Direct inclusion of Wikidata is discouraged because of the existence of [integrated datasets](https://www.wikidata.org/wiki/Wikidata:Licensing#Determining_the_copyright_of_a_dataset) - use a primary source with a single explicit license.
 
+## AI-Assisted Contributions
+
+Generally it's fine to use AI tools to help create pull requests as long as you adhere to the following guidelines:
+
+- State in your PR description what AI tool(s) you used to create the PR.
+- Make sure a human has reviewed and fully understands all the code changes being submitted.
+- Make sure the PR does not contain any unrelated changes.
+- Make sure that the PR adheres to the project's coding standards and licensing guidelines.
+- No AI-generated media is allowed (art, images, videos, audio, etc.).
+
+This AI policy is based on our upstream dependency, [Planetiler](https://github.com/onthegomap/planetiler/blob/main/CONTRIBUTING.md).

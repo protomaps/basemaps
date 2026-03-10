@@ -1,6 +1,10 @@
-Tiles 4.14.1
+Tiles 4.14.2
 ------
 - Fix OSM place selection regression at zoom=7 [#576]
+
+Tiles 4.14.1
+------
+- make building offline possible by using download QRank / PGF files [#378]
 
 Tiles 4.14.0
 ------
