@@ -1,3 +1,7 @@
+Tiles 4.14.2
+------
+- Upgrade to planetiler 0.10.1 with workaround for JTS polygon negative buffer bug [#538]
+
 Styles 5.7.2
 ------
 - improve poor visibility of roads type=track [#509]

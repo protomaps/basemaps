@@ -90,7 +90,7 @@ class ClipTest {
 
     assertEquals(1, clipped.size());
     assertEquals(1, clipped.get("layer").size());
-    assertEquals(newPolygon(64, 160, 96, 160, 96, 192, 64, 192, 64, 160),
+    assertEquals(newPolygon(96, 160, 96, 192, 64, 192, 64, 160, 96, 160),
       clipped.get("layer").getFirst().geometry().decode());
   }
 
