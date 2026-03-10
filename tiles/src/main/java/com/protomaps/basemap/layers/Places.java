@@ -230,6 +230,19 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       15, 3
     ), 0);
 
+  private Map<String, Object> makeTagMap(String kind, String kindDetail, Integer population, Integer populationFallback) {
+    Map<String, Object> computedTags = new HashMap<>();
+
+    computedTags.put("pm:kind", kind);
+    computedTags.put("pm:kindDetail", kindDetail);
+    computedTags.put("pm:population", population);
+    if (populationFallback > 0) {
+      computedTags.put("pm:populationFallback", populationFallback);
+    }
+
+    return computedTags;
+  }
+
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (!sf.isPoint() || !sf.hasTag("name") || !sf.hasTag("place")) {
       return;
@@ -259,15 +272,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     Integer maxZoom;
     Integer kindRank;
 
-    // Only include populationFallback in computed tags if it's set (>0)
-    Map<String, Object> computedTags = new HashMap<>();
-    computedTags.put("pm:kind", kind);
-    computedTags.put("pm:kindDetail", kindDetail);
-    computedTags.put("pm:population", population);
-    if (populationFallback > 0) {
-      computedTags.put("pm:populationFallback", populationFallback);
-    }
-
+    var computedTags = makeTagMap(kind, kindDetail, population, populationFallback);
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
     var zoomMatches = zoomsIndex.getMatches(sf2);
 
@@ -381,14 +386,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     Integer maxZoom;
     Integer kindRank;
 
-    Map<String, Object> computedTags = new HashMap<>();
-    computedTags.put("pm:kind", kind);
-    computedTags.put("pm:kindDetail", kindDetail);
-    computedTags.put("pm:population", population);
-    if (populationFallback > 0) {
-      computedTags.put("pm:populationFallback", populationFallback);
-    }
-
+    var computedTags = makeTagMap(kind, kindDetail, population, populationFallback);
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
     var zoomMatches = zoomsIndex.getMatches(sf2);
 
