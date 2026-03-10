@@ -812,15 +812,14 @@ export function nolabels_layers(
       ],
       paint: {
         "line-color": t.other,
-        "line-dasharray": [3, 1],
         "line-width": [
           "interpolate",
           ["exponential", 1.6],
           ["zoom"],
           14,
-          0,
+          0.5,
           20,
-          7,
+          12,
         ],
       },
     },
