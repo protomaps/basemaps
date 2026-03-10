@@ -1,3 +1,7 @@
+Tiles 4.14.1
+------
+- Fix OSM place selection regression at zoom=7 [#576]
+
 Tiles 4.14.0
 ------
 - Add experimental Overture data source support [#541]
