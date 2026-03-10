@@ -230,7 +230,8 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       15, 3
     ), 0);
 
-  private Map<String, Object> makeTagMap(String kind, String kindDetail, Integer population, Integer populationFallback) {
+  private Map<String, Object> makeTagMap(String kind, String kindDetail, Integer population,
+    Integer populationFallback) {
     Map<String, Object> computedTags = new HashMap<>();
 
     computedTags.put("pm:kind", kind);
