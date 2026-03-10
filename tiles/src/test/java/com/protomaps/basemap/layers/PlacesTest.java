@@ -238,11 +238,11 @@ class PlacesTest extends LayerTest {
   @Test
   void testCityWithPopulationVisibleAtZoom7() {
     // Kétou - OSM node/2313302870
-    // place=city with population=160000 should be visible at zoom 7
+    // place=city with population=160000 should be visible at zoom 7 (minzoom=7, min_zoom=8)
     assertFeatures(7,
       List.of(Map.of("kind", "locality",
         "kind_detail", "city",
-        "min_zoom", 9,
+        "min_zoom", 8,
         "population", 160000)),
       process(SimpleFeature.create(
         newPoint(2.5892, 7.3632),
@@ -252,6 +252,39 @@ class PlacesTest extends LayerTest {
         0
       )));
   }
+
+  @Test
+  void testCityWithoutPopulationHasCorrectMinZoom() {
+    // Cities without population tags get populationFallback=5000 and should have _minZoom=8
+    assertFeatures(8,
+      List.of(Map.of("_minzoom", 8, "kind", "locality", "kind_detail", "city", "population", 5000)),
+      process(SimpleFeature.create(
+        newPoint(2.5892, 7.3632),
+        new HashMap<>(Map.of("place", "city", "name", "Some City")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testOuidahWithWikidataVisibleAtZoom6() {
+    // Ouidah - OSM node/313015821, wikidata Q850031
+    // Has wikidata entry in places.csv: Q850031,6,-1,8
+    // Should be visible at zoom 6 (wikidata override)
+    assertFeatures(6,
+      List.of(Map.of("kind", "locality",
+        "kind_detail", "city",
+        "population", 160000)),
+      process(SimpleFeature.create(
+        newPoint(2.0854, 6.3616),
+        new HashMap<>(Map.of("place", "city", "name", "Ouidah", "population", "160000", "wikidata", "Q850031")),
+        "osm",
+        null,
+        0
+      )));
+  }
+
 }
 
 
