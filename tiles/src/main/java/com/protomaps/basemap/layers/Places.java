@@ -75,8 +75,8 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     rule(with("place", "state", "province"), with("pm:country", "US", "CA", "BR", "IN", "CN", "AU"),
       use("pm:kind", "region")),
     rule(with("place", "city", "town"), use("pm:kind", "locality"), use("pm:kindDetail", fromTag("place"))),
-    rule(with("place", "city"), without("population"), use("pm:population", 5000)),
-    rule(with("place", "town"), without("population"), use("pm:population", 10000)),
+    rule(with("place", "city"), without("population"), use("pm:populationFallback", 5000)),
+    rule(with("place", "town"), without("population"), use("pm:populationFallback", 10000)),
 
     // Neighborhood-scale places
 
@@ -87,17 +87,17 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     // Smaller places detailed in OSM but not fully tested for Overture
 
     rule(with("place", "village"), use("pm:kind", "locality"), use("pm:kindDetail", fromTag("place"))),
-    rule(with("place", "village"), without("population"), use("pm:population", 2000)),
+    rule(with("place", "village"), without("population"), use("pm:populationFallback", 2000)),
     rule(with("place", "locality"), use("pm:kind", "locality")),
-    rule(with("place", "locality"), without("population"), use("pm:population", 1000)),
+    rule(with("place", "locality"), without("population"), use("pm:populationFallback", 1000)),
     rule(with("place", "hamlet"), use("pm:kind", "locality")),
-    rule(with("place", "hamlet"), without("population"), use("pm:population", 200)),
+    rule(with("place", "hamlet"), without("population"), use("pm:populationFallback", 200)),
     rule(with("place", "isolated_dwelling"), use("pm:kind", "locality")),
-    rule(with("place", "isolated_dwelling"), without("population"), use("pm:population", 100)),
+    rule(with("place", "isolated_dwelling"), without("population"), use("pm:populationFallback", 100)),
     rule(with("place", "farm"), use("pm:kind", "locality")),
-    rule(with("place", "farm"), without("population"), use("pm:population", 50)),
+    rule(with("place", "farm"), without("population"), use("pm:populationFallback", 50)),
     rule(with("place", "allotments"), use("pm:kind", "locality")),
-    rule(with("place", "allotments"), without("population"), use("pm:population", 1000))
+    rule(with("place", "allotments"), without("population"), use("pm:populationFallback", 1000))
 
   )).index();
 
@@ -126,10 +126,14 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     rule(with("pm:kind", "region"), use("pm:minzoom", 8), use("pm:maxzoom", 11)),
     rule(with("pm:kind", "region"), with("pm:country", "US", "CA", "BR", "IN", "CN", "AU"), use("pm:kindRank", 1)),
 
-    rule(with("pm:kind", "locality"), use("pm:kindRank", 4), use("pm:minzoom", 7), use("pm:maxzoom", 15)),
-    rule(with("pm:kind", "locality"), atLeast("pm:population", 1000), use("pm:minzoom", 12)),
-    rule(with("pm:kind", "locality"), with("pm:kindDetail", "city"), use("pm:kindRank", 2), use("pm:minzoom", 8)),
-    rule(with("pm:kind", "locality"), with("pm:kindDetail", "town"), use("pm:kindRank", 2), use("pm:minzoom", 9)),
+    rule(with("pm:kind", "locality"), use("pm:kindRank", 4), use("pm:minzoom", 11), use("pm:maxzoom", 15)),
+    rule(with("pm:kind", "locality"), with("pm:populationFallback"), use("pm:minzoom", 12)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "city"), use("pm:kindRank", 2), use("pm:minzoom", 7)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "city"), with("pm:populationFallback"),
+      use("pm:minzoom", 8)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "town"), use("pm:kindRank", 2), use("pm:minzoom", 7)),
+    rule(with("pm:kind", "locality"), with("pm:kindDetail", "town"), with("pm:populationFallback"),
+      use("pm:minzoom", 9)),
     rule(with("pm:kind", "locality"), with("pm:kindDetail", "village"), use("pm:kindRank", 3), use("pm:minzoom", 10)),
     rule(with("pm:kind", "locality"), with("pm:kindDetail", "village"), atLeast("pm:population", 2000),
       use("pm:minzoom", 11)),
@@ -226,6 +230,20 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       15, 3
     ), 0);
 
+  private Map<String, Object> makeTagMap(String kind, String kindDetail, Integer population,
+    Integer populationFallback) {
+    Map<String, Object> computedTags = new HashMap<>();
+
+    computedTags.put("pm:kind", kind);
+    computedTags.put("pm:kindDetail", kindDetail);
+    computedTags.put("pm:population", population);
+    if (populationFallback > 0) {
+      computedTags.put("pm:populationFallback", populationFallback);
+    }
+
+    return computedTags;
+  }
+
   public void processOsm(SourceFeature sf, FeatureCollector features) {
     if (!sf.isPoint() || !sf.hasTag("name") || !sf.hasTag("place")) {
       return;
@@ -245,6 +263,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     String kind = getString(sf, matches, "pm:kind", "pm:undefined");
     String kindDetail = getString(sf, matches, "pm:kindDetail", "");
     Integer population = getInteger(sf, matches, "pm:population", 0);
+    Integer populationFallback = getInteger(sf, matches, "pm:populationFallback", 0);
 
     if ("pm:undefined".equals(kind)) {
       return;
@@ -254,8 +273,14 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     Integer maxZoom;
     Integer kindRank;
 
-    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail));
+    var computedTags = makeTagMap(kind, kindDetail, population, populationFallback);
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
     var zoomMatches = zoomsIndex.getMatches(sf2);
+
+    // Use populationFallback for sorting if no real population
+    if (population == 0 && populationFallback > 0) {
+      population = populationFallback;
+    }
 
     minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
     maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
@@ -345,20 +370,6 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    Integer minZoom;
-    Integer maxZoom;
-    Integer kindRank;
-
-    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, Map.of("pm:kind", kind, "pm:kindDetail", kindDetail));
-    var zoomMatches = zoomsIndex.getMatches(sf2);
-
-    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
-    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
-    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
-
-    // Extract name
-    String name = sf.getString("names.primary");
-
     // Extract population (if available)
     Integer population = 0;
     if (sf.hasTag("population")) {
@@ -367,6 +378,25 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
         population = number.intValue();
       }
     }
+
+    // Overture always uses populationFallback for zoom calculations to get consistent behavior
+    // This ensures Overture places get the higher minzoom levels (8 for city, 9 for town, etc)
+    Integer populationFallback = 1; // Marker value to trigger fallback zoom levels
+
+    Integer minZoom;
+    Integer maxZoom;
+    Integer kindRank;
+
+    var computedTags = makeTagMap(kind, kindDetail, population, populationFallback);
+    var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
+    var zoomMatches = zoomsIndex.getMatches(sf2);
+
+    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
+    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
+    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
+
+    // Extract name
+    String name = sf.getString("names.primary");
 
     int populationRank = 0;
 
