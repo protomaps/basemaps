@@ -6,11 +6,11 @@
 # extracts root domains, disambiguates multiple QIDs per domain by taking the
 # lowest Q-number, and writes a gzipped two-column CSV.
 #
-# Output: wikidata-website-qid-YYYY-MM.csv.gz
+# Output: data/sources/wikidata-website-qid-YYYY-MM.csv.gz
 # Usage: ./generate-wikidata-website-qid.sh
 
 DATE=$(date +%Y-%m)
-OUTPUT="wikidata-website-qid-${DATE}.csv.gz"
+OUTPUT="data/sources/wikidata-website-qid-${DATE}.csv.gz"
 TSV_TMP=$(mktemp /tmp/wikidata-p856-XXXXXX) && mv "$TSV_TMP" "${TSV_TMP}.tsv" && TSV_TMP="${TSV_TMP}.tsv"
 
 echo "Fetching Wikidata P856 (official website) from QLever..."
