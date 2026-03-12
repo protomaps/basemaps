@@ -102,3 +102,45 @@ The lowest Q-number heuristic gets the right answer in all tested cases:
 ### Output
 
 `data/sources/wikidata-domain-qid.parquet` — 1,432,271 domain → QID mappings, 30 MB. Built by grouping `wikidata-p856.parquet` by domain and taking the minimum Q-number per domain.
+
+## Integration with the tile build pipeline
+
+### Distribution format
+
+The final file should be published as a dated gzipped two-column CSV, e.g.:
+
+```
+wikidata-website-qid-2026-03.csv.gz
+domain,qid
+oaklandzoo.org,Q2008530
+museumca.org,Q877714
+...
+```
+
+This mirrors the format and hosting pattern of `qrank.csv.gz` (from `qrank.toolforge.org`), but hosted on `r2-public.protomaps.com` since this is a derived file we generate ourselves. A dated URL (like `Overture-QRank-2025-12-17.parquet`) makes renders reproducible. It would be regenerated periodically by re-running the QLever P856 query and rebuilding.
+
+### Runtime lookup (two-hop via QRank)
+
+At render time the file is downloaded once into the sources directory if not present, then loaded into a `WebsiteQidDb` (a new class modeled on `QrankDb`) as a `HashMap<String, Long>` — domain string → numeric Q-ID.
+
+In `Pois.processOverture`, the website lookup acts as a fallback that fills in a wikidata ID when the feature doesn't have one natively, and then the existing QRank machinery takes over unchanged:
+
+```java
+String wikidata = sf.getString("wikidata");  // always null for Overture places theme
+if (wikidata == null) {
+    String website = /* first entry from sf.getList("websites") */;
+    wikidata = websiteQidDb.getQid(website);  // domain → "Q2008530"
+}
+long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
+var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
+```
+
+The full lookup chain is:
+
+```
+sf.websites[0] → domain → Q-ID (WebsiteQidDb)
+                           Q-ID → qrank score (QrankDb)
+                                   qrank score → minZoom (assignZoom)
+```
+
+No changes are needed to `QrankDb` or `assignZoom` — `QrankDb.get(long)` already accepts a numeric ID. A place only benefits if it has a matching website entry *and* a QRank score; otherwise `qrank = 0` and behavior is identical to today.
