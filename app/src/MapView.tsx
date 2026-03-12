@@ -58,7 +58,7 @@ const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
 
 const GEOCODER_NUM_RESULTS = 10;
-const GEOCODE_EARTH_API_KEY = "ge-36393e37d3f44f4a";
+const GEOCODE_EARTH_API_KEY = import.meta.env.VITE_GEOCODE_EARTH_API_KEY || "ge-36393e37d3f44f4a";
 
 function getSourceLayer(l: LayerSpecification): string {
   if ("source-layer" in l && l["source-layer"]) {
