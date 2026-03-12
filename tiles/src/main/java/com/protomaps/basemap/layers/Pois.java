@@ -22,6 +22,7 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.feature.QrankDb;
+import com.protomaps.basemap.feature.WebsiteQidDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +32,22 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   private Map<String, int[][]> qrankGrading = Map.of(
     "station", new int[][]{{10, 50000}, {12, 20000}, {13, 10000}},
-    "aerodrome", new int[][]{{10, 50000}, {12, 20000}, {13, 5000}, {14, 2500}},
+    "aerodrome", new int[][]{{10, 200000}, {11, 100000}, {12, 20000}, {13, 5000}, {14, 2500}},
     "park", new int[][]{{11, 20000}, {12, 10000}, {13, 5000}, {14, 2500}},
     "peak", new int[][]{{11, 20000}, {12, 10000}, {13, 5000}, {14, 2500}},
-    "attraction", new int[][]{{12, 40000}, {13, 20000}, {14, 10000}},
-    "university", new int[][]{{12, 40000}, {13, 20000}, {14, 10000}}
+    "attraction", new int[][]{{12, 40000}, {13, 20000}, {14, 5000}},
+    "university", new int[][]{{12, 2000000}, {13, 500000}, {14, 10000}},
+    "college", new int[][]{{12, 2000000}, {13, 500000}, {14, 10000}},
+    "zoo", new int[][]{{12, 10000}, {13, 5000}, {14, 2500}},
+    "museum", new int[][]{{13, 20000}, {14, 5000}}
   );
 
   private QrankDb qrankDb;
+  private WebsiteQidDb websiteQidDb;
 
-  public Pois(QrankDb qrankDb) {
+  public Pois(QrankDb qrankDb, WebsiteQidDb websiteQidDb) {
     this.qrankDb = qrankDb;
+    this.websiteQidDb = websiteQidDb;
   }
 
   public static final String LAYER_NAME = "pois";
@@ -564,6 +570,12 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // QRank may override minZoom entirely
     String wikidata = sf.getString("wikidata");
+    if (wikidata == null && websiteQidDb != null) {
+      Object websitesObj = sf.getTag("websites");
+      if (websitesObj instanceof List<?> websites && !((List<?>) websites).isEmpty()) {
+        wikidata = websiteQidDb.getQid(websites.get(0).toString());
+      }
+    }
     long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
     var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
 

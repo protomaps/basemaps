@@ -8,6 +8,7 @@ import com.onthegomap.planetiler.reader.parquet.GeoParquetMetadata;
 import com.onthegomap.planetiler.util.Downloader;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.QrankDb;
+import com.protomaps.basemap.feature.WebsiteQidDb;
 import com.protomaps.basemap.layers.Boundaries;
 import com.protomaps.basemap.layers.Buildings;
 import com.protomaps.basemap.layers.Earth;
@@ -38,7 +39,7 @@ public class Basemap extends ForwardingProfile {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Basemap.class);
 
-  public Basemap(QrankDb qrankDb, CountryCoder countryCoder, Clip clip,
+  public Basemap(QrankDb qrankDb, WebsiteQidDb websiteQidDb, CountryCoder countryCoder, Clip clip,
     String layer) {
 
     if (layer.isEmpty() || layer.equals(Boundaries.LAYER_NAME)) {
@@ -78,7 +79,7 @@ public class Basemap extends ForwardingProfile {
     }
 
     if (layer.isEmpty() || layer.equals(Pois.LAYER_NAME)) {
-      var poi = new Pois(qrankDb);
+      var poi = new Pois(qrankDb, websiteQidDb);
       registerHandler(poi);
       registerSourceHandler("osm", poi::processOsm);
       registerSourceHandler("pm:overture", poi::processOverture);
@@ -206,12 +207,12 @@ public class Basemap extends ForwardingProfile {
   }
 
   private static void printVersion() {
-    Basemap basemap = new Basemap(null, null, null, "");
+    Basemap basemap = new Basemap(null, null, null, null, "");
     System.out.println(basemap.version());
   }
 
   private static void printHelp() {
-    Basemap basemap = new Basemap(null, null, null, "");
+    Basemap basemap = new Basemap(null, null, null, null, "");
     System.out.println(String.format("""
       %s v%s
       %s
@@ -317,6 +318,16 @@ public class Basemap extends ForwardingProfile {
 
     var qrankDb = QrankDb.fromCsv(qrankCsv);
 
+    Path websiteQidCsv = sourcesDir.resolve("wikidata-website-qid-2026-03.csv.gz");
+    if (!Files.exists(websiteQidCsv)) {
+      Downloader.create(planetiler.config())
+        .add("wikidata-website-qid",
+          "https://954.teczno.com/~migurski/tmp/wikidata-website-qid.csv.gz",
+          websiteQidCsv)
+        .run();
+    }
+    var websiteQidDb = WebsiteQidDb.fromCsv(websiteQidCsv);
+
     if (!Files.exists(pgfEncodingZip)) {
       Downloader.create(planetiler.config())
         .add("pgf-encoding", "https://wipfli.github.io/pgf-encoding/pgf-encoding.zip", pgfEncodingZip)
@@ -375,7 +386,7 @@ public class Basemap extends ForwardingProfile {
       outputName = area;
     }
 
-    planetiler.setProfile(new Basemap(qrankDb, countryCoder, clip, layer))
+    planetiler.setProfile(new Basemap(qrankDb, websiteQidDb, countryCoder, clip, layer))
       .setOutput(Path.of(outputName + ".pmtiles"))
       .run();
   }
