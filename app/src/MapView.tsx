@@ -12,6 +12,7 @@ import {
   Popup,
   addProtocol,
   getRTLTextPluginStatus,
+  default as maplibregl,
   removeProtocol,
   setRTLTextPlugin,
 } from "maplibre-gl";
@@ -22,6 +23,10 @@ import type {
   StyleSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import {
+  default as MaplibreGeocoder,
+  type MaplibreGeocoderApiConfig,
+} from "@maplibre/maplibre-gl-geocoder";
 import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { FileSource, PMTiles, Protocol } from "pmtiles";
 import {
@@ -43,6 +48,7 @@ import {
   layersForVersion,
   parseHash,
 } from "./utils";
+import "@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css";
 
 const STYLE_MAJOR_VERSION = 5;
 
@@ -50,6 +56,9 @@ const DEFAULT_TILES = "https://demo-bucket.protomaps.com/v4.pmtiles";
 
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
+
+const GEOCODER_NUM_RESULTS = 10;
+const GEOCODE_EARTH_API_KEY = "ge-36393e37d3f44f4a";
 
 function getSourceLayer(l: LayerSpecification): string {
   if ("source-layer" in l && l["source-layer"]) {
@@ -295,6 +304,41 @@ function MapLibreView(props: {
           closeOnClick: false,
         }),
       }),
+    );
+
+    const geocodeEarthResults = async (
+      config: MaplibreGeocoderApiConfig,
+      endpoint: string,
+    ) => {
+      const { lat, lng } = map.getCenter();
+      const url = `https://api.geocode.earth/v1/${endpoint}?api_key=${GEOCODE_EARTH_API_KEY}&text=${encodeURIComponent(`${config.query}`)}&focus.point.lat=${lat}&focus.point.lon=${lng}&size=${GEOCODER_NUM_RESULTS}`;
+      const result = await fetch(url);
+      const json = await result.json();
+      for (const f of json.features) {
+        const props = f.properties;
+        f.place_name = props?.label;
+      }
+      return json;
+    };
+
+    map.addControl(
+      new MaplibreGeocoder(
+        {
+          getSuggestions: (config) =>
+            geocodeEarthResults(config, "autocomplete"),
+          forwardGeocode: (config) => geocodeEarthResults(config, "search"),
+        },
+        {
+          maplibregl,
+          showResultsWhileTyping: true,
+          placeholder: "Search a city or address",
+          limit: GEOCODER_NUM_RESULTS,
+          proximityMinZoom: 9,
+          marker: false,
+          flyTo: { animate: false },
+        },
+      ),
+      "top-left",
     );
 
     const popup = new Popup({
