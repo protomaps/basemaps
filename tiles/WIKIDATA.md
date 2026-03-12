@@ -32,17 +32,51 @@ Overture places features often include `websites` and `socials` arrays.
 ### Scale
 
 - ~303,848 unique meaningful domains across all places features (excluding generic social/link domains).
-- Too large to bulk-query Wikidata for all places.
-- Feasible as a **pre-built lookup table** scoped to notable categories: `zoo`, `museum`, `airport`, `stadium`, `aquarium`, `university`, `library` — estimated ~5–10k distinct domains.
+- Too large to bulk-query the Wikidata SPARQL endpoint (60-second hard timeout).
 
 ### Caveats
 
 - Multiple Overture features can share the same domain (e.g. all Oakland Public Library branches → `oaklandlibrary.org`), so the match links to the organization entity, not a specific location.
+- Some domains map to multiple QIDs (e.g. `museumca.org` → Q877714, Q133252684, Q30672317) — needs disambiguation.
 - No coverage for places without websites (~half of all features).
 
-## Recommended next step
+## Bulk Wikidata P856 export via QLever
 
-Build a one-time lookup table by:
-1. Extracting root domains from `websites` for notable-category features
-2. Batching SPARQL queries to Wikidata P856 to retrieve QIDs
-3. Joining back to Overture IDs and storing as a small CSV/parquet for use in tile generation
+The Wikidata SPARQL endpoint times out on full P856 scans. [QLever](https://qlever.dev/wikidata) (University of Freiburg) is a faster alternative engine that handles full-dataset scans. The complete P856 table (2.3M rows) was fetched in one query in ~16 seconds:
+
+```
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+SELECT ?item ?website WHERE { ?item wdt:P856 ?website }
+```
+
+```sh
+curl -H "Accept: text/tab-separated-values" \
+  --data-urlencode "query=PREFIX wdt: <http://www.wikidata.org/prop/direct/> SELECT ?item ?website WHERE { ?item wdt:P856 ?website }" \
+  --data-urlencode "send=2400000" \
+  "https://qlever.dev/api/wikidata" \
+  -o data/sources/wikidata-p856.tsv
+```
+
+The TSV was then parsed to extract QID and root domain, and saved as `data/sources/wikidata-p856.parquet` (36 MB, 2.3M rows).
+
+## Match rate against Overture Oakland data
+
+Joining `wikidata-p856.parquet` against `Oakland-visualtests.parquet` on root domain (excluding generic domains like facebook.com, yelp.com, etc.):
+
+- **522,799** places have a usable website URL
+- **121,685** (23.3%) matched to at least one Wikidata QID
+
+Confirmed matches for notable places:
+- `oaklandzoo.org` → Q2008530 (Oakland Zoo) ✅
+- `museumca.org` → Q877714 (Oakland Museum of California) ✅
+- `iflyoak.com` → Q1165584 (Oakland International Airport) ✅
+- `berkeley.edu` → Q168756 (UC Berkeley) ✅
+
+Top matched categories: doctor, park, government association, medical center, hotel, university, library, landmark.
+
+## Remaining open question
+
+When a domain maps to multiple QIDs, which to prefer? Options:
+- The QID whose P856 URL most closely matches the full Overture URL (not just domain)
+- The QID with the most Wikidata statements (a proxy for "most notable")
+- The QID that is an instance of a place type matching the Overture category
