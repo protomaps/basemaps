@@ -379,9 +379,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
-    // Overture always uses populationFallback for zoom calculations to get consistent behavior
-    // This ensures Overture places get the higher minzoom levels (8 for city, 9 for town, etc)
-    Integer populationFallback = 1; // Marker value to trigger fallback zoom levels
+    Integer populationFallback = (population > 0) ? 0 : 1;
 
     Integer minZoom;
     Integer maxZoom;
@@ -406,6 +404,18 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       }
     }
 
+    if (WIKIDATA_CONFIGS.containsKey(sf.getString("wikidata"))) {
+      var wikidataConfig = WIKIDATA_CONFIGS.get(sf.getString("wikidata"));
+      if (kind.equals("country") || kind.equals("region")) {
+        minZoom = wikidataConfig.minZoom();
+        maxZoom = wikidataConfig.maxZoom();
+      }
+      if (kind.equals("locality")) {
+        minZoom = wikidataConfig.minZoom();
+        populationRank = wikidataConfig.rankMax();
+      }
+    }
+
     var feat = features.point(this.name())
       .setAttr("kind", kind)
       .setAttr("name", name)
@@ -416,6 +426,10 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     if (kindDetail != null) {
       feat.setAttr("kind_detail", kindDetail);
+    }
+
+    if (sf.hasTag("wikidata")) {
+      feat.setAttr("wikidata", sf.getString("wikidata"));
     }
 
     int sortKey = getSortKey(minZoom, kindRank, population, name);
