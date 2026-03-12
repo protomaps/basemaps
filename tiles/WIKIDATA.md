@@ -74,9 +74,31 @@ Confirmed matches for notable places:
 
 Top matched categories: doctor, park, government association, medical center, hotel, university, library, landmark.
 
-## Remaining open question
+## Disambiguation: multiple QIDs per domain
 
-When a domain maps to multiple QIDs, which to prefer? Options:
-- The QID whose P856 URL most closely matches the full Overture URL (not just domain)
-- The QID with the most Wikidata statements (a proxy for "most notable")
-- The QID that is an instance of a place type matching the Overture category
+142,182 domains map to more than one QID in the P856 table (avg 6.7, max 81,822 for a digital library collection domain where every digitized item has its own Wikidata entry).
+
+### Approaches considered
+
+**Full URL path matching** — prefer the QID whose stored P856 URL most closely matches the full Overture URL, not just the domain. Ruled out: Wikidata typically stores bare root URLs (`http://www.oaklandzoo.org`), so this rarely breaks ties.
+
+**P31 instance-of type matching** — fetch P31 (instance of) for all candidate QIDs and prefer the one whose type aligns with the Overture category (e.g. Overture `museum` → prefer QID with `instance of: Q33506`). Ruled out: P31 has 122M rows in Wikidata; QLever serves at most ~15M rows per query and the full download fails. Batching 920k candidate QIDs via the SPARQL endpoint would be slow and fragile.
+
+**Lowest Q-number tiebreak** — prefer the QID with the smallest numeric value. This works because Wikidata assigns lower Q-numbers to older, more established entities. Exhibitions, digitized sub-items, and branch locations all post-date their parent organizations and receive higher Q-numbers.
+
+### Result
+
+The lowest Q-number heuristic gets the right answer in all tested cases:
+
+| Domain | Winner QID | Entity |
+|---|---|---|
+| `museumca.org` | Q877714 | Oakland Museum of California (not the exhibitions Q133252684, Q30672317) |
+| `oaklandzoo.org` | Q2008530 | Oakland Zoo |
+| `iflyoak.com` | Q1165584 | Oakland International Airport |
+| `berkeley.edu` | Q168756 | UC Berkeley |
+| `oaklandlibrary.org` | Q1090829 | Oakland Public Library (not individual branches) |
+| `bart.gov` | Q250113 | Bay Area Rapid Transit |
+
+### Output
+
+`data/sources/wikidata-domain-qid.parquet` — 1,432,271 domain → QID mappings, 30 MB. Built by grouping `wikidata-p856.parquet` by domain and taking the minimum Q-number per domain.
