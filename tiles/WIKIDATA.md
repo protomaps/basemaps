@@ -90,14 +90,14 @@ Top matched categories: doctor, park, government association, medical center, ho
 
 The lowest Q-number heuristic gets the right answer in all tested cases:
 
-| Domain | Winner QID | Entity |
-|---|---|---|
-| `museumca.org` | Q877714 | Oakland Museum of California (not the exhibitions Q133252684, Q30672317) |
-| `oaklandzoo.org` | Q2008530 | Oakland Zoo |
-| `iflyoak.com` | Q1165584 | Oakland International Airport |
-| `berkeley.edu` | Q168756 | UC Berkeley |
-| `oaklandlibrary.org` | Q1090829 | Oakland Public Library (not individual branches) |
-| `bart.gov` | Q250113 | Bay Area Rapid Transit |
+|        Domain        | Winner QID |                                  Entity                                  |
+|----------------------|------------|--------------------------------------------------------------------------|
+| `museumca.org`       | Q877714    | Oakland Museum of California (not the exhibitions Q133252684, Q30672317) |
+| `oaklandzoo.org`     | Q2008530   | Oakland Zoo                                                              |
+| `iflyoak.com`        | Q1165584   | Oakland International Airport                                            |
+| `berkeley.edu`       | Q168756    | UC Berkeley                                                              |
+| `oaklandlibrary.org` | Q1090829   | Oakland Public Library (not individual branches)                         |
+| `bart.gov`           | Q250113    | Bay Area Rapid Transit                                                   |
 
 ### Output
 
