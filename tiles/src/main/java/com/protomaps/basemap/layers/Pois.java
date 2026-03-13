@@ -22,6 +22,7 @@ import com.onthegomap.planetiler.reader.SourceFeature;
 import com.protomaps.basemap.feature.FeatureId;
 import com.protomaps.basemap.feature.Matcher;
 import com.protomaps.basemap.feature.QrankDb;
+import com.protomaps.basemap.feature.WebsiteQidDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +32,22 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
   private Map<String, int[][]> qrankGrading = Map.of(
     "station", new int[][]{{10, 50000}, {12, 20000}, {13, 10000}},
-    "aerodrome", new int[][]{{10, 50000}, {12, 20000}, {13, 5000}, {14, 2500}},
+    "aerodrome", new int[][]{{10, 200000}, {11, 100000}, {12, 20000}, {13, 5000}, {14, 2500}},
     "park", new int[][]{{11, 20000}, {12, 10000}, {13, 5000}, {14, 2500}},
     "peak", new int[][]{{11, 20000}, {12, 10000}, {13, 5000}, {14, 2500}},
-    "attraction", new int[][]{{12, 40000}, {13, 20000}, {14, 10000}},
-    "university", new int[][]{{12, 40000}, {13, 20000}, {14, 10000}}
+    "attraction", new int[][]{{12, 40000}, {13, 20000}, {14, 5000}},
+    "university", new int[][]{{12, 2000000}, {13, 500000}, {14, 10000}},
+    "college", new int[][]{{12, 2000000}, {13, 500000}, {14, 10000}},
+    "zoo", new int[][]{{12, 10000}, {13, 5000}, {14, 2500}},
+    "museum", new int[][]{{13, 20000}, {14, 5000}}
   );
 
   private QrankDb qrankDb;
+  private WebsiteQidDb websiteQidDb;
 
-  public Pois(QrankDb qrankDb) {
+  public Pois(QrankDb qrankDb, WebsiteQidDb websiteQidDb) {
     this.qrankDb = qrankDb;
+    this.websiteQidDb = websiteQidDb;
   }
 
   public static final String LAYER_NAME = "pois";
@@ -542,6 +548,37 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     outputFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
   }
 
+  // Categories where the Overture feature IS the institution itself, so its website
+  // reliably resolves to that institution's Wikidata QID rather than a corporate brand.
+  // Excluded: air_transport_facility_service, transportation_location, travel_service, etc.
+  // — these are sub-facilities or branded counters whose websites resolve to the airline/
+  // brand entity (e.g. jetblue.com → Q161086 JetBlue Airways), producing spuriously high
+  // QRank scores that push check-in counters and baggage claims to early zoom levels.
+  private static final java.util.Set<String> WEBSITE_QID_ELIGIBLE_CATEGORIES = java.util.Set.of(
+    "airport", // the airport itself, not airline counters inside it
+    "zoo", // institution-level feature
+    "museum", // institution-level feature
+    "art_museum", // institution-level feature
+    "college_university", // institution-level feature
+    "university", // institution-level feature
+    "park", // institution-level feature
+    "national_park", // institution-level feature
+    "aquarium", // institution-level feature
+    "botanical_garden", // institution-level feature
+    "stadium", // institution-level feature
+    "library" // institution-level feature
+  );
+
+  // Minimum confidence for website→QID lookup. Low-confidence features are often
+  // brand counters or services miscategorised as the institution (e.g. JetBlue at 0.32
+  // tagged basic_category=airport). Real airports/zoos/etc. cluster at 0.90+.
+  private static final double WEBSITE_QID_MIN_CONFIDENCE = 0.9;
+
+  private static boolean isWebsiteQidEligible(String basicCategory, double confidence) {
+    return basicCategory != null && WEBSITE_QID_ELIGIBLE_CATEGORIES.contains(basicCategory) &&
+      confidence >= WEBSITE_QID_MIN_CONFIDENCE;
+  }
+
   public void processOverture(SourceFeature sf, FeatureCollector features) {
     // Filter by type field - Overture transportation theme
     if (!"places".equals(sf.getString("theme"))) {
@@ -569,8 +606,17 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    // QRank may override minZoom entirely
+    // QRank may override minZoom entirely.
+    // Website→QID lookup is restricted to categories where the feature IS the institution
+    // (airport, zoo, museum, etc.) — not sub-facilities of branded services where the
+    // website resolves to a corporate brand entity rather than the specific place.
     String wikidata = sf.getString("wikidata");
+    if (wikidata == null && websiteQidDb != null && isWebsiteQidEligible(sf.getString("basic_category"), confidence)) {
+      Object websitesObj = sf.getTag("websites");
+      if (websitesObj instanceof List<?> websites && !((List<?>) websites).isEmpty()) {
+        wikidata = websiteQidDb.getQid(websites.get(0).toString());
+      }
+    }
     long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
     var qrankedZoom = QrankDb.assignZoom(qrankGrading, kind, qrank);
 

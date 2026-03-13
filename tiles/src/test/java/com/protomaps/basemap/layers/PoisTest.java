@@ -3,6 +3,7 @@ package com.protomaps.basemap.layers;
 import static com.onthegomap.planetiler.TestUtils.*;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,9 +93,10 @@ class PoisTest extends LayerTest {
 
   @Test
   void withQrank() {
+    // Q8888 has QRank=100000; aerodrome grading {10,200000},{11,100000},... → minZoom=11 → min_zoom=12
     assertFeatures(11,
       List.of(
-        Map.of("kind", "aerodrome", "name", "SFO", "min_zoom", 11)),
+        Map.of("kind", "aerodrome", "name", "SFO", "min_zoom", 12)),
       process(SimpleFeature.create(
         newPoint(0, 0),
         new HashMap<>(Map.of("aeroway", "aerodrome", "name", "SFO", "wikidata", "Q8888")),
@@ -106,9 +108,10 @@ class PoisTest extends LayerTest {
 
   @Test
   void withQrankPoly() {
+    // Q8888 has QRank=100000; aerodrome grading {10,200000},{11,100000},... → minZoom=11 → min_zoom=12
     assertFeatures(11,
       List.of(Map.of("kind", "aerodrome"),
-        Map.of("kind", "aerodrome", "name", "SFO", "min_zoom", 11)),
+        Map.of("kind", "aerodrome", "name", "SFO", "min_zoom", 12)),
       process(SimpleFeature.create(
         newPolygon(0, 0, 0, 1, 1, 1, 1, 0, 0, 0),
         new HashMap<>(Map.of("aeroway", "aerodrome", "name", "SFO", "wikidata", "Q8888")),
@@ -1374,8 +1377,9 @@ class PoisOvertureTest extends LayerTest {
   }
 
   @Test
-  void lowConfidence_dropped() {
-    // JetBlue counter (confidence=0.64) is below the 0.65 cutoff and must be dropped.
+  void websiteQid_ineligibleCategory_dropped() {
+    // JetBlue counter at Oakland Airport: basic_category=air_transport_facility_service,
+    // confidence=0.64 (below 0.65 cutoff) — dropped entirely before any kind or QID lookup.
     // Before the confidence cutoff this would have appeared at min_zoom=16.
     var tags = new HashMap<String, Object>();
     tags.put("id", "e67dea74-eb8c-47e8-bfd3-80af26dd7d5c");
@@ -1384,8 +1388,96 @@ class PoisOvertureTest extends LayerTest {
     tags.put("basic_category", "air_transport_facility_service");
     tags.put("confidence", 0.64);
     tags.put("names.primary", "JetBlue Airways");
+    tags.put("websites", new ArrayList<>(List.of("http://www.jetblue.com")));
     assertFeatures(15,
       List.of(),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
+  }
+
+  @Test
+  void websiteQid_lowConfidence_dropped() {
+    // JetBlue miscategorized as basic_category=airport at confidence=0.32 — below the 0.65
+    // cutoff, so the feature is dropped entirely before any website→QID lookup can fire.
+    // Before the confidence cutoff, jetblue.com → Q161086 (QRank=5M) would have promoted
+    // this to zoom 10.
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "8b6a937e-c32d-436b-b5cc-397fb8f978f2");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "airport");
+    tags.put("confidence", 0.32);
+    tags.put("names.primary", "JetBlue");
+    tags.put("websites", new ArrayList<>(List.of("http://www.jetblue.com")));
+    assertFeatures(15,
+      List.of(),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
+  }
+
+  @Test
+  void withQrankViaWebsite_aerodrome_oakland() {
+    // Oakland International Airport: websites→iflyoak.com→Q1165584, QRank=140740
+    // aerodrome grading: 140740 < 200000, 140740 >= 100000 → minZoom=11 → min_zoom=12
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "f66024a2-99ed-40a1-8c01-a6c93a26b0e4");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "airport");
+    tags.put("confidence", 0.9973583119336149);
+    tags.put("names.primary", "Oakland International Airport");
+    tags.put("websites", new ArrayList<>(List.of("http://www.iflyoak.com/")));
+    assertFeatures(11,
+      List.of(Map.of("kind", "aerodrome", "min_zoom", 12, "name", "Oakland International Airport")),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
+  }
+
+  @Test
+  void withQrankViaWebsite_zoo_oakland() {
+    // Oakland Zoo: websites→oaklandzoo.org→Q2008530, QRank=12197
+    // zoo grading: 12197 >= 10000 → minZoom=12 → min_zoom=13
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "a74a40ae-92ae-4fae-958e-da2057fd1bc7");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "zoo");
+    tags.put("confidence", 0.9735918045043945);
+    tags.put("names.primary", "Oakland Zoo");
+    tags.put("websites", new ArrayList<>(List.of("http://www.oaklandzoo.org/")));
+    assertFeatures(12,
+      List.of(Map.of("kind", "zoo", "min_zoom", 13, "name", "Oakland Zoo")),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
+  }
+
+  @Test
+  void withQrankViaWebsite_college_ucb() {
+    // UC Berkeley: websites→berkeley.edu→Q168756, QRank=1604223
+    // college grading: 1604223 < 2000000, 1604223 >= 500000 → minZoom=13 → min_zoom=14
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "67e4f788-d72f-4a36-b6e2-5864f928bcb3");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "college_university");
+    tags.put("confidence", 0.9735918045043945);
+    tags.put("names.primary", "UC Berkeley");
+    tags.put("websites", new ArrayList<>(List.of("http://www.berkeley.edu")));
+    assertFeatures(13,
+      List.of(Map.of("kind", "college", "min_zoom", 14, "name", "UC Berkeley")),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
+  }
+
+  @Test
+  void withQrankViaWebsite_museum_omca() {
+    // Oakland Museum of California: websites→museumca.org→Q877714, QRank=9227
+    // museum grading: 9227 < 20000, 9227 >= 5000 → minZoom=14 → min_zoom=15
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "474b271e-afeb-49d2-b5c6-29478b555536");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "museum");
+    tags.put("confidence", 0.9500626074407351);
+    tags.put("names.primary", "Oakland Museum of California");
+    tags.put("websites", new ArrayList<>(List.of("http://museumca.org")));
+    assertFeatures(14,
+      List.of(Map.of("kind", "museum", "min_zoom", 15, "name", "Oakland Museum of California")),
       process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
   }
 }
