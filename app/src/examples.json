@@ -56,6 +56,34 @@
     "zoom": 11
   },
   {
+    "name": "oakland-hills-z14",
+    "description": "Area around Oakland hills",
+    "tags": ["oakland", "oakland-hills"],
+    "center": [-122.2119, 37.9001],
+    "zoom": 14
+  },
+  {
+    "name": "oakland-hills-z13",
+    "description": "Area around Oakland hills",
+    "tags": ["oakland", "oakland-hills"],
+    "center": [-122.2119, 37.9001],
+    "zoom": 13
+  },
+  {
+    "name": "oakland-hills-z12",
+    "description": "Area around Oakland hills",
+    "tags": ["oakland", "oakland-hills"],
+    "center": [-122.2119, 37.9001],
+    "zoom": 12
+  },
+  {
+    "name": "oakland-hills-z11",
+    "description": "Area around Oakland hills",
+    "tags": ["oakland", "oakland-hills"],
+    "center": [-122.2119, 37.9001],
+    "zoom": 11
+  },
+  {
     "name": "oakland-airport-z15",
     "description": "Area around Oakland Airport terminals",
     "tags": ["oakland", "oakland-airport"],
