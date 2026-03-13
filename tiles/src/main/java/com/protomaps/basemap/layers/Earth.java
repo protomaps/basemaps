@@ -78,8 +78,9 @@ public class Earth implements ForwardingProfile.LayerPostProcessor {
   public void processOverture(SourceFeature sf, FeatureCollector features) {
     String type = sf.getString("type");
 
-    // Filter by type field - Overture base theme land
-    if (!"land".equals(type)) {
+    // Filter by type field - Overture base theme land, subtype land only
+    // Other subtypes (forest, grass, shrub, wetland, rock, sand, ice) go to Landuse
+    if (!"land".equals(type) || !"land".equals(sf.getString("subtype"))) {
       return;
     }
 
