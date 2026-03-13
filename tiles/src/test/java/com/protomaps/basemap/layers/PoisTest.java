@@ -1143,16 +1143,16 @@ class PoisOvertureTest extends LayerTest {
   @Test
   void kind_nationalPark_fromBasicCategory() {
     assertFeatures(15,
-      List.of(Map.of("kind", "national_park", "min_zoom", 12, "name", "Alcatraz National Park")),
+      List.of(Map.of("kind", "national_park", "min_zoom", 12, "name", "Pinnacles National Park")),
       process(SimpleFeature.create(
         newPoint(1, 1),
         new HashMap<>(Map.of(
-          "id", "814b8a78-161f-4273-a4bb-7d686d0e3be4", // https://www.openstreetmap.org/way/295140461/history/15
+          "id", "4d619bc0-d30c-4dbe-9f8b-079cf06c1a39",
           "theme", "places",
           "type", "place",
           "basic_category", "national_park",
-          "names.primary", "Alcatraz National Park",
-          "confidence", 0.64
+          "names.primary", "Pinnacles National Park",
+          "confidence", 0.917024286724829
         )),
         "pm:overture", null, 0
       )));
@@ -1377,11 +1377,10 @@ class PoisOvertureTest extends LayerTest {
   }
 
   @Test
-  void websiteQid_ineligibleCategory_noEarlyZoom() {
-    // JetBlue counter at Oakland Airport: basic_category=air_transport_facility_service
-    // jetblue.com → Q161086 (JetBlue Airways, QRank=5M) — but the category is ineligible
-    // for website→QID lookup, so the high brand QRank must NOT promote it to an early zoom.
-    // Before the eligibility allowlist this would have resolved to zoom 10.
+  void websiteQid_ineligibleCategory_dropped() {
+    // JetBlue counter at Oakland Airport: basic_category=air_transport_facility_service,
+    // confidence=0.64 (below 0.65 cutoff) — dropped entirely before any kind or QID lookup.
+    // Before the confidence cutoff this would have appeared at min_zoom=16.
     var tags = new HashMap<String, Object>();
     tags.put("id", "e67dea74-eb8c-47e8-bfd3-80af26dd7d5c");
     tags.put("theme", "places");
@@ -1391,15 +1390,16 @@ class PoisOvertureTest extends LayerTest {
     tags.put("names.primary", "JetBlue Airways");
     tags.put("websites", new ArrayList<>(List.of("http://www.jetblue.com")));
     assertFeatures(15,
-      List.of(Map.of("kind", "air_transport_facility_service", "min_zoom", 16, "name", "JetBlue Airways")),
+      List.of(),
       process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
   }
 
   @Test
-  void websiteQid_lowConfidence_noEarlyZoom() {
-    // JetBlue miscategorized as basic_category=airport at confidence=0.32 — the eligible
-    // category passes the allowlist, but low confidence must block the website→QID lookup.
-    // jetblue.com → Q161086 (QRank=5M) would otherwise promote this to zoom 10.
+  void websiteQid_lowConfidence_dropped() {
+    // JetBlue miscategorized as basic_category=airport at confidence=0.32 — below the 0.65
+    // cutoff, so the feature is dropped entirely before any website→QID lookup can fire.
+    // Before the confidence cutoff, jetblue.com → Q161086 (QRank=5M) would have promoted
+    // this to zoom 10.
     var tags = new HashMap<String, Object>();
     tags.put("id", "8b6a937e-c32d-436b-b5cc-397fb8f978f2");
     tags.put("theme", "places");
@@ -1409,7 +1409,7 @@ class PoisOvertureTest extends LayerTest {
     tags.put("names.primary", "JetBlue");
     tags.put("websites", new ArrayList<>(List.of("http://www.jetblue.com")));
     assertFeatures(15,
-      List.of(Map.of("kind", "aerodrome", "min_zoom", 14, "name", "JetBlue")),
+      List.of(),
       process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
   }
 
