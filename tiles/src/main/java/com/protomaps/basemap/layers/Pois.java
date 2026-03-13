@@ -562,6 +562,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     if (kind.equals("pm:undefined"))
       return;
 
+    // Drop low-confidence features. Below 0.65, features are dominated by uncertain data:
+    // real estate listings, auto repair, beauty salons, ATMs from low-quality sources.
+    double confidence = sf.getTag("confidence") instanceof Number n ? n.doubleValue() : 0.0;
+    if (confidence < 0.65) {
+      return;
+    }
+
     // QRank may override minZoom entirely
     String wikidata = sf.getString("wikidata");
     long qrank = (wikidata != null) ? qrankDb.get(wikidata) : 0;
@@ -581,6 +588,10 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     String name = sf.getString("names.primary");
 
+    // Sort key: lower = higher rendering priority. Within the same minZoom bucket,
+    // higher confidence wins (subtract confidence*100 so 0.99 → -99, 0.65 → -65).
+    int sortKey = minZoom * 1000 - (int) (confidence * 100);
+
     features.point(this.name())
       // all POIs should receive their IDs at all zooms
       // (there is no merging of POIs like with lines and polygons in other layers)
@@ -593,7 +604,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       .setAttr("min_zoom", minZoom + 1)
       //
       .setBufferPixels(8)
-      .setZoomRange(Math.min(minZoom, 15), 15);
+      .setZoomRange(Math.min(minZoom, 15), 15)
+      .setSortKey(sortKey);
   }
 
   @Override

@@ -1140,16 +1140,16 @@ class PoisOvertureTest extends LayerTest {
   @Test
   void kind_nationalPark_fromBasicCategory() {
     assertFeatures(15,
-      List.of(Map.of("kind", "national_park", "min_zoom", 12, "name", "Alcatraz National Park")),
+      List.of(Map.of("kind", "national_park", "min_zoom", 12, "name", "Pinnacles National Park")),
       process(SimpleFeature.create(
         newPoint(1, 1),
         new HashMap<>(Map.of(
-          "id", "814b8a78-161f-4273-a4bb-7d686d0e3be4", // https://www.openstreetmap.org/way/295140461/history/15
+          "id", "4d619bc0-d30c-4dbe-9f8b-079cf06c1a39",
           "theme", "places",
           "type", "place",
           "basic_category", "national_park",
-          "names.primary", "Alcatraz National Park",
-          "confidence", 0.64
+          "names.primary", "Pinnacles National Park",
+          "confidence", 0.917024286724829
         )),
         "pm:overture", null, 0
       )));
@@ -1371,5 +1371,21 @@ class PoisOvertureTest extends LayerTest {
         )),
         "pm:overture", null, 0
       )));
+  }
+
+  @Test
+  void lowConfidence_dropped() {
+    // JetBlue counter (confidence=0.64) is below the 0.65 cutoff and must be dropped.
+    // Before the confidence cutoff this would have appeared at min_zoom=16.
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "e67dea74-eb8c-47e8-bfd3-80af26dd7d5c");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "air_transport_facility_service");
+    tags.put("confidence", 0.64);
+    tags.put("names.primary", "JetBlue Airways");
+    assertFeatures(15,
+      List.of(),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
   }
 }
