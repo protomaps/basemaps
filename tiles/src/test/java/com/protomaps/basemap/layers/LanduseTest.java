@@ -256,6 +256,69 @@ class LanduseTest extends LayerTest {
   }
 
   @Test
+  void testOvertureLand() {
+    // forest subtype, wood class → wood kind
+    // d3377708-0909-3bad-93a0-bccf36a3da6b
+    assertFeatures(15,
+      List.of(Map.of("kind", "wood")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("id", "d3377708-0909-3bad-93a0-bccf36a3da6b",
+          "theme", "base", "type", "land", "subtype", "forest", "class", "wood")),
+        "pm:overture", null, 0)));
+
+    // grass subtype, grassland class → grassland kind
+    // 553b0479-ef8d-3e61-8160-193422ebc844
+    assertFeatures(15,
+      List.of(Map.of("kind", "grassland")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("id", "553b0479-ef8d-3e61-8160-193422ebc844",
+          "theme", "base", "type", "land", "subtype", "grass", "class", "grassland")),
+        "pm:overture", null, 0)));
+
+    // shrub subtype, scrub class → scrub kind
+    // f7254ef8-2649-31e4-9906-1a775dbde15b
+    assertFeatures(15,
+      List.of(Map.of("kind", "scrub")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("id", "f7254ef8-2649-31e4-9906-1a775dbde15b",
+          "theme", "base", "type", "land", "subtype", "shrub", "class", "scrub")),
+        "pm:overture", null, 0)));
+
+    // wetland subtype → wetland kind
+    // 4d48560e-025b-39fd-b8f3-cd063b166121
+    assertFeatures(15,
+      List.of(Map.of("kind", "wetland")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("id", "4d48560e-025b-39fd-b8f3-cd063b166121",
+          "theme", "base", "type", "land", "subtype", "wetland", "class", "wetland")),
+        "pm:overture", null, 0)));
+
+    // rock subtype, bare_rock class → bare_rock kind
+    // e3d2b715-397f-34c3-b534-380dbb732b7b
+    assertFeatures(15,
+      List.of(Map.of("kind", "bare_rock")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("id", "e3d2b715-397f-34c3-b534-380dbb732b7b",
+          "theme", "base", "type", "land", "subtype", "rock", "class", "bare_rock")),
+        "pm:overture", null, 0)));
+
+    // sand subtype, beach class → beach kind
+    // 78640854-7fdf-36a8-b512-423f41814db8
+    assertFeatures(15,
+      List.of(Map.of("kind", "beach")),
+      process(SimpleFeature.create(
+        newPolygon(0, 0, 0, 1, 1, 1, 0, 0),
+        new HashMap<>(Map.of("id", "78640854-7fdf-36a8-b512-423f41814db8",
+          "theme", "base", "type", "land", "subtype", "sand", "class", "beach")),
+        "pm:overture", null, 0)));
+  }
+
+  @Test
   void testFromTagHighway() {
     assertFeatures(15,
       List.of(Map.of("kind", "pedestrian")),
