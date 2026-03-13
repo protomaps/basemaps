@@ -564,7 +564,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // Drop low-confidence features. Below 0.65, features are dominated by uncertain data:
     // real estate listings, auto repair, beauty salons, ATMs from low-quality sources.
-    double confidence = sf.getTag("confidence") instanceof Number n ? n.doubleValue() : 0.0;
+    double confidence = sf.getTag("confidence")instanceof Number n ? n.doubleValue() : 0.0;
     if (confidence < 0.65) {
       return;
     }
