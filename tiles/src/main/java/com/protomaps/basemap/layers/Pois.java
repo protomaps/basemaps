@@ -548,6 +548,37 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     outputFeature.setPointLabelGridSizeAndLimit(14, 8, 1);
   }
 
+  // Categories where the Overture feature IS the institution itself, so its website
+  // reliably resolves to that institution's Wikidata QID rather than a corporate brand.
+  // Excluded: air_transport_facility_service, transportation_location, travel_service, etc.
+  // — these are sub-facilities or branded counters whose websites resolve to the airline/
+  // brand entity (e.g. jetblue.com → Q161086 JetBlue Airways), producing spuriously high
+  // QRank scores that push check-in counters and baggage claims to early zoom levels.
+  private static final java.util.Set<String> WEBSITE_QID_ELIGIBLE_CATEGORIES = java.util.Set.of(
+    "airport", // the airport itself, not airline counters inside it
+    "zoo", // institution-level feature
+    "museum", // institution-level feature
+    "art_museum", // institution-level feature
+    "college_university", // institution-level feature
+    "university", // institution-level feature
+    "park", // institution-level feature
+    "national_park", // institution-level feature
+    "aquarium", // institution-level feature
+    "botanical_garden", // institution-level feature
+    "stadium", // institution-level feature
+    "library" // institution-level feature
+  );
+
+  // Minimum confidence for website→QID lookup. Low-confidence features are often
+  // brand counters or services miscategorised as the institution (e.g. JetBlue at 0.32
+  // tagged basic_category=airport). Real airports/zoos/etc. cluster at 0.90+.
+  private static final double WEBSITE_QID_MIN_CONFIDENCE = 0.9;
+
+  private static boolean isWebsiteQidEligible(String basicCategory, double confidence) {
+    return basicCategory != null && WEBSITE_QID_ELIGIBLE_CATEGORIES.contains(basicCategory) &&
+      confidence >= WEBSITE_QID_MIN_CONFIDENCE;
+  }
+
   public void processOverture(SourceFeature sf, FeatureCollector features) {
     // Filter by type field - Overture transportation theme
     if (!"places".equals(sf.getString("theme"))) {
@@ -568,9 +599,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     if (kind.equals("pm:undefined"))
       return;
 
-    // QRank may override minZoom entirely
+    // QRank may override minZoom entirely.
+    // Website→QID lookup is restricted to categories where the feature IS the institution
+    // (airport, zoo, museum, etc.) — not sub-facilities of branded services where the
+    // website resolves to a corporate brand entity rather than the specific place.
     String wikidata = sf.getString("wikidata");
-    if (wikidata == null && websiteQidDb != null) {
+    double confidence = sf.getTag("confidence")instanceof Number n ? n.doubleValue() : 0.0;
+    if (wikidata == null && websiteQidDb != null && isWebsiteQidEligible(sf.getString("basic_category"), confidence)) {
       Object websitesObj = sf.getTag("websites");
       if (websitesObj instanceof List<?> websites && !((List<?>) websites).isEmpty()) {
         wikidata = websiteQidDb.getQid(websites.get(0).toString());

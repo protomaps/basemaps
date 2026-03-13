@@ -28,15 +28,16 @@ abstract class LayerTest {
 
 
   final QrankDb qrankDb = new QrankDb(LongLongHashMap.from(
-    new long[]{8888, 1165584, 2008530, 168756, 877714},
-    new long[]{100000, 140740, 12197, 1604223, 9227}
+    new long[]{8888, 1165584, 2008530, 168756, 877714, 161086},
+    new long[]{100000, 140740, 12197, 1604223, 9227, 5000000}
   ));
 
   final WebsiteQidDb websiteQidDb = new WebsiteQidDb(Map.of(
     "iflyoak.com", 1165584L, // Oakland Airport Q1165584
     "oaklandzoo.org", 2008530L, // Oakland Zoo Q2008530
     "berkeley.edu", 168756L, // UC Berkeley Q168756
-    "museumca.org", 877714L // OMCA Q877714
+    "museumca.org", 877714L, // OMCA Q877714
+    "jetblue.com", 161086L // JetBlue Airways Q161086 (airline brand, not a place)
   ));
 
   final Basemap profile = new Basemap(qrankDb, websiteQidDb, countryCoder, null, "");

@@ -1377,6 +1377,43 @@ class PoisOvertureTest extends LayerTest {
   }
 
   @Test
+  void websiteQid_ineligibleCategory_noEarlyZoom() {
+    // JetBlue counter at Oakland Airport: basic_category=air_transport_facility_service
+    // jetblue.com → Q161086 (JetBlue Airways, QRank=5M) — but the category is ineligible
+    // for website→QID lookup, so the high brand QRank must NOT promote it to an early zoom.
+    // Before the eligibility allowlist this would have resolved to zoom 10.
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "e67dea74-eb8c-47e8-bfd3-80af26dd7d5c");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "air_transport_facility_service");
+    tags.put("confidence", 0.64);
+    tags.put("names.primary", "JetBlue Airways");
+    tags.put("websites", new ArrayList<>(List.of("http://www.jetblue.com")));
+    assertFeatures(15,
+      List.of(Map.of("kind", "air_transport_facility_service", "min_zoom", 16, "name", "JetBlue Airways")),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
+  }
+
+  @Test
+  void websiteQid_lowConfidence_noEarlyZoom() {
+    // JetBlue miscategorized as basic_category=airport at confidence=0.32 — the eligible
+    // category passes the allowlist, but low confidence must block the website→QID lookup.
+    // jetblue.com → Q161086 (QRank=5M) would otherwise promote this to zoom 10.
+    var tags = new HashMap<String, Object>();
+    tags.put("id", "8b6a937e-c32d-436b-b5cc-397fb8f978f2");
+    tags.put("theme", "places");
+    tags.put("type", "place");
+    tags.put("basic_category", "airport");
+    tags.put("confidence", 0.32);
+    tags.put("names.primary", "JetBlue");
+    tags.put("websites", new ArrayList<>(List.of("http://www.jetblue.com")));
+    assertFeatures(15,
+      List.of(Map.of("kind", "aerodrome", "min_zoom", 14, "name", "JetBlue")),
+      process(SimpleFeature.create(newPoint(1, 1), tags, "pm:overture", null, 0)));
+  }
+
+  @Test
   void withQrankViaWebsite_aerodrome_oakland() {
     // Oakland International Airport: websites→iflyoak.com→Q1165584, QRank=140740
     // aerodrome grading: 140740 < 200000, 140740 >= 100000 → minZoom=11 → min_zoom=12
@@ -1385,6 +1422,7 @@ class PoisOvertureTest extends LayerTest {
     tags.put("theme", "places");
     tags.put("type", "place");
     tags.put("basic_category", "airport");
+    tags.put("confidence", 0.9973583119336149);
     tags.put("names.primary", "Oakland International Airport");
     tags.put("websites", new ArrayList<>(List.of("http://www.iflyoak.com/")));
     assertFeatures(11,
@@ -1401,6 +1439,7 @@ class PoisOvertureTest extends LayerTest {
     tags.put("theme", "places");
     tags.put("type", "place");
     tags.put("basic_category", "zoo");
+    tags.put("confidence", 0.9735918045043945);
     tags.put("names.primary", "Oakland Zoo");
     tags.put("websites", new ArrayList<>(List.of("http://www.oaklandzoo.org/")));
     assertFeatures(12,
@@ -1417,6 +1456,7 @@ class PoisOvertureTest extends LayerTest {
     tags.put("theme", "places");
     tags.put("type", "place");
     tags.put("basic_category", "college_university");
+    tags.put("confidence", 0.9735918045043945);
     tags.put("names.primary", "UC Berkeley");
     tags.put("websites", new ArrayList<>(List.of("http://www.berkeley.edu")));
     assertFeatures(13,
@@ -1433,6 +1473,7 @@ class PoisOvertureTest extends LayerTest {
     tags.put("theme", "places");
     tags.put("type", "place");
     tags.put("basic_category", "museum");
+    tags.put("confidence", 0.9500626074407351);
     tags.put("names.primary", "Oakland Museum of California");
     tags.put("websites", new ArrayList<>(List.of("http://museumca.org")));
     assertFeatures(14,
