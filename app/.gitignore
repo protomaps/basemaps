@@ -1,6 +1,7 @@
 node_modules
 dist
 .vite
+.env.local
 
 # Editor directories and files
 .vscode/*
