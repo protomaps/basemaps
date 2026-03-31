@@ -269,42 +269,19 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
-    Integer minZoom;
-    Integer maxZoom;
-    Integer kindRank;
-
     var computedTags = makeTagMap(kind, kindDetail, population, populationFallback);
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
-    var zoomMatches = zoomsIndex.getMatches(sf2);
 
     // Use populationFallback for sorting if no real population
     if (population == 0 && populationFallback > 0) {
       population = populationFallback;
     }
 
-    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
-    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
-    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
-
-    int populationRank = 0;
-
-    for (int i = 0; i < popBreaks.length; i++) {
-      if (population >= popBreaks[i]) {
-        populationRank = i + 1;
-      }
-    }
-
-    if (WIKIDATA_CONFIGS.containsKey(sf.getString("wikidata"))) {
-      var wikidataConfig = WIKIDATA_CONFIGS.get(sf.getString("wikidata"));
-      if (kind.equals("country") || kind.equals("region")) {
-        minZoom = wikidataConfig.minZoom();
-        maxZoom = wikidataConfig.maxZoom();
-      }
-      if (kind.equals("locality")) {
-        minZoom = wikidataConfig.minZoom();
-        populationRank = wikidataConfig.rankMax();
-      }
-    }
+    var zp = getZoomsPops(sf2, kind, population);
+    int minZoom = zp.minZoom();
+    int maxZoom = zp.maxZoom();
+    int kindRank = zp.kindRank();
+    int populationRank = zp.populationRank();
 
     var feat = features.point(this.name())
       .setId(FeatureId.create(sf))
@@ -381,40 +358,17 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
 
     Integer populationFallback = (population > 0) ? 0 : 1;
 
-    Integer minZoom;
-    Integer maxZoom;
-    Integer kindRank;
-
     var computedTags = makeTagMap(kind, kindDetail, population, populationFallback);
     var sf2 = new Matcher.SourceFeatureWithComputedTags(sf, computedTags);
-    var zoomMatches = zoomsIndex.getMatches(sf2);
-
-    minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
-    maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
-    kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
 
     // Extract name
     String name = sf.getString("names.primary");
 
-    int populationRank = 0;
-
-    for (int i = 0; i < popBreaks.length; i++) {
-      if (population >= popBreaks[i]) {
-        populationRank = i + 1;
-      }
-    }
-
-    if (WIKIDATA_CONFIGS.containsKey(sf.getString("wikidata"))) {
-      var wikidataConfig = WIKIDATA_CONFIGS.get(sf.getString("wikidata"));
-      if (kind.equals("country") || kind.equals("region")) {
-        minZoom = wikidataConfig.minZoom();
-        maxZoom = wikidataConfig.maxZoom();
-      }
-      if (kind.equals("locality")) {
-        minZoom = wikidataConfig.minZoom();
-        populationRank = wikidataConfig.rankMax();
-      }
-    }
+    var zp = getZoomsPops(sf2, kind, population);
+    int minZoom = zp.minZoom();
+    int maxZoom = zp.maxZoom();
+    int kindRank = zp.kindRank();
+    int populationRank = zp.populationRank();
 
     var feat = features.point(this.name())
       .setAttr("kind", kind)
@@ -440,6 +394,36 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     feat.setPointLabelGridPixelSize(LOCALITY_GRID_SIZE_ZOOM_FUNCTION)
       .setPointLabelGridLimit(LOCALITY_GRID_LIMIT_ZOOM_FUNCTION);
     feat.setBufferPixelOverrides(ZoomFunction.maxZoom(12, 64));
+  }
+
+  record ZoomsPops(int minZoom, int maxZoom, int kindRank, int populationRank) {}
+
+  private ZoomsPops getZoomsPops(Matcher.SourceFeatureWithComputedTags sf2, String kind, int population) {
+    var zoomMatches = zoomsIndex.getMatches(sf2);
+    int minZoom = getInteger(sf2, zoomMatches, "pm:minzoom", 99);
+    int maxZoom = getInteger(sf2, zoomMatches, "pm:maxzoom", 99);
+    int kindRank = getInteger(sf2, zoomMatches, "pm:kindRank", 99);
+
+    int populationRank = 0;
+    for (int i = 0; i < popBreaks.length; i++) {
+      if (population >= popBreaks[i]) {
+        populationRank = i + 1;
+      }
+    }
+
+    if (WIKIDATA_CONFIGS.containsKey(sf2.getString("wikidata"))) {
+      var wikidataConfig = WIKIDATA_CONFIGS.get(sf2.getString("wikidata"));
+      if (kind.equals("country") || kind.equals("region")) {
+        minZoom = wikidataConfig.minZoom();
+        maxZoom = wikidataConfig.maxZoom();
+      }
+      if (kind.equals("locality")) {
+        minZoom = wikidataConfig.minZoom();
+        populationRank = wikidataConfig.rankMax();
+      }
+    }
+
+    return new ZoomsPops(minZoom, maxZoom, kindRank, populationRank);
   }
 
   @Override
