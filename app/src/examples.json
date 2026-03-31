@@ -1,5 +1,117 @@
 [
   {
+    "name": "oakland-downtown-z4",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 4
+  },
+  {
+    "name": "oakland-downtown-z5",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 5
+  },
+  {
+    "name": "oakland-downtown-z6",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 6
+  },
+  {
+    "name": "oakland-downtown-z7",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.2713, 37.8043],
+    "zoom": 7
+  },
+  {
+    "name": "oakland-downtown-z8",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 8
+  },
+  {
+    "name": "oakland-downtown-z9",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.2713, 37.8043],
+    "zoom": 9
+  },
+  {
+    "name": "oakland-downtown-z10",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.2713, 37.8043],
+    "zoom": 10
+  },
+  {
+    "name": "oakland-downtown-z11",
+    "description": "Area around downtown Oakland",
+    "tags": ["oakland", "oakland-downtown"],
+    "center": [-122.2713, 37.8043],
+    "zoom": 11
+  },
+  {
+    "name": "oakland-airport-z15",
+    "description": "Area around Oakland Airport terminals",
+    "tags": ["oakland", "oakland-airport"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 15
+  },
+  {
+    "name": "oakland-airport-z14",
+    "description": "Area around Oakland Airport terminals",
+    "tags": ["oakland", "oakland-airport"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 14
+  },
+  {
+    "name": "oakland-airport-z13",
+    "description": "Area around Oakland Airport terminals",
+    "tags": ["oakland", "oakland-airport"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 13
+  },
+  {
+    "name": "oakland-airport-z12",
+    "description": "Area around Oakland Airport terminals",
+    "tags": ["oakland", "oakland-airport"],
+    "center": [-122.21885, 37.71324],
+    "zoom": 12
+  },
+  {
+    "name": "oakland-lake-merritt-z15",
+    "description": "Area around Oakland Lake Merritt",
+    "tags": ["oakland", "oakland-lake-merritt"],
+    "center": [-122.26467, 37.80661],
+    "zoom": 15
+  },
+  {
+    "name": "oakland-lake-merritt-z14",
+    "description": "Area around Oakland Lake Merritt",
+    "tags": ["oakland", "oakland-lake-merritt"],
+    "center": [-122.26467, 37.80661],
+    "zoom": 14
+  },
+  {
+    "name": "oakland-lake-merritt-z13",
+    "description": "Area around Oakland Lake Merritt",
+    "tags": ["oakland", "oakland-lake-merritt"],
+    "center": [-122.26467, 37.80661],
+    "zoom": 13
+  },
+  {
+    "name": "oakland-lake-merritt-z12",
+    "description": "Area around Oakland Lake Merritt",
+    "tags": ["oakland", "oakland-lake-merritt"],
+    "center": [-122.26467, 37.80661],
+    "zoom": 12
+  },
+  {
     "name": "taiwan-z8",
     "description": "Compare the appearance of highways",
     "tags": ["highway", "cjk", "tw"],

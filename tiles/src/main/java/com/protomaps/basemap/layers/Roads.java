@@ -219,6 +219,17 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     )).index();
 
+  private static final MultiExpression.Index<Map<String, Object>> overtureAerowayKindsIndex =
+    MultiExpression.ofOrdered(List.of(
+      rule(use("pm:kind", "pm:undefined"), use("pm:kindDetail", "pm:undefined"), use("pm:highway", "pm:undefined")),
+      rule(with("class", "runway"), use("pm:kind", "aeroway"), use("pm:kindDetail", "runway"),
+        use("pm:highway", "aeroway")),
+      rule(with("class", "taxiway"), use("pm:kind", "aeroway"), use("pm:kindDetail", "taxiway"),
+        use("pm:highway", "aeroway")),
+      rule(with("class", "taxilane"), use("pm:kind", "aeroway"), use("pm:kindDetail", "taxiway"),
+        use("pm:highway", "aeroway"))
+    )).index();
+
   // Protomaps kind/kind_detail to min_zoom mapping
 
   private static final MultiExpression.Index<Map<String, Object>> highwayZoomsIndex = MultiExpression.ofOrdered(List.of(
@@ -505,6 +516,30 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   public void processOverture(SourceFeature sf, FeatureCollector features) {
+    if ("base".equals(sf.getString("theme")) && "infrastructure".equals(sf.getString("type"))) {
+      if (!"airport".equals(sf.getString("subtype")))
+        return;
+
+      List<Map<String, Object>> kindMatches = overtureAerowayKindsIndex.getMatches(sf);
+      String kind = getString(sf, kindMatches, "pm:kind", "pm:undefined");
+      String kindDetail = getString(sf, kindMatches, "pm:kindDetail", "pm:undefined");
+      if ("pm:undefined".equals(kind))
+        return;
+
+      int minZoom = "runway".equals(kindDetail) ? 9 : 10;
+      String name = sf.getString("names.primary");
+
+      if (!sf.canBePolygon()) {
+        try {
+          LineString line = (LineString) sf.latLonGeometry();
+          emitOvertureFeature(features, sf, line, kind, kindDetail, name, "aeroway", minZoom,
+            new OvertureSegmentProperties());
+        } catch (GeometryException e) {
+          /* skip */ }
+      }
+      return;
+    }
+
     // Filter by type field - Overture transportation theme
     if (!"transportation".equals(sf.getString("theme"))) {
       return;

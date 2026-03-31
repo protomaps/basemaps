@@ -291,13 +291,132 @@ class PlacesTest extends LayerTest {
 class PlacesOvertureTest extends LayerTest {
 
   @Test
+  void testSanFranciscoOvertureCity() {
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "locality",
+        "kind_detail", "city",
+        "name", "San Francisco",
+        "_minzoom", 2,
+        "min_zoom", 3,
+        "population", 873965,
+        "population_rank", 12
+      )),
+      process(SimpleFeature.create(
+        newPoint(-122.4194, 37.7749),
+        new HashMap<>(Map.of(
+          "id", "dd84743c-4b27-476c-8da9-6e9730216bbd",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "locality",
+          "class", "city",
+          "names.primary", "San Francisco",
+          "wikidata", "Q62",
+          "population", 873965
+        )),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testSanJoseOvertureCity() {
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "locality",
+        "kind_detail", "city",
+        "name", "San Jose",
+        "_minzoom", 4,
+        "min_zoom", 5,
+        "population", 1035317,
+        "population_rank", 12
+      )),
+      process(SimpleFeature.create(
+        newPoint(-121.8863, 37.3382),
+        new HashMap<>(Map.of(
+          "id", "f5b6f0d6-6d89-4d16-b31d-fc7ab1bf8e44",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "locality",
+          "class", "city",
+          "names.primary", "San Jose",
+          "wikidata", "Q16553",
+          "population", 1035317
+        )),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testSanMateoOvertureCity() {
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "locality",
+        "kind_detail", "city",
+        "name", "San Mateo",
+        "_minzoom", 6,
+        "min_zoom", 7,
+        "population", 103536,
+        "population_rank", 11
+      )),
+      process(SimpleFeature.create(
+        newPoint(-122.3255, 37.5630),
+        new HashMap<>(Map.of(
+          "id", "2910cbac-cb82-4093-9f08-aeebd96a1c14",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "locality",
+          "class", "city",
+          "names.primary", "San Mateo",
+          "wikidata", "Q169943",
+          "population", 103536
+        )),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
+  void testSaratogaOvertureTown() {
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "locality",
+        "kind_detail", "town",
+        "name", "Saratoga",
+        "_minzoom", 7,
+        "min_zoom", 8,
+        "population", 30153
+      )),
+      process(SimpleFeature.create(
+        newPoint(-122.0233, 37.2638),
+        new HashMap<>(Map.of(
+          "id", "3a6c1a95-cf1b-4429-a0fd-eb966a2fea72",
+          "theme", "divisions",
+          "type", "division",
+          "subtype", "locality",
+          "class", "town",
+          "names.primary", "Saratoga",
+          "wikidata", "Q927163",
+          "population", 30153
+        )),
+        "pm:overture",
+        null,
+        0
+      )));
+  }
+
+  @Test
   void testOaklandCity() {
     assertFeatures(12,
       List.of(Map.of(
         "kind", "locality",
         "kind_detail", "city",
         "name", "Oakland",
-        "min_zoom", 9,
+        "min_zoom", 8,
         "population", 433031,
         "population_rank", 10
       )),

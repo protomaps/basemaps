@@ -819,6 +819,42 @@ class RoadsOvertureTest extends LayerTest {
       )));
   }
 
+  @Test
+  void kind_aeroway_fromRunwayClass() {
+    // Overture feature 0205eaa2-ffeb-3aa3-bac3-2595270de305
+    // Source: https://www.openstreetmap.org/way/27194437
+    assertFeatures(12,
+      List.of(Map.of("kind", "aeroway", "kind_detail", "runway", "_minzoom", 9)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "0205eaa2-ffeb-3aa3-bac3-2595270de305",
+          "theme", "base", "type", "infrastructure",
+          "subtype", "airport", "class", "runway"
+        )),
+        "pm:overture", null, 0
+      ))
+    );
+  }
+
+  @Test
+  void kind_aeroway_fromTaxiwayClass() {
+    // Overture feature 00244611-9db0-3fab-be3b-ad8001dad572
+    // Source: https://www.openstreetmap.org/way/517100793
+    assertFeatures(12,
+      List.of(Map.of("kind", "aeroway", "kind_detail", "taxiway", "_minzoom", 10)),
+      process(SimpleFeature.create(
+        newLineString(0, 0, 1, 1),
+        new HashMap<>(Map.of(
+          "id", "00244611-9db0-3fab-be3b-ad8001dad572",
+          "theme", "base", "type", "infrastructure",
+          "subtype", "airport", "class", "taxiway"
+        )),
+        "pm:overture", null, 0
+      ))
+    );
+  }
+
   // Tests for partial application of properties (bridge, tunnel, oneway, level) requiring line splitting
 
   @Test

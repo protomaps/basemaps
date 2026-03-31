@@ -1,3 +1,7 @@
+Tiles 4.14.4
+------
+- Continue expanding Overture support to lower zoom levels with Places and some infrastructure [#579]
+
 Tiles 4.14.3
 ------
 - Fix OSM place selection regression at zoom=7 [#576]
