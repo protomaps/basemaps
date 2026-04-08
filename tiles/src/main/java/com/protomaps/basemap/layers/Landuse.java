@@ -262,6 +262,28 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
       return;
     }
 
+    if ("land".equals(sf.getString("type"))) {
+      String landClass = sf.getString("class");
+      String kind = switch (landClass) {
+        case "wood", "forest" -> "wood";
+        case "grassland", "grass", "meadow", "fell" -> "grassland";
+        case "scrub", "heath", "shrub", "shrubbery" -> "scrub";
+        case "wetland" -> "wetland";
+        case "bare_rock", "scree", "stone", "rock", "shingle" -> "bare_rock";
+        case "beach" -> "beach";
+        case "sand" -> "sand";
+        default -> null;
+      };
+      if (kind != null && sf.canBePolygon()) {
+        features.polygon(LAYER_NAME)
+          .setAttr("kind", kind)
+          .setAttr("sort_rank", 189)
+          .setZoomRange(7, 15)
+          .setMinPixelSize(2.0);
+      }
+      return;
+    }
+
     if (/* !"land_cover".equals(sf.getString("type")) && */ !"land_use".equals(sf.getString("type"))) {
       return;
     }

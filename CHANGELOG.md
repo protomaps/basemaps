@@ -1,3 +1,7 @@
+Tiles 4.14.5
+------
+- Continue expanding Overture support with land rendering [#581]
+
 Tiles 4.14.4
 ------
 - Continue expanding Overture support to lower zoom levels with Places and some infrastructure [#579]
