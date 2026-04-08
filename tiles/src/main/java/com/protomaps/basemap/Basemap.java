@@ -6,6 +6,7 @@ import com.onthegomap.planetiler.Planetiler;
 import com.onthegomap.planetiler.config.Arguments;
 import com.onthegomap.planetiler.reader.parquet.GeoParquetMetadata;
 import com.onthegomap.planetiler.util.Downloader;
+import com.onthegomap.planetiler.util.Glob;
 import com.protomaps.basemap.feature.CountryCoder;
 import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.layers.Boundaries;
@@ -261,7 +262,7 @@ public class Basemap extends ForwardingProfile {
     var countryCoder = CountryCoder.fromJarResource();
 
     String area = args.getString("area", "Geofabrik area name to download, or filename in data/sources/", "");
-    String overtureFile = args.getString("overture", "Path to Overture Maps Parquet file", "");
+    String overtureFile = args.getString("overture", "Path to Overture Maps directory or .parquet file", "");
 
     if (!area.isEmpty() && !overtureFile.isEmpty()) {
       LOGGER.error("Error: Cannot specify both --area and --overture");
@@ -287,10 +288,17 @@ public class Basemap extends ForwardingProfile {
         "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip");
 
     if (!overtureFile.isEmpty()) {
+      Path base = args.inputFile("overture", "overture base directory", Path.of("data", "overture"));
+      var hivePartitoning = false;
+      var inputPaths = List.of(Path.of(overtureFile));
+      if (!overtureFile.endsWith(".parquet")) {
+        inputPaths = Glob.of(base).resolve("**", "*.parquet").find();
+        hivePartitoning = true;
+      }
       // Add Overture Parquet source
       planetiler.addParquetSource("pm:overture",
-        List.of(Path.of(overtureFile)),
-        false, // not Hive partitioned dirname, just a single file
+        inputPaths,
+        hivePartitoning,
         fields -> fields.get("id"),
         fields -> fields.get("type") // source layer
       );
