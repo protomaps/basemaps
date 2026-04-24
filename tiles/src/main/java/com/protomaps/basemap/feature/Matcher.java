@@ -305,8 +305,10 @@ public class Matcher {
         if (value instanceof Integer integerValue) {
           return integerValue;
         } else if (value instanceof FromTag fromTag) {
+          if (!sf.hasTag(fromTag.key)) return defaultValue;
           try {
-            return sf.hasTag(fromTag.key) ? Integer.valueOf(sf.getString(fromTag.key)) : defaultValue;
+            String digits = sf.getString(fromTag.key).replaceAll("[^0-9]", "");
+            return digits.isEmpty() ? defaultValue : Integer.valueOf(digits);
           } catch (NumberFormatException e) {
             return defaultValue;
           }
