@@ -562,6 +562,16 @@ class MatcherTest {
     );
     matches = index.getMatches(sf);
     assertEquals(1, getInteger(sf, matches, "a", 1));
+
+    sf = SimpleFeature.create(
+      newPoint(0, 0),
+      Map.of("b", "326 280"),
+      "osm",
+      null,
+      0
+    );
+    matches = index.getMatches(sf);
+    assertEquals(326280, getInteger(sf, matches, "a", 0));
   }
 
   @Test
