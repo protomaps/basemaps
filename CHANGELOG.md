@@ -1,3 +1,7 @@
+Tiles 4.14.6
+------
+- fix parsing of integers in feature matcher by @pekkine [#599]
+
 Tiles 4.14.5
 ------
 - Continue expanding Overture support with land rendering [#581]
