@@ -310,7 +310,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
   }
 
   // Hardcoded to US for now
-  private CartographicLocale locale = new CartographicLocale();
 
   private record RouteRelationInfo(
     @Override long id,
@@ -340,7 +339,7 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     String highway = sf.getString("highway");
 
-    CartographicLocale.Shield shield = locale.getShield(sf);
+    var locale = new CartographicLocale();
 
     for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
       RouteRelationInfo relation = routeInfo.relation();
@@ -354,8 +353,10 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       code.ifPresent(s -> sf.setTag("pm:country", s));
       locale = CountryCoder.getLocale(code);
     } catch (GeometryException e) {
-      // do nothing
+      e.log("Failed to determine country code");
     }
+
+    CartographicLocale.Shield shield = locale.getShield(sf);
 
     var matches = osmKindsIndex.getMatches(sf);
 

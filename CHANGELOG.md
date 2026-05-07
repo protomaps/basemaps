@@ -1,3 +1,7 @@
+Tiles 4.14.7
+------
+- fix race condition in determining locale for high way shields [#586]
+
 Tiles 4.14.6
 ------
 - fix parsing of integers in feature matcher by @pekkine [#599]
