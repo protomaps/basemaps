@@ -17,11 +17,11 @@ class USTest {
 
   @ParameterizedTest
   @CsvSource({
-    "US 1,1,US",
-    "US 1;US 5,1,US",
+    "US 1,1,US:US",
+    "US 1;US 5,1,US:US",
     "I 5,5,US:I",
     "6,6,other",
-    "US 1 ,1,US",
+    "US 1 ,1,US:US",
     "HI-3920,HI-3920,other"
   })
   void shieldUs(String refTag, String expectedText, String expectedNetwork) {

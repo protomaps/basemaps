@@ -1,3 +1,6 @@
+Tiles 4.14.8
+- fix US route network values [#518]
+
 Tiles 4.14.7
 ------
 - fix race condition in determining locale for high way shields [#586]
