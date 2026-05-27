@@ -210,7 +210,7 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
       // Disabled to allow population log to have larger range
       //.thenByInt(populationRank, 15, 0)
       // Order DESCENDING (larger values win, Millbrea 40k wins over San Bruno 20k, both rank 7)
-      .thenByLog(population, 40000000, 1, 100)
+      .thenByLog(population, 40000000, 1, 65)
       // Order ASCENDING (shorter strings are better than longer strings for map display and adds predictability)
       .thenByInt(name == null ? 0 : name.length(), 0, 31)
       .get();
