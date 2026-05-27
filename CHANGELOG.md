@@ -1,4 +1,10 @@
+Tiles 4.14.9
+------
+- upgrade to planetiler 0.10.2 [#585]
+- narrow resolution of places log(population) sort key levels to avoid running out of bits [#585]
+
 Tiles 4.14.8
+------
 - fix US route network values [#518]
 
 Tiles 4.14.7
