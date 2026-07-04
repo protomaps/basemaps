@@ -1,8 +1,11 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.newPolygon;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.onthegomap.planetiler.FeatureCollector;
+import com.onthegomap.planetiler.VectorTile;
+import com.onthegomap.planetiler.geo.GeometryException;
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
 import java.util.List;
@@ -579,5 +582,19 @@ class LanduseTest extends LayerTest {
       processWith("boundary", "national_park",
         "protection_title", "National Park")
     );
+  }
+
+  @Test
+  void postProcessFiltersSmallPolygonsBelowZoom15() throws GeometryException {
+    var small = new VectorTile.Feature("landuse", 1,
+      VectorTile.encodeGeometry(newPolygon(0, 0, 1, 0, 1, 1, 0, 1, 0, 0)),
+      new HashMap<>(Map.of("kind", "park")));
+    var large = new VectorTile.Feature("landuse", 2,
+      VectorTile.encodeGeometry(newPolygon(0, 0, 2, 0, 2, 2, 0, 2, 0, 0)),
+      new HashMap<>(Map.of("kind", "park")));
+
+    var result = new Landuse().postProcess(14, List.of(small, large));
+
+    assertEquals(List.of(large), result);
   }
 }

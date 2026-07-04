@@ -20,7 +20,7 @@ public class Area {
       if (minArea > 0 && area < minArea) {
         // do nothing
       } else {
-        if (minArea < 30000 / (4096 * 4096) * (256 * 256)) {
+        if (minArea < 30000d / (4096 * 4096) * (256 * 256)) {
           Set<String> keys = new HashSet<>(item.tags().keySet());
           for (String key : keys) {
             if (key.equals("name") || key.startsWith("name:")) {
