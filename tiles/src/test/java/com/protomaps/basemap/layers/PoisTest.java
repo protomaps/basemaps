@@ -198,6 +198,17 @@ class PoisTest extends LayerTest {
   }
 
   @Test
+  void peakElevation() {
+    assertFeatures(14,
+      List.of(Map.of("kind", "peak", "min_zoom", 14, "elevation", "569")),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("natural", "peak", "ele", "569")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
   void zoom_14_golfCourse() {
     assertFeatures(14,
       List.of(Map.of("kind", "golf_course", "min_zoom", 14)),

@@ -501,9 +501,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // Assign outputFeature
     if (hasNamedPolygon) {
-      outputFeature = features.pointOnSurface(this.name())
-        //.setAttr("area_debug", wayArea) // DEBUG
-        .setAttr("elevation", sf.getString("ele"));
+      outputFeature = features.pointOnSurface(this.name());
     } else if (sf.isPoint()) {
       outputFeature = features.point(this.name());
     } else {
@@ -525,7 +523,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       .setZoomRange(Math.min(minZoom, 15), 15)
       // Core OSM tags for different kinds of places
       // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-      .setAttr("iata", sf.getString("iata"));
+      .setAttr("iata", sf.getString("iata"))
+      .setAttr("elevation", sf.getString("ele"));
 
     // Core Tilezen schema properties
     if (!kindDetail.equals("pm:undefined"))
