@@ -1,3 +1,7 @@
+Tiles 4.14.10
+------
+- fix bug in area threshold via @candux [#620]
+
 Tiles 4.14.9
 ------
 - upgrade to planetiler 0.10.2 [#585]
