@@ -314,11 +314,11 @@ public class Landuse implements ForwardingProfile.LayerPostProcessor {
   public List<VectorTile.Feature> postProcess(int zoom, List<VectorTile.Feature> items) throws GeometryException {
     if (zoom == 15)
       return items;
-    int minArea = 400 / (4096 * 4096) * (256 * 256);
+    double minArea = 400d / (4096 * 4096) * (256 * 256);
     if (zoom == 6)
-      minArea = 600 / (4096 * 4096) * (256 * 256);
+      minArea = 600d / (4096 * 4096) * (256 * 256);
     else if (zoom <= 5)
-      minArea = 800 / (4096 * 4096) * (256 * 256);
+      minArea = 800d / (4096 * 4096) * (256 * 256);
     items = Area.filterArea(items, minArea);
 
     // We only care about park boundaries inside groups of adjacent parks at higher zooms when they are labeled
