@@ -1,6 +1,7 @@
 package com.protomaps.basemap.layers;
 
 import static com.onthegomap.planetiler.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import java.util.HashMap;
@@ -200,12 +201,56 @@ class PoisTest extends LayerTest {
   @Test
   void peakElevation() {
     assertFeatures(14,
-      List.of(Map.of("kind", "peak", "min_zoom", 14, "elevation", "569")),
+      List.of(Map.of("kind", "peak", "min_zoom", 14, "elevation", 569)),
       process(SimpleFeature.create(
         newPoint(1, 1),
         new HashMap<>(Map.of("natural", "peak", "ele", "569")),
         "osm", null, 0
       )));
+  }
+
+  @Test
+  void peakElevationDecimal() {
+    assertFeatures(14,
+      List.of(Map.of("kind", "peak", "min_zoom", 14, "elevation", 570)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("natural", "peak", "ele", "569.5")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void peakElevationMeterSuffix() {
+    assertFeatures(14,
+      List.of(Map.of("kind", "peak", "min_zoom", 14, "elevation", 569)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("natural", "peak", "ele", "569 m")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void peakElevationMeterSuffixWithoutWhitespace() {
+    assertFeatures(14,
+      List.of(Map.of("kind", "peak", "min_zoom", 14, "elevation", 569)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("natural", "peak", "ele", "569m")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void peakElevationNonMeterUnitOmitted() {
+    var features = process(SimpleFeature.create(
+      newPoint(1, 1),
+      new HashMap<>(Map.of("natural", "peak", "ele", "569 ft")),
+      "osm", null, 0
+    ));
+
+    assertFalse(toMap(features.iterator().next(), 14).containsKey("elevation"));
   }
 
   @Test
@@ -640,7 +685,7 @@ class PoisTest extends LayerTest {
   @Test
   void zoom_12_tallBuilding_100mHeight() {
     assertFeatures(12,
-      List.of(Map.of("kind", "office", "min_zoom", 12, "name", "Skyscraper", "elevation", "100")),
+      List.of(Map.of("kind", "office", "min_zoom", 12, "name", "Skyscraper", "elevation", 100)),
       process(SimpleFeature.create(
         AREA_12K_SQ_M,
         new HashMap<>(Map.of(
