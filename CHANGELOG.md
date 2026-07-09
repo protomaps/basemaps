@@ -1,3 +1,7 @@
+Tiles 4.14.11
+------
+- fix missing `elevation` values and numeric types for peaks via @candux [#619]
+
 Tiles 4.14.10
 ------
 - fix bug in area threshold via @candux [#620]
