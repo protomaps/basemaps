@@ -25,9 +25,14 @@ import com.protomaps.basemap.feature.QrankDb;
 import com.protomaps.basemap.names.OsmNames;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("java:S1192")
 public class Pois implements ForwardingProfile.LayerPostProcessor {
+
+  // Matches numeric metre values with an optional trailing "m" suffix, e.g. "569", "569.5", "569 m", or "569m".
+  private static final Pattern ELEVATION_PATTERN =
+    Pattern.compile("^([+-]?(?:\\d+(?:\\.\\d+)?|\\.\\d+))(?:\\s*m)?$");
 
   private Map<String, int[][]> qrankGrading = Map.of(
     "station", new int[][]{{10, 50000}, {12, 20000}, {13, 10000}},
@@ -45,6 +50,25 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
   }
 
   public static final String LAYER_NAME = "pois";
+
+  static Integer parseElevation(String elevation) {
+    if (elevation == null) {
+      return null;
+    }
+
+    var matcher = ELEVATION_PATTERN.matcher(elevation.trim());
+    if (!matcher.matches()) {
+      return null;
+    }
+
+    var parsed = parseDoubleOrNull(matcher.group(1));
+    if (parsed == null) {
+      return null;
+    }
+
+    var rounded = Math.round(parsed);
+    return rounded >= Integer.MIN_VALUE && rounded <= Integer.MAX_VALUE ? (int) rounded : null;
+  }
 
   private static final Expression WITH_OPERATOR_USFS = with("operator", "United States Forest Service",
     "US Forest Service", "U.S. Forest Service", "USDA Forest Service", "United States Department of Agriculture",
@@ -501,9 +525,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     // Assign outputFeature
     if (hasNamedPolygon) {
-      outputFeature = features.pointOnSurface(this.name())
-        //.setAttr("area_debug", wayArea) // DEBUG
-        .setAttr("elevation", sf.getString("ele"));
+      outputFeature = features.pointOnSurface(this.name());
     } else if (sf.isPoint()) {
       outputFeature = features.point(this.name());
     } else {
@@ -525,7 +547,8 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
       .setZoomRange(Math.min(minZoom, 15), 15)
       // Core OSM tags for different kinds of places
       // Special airport only tag (to indicate if it's an airport with regular commercial flights)
-      .setAttr("iata", sf.getString("iata"));
+      .setAttr("iata", sf.getString("iata"))
+      .setAttr("elevation", parseElevation(sf.getString("ele")));
 
     // Core Tilezen schema properties
     if (!kindDetail.equals("pm:undefined"))
