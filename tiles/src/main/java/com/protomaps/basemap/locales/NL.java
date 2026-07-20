@@ -11,16 +11,16 @@ import java.util.List;
 public class NL extends CartographicLocale {
 
   /**
-   * OSM scopes stadsroute networks per municipality: NL:S:Amsterdam, NL:S:Rotterdam,
-   * NL:S:Den Haag, NL:S:Nijmegen, NL:S:Zaanstad, NL:S:Parkstad. They share one shield design,
-   * so they collapse onto a single network for symbolization.
+   * OSM scopes stadsroute networks per municipality: NL:S:Amsterdam, NL:S:Rotterdam, NL:S:Den Haag, NL:S:Nijmegen,
+   * NL:S:Zaanstad, NL:S:Parkstad. They share one shield design, so they collapse onto a single network for
+   * symbolization.
    */
   private static final String S_ROAD_PREFIX = "NL:S:";
 
   /**
-   * Legacy name for the collapsed stadsroute network. This is not an OSM value — it was
-   * synthesized by an older way-ref-based implementation, and the sprite sheets and styles are
-   * keyed to it. Renaming it to "NL:S" is deferred to the next breaking release.
+   * Legacy name for the collapsed stadsroute network. This is not an OSM value — it was synthesized by an older
+   * way-ref-based implementation, and the sprite sheets and styles are keyed to it. Renaming it to "NL:S" is deferred
+   * to the next breaking release.
    */
   private static final String S_ROAD_NETWORK = "NL:S-road";
 

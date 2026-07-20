@@ -35,19 +35,18 @@ public class CartographicLocale {
   }
 
   /**
-   * Normalize a raw OSM route network to the network used for shield symbolization, priority
-   * and minzoom. The base implementation returns the network unchanged; locales collapse
-   * variants that share a base route's shield (e.g. carriageway suffixes) onto it.
+   * Normalize a raw OSM route network to the network used for shield symbolization, priority and minzoom. The base
+   * implementation returns the network unchanged; locales collapse variants that share a base route's shield (e.g.
+   * carriageway suffixes) onto it.
    */
   public String normalizeNetwork(String network) {
     return network;
   }
 
   /**
-   * Priority of a route network when ordering the concurrent shields on a single road.
-   * Lower rank sorts earlier, so it becomes a lower shield index (network_1 is the primary
-   * shield). Priority is a national convention, so the base implementation treats every
-   * network equally and leaves ordering to the ref tiebreak.
+   * Priority of a route network when ordering the concurrent shields on a single road. Lower rank sorts earlier, so it
+   * becomes a lower shield index (network_1 is the primary shield). Priority is a national convention, so the base
+   * implementation treats every network equally and leaves ordering to the ref tiebreak.
    */
   public int networkRank(String network) {
     return DEFAULT_RANK;
@@ -56,10 +55,9 @@ public class CartographicLocale {
   /**
    * Normalize, de-duplicate, prioritize and cap a road's concurrent shields.
    * <p>
-   * Input order is not significant: directional (forward/backward) route relations produce
-   * duplicate (network, ref) pairs, and {@code SourceFeature.relationInfo()} ordering is not
-   * stable across builds, so the deterministic ordering here comes entirely from
-   * {@link #networkRank(String)} with the shield text as a tiebreak.
+   * Input order is not significant: directional (forward/backward) route relations produce duplicate (network, ref)
+   * pairs, and {@code SourceFeature.relationInfo()} ordering is not stable across builds, so the deterministic ordering
+   * here comes entirely from {@link #networkRank(String)} with the shield text as a tiebreak.
    */
   public List<Shield> orderShields(List<Shield> shields) {
     List<Shield> normalized = new ArrayList<>();
@@ -82,8 +80,8 @@ public class CartographicLocale {
   }
 
   /**
-   * Generic shield derived from the way's own {@code ref} tag, used as a fallback when a road
-   * is not a member of any route relation. The network is unknown on this path, so "other".
+   * Generic shield derived from the way's own {@code ref} tag, used as a fallback when a road is not a member of any
+   * route relation. The network is unknown on this path, so "other".
    */
   public Shield getShield(SourceFeature sf) {
     String ref = sf.getString("ref");
