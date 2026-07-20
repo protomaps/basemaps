@@ -313,7 +313,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
   private record RouteRelationInfo(
     @Override long id,
-    String network
+    String network,
+    String ref
   ) implements OsmRelationInfo {}
 
   @Override
@@ -321,7 +322,8 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
     if (relation.hasTag("type", "route") && relation.hasTag("route", "road")) {
       return List.of(new RouteRelationInfo(
         relation.id(),
-        relation.getString("network")
+        relation.getString("network"),
+        relation.getString("ref")
       ));
     }
     return new ArrayList<>();
@@ -341,13 +343,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
 
     var locale = new CartographicLocale();
 
-    for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
-      RouteRelationInfo relation = routeInfo.relation();
-      if (relation.network != null) {
-        sf.setTag("_r_network_" + relation.network, "yes");
-      }
-    }
-
     try {
       var code = countryCoder.getCountryCode(sf.latLonGeometry());
       code.ifPresent(s -> sf.setTag("pm:country", s));
@@ -356,7 +351,23 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       e.log("Failed to determine country code");
     }
 
-    CartographicLocale.Shield shield = locale.getShield(sf);
+    var relationShields = new ArrayList<CartographicLocale.Shield>();
+
+    for (var routeInfo : sf.relationInfo(RouteRelationInfo.class)) {
+      RouteRelationInfo relation = routeInfo.relation();
+      if (relation.network != null) {
+        // Collapse carriageway variants (US:I:Local, US:I:Express) onto their base network so
+        // the shield and the minzoom rules below treat them like the route they belong to.
+        String network = locale.normalizeNetwork(relation.network);
+        sf.setTag("_r_network_" + network, "yes");
+        relationShields.add(new CartographicLocale.Shield(relation.ref, network));
+      }
+    }
+
+    // Shields come only from route relations; the locale orders, de-duplicates and caps them.
+    // Roads that are not a member of any route relation get no shield (the way's own ref tag is
+    // ignored, since it produces networkless, often low-quality shields).
+    var shields = locale.orderShields(relationShields);
 
     var matches = osmKindsIndex.getMatches(sf);
 
@@ -386,8 +397,6 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       // To power better client label collisions
       .setAttr("min_zoom", minZoom + 1)
       .setAttrWithMinzoom("ref", sf.getString("ref"), minZoomShieldText)
-      .setAttrWithMinzoom("shield_text", shield.text(), minZoomShieldText)
-      .setAttrWithMinzoom("network", shield.network(), minZoomShieldText)
       .setAttrWithMinzoom("oneway", sf.getString("oneway"), 14)
       .setAttrWithMinzoom("access", sf.getTag("access"), 15)
       // temporary attribute that gets removed in the post-process step
@@ -396,6 +405,20 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       .setMinPixelSize(0)
       .setPixelTolerance(0)
       .setMinZoom(minZoom);
+
+    // Emit one network_N / shield_text_N pair per concurrent route shield, primary first.
+    for (int i = 0; i < shields.size(); i++) {
+      CartographicLocale.Shield s = shields.get(i);
+      feat.setAttrWithMinzoom("network_" + (i + 1), s.network(), minZoomShieldText);
+      feat.setAttrWithMinzoom("shield_text_" + (i + 1), s.text(), minZoomShieldText);
+    }
+
+    // Backwards-compatible singular aliases mirror the primary shield.
+    if (!shields.isEmpty()) {
+      CartographicLocale.Shield primary = shields.get(0);
+      feat.setAttrWithMinzoom("network", primary.network(), minZoomShieldText);
+      feat.setAttrWithMinzoom("shield_text", primary.text(), minZoomShieldText);
+    }
 
     if (!kindDetail.isEmpty()) {
       feat.setAttr("kind_detail", kindDetail);

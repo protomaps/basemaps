@@ -7,6 +7,8 @@ import com.onthegomap.planetiler.TestUtils;
 import com.onthegomap.planetiler.reader.SimpleFeature;
 import com.onthegomap.planetiler.reader.osm.OsmElement;
 import com.onthegomap.planetiler.reader.osm.OsmReader;
+import com.onthegomap.planetiler.reader.osm.OsmRelationInfo;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,32 @@ class RoadsTest extends LayerTest {
       null,
       2,
       relationResult.stream().map(info -> new OsmReader.RelationMember<>("role", info)).toList()
+    ));
+  }
+
+  // Builds a motorway that is a member of one route relation per (network, ref) pair supplied.
+  private FeatureCollector processWithRelationShields(double startLon, double startLat, double endLon, double endLat,
+    String... networkRefPairs) {
+    var members = new ArrayList<OsmReader.RelationMember<OsmRelationInfo>>();
+    for (int i = 0; i + 1 < networkRefPairs.length; i += 2) {
+      var relationResult = profile.preprocessOsmRelation(new OsmElement.Relation(i + 10L, Map.of(
+        "type", "route",
+        "route", "road",
+        "network", networkRefPairs[i],
+        "ref", networkRefPairs[i + 1]
+      ), List.of(
+        new OsmElement.Relation.Member(OsmElement.Type.WAY, 2, "role")
+      )));
+      relationResult.forEach(info -> members.add(new OsmReader.RelationMember<>("role", info)));
+    }
+
+    return process(SimpleFeature.createFakeOsmFeature(
+      newLineString(startLon, startLat, endLon, endLat),
+      new HashMap<>(Map.of("highway", "motorway")),
+      "osm",
+      null,
+      2,
+      members
     ));
   }
 
@@ -120,6 +148,88 @@ class RoadsTest extends LayerTest {
         "_minzoom", 3
       )),
       processWithRelationAndCoords("US:US", 2.424, 48.832, 8.52332, 47.36919, "highway", "motorway")
+    );
+  }
+
+  @Test
+  void relationShieldsOrderedByNetworkPriority() {
+    // Concurrent I 70 / US 6 relations: Interstate becomes the primary shield regardless of
+    // relation order, and the singular aliases mirror it. Denver - Boulder.
+    assertFeatures(12,
+      List.of(Map.of(
+        "network_1", "US:I",
+        "shield_text_1", "70",
+        "network_2", "US:US",
+        "shield_text_2", "6",
+        "network", "US:I",
+        "shield_text", "70"
+      )),
+      processWithRelationShields(-104.97235, 39.73867, -105.260503, 40.010771,
+        "US:US", "6", "US:I", "70")
+    );
+  }
+
+  @Test
+  void carriagewayNetworkNormalizedToBaseInterstate() {
+    // A US:I:Local relation shares the Interstate shield and gets the Interstate minzoom (3).
+    // Denver - Boulder.
+    assertFeatures(12,
+      List.of(Map.of(
+        "_minzoom", 3,
+        "network_1", "US:I",
+        "shield_text_1", "70",
+        "network", "US:I",
+        "shield_text", "70"
+      )),
+      processWithRelationShields(-104.97235, 39.73867, -105.260503, 40.010771,
+        "US:I:Local", "70")
+    );
+  }
+
+  @Test
+  void municipalStadsrouteNormalizedToSRoad() {
+    // OSM scopes stadsroute networks per municipality (NL:S:Amsterdam); they collapse onto the
+    // single NL:S-road network the sprite sheet is keyed to. Amsterdam S100.
+    assertFeatures(12,
+      List.of(Map.of(
+        "network_1", "NL:S-road",
+        "shield_text_1", "S100",
+        "network", "NL:S-road",
+        "shield_text", "S100"
+      )),
+      processWithRelationShields(4.86, 52.36, 4.90, 52.38,
+        "NL:S:Amsterdam", "S100")
+    );
+  }
+
+  @Test
+  void stadsrouteRanksBelowAAndNRoads() {
+    // A concurrent A-road outranks the stadsroute even though the S relation comes first.
+    assertFeatures(12,
+      List.of(Map.of(
+        "network_1", "NL:A",
+        "shield_text_1", "10",
+        "network_2", "NL:S-road",
+        "shield_text_2", "S100",
+        "network", "NL:A"
+      )),
+      processWithRelationShields(4.86, 52.36, 4.90, 52.38,
+        "NL:S:Amsterdam", "S100", "NL:A", "10")
+    );
+  }
+
+  @Test
+  void bareWayRefProducesNoShield() {
+    // With no route relation the way's own ref tag is ignored: the road is emitted but gets no shield.
+    assertFeatures(12,
+      List.of(Map.of(
+        "kind", "highway",
+        "network", "<null>",
+        "shield_text", "<null>",
+        "network_1", "<null>",
+        "shield_text_1", "<null>"
+      )),
+      processWith("highway", "motorway", "ref", "A1")
     );
   }
 
