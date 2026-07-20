@@ -134,7 +134,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.14.11";
+    return "4.15.0";
   }
 
   @Override

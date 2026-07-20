@@ -1,3 +1,10 @@
+Tiles 4.15.0
+------
+- derive road shields from route relations instead of way `ref` tags
+- normalize Dutch municipal stadsroute networks (`NL:S:Amsterdam`, `NL:S:Rotterdam`, `NL:S:Den Haag`, `NL:S:Nijmegen`, `NL:S:Zaanstad`, `NL:S:Parkstad`) to `NL:S-road`.
+  `NL:S-road` is not an OpenStreetMap value — it was synthesized by the previous way-ref implementation and is kept here only so existing sprite sheets and styles keep working.
+  **In the next breaking release this network will be renamed to `NL:S`.**
+
 Tiles 4.14.11
 ------
 - fix missing `elevation` values and numeric types for peaks via @candux [#619]

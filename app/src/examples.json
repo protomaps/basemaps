@@ -236,5 +236,12 @@
     "tags": ["roads", "tunnels"],
     "center": [-73.9684, 40.747621],
     "zoom": 17
+  },
+  {
+    "name": "nj-concurrencies",
+    "description": "New Jersey motorway concurrency with multiple shields: US Route 1-9",
+    "tags": ["roads", "shields", "concurrencies"],
+    "center": [-74.10479, 40.7282],
+    "zoom": 15
   }
 ]
