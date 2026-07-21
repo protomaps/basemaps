@@ -74,6 +74,62 @@ class BoundariesTest extends LayerTest {
       collector);
   }
 
+  @Test
+  void testOccupiedAdminLevelThreeIsDisputedRegionBoundary() {
+    var infos = profile.preprocessOsmRelation(
+      new OsmElement.Relation(1,
+        Map.of("type", "boundary", "boundary", "administrative", "admin_level", "3", "border_type", "occupied"),
+        List.of(new OsmElement.Relation.Member(OsmElement.Type.WAY, 123, ""))));
+
+    var way = SimpleFeature.createFakeOsmFeature(
+      newLineString(0, 0, 1, 1),
+      new HashMap<>(),
+      "osm",
+      null,
+      123,
+      infos.stream().map(r -> new OsmReader.RelationMember<>("", r)).toList()
+    );
+
+    var collector = featureCollectorFactory.get(way);
+    profile.processFeature(way, collector);
+
+    assertFeatures(6,
+      List.of(Map.of(
+        "kind", "region",
+        "kind_detail", 3,
+        "disputed", true,
+        "sort_rank", 288,
+        "_minzoom", 6)),
+      collector);
+  }
+
+  @Test
+  void testOrdinaryAdminLevelThreeRemainsRegionBoundary() {
+    var infos = profile.preprocessOsmRelation(
+      new OsmElement.Relation(1, Map.of("type", "boundary", "boundary", "administrative", "admin_level", "3"),
+        List.of(new OsmElement.Relation.Member(OsmElement.Type.WAY, 123, ""))));
+
+    var way = SimpleFeature.createFakeOsmFeature(
+      newLineString(0, 0, 1, 1),
+      new HashMap<>(),
+      "osm",
+      null,
+      123,
+      infos.stream().map(r -> new OsmReader.RelationMember<>("", r)).toList()
+    );
+
+    var collector = featureCollectorFactory.get(way);
+    profile.processFeature(way, collector);
+
+    assertFeatures(6,
+      List.of(Map.of(
+        "kind", "region",
+        "kind_detail", 3,
+        "sort_rank", 289,
+        "_minzoom", 6)),
+      collector);
+  }
+
   @ParameterizedTest
   @CsvSource(value = {
     "disputed,yes",
