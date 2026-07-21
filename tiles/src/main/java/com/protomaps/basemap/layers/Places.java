@@ -244,8 +244,39 @@ public class Places implements ForwardingProfile.LayerPostProcessor {
     return computedTags;
   }
 
+  private static boolean isCurrentNameKey(String key) {
+    return key.equals("name") || key.startsWith("name:");
+  }
+
+  private static boolean isOldNameKey(String key) {
+    return key.equals("old_name") ||
+      key.equals("old:name") ||
+      key.startsWith("old_name:") ||
+      key.startsWith("old:name:");
+  }
+
+  private static boolean hasAnyCurrentName(SourceFeature sf) {
+    return sf.tags().keySet().stream().anyMatch(Places::isCurrentNameKey);
+  }
+
+  private static boolean hasAnyOldName(SourceFeature sf) {
+    return sf.tags().keySet().stream().anyMatch(Places::isOldNameKey);
+  }
+
+  private static boolean isLegacyOnlyPlace(SourceFeature sf) {
+    return hasAnyOldName(sf) && !hasAnyCurrentName(sf);
+  }
+
   public void processOsm(SourceFeature sf, FeatureCollector features) {
-    if (!sf.isPoint() || !sf.hasTag("name") || !sf.hasTag("place")) {
+    if (!sf.isPoint() || !sf.hasTag("place")) {
+      return;
+    }
+
+    if (isLegacyOnlyPlace(sf)) {
+      return;
+    }
+
+    if (!hasAnyCurrentName(sf)) {
       return;
     }
 
