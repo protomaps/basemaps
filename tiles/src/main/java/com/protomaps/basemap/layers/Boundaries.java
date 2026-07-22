@@ -12,6 +12,7 @@ import com.onthegomap.planetiler.util.Parse;
 import com.protomaps.basemap.feature.FeatureId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.OptionalInt;
 
 @SuppressWarnings("java:S1192")
@@ -25,25 +26,40 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
     return LAYER_NAME;
   }
 
+  /**
+   * Reads a Natural Earth attribute, falling back to the upper case spelling of the column.
+   * <p>
+   * Column name casing is not consistent across the Natural Earth distributions: the sqlite package is entirely lower
+   * case, while the GeoPackage package preserves whatever the source shapefiles use. That is lower case for most
+   * physical layers but upper case for the admin layers this handler reads, and some tables mix both.
+   */
+  private static String getNeString(SourceFeature sf, String key) {
+    Object value = sf.getTag(key);
+    if (value == null) {
+      value = sf.getTag(key.toUpperCase(Locale.ROOT));
+    }
+    return value == null ? null : value.toString();
+  }
+
   public void processNe(SourceFeature sf, FeatureCollector features) {
     String sourceLayer = sf.getSourceLayer();
     String kind = "";
     int adminLevel = 2;
     boolean disputed = false;
-    int themeMinZoom = 0;
     int themeMaxZoom = 0;
 
     if (sourceLayer.equals("ne_10m_admin_0_boundary_lines_land") ||
       sourceLayer.equals("ne_10m_admin_0_boundary_lines_map_units") ||
       sourceLayer.equals("ne_10m_admin_0_boundary_lines_disputed_areas") ||
       sourceLayer.equals("ne_10m_admin_1_states_provinces_lines")) {
-      themeMinZoom = 4;
       themeMaxZoom = 5;
       kind = "tz_boundary";
     }
 
+    String featureClass = getNeString(sf, "featurecla");
+
     if (!kind.isEmpty()) {
-      switch (sf.getString("featurecla")) {
+      switch (featureClass == null ? "" : featureClass) {
         case "Disputed (please verify)" -> {
           kind = "country";
           disputed = true;
@@ -130,8 +146,10 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
       }
     }
 
-    if (sf.canBeLine() && sf.getString("min_zoom") != null && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
-      var minZoom = Double.parseDouble(sf.getString("min_zoom")) - 1.0;
+    String minZoomString = getNeString(sf, "min_zoom");
+
+    if (sf.canBeLine() && minZoomString != null && (!kind.isEmpty() && !kind.equals("tz_boundary"))) {
+      var minZoom = Double.parseDouble(minZoomString) - 1.0;
       int sortRank = 289 - (disputed ? 1 : 0);
       features.line(this.name())
         .setAttr("kind", kind)
@@ -139,10 +157,8 @@ public class Boundaries implements ForwardingProfile.OsmRelationPreprocessor,
         .setAttr("sort_rank", sortRank)
         .setSortKey(sortRank)
         .setAttr("disputed", disputed ? true : null)
-        .setAttr("brk_a3", sf.getString("brk_a3"))
-        .setZoomRange(
-          sf.getString("min_zoom") == null ? themeMinZoom : (int) minZoom,
-          themeMaxZoom)
+        .setAttr("brk_a3", getNeString(sf, "brk_a3"))
+        .setZoomRange((int) minZoom, themeMaxZoom)
         .setMinPixelSize(0)
         .setBufferPixels(8);
     }

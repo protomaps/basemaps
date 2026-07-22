@@ -134,7 +134,7 @@ public class Basemap extends ForwardingProfile {
 
   @Override
   public String version() {
-    return "4.15.0";
+    return "4.15.1";
   }
 
   @Override
@@ -284,8 +284,8 @@ public class Basemap extends ForwardingProfile {
     }
 
     var planetiler = Planetiler.create(args)
-      .addNaturalEarthSource("ne", sourcesDir.resolve("natural_earth_vector.sqlite.zip"),
-        "https://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip");
+      .addGeoPackageSource("ne", sourcesDir.resolve("natural_earth_vector.gpkg.zip"),
+        "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip");
 
     if (!overtureFile.isEmpty()) {
       Path base = args.inputFile("overture", "overture base directory", Path.of("data", "overture"));
