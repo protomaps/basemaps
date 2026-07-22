@@ -313,6 +313,7 @@ public class Basemap extends ForwardingProfile {
         .addGeoPackageSource("landcover", sourcesDir.resolve("daylight-landcover.gpkg"),
           "https://r2-public.protomaps.com/datasets/daylight-landcover.gpkg");
     }
+
     Path pgfEncodingZip = sourcesDir.resolve("pgf-encoding.zip");
     Path qrankCsv = sourcesDir.resolve("qrank.csv.gz");
 
