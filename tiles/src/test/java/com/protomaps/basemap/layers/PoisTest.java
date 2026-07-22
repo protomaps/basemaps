@@ -1084,6 +1084,33 @@ class PoisTest extends LayerTest {
   }
 
   @Test
+  void aerialwayStationNode() {
+    assertFeatures(15,
+      List.of(Map.of("kind", "station", "kind_detail", "aerialway", "min_zoom", 16)),
+      process(SimpleFeature.create(
+        newPoint(1, 1),
+        new HashMap<>(Map.of("aerialway", "station")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
+  void aerialwayStationArea() {
+    assertFeatures(15,
+      List.of(Map.of(
+        "kind", "station",
+        "kind_detail", "aerialway",
+        "name", "Valley station",
+        "min_zoom", 16
+      )),
+      process(SimpleFeature.create(
+        AREA_127_SQ_M,
+        new HashMap<>(Map.of("aerialway", "station", "name", "Valley station")),
+        "osm", null, 0
+      )));
+  }
+
+  @Test
   void kind_bakery_generic() {
     assertFeatures(15,
       List.of(Map.of("kind", "bakery", "min_zoom", 17)),

@@ -459,16 +459,30 @@ class RoadsTest extends LayerTest {
     );
   }
 
-  @Test
-  void testAerialwayCableCar() {
+  @ParameterizedTest
+  @CsvSource({
+    "cable_car, 11",
+    "gondola, 11",
+    "mixed_lift, 11",
+    "chair_lift, 12",
+    "drag_lift, 13",
+    "t-bar, 13",
+    "j-bar, 13",
+    "platter, 13",
+    "rope_tow, 13",
+    "magic_carpet, 14",
+    "zip_line, 14",
+    "goods, 14"
+  })
+  void testAerialways(String aerialway, int minZoom) {
     assertFeatures(12,
       List.of(Map.of("kind", "aerialway",
-        "kind_detail", "cable_car",
-        "_minzoom", 11
+        "kind_detail", aerialway,
+        "_minzoom", minZoom
       )),
       processWithRelationAndCoords("",
         0, 0, 1, 1,
-        "aerialway", "cable_car"
+        "aerialway", aerialway
       )
     );
   }

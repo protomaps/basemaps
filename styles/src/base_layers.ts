@@ -1062,6 +1062,29 @@ export function nolabels_layers(
       },
     },
     {
+      id: "roads_aerialway",
+      type: "line",
+      source: source,
+      "source-layer": "roads",
+      filter: ["==", "kind", "aerialway"],
+      paint: {
+        "line-color": t.railway,
+        "line-dasharray": [4, 1],
+        "line-opacity": 0.5,
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.6],
+          ["zoom"],
+          3,
+          0,
+          6,
+          0.15,
+          18,
+          9,
+        ],
+      },
+    },
+    {
       id: "boundaries_country",
       type: "line",
       source: source,
@@ -1439,6 +1462,29 @@ export function labels_layers(
       },
     },
     {
+      id: "roads_labels_aerialway",
+      type: "symbol",
+      source: source,
+      "source-layer": "roads",
+      minzoom: 13,
+      filter: ["==", "kind", "aerialway"],
+      layout: {
+        "symbol-placement": "line",
+        "text-font": [t.regular || "Noto Sans Regular"],
+        "text-field": get_multiline_name(
+          lang,
+          script,
+          t.regular,
+        ) as DataDrivenPropertyValueSpecification<string>,
+        "text-size": 12,
+      },
+      paint: {
+        "text-color": t.roads_label_minor,
+        "text-halo-color": t.roads_label_minor_halo,
+        "text-halo-width": 1,
+      },
+    },
+    {
       id: "roads_labels_minor",
       type: "symbol",
       source: source,
@@ -1662,9 +1708,14 @@ export function labels_layers(
             ],
             layout: {
               "icon-image": [
-                "match",
-                ["get", "kind"],
-                "station",
+                "case",
+                [
+                  "all",
+                  ["==", ["get", "kind"], "station"],
+                  ["==", ["get", "kind_detail"], "aerialway"],
+                ],
+                "aerialway",
+                ["==", ["get", "kind"], "station"],
                 "train_station",
                 ["get", "kind"],
               ],
