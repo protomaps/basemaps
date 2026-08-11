@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -58,6 +59,25 @@ public class BasemapTest {
     // Verify bounds are valid (minX < maxX, minY < maxY)
     assertTrue(minX < maxX, "Min X should be less than Max X");
     assertTrue(minY < maxY, "Min Y should be less than Max Y");
+  }
+
+  @Test
+  void testExtractBoundsUsesRootLocale() {
+    // A locale with a comma decimal separator must not corrupt the comma-separated bounds string.
+    Path testFile = Path.of("src", "test", "resources", "test-bounds.parquet");
+    Locale previous = Locale.getDefault();
+    try {
+      Locale.setDefault(Locale.GERMANY);
+
+      Optional<String> boundsOpt = Basemap.extractBoundsFromGeoParquet(testFile);
+
+      assertTrue(boundsOpt.isPresent(), "Should extract bounds from valid GeoParquet file");
+      String boundsStr = boundsOpt.get();
+      assertEquals(4, boundsStr.split(",").length, "Bounds string should have 4 comma-separated values");
+      assertEquals(-122.4241767, Double.parseDouble(boundsStr.split(",")[0]), 0.0001, "Min X should match");
+    } finally {
+      Locale.setDefault(previous);
+    }
   }
 
   @Test
