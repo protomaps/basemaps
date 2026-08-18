@@ -1066,7 +1066,11 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "boundaries",
-      filter: ["<=", "kind_detail", 2],
+      filter: [
+        "any",
+        ["<=", "kind_detail", 2],
+        ["all", ["==", "kind_detail", 3], ["==", "disputed", true]],
+      ],
       paint: {
         "line-color": t.boundaries,
         "line-width": 0.7,
@@ -1084,7 +1088,11 @@ export function nolabels_layers(
       type: "line",
       source: source,
       "source-layer": "boundaries",
-      filter: [">", "kind_detail", 2],
+      filter: [
+        "all",
+        [">", "kind_detail", 2],
+        ["none", ["all", ["==", "kind_detail", 3], ["==", "disputed", true]]],
+      ],
       paint: {
         "line-color": t.boundaries,
         "line-width": 0.4,

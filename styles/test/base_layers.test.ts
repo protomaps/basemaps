@@ -20,3 +20,22 @@ test("the nolayers label has no labels", () => {
     assert.notEqual("symbol", layer.type);
   }
 });
+
+test("country boundary styling includes disputed level three boundaries", () => {
+  const boundaryLayers = nolabels_layers("dummy", LIGHT);
+  const country = boundaryLayers.find(
+    (layer) => layer.id === "boundaries_country",
+  );
+  const other = boundaryLayers.find((layer) => layer.id === "boundaries");
+
+  assert.deepEqual(country?.filter, [
+    "any",
+    ["<=", "kind_detail", 2],
+    ["all", ["==", "kind_detail", 3], ["==", "disputed", true]],
+  ]);
+  assert.deepEqual(other?.filter, [
+    "all",
+    [">", "kind_detail", 2],
+    ["none", ["all", ["==", "kind_detail", 3], ["==", "disputed", true]]],
+  ]);
+});
