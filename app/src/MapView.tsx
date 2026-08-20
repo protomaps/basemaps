@@ -12,16 +12,18 @@ import {
   Popup,
   addProtocol,
   getRTLTextPluginStatus,
-  default as maplibregl,
   removeProtocol,
   setRTLTextPlugin,
+  setWorkerUrl,
 } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import type {
   LngLatBoundsLike,
   MapGeoJSONFeature,
   MapTouchEvent,
   StyleSpecification,
 } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   default as MaplibreGeocoder,
@@ -49,6 +51,8 @@ import {
   parseHash,
 } from "./utils";
 import "@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css";
+
+setWorkerUrl(workerUrl);
 
 const STYLE_MAJOR_VERSION = 5;
 

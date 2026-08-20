@@ -2,7 +2,8 @@
 import { render } from "solid-js/web";
 import "./index.css";
 import type { LayerSpecification } from "@maplibre/maplibre-gl-style-spec";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import * as pmtiles from "pmtiles";
 import { For, createEffect, createSignal, onMount } from "solid-js";
 import { layers, namedFlavor } from "../../styles/src/index.ts";
@@ -12,6 +13,8 @@ import { layersForVersion } from "./utils";
 import "maplibre-gl/dist/maplibre-gl.css";
 // @ts-ignore
 import pixelmatch from "pixelmatch";
+
+maplibregl.setWorkerUrl(workerUrl);
 
 if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
   maplibregl.setRTLTextPlugin(
