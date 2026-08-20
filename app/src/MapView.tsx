@@ -20,6 +20,7 @@ import * as maplibregl from "maplibre-gl";
 import type {
   LngLatBoundsLike,
   MapGeoJSONFeature,
+  MapMouseEvent,
   MapTouchEvent,
   StyleSpecification,
 } from "maplibre-gl";
@@ -376,7 +377,7 @@ function MapLibreView(props: {
       });
     });
 
-    const showContextMenu = (e: MapTouchEvent) => {
+    const showContextMenu = (e: MapMouseEvent | MapTouchEvent) => {
       const features = map.queryRenderedFeatures(e.point);
       if (hiddenRef && features.length) {
         hiddenRef.innerHTML = "";
@@ -389,7 +390,7 @@ function MapLibreView(props: {
       }
     };
 
-    map.on("contextmenu", (e: MapTouchEvent) => {
+    map.on("contextmenu", (e: MapMouseEvent) => {
       showContextMenu(e);
     });
 
@@ -410,12 +411,9 @@ function MapLibreView(props: {
     map.on("touchend", clearLongPress);
     map.on("touchcancel", clearLongPress);
     map.on("touchmove", clearLongPress);
-    map.on("pointerdrag", clearLongPress);
-    map.on("pointermove", clearLongPress);
+    map.on("mousemove", clearLongPress);
+    map.on("drag", clearLongPress);
     map.on("moveend", clearLongPress);
-    map.on("gesturestart", clearLongPress);
-    map.on("gesturechange", clearLongPress);
-    map.on("gestureend", clearLongPress);
 
     mapRef = map;
 
