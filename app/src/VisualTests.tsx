@@ -16,13 +16,6 @@ import pixelmatch from "pixelmatch";
 
 maplibregl.setWorkerUrl(workerUrl);
 
-if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
-  maplibregl.setRTLTextPlugin(
-    "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
-    false, // we need to pre-load this, otherwise diffs will be flaky
-  );
-}
-
 // Jumps the map and waits for idle, capturing a Blob of the rendered frame.
 const moveAndCaptureBlob = (
   map: maplibregl.Map,

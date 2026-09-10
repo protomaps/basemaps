@@ -296,7 +296,6 @@ async function getImageFromStyle(styleForTest: StyleWithTestData, page: Page): P
                 reject(new Error('Test timed out'));
             }, options.timeout || 4000);
 
-
             if (maplibregl.getRTLTextPluginStatus() === 'unavailable') {
                 maplibregl.setRTLTextPlugin(
                     'https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.3.0/dist/mapbox-gl-rtl-text.js',
