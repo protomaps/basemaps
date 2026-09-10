@@ -260,13 +260,6 @@ function MapLibreView(props: {
   onMount(() => {
     props.ref?.({ fit });
 
-    if (getRTLTextPluginStatus() === "unavailable") {
-      setRTLTextPlugin(
-        "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
-        true,
-      );
-    }
-
     if (!mapContainer) {
       console.error("Could not mount map element");
       return;
