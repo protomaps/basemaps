@@ -11,9 +11,7 @@ import {
   NavigationControl,
   Popup,
   addProtocol,
-  getRTLTextPluginStatus,
   removeProtocol,
-  setRTLTextPlugin,
   setWorkerUrl,
 } from "maplibre-gl";
 import * as maplibregl from "maplibre-gl";
