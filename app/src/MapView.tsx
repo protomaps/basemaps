@@ -55,7 +55,7 @@ setWorkerUrl(workerUrl);
 
 const STYLE_MAJOR_VERSION = 5;
 
-const DEFAULT_TILES = "https://demo-bucket.protomaps.com/v4.pmtiles";
+const DEFAULT_TILES = "https://latest.protomaps.com/v4.pmtiles";
 
 const ATTRIBUTION =
   '<a href="https://github.com/protomaps/basemaps">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
