@@ -85,6 +85,7 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
     rule(
       Expression.or(
         with("aeroway", "aerodrome"),
+        with("aerialway", "station"),
         with("amenity"),
         with("attraction"),
         with("boundary", "national_park", "protected_area"),
@@ -190,7 +191,13 @@ public class Pois implements ForwardingProfile.LayerPostProcessor {
 
     rule(with("sport"), use("pm:kindDetail", fromTag("sport"))),
     rule(with("religion"), use("pm:kindDetail", fromTag("religion"))),
-    rule(with("cuisine"), use("pm:kindDetail", fromTag("cuisine")))
+    rule(with("cuisine"), use("pm:kindDetail", fromTag("cuisine"))),
+    // Keep explicit aerialway stations ahead of generic railway classification on dual-tagged features.
+    rule(
+      with("aerialway", "station"),
+      use("pm:kind", fromTag("aerialway")),
+      use("pm:kindDetail", "aerialway")
+    )
 
   )).index();
 

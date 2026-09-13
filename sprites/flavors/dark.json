@@ -39,6 +39,7 @@
     "nature_reserve": "green",
     "aerodrome": "lapis",
     "train_station": "lapis",
+    "aerialway": "lapis",
     "bus_stop": "lapis",
     "ferry_terminal": "lapis",
     "stadium": "slategray",

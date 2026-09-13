@@ -129,10 +129,28 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       use("minZoom", 13)
     ),
     rule(
-      with("aerialway", "cable_car"),
+      with("aerialway", "cable_car", "gondola", "mixed_lift"),
       use("kind", "aerialway"),
-      use("kindDetail", "cable_car"),
+      use("kindDetail", fromTag("aerialway")),
       use("minZoom", 11)
+    ),
+    rule(
+      with("aerialway", "chair_lift"),
+      use("kind", "aerialway"),
+      use("kindDetail", fromTag("aerialway")),
+      use("minZoom", 12)
+    ),
+    rule(
+      with("aerialway", "drag_lift", "t-bar", "j-bar", "platter", "rope_tow"),
+      use("kind", "aerialway"),
+      use("kindDetail", fromTag("aerialway")),
+      use("minZoom", 13)
+    ),
+    rule(
+      with("aerialway", "magic_carpet", "zip_line", "goods"),
+      use("kind", "aerialway"),
+      use("kindDetail", fromTag("aerialway")),
+      use("minZoom", 14)
     ),
     rule(
       with("man_made", "pier"),
