@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import com.protomaps.basemap.locales.CartographicLocale;
+import com.protomaps.basemap.locales.DE;
+import com.protomaps.basemap.locales.JP;
 import com.protomaps.basemap.locales.NL;
 import com.protomaps.basemap.locales.US;
 import java.util.Optional;
@@ -58,6 +60,8 @@ class CountryCoderTest {
   void testCodeToLocale() {
     assertInstanceOf(NL.class, CountryCoder.getLocale(Optional.of("NL")));
     assertInstanceOf(US.class, CountryCoder.getLocale(Optional.of("US")));
+    assertInstanceOf(DE.class, CountryCoder.getLocale(Optional.of("DE")));
+    assertInstanceOf(JP.class, CountryCoder.getLocale(Optional.of("JP")));
     assertInstanceOf(CartographicLocale.class, CountryCoder.getLocale(Optional.empty()));
   }
 }
