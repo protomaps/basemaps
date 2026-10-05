@@ -24,7 +24,7 @@ abstract class LayerTest {
 
   // Coarse bounding boxes, not real borders: just enough for tests to land inside a locale.
   final CountryCoder countryCoder = CountryCoder.fromJsonString(
-    "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"US\",\"nameEn\":\"United States\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-124,47],[-124,25],[-71,25],[-71,47],[-124,47]]]]}},{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"NL\",\"nameEn\":\"Netherlands\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[3.3,53.6],[3.3,50.7],[7.3,50.7],[7.3,53.6],[3.3,53.6]]]]}}]}");
+    "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"US\",\"nameEn\":\"United States\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-124,47],[-124,25],[-71,25],[-71,47],[-124,47]]]]}},{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"NL\",\"nameEn\":\"Netherlands\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[3.3,53.6],[3.3,50.7],[7.3,50.7],[7.3,53.6],[3.3,53.6]]]]}},{\"type\":\"Feature\",\"properties\":{\"iso1A2\":\"FI\",\"nameEn\":\"Finland\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[19.5,70.1],[19.5,59.7],[31.6,59.7],[31.6,70.1],[19.5,70.1]]]]}}]}");
 
 
   final QrankDb qrankDb = new QrankDb(LongLongHashMap.from(new long[]{8888}, new long[]{100000}));

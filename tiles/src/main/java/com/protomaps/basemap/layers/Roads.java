@@ -300,6 +300,13 @@ public class Roads implements ForwardingProfile.LayerPostProcessor, ForwardingPr
       with("pm:country", "US"),
       with("_r_network_US:I"),
       use("pm:minzoom", 3)
+    ),
+
+    // Finland tags its national road network highway=trunk, not motorway.
+    rule(
+      with("pm:country", "FI"),
+      with("pm:highway", "trunk"),
+      use("pm:minzoom", 3)
     )
 
   )).index();

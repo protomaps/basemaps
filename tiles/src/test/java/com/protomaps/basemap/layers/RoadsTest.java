@@ -151,6 +151,20 @@ class RoadsTest extends LayerTest {
     );
   }
 
+  @ParameterizedTest
+  @CsvSource({
+    "trunk, 3",
+    "trunk_link, 6",
+    "primary, 7",
+  })
+  void finnishTrunkRoadsEnterAtMotorwayZoom(String highway, int minZoom) {
+    // Kokkola - Kajaani: national route 28 is 218 km of highway=trunk with no motorway section
+    assertFeatures(0,
+      List.of(Map.of("kind", "major_road", "_minzoom", minZoom)),
+      processWithRelationAndCoords("", 23.34, 63.87, 27.45, 64.12, "highway", highway)
+    );
+  }
+
   @Test
   void relationShieldsOrderedByNetworkPriority() {
     // Concurrent I 70 / US 6 relations: Interstate becomes the primary shield regardless of

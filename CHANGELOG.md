@@ -1,3 +1,7 @@
+Tiles 4.15.3
+------
+- include Finnish trunk roads from zoom 3 [#221]
+
 Tiles 4.15.2
 ------
 - Fix parsing of commas in non-English locales [#628]
